@@ -119,7 +119,7 @@ Any Data_copy (I) {
 	Data thee;
 	if (me == NULL) return NULL;
 	if (our copy == classData -> copy) return Melder_errorp3 (L"(Data_copy:) Class ", our _className, L" cannot be copied.");
-	thee = _Thing_new (my methods);
+	thee = (structData*)_Thing_new (my methods);
 	if (! thee) return NULL;
 	if (! our copy (me, thee)) {
 		forget (thee);
@@ -286,21 +286,25 @@ Any Data_readFromTextFile (MelderFile file) {
 	MelderReadText text = NULL;
 //start:
 	text = MelderReadText_createFromFile (file); cherror
-	wchar_t *line = MelderReadText_readLine (text); cherror
-	if (line == NULL) error1 (L"No lines.")
-	wchar_t *end = wcsstr (line, L"ooTextFile");   /* oo format? */
-	if (end) {
-		klas = texgetw2 (text); cherror
-		me = Thing_newFromClassName (klas); cherror
-	} else {
-		end = wcsstr (line, L"TextFile");
-		if (end == NULL) error1 (L"Not an old-type text file; should not occur.")
-		*end = '\0';
-		me = Thing_newFromClassName (line); cherror
-		Thing_version = -1;   /* Old version: override version number, which was set to 0 by newFromClassName. */
+	{
+		wchar_t *line = MelderReadText_readLine (text); cherror
+		if (line == NULL) error1 (L"No lines.")
+		{
+			wchar_t *end = wcsstr (line, L"ooTextFile");   /* oo format? */
+			if (end) {
+				klas = texgetw2 (text); cherror
+				me = (structData*)Thing_newFromClassName (klas); cherror
+			} else {
+				end = wcsstr (line, L"TextFile");
+				if (end == NULL) error1 (L"Not an old-type text file; should not occur.")
+				*end = '\0';
+				me = (structData*)Thing_newFromClassName (line); cherror
+				Thing_version = -1;   /* Old version: override version number, which was set to 0 by newFromClassName. */
+			}
+			MelderFile_getParentDir (file, & Data_directoryBeingRead);
+			Data_readText (me, text); cherror
+		}
 	}
-	MelderFile_getParentDir (file, & Data_directoryBeingRead);
-	Data_readText (me, text); cherror
 end:
 	Melder_free (klas);
 	MelderReadText_delete (text);
@@ -334,11 +338,11 @@ Any Data_readFromBinaryFile (MelderFile file) {
 		char *klas;
 		fseek (f, strlen ("ooBinaryFile"), 0);
 		klas = bingets1 (f);
-		if (! klas || ! (me = Thing_newFromClassNameA (klas))) { fclose (f); return 0; }
+		if (! klas || ! (me = (structData*)Thing_newFromClassNameA (klas))) { fclose (f); return 0; }
 		Melder_free (klas);
 	} else {
 		end = strstr (line, "BinaryFile");
-		if (! end || ! (*end = '\0', me = Thing_newFromClassNameA (line))) {
+		if (! end || ! (*end = '\0', me = (structData*)Thing_newFromClassNameA (line))) {
 			fclose (f);
 			return Melder_errorp3 (L"(Data_readFromBinaryFile:) File ", MelderFile_messageName (file),
 				L" is not a Data binary file.");
@@ -373,7 +377,7 @@ Any Data_readFromLispFile (MelderFile file) {
 	if ((f = Melder_fopen (file, "r")) == NULL) return NULL;
 	fgets (line, 199, f);
 	end = strstr (line, "LispFile");
-	if (! end || ! (*end = '\0', me = Thing_newFromClassNameA (line))) {
+	if (! end || ! (*end = '\0', me = (structData*)Thing_newFromClassNameA (line))) {
 		fclose (f);
 		return Melder_errorp3 (L"(Data_readFromLispFile:) File ", MelderFile_messageName (file),
 			L" is not a Data LISP file.");
@@ -440,7 +444,7 @@ Any Data_readFromFile (MelderFile file) {
 
 	MelderFile_getParentDir (file, & Data_directoryBeingRead);
 	for (i = 1; i <= numFileTypeRecognizers; i ++) {
-		Data object = fileTypeRecognizers [i] (nread, header, file);
+		Data object = (structData*)fileTypeRecognizers [i] (nread, header, file);
 		if (Melder_hasError ()) return NULL;
 		if (object) return object;
 	}

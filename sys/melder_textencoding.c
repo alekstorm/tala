@@ -296,47 +296,49 @@ void Melder_8bitToWcs_inline_e (const char *string, wchar_t *wcs, int inputEncod
 			error1 (L"Text is not valid UTF-8; please try a different text input encoding.");
 		}
 	}
-	const unsigned char *p = (const unsigned char *) & string [0];
-	if (inputEncoding == kMelder_textInputEncoding_UTF8) {
-		while (*p != '\0') {
-			uint32_t kar = * p ++;
-			if (kar <= 0x7F) {
-				* q ++ = kar;
-			} else if (kar <= 0xDF) {
-				unsigned long kar2 = * p ++;
-				* q ++ = ((kar & 0x1F) << 6) | (kar2 & 0x3F);
-			} else if (kar <= 0xEF) {
-				unsigned long kar2 = * p ++, kar3 = * p ++;
-				* q ++ = ((kar & 0x0F) << 12) | ((kar2 & 0x3F) << 6) | (kar3 & 0x3F);
-			} else if (kar <= 0xF4) {
-				unsigned long kar2 = * p ++, kar3 = * p ++, kar4 = * p ++;
-				kar = ((kar & 0x07) << 18) | ((kar2 & 0x3F) << 12) | ((kar3 & 0x3F) << 6) | (kar4 & 0x3F);
-				if (sizeof (wchar_t) == 2) {
-					/*
-					 * Convert to UTF-16 surrogate pair.
-					 */
-					kar -= 0x10000;
-					* q ++ = 0xD800 | (kar >> 10);
-					* q ++ = 0xDC00 | (kar & 0x3FF);
-				} else {
+	{
+		const unsigned char *p = (const unsigned char *) & string [0];
+		if (inputEncoding == kMelder_textInputEncoding_UTF8) {
+			while (*p != '\0') {
+				uint32_t kar = * p ++;
+				if (kar <= 0x7F) {
 					* q ++ = kar;
+				} else if (kar <= 0xDF) {
+					unsigned long kar2 = * p ++;
+					* q ++ = ((kar & 0x1F) << 6) | (kar2 & 0x3F);
+				} else if (kar <= 0xEF) {
+					unsigned long kar2 = * p ++, kar3 = * p ++;
+					* q ++ = ((kar & 0x0F) << 12) | ((kar2 & 0x3F) << 6) | (kar3 & 0x3F);
+				} else if (kar <= 0xF4) {
+					unsigned long kar2 = * p ++, kar3 = * p ++, kar4 = * p ++;
+					kar = ((kar & 0x07) << 18) | ((kar2 & 0x3F) << 12) | ((kar3 & 0x3F) << 6) | (kar4 & 0x3F);
+					if (sizeof (wchar_t) == 2) {
+						/*
+						 * Convert to UTF-16 surrogate pair.
+						 */
+						kar -= 0x10000;
+						* q ++ = 0xD800 | (kar >> 10);
+						* q ++ = 0xDC00 | (kar & 0x3FF);
+					} else {
+						* q ++ = kar;
+					}
 				}
 			}
+		} else if (inputEncoding == kMelder_textInputEncoding_ISO_LATIN1) {
+			while (*p != '\0') {
+				* q ++ = * p ++;
+			}
+		} else if (inputEncoding == kMelder_textInputEncoding_WINDOWS_LATIN1) {
+			while (*p != '\0') {
+				* q ++ = Melder_decodeWindowsLatin1 [* p ++];
+			}
+		} else if (inputEncoding == kMelder_textInputEncoding_MACROMAN) {
+			while (*p != '\0') {
+				* q ++ = Melder_decodeMacRoman [* p ++];
+			}
+		} else if (inputEncoding != kMelder_textInputEncoding_UTF8) {
+			Melder_fatal ("Unknown text input encoding %d.", inputEncoding);
 		}
-	} else if (inputEncoding == kMelder_textInputEncoding_ISO_LATIN1) {
-		while (*p != '\0') {
-			* q ++ = * p ++;
-		}
-	} else if (inputEncoding == kMelder_textInputEncoding_WINDOWS_LATIN1) {
-		while (*p != '\0') {
-			* q ++ = Melder_decodeWindowsLatin1 [* p ++];
-		}
-	} else if (inputEncoding == kMelder_textInputEncoding_MACROMAN) {
-		while (*p != '\0') {
-			* q ++ = Melder_decodeMacRoman [* p ++];
-		}
-	} else if (inputEncoding != kMelder_textInputEncoding_UTF8) {
-		Melder_fatal ("Unknown text input encoding %d.", inputEncoding);
 	}
 end:
 	* q = '\0';
@@ -556,7 +558,7 @@ char * Melder_peekWcsToUtf8 (const wchar_t *text) {
 	}
 	if (sizeNeeded > bufferSize [ibuffer]) {
 		sizeNeeded = sizeNeeded * 1.61803 + 100;
-		buffer [ibuffer] = Melder_realloc_f (buffer [ibuffer], sizeNeeded * sizeof (char));
+		buffer [ibuffer] = (char*)Melder_realloc_f (buffer [ibuffer], sizeNeeded * sizeof (char));
 		bufferSize [ibuffer] = sizeNeeded;
 	}
 	Melder_wcsToUtf8_inline (text, buffer [ibuffer]);

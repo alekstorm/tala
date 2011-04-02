@@ -45,7 +45,7 @@ static int thePauseFormOkCallback (UiForm sendingForm, const wchar_t *sendingStr
 	 */
 	thePauseForm_clicked = UiForm_getClickedContinueButton (thePauseForm);
 	if (thePauseForm_clicked != theCancelContinueButton)
-		UiForm_Interpreter_addVariables (thePauseForm, closure);   // 'closure', not 'interpreter' or 'theInterpreter'!
+		UiForm_Interpreter_addVariables (thePauseForm, (structInterpreter*)closure);   // 'closure', not 'interpreter' or 'theInterpreter'!
 	return 1;
 }
 static int thePauseFormCancelCallback (Any dia, void *closure) {
@@ -177,55 +177,57 @@ int UiPause_end (int numberOfContinueButtons, int defaultContinueButton, int can
 {
 	if (thePauseForm == NULL)
 		error1 (L"Found the function \"endPause\" without a preceding \"beginPause\".")
-	UiForm_setPauseForm (thePauseForm, numberOfContinueButtons, defaultContinueButton, cancelContinueButton,
-		continueText1, continueText2, continueText3, continueText4, continueText5,
-		continueText6, continueText7, continueText8, continueText9, continueText10,
-		thePauseFormCancelCallback);
-	theCancelContinueButton = cancelContinueButton;
-	UiForm_finish (thePauseForm); cherror
-	int wasBackgrounding = Melder_backgrounding;
-	structMelderDir dir = { { 0 } };
-	Melder_getDefaultDir (& dir);
-	//if (theCurrentPraatApplication -> batch) goto end;
-	if (wasBackgrounding) praat_foreground ();
-	/*
-	 * Put the pause form on the screen.
-	 */
-	UiForm_destroyWhenUnmanaged (thePauseForm);
-	UiForm_do (thePauseForm, false);
-	/*
-	 * Wait for the user to click Stop or Continue.
-	 */
-	#ifndef CONSOLE_APPLICATION
-		thePauseForm_clicked = 0;
-		Melder_assert (theEventLoopDepth == 0);
-		theEventLoopDepth ++;
-		#if gtk
-			do {
-				gtk_main_iteration ();
-			} while (! thePauseForm_clicked);
-		#else
-			do {
-				XEvent event;
-				XtAppNextEvent (Melder_appContext, & event);
-				XtDispatchEvent (& event);
-			} while (! thePauseForm_clicked);
+	{
+		UiForm_setPauseForm (thePauseForm, numberOfContinueButtons, defaultContinueButton, cancelContinueButton,
+			continueText1, continueText2, continueText3, continueText4, continueText5,
+			continueText6, continueText7, continueText8, continueText9, continueText10,
+			thePauseFormCancelCallback);
+		theCancelContinueButton = cancelContinueButton;
+		UiForm_finish (thePauseForm); cherror
+		int wasBackgrounding = Melder_backgrounding;
+		structMelderDir dir = { { 0 } };
+		Melder_getDefaultDir (& dir);
+		//if (theCurrentPraatApplication -> batch) goto end;
+		if (wasBackgrounding) praat_foreground ();
+		/*
+		 * Put the pause form on the screen.
+		 */
+		UiForm_destroyWhenUnmanaged (thePauseForm);
+		UiForm_do (thePauseForm, false);
+		/*
+		 * Wait for the user to click Stop or Continue.
+		 */
+		#ifndef CONSOLE_APPLICATION
+			thePauseForm_clicked = 0;
+			Melder_assert (theEventLoopDepth == 0);
+			theEventLoopDepth ++;
+			#if gtk
+				do {
+					gtk_main_iteration ();
+				} while (! thePauseForm_clicked);
+			#else
+				do {
+					XEvent event;
+					XtAppNextEvent (Melder_appContext, & event);
+					XtDispatchEvent (& event);
+				} while (! thePauseForm_clicked);
+			#endif
+			theEventLoopDepth --;
+			if (wasBackgrounding) praat_background ();
+			Melder_setDefaultDir (& dir);
+			/* BUG: should also restore praatP. editor. */
+			thePauseForm = NULL;   // undangle
+			thePauseFormRadio = NULL;   // undangle
+			if (thePauseForm_clicked == -1) {
+				Interpreter_stop (interpreter);
+				error1 (L"You interrupted the script.");
+				//Melder_flushError (NULL);
+				//Melder_clearError ();
+			} else {
+				//Melder_casual ("Clicked %d", thePauseForm_clicked);
+			}
 		#endif
-		theEventLoopDepth --;
-		if (wasBackgrounding) praat_background ();
-		Melder_setDefaultDir (& dir);
-		/* BUG: should also restore praatP. editor. */
-		thePauseForm = NULL;   // undangle
-		thePauseFormRadio = NULL;   // undangle
-		if (thePauseForm_clicked == -1) {
-			Interpreter_stop (interpreter);
-			error1 (L"You interrupted the script.");
-			//Melder_flushError (NULL);
-			//Melder_clearError ();
-		} else {
-			//Melder_casual ("Clicked %d", thePauseForm_clicked);
-		}
-	#endif
+	}
 end:
 	iferror return 0;
 	return thePauseForm_clicked;

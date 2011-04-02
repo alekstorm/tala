@@ -56,7 +56,7 @@ static double totalNumberOfAllocations = 0, totalNumberOfDeallocations = 0, tota
 static char *theRainyDayFund = NULL;
 
 void Melder_alloc_init (void) {
-	theRainyDayFund = malloc (theRainyDayFund_SIZE);   // called at application initialization, so cannot fail
+	theRainyDayFund = (char*)malloc (theRainyDayFund_SIZE);   // called at application initialization, so cannot fail
 	assert (theRainyDayFund != NULL);
 }
 
@@ -191,9 +191,9 @@ char * Melder_strdup_e (const char *string) {
 	long size;
 	if (! string) return NULL;
 	size = strlen (string) + 1;
-	result = malloc (size * sizeof (char));
+	result = (char*)malloc (size * sizeof (char));
 	if (result == NULL)
-		return Melder_errorp ("Out of memory: there is not enough room to duplicate a text of %ld characters.", size - 1);
+		return (char*)Melder_errorp ("Out of memory: there is not enough room to duplicate a text of %ld characters.", size - 1);
 	strcpy (result, string);
 	if (Melder_debug == 34) { Melder_casual ("Melder_strdup\t%ld\t%ld\t1", result, size); }
 	totalNumberOfAllocations += 1;
@@ -206,10 +206,10 @@ char * Melder_strdup_f (const char *string) {
 	long size;
 	if (! string) return NULL;
 	size = strlen (string) + 1;
-	result = malloc (size * sizeof (char));
+	result = (char*)malloc (size * sizeof (char));
 	if (result == NULL) {
 		if (theRainyDayFund != NULL) free (theRainyDayFund);
-		result = malloc (size * sizeof (char));
+		result = (char*)malloc (size * sizeof (char));
 		if (result != NULL) {
 			Melder_flushError ("Praat is very low on memory.\nSave your work and quit Praat.\nIf you don't do that, Praat may crash.");
 		} else {
@@ -227,9 +227,9 @@ wchar_t * Melder_wcsdup_e (const wchar_t *string) {
 	long size;
 	if (! string) return NULL;
 	size = wcslen (string) + 1;
-	result = malloc (size * sizeof (wchar_t));
+	result = (wchar_t*)malloc (size * sizeof (wchar_t));
 	if (result == NULL)
-		return Melder_errorp ("Out of memory: there is not enough room to duplicate a text of %ld characters.", size - 1);
+		return (wchar_t*)Melder_errorp ("Out of memory: there is not enough room to duplicate a text of %ld characters.", size - 1);
 	wcscpy (result, string);
 	if (Melder_debug == 34) { Melder_casual ("Melder_wcsdup\t%ld\t%ld\t4", result, size); }
 	totalNumberOfAllocations += 1;
@@ -242,10 +242,10 @@ wchar_t * Melder_wcsdup_f (const wchar_t *string) {
 	long size;
 	if (! string) return NULL;
 	size = wcslen (string) + 1;
-	result = malloc (size * sizeof (wchar_t));
+	result = (wchar_t*)malloc (size * sizeof (wchar_t));
 	if (result == NULL) {
 		if (theRainyDayFund != NULL) free (theRainyDayFund);
-		result = malloc (size * sizeof (wchar_t));
+		result = (wchar_t*)malloc (size * sizeof (wchar_t));
 		if (result != NULL) {
 			Melder_flushError ("Praat is very low on memory.\nSave your work and quit Praat.\nIf you don't do that, Praat may crash.");
 		} else {

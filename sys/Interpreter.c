@@ -89,12 +89,12 @@ class_methods_end
 
 static InterpreterVariable InterpreterVariable_create (const wchar_t *key) {
 	if (key [0] == 'e' && key [1] == '\0')
-		return Melder_errorp ("You cannot use 'e' as the name of a variable (e is the constant 2.71...).");
+		return (structInterpreterVariable*)Melder_errorp ("You cannot use 'e' as the name of a variable (e is the constant 2.71...).");
 	if (key [0] == 'p' && key [1] == 'i' && key [2] == '\0')
-		return Melder_errorp ("You cannot use 'pi' as the name of a variable (pi is the constant 3.14...).");
+		return (structInterpreterVariable*)Melder_errorp ("You cannot use 'pi' as the name of a variable (pi is the constant 3.14...).");
 	if (key [0] == 'u' && key [1] == 'n' && key [2] == 'd' && key [3] == 'e' && key [4] == 'f' && key [5] == 'i' &&
 		key [6] == 'n' && key [7] == 'e' && key [8] == 'd' && key [9] == '\0')
-		return Melder_errorp ("You cannot use 'undefined' as the name of a variable.");
+		return (structInterpreterVariable*)Melder_errorp ("You cannot use 'undefined' as the name of a variable.");
 	InterpreterVariable me = Thing_new (InterpreterVariable);
 	if (! me || ! (my key = Melder_wcsdup_e (key))) { forget (me); return NULL; }
 	return me;
@@ -564,7 +564,7 @@ InterpreterVariable Interpreter_hasVariable (Interpreter me, const wchar_t *key)
 		wcscpy (variableNameIncludingProcedureName, key);
 	}
 	ivar = SortedSetOfString_lookUp (my variables, variableNameIncludingProcedureName);
-	return ivar ? my variables -> item [ivar] : NULL;
+	return (structInterpreterVariable*)(ivar ? my variables -> item [ivar] : NULL);
 }
 
 InterpreterVariable Interpreter_lookUpVariable (Interpreter me, const wchar_t *key) {
@@ -667,7 +667,7 @@ int Interpreter_run (Interpreter me, wchar_t *text) {
 	/*
 	 * Remember line starts and labels.
 	 */
-	lines = NUMpvector (1, numberOfLines); cherror
+	lines = (wchar_t**)NUMpvector (1, numberOfLines); cherror
 	for (lineNumber = 1, command = text; lineNumber <= numberOfLines; lineNumber ++, command += wcslen (command) + 1 + chopped) {
 		int length;
 		while (*command == ' ' || *command == '\t' || *command == UNICODE_NO_BREAK_SPACE) command ++;   // nbsp can occur for scripts copied from the manual
@@ -718,295 +718,261 @@ int Interpreter_run (Interpreter me, wchar_t *text) {
 			parameterToVariable (me, my types [ipar], parameter, ipar); cherror
 		}
 	}
-	/*
-	 * Initialize some variables.
-	 */
-	Interpreter_addStringVariable (me, L"newline$", L"\n");
-	Interpreter_addStringVariable (me, L"tab$", L"\t");
-	Interpreter_addStringVariable (me, L"shellDirectory$", Melder_getShellDirectory ());
-	structMelderDir dir = { { 0 } }; Melder_getDefaultDir (& dir);
-	Interpreter_addStringVariable (me, L"defaultDirectory$", Melder_dirToPath (& dir));
-	Interpreter_addStringVariable (me, L"preferencesDirectory$", Melder_dirToPath (& praatDir));
-	Melder_getHomeDir (& dir);
-	Interpreter_addStringVariable (me, L"homeDirectory$", Melder_dirToPath (& dir));
-	Melder_getTempDir (& dir);
-	Interpreter_addStringVariable (me, L"temporaryDirectory$", Melder_dirToPath (& dir));
-	#if defined (macintosh)
-		Interpreter_addNumericVariable (me, L"macintosh", 1);
-		Interpreter_addNumericVariable (me, L"windows", 0);
-		Interpreter_addNumericVariable (me, L"unix", 0);
-	#elif defined (_WIN32)
-		Interpreter_addNumericVariable (me, L"macintosh", 0);
-		Interpreter_addNumericVariable (me, L"windows", 1);
-		Interpreter_addNumericVariable (me, L"unix", 0);
-	#elif defined (UNIX)
-		Interpreter_addNumericVariable (me, L"macintosh", 0);
-		Interpreter_addNumericVariable (me, L"windows", 0);
-		Interpreter_addNumericVariable (me, L"unix", 1);
-	#else
-		Interpreter_addNumericVariable (me, L"macintosh", 0);
-		Interpreter_addNumericVariable (me, L"windows", 0);
-		Interpreter_addNumericVariable (me, L"unix", 0);
-	#endif
-	Interpreter_addNumericVariable (me, L"left", 1);   // to accommodate scripts from before Praat 5.2.06
-	Interpreter_addNumericVariable (me, L"right", 2);   // to accommodate scripts from before Praat 5.2.06
-	Interpreter_addNumericVariable (me, L"mono", 1);   // to accommodate scripts from before Praat 5.2.06
-	Interpreter_addNumericVariable (me, L"stereo", 2);   // to accommodate scripts from before Praat 5.2.06
-	Interpreter_addNumericVariable (me, L"all", 0);   // to accommodate scripts from before Praat 5.2.06
-	Interpreter_addNumericVariable (me, L"average", 0);   // to accommodate scripts from before Praat 5.2.06
-	#define xstr(s) str(s)
-	#define str(s) #s
-	Interpreter_addStringVariable (me, L"praatVersion$", L"" xstr(PRAAT_VERSION_STR));
-	Interpreter_addNumericVariable (me, L"praatVersion", PRAAT_VERSION_NUM);
-	/*
-	 * Execute commands.
-	 */
-	#define wordEnd(c)  (c == '\0' || c == ' ' || c == '\t')
-	for (lineNumber = 1; lineNumber <= numberOfLines; lineNumber ++) {
-		if (my stopped) goto end2;
-		int c0, fail = FALSE;
-		wchar_t *p;
-		MelderString_copy (& command2, lines [lineNumber]);
-		c0 = command2. string [0];
-		if (c0 == '\0') continue;
+	{
 		/*
-		 * Substitute variables.
-		 */
-		for (p = & command2. string [0]; *p !='\0'; p ++) if (*p == '\'') {
+		* Initialize some variables.
+		*/
+		Interpreter_addStringVariable (me, L"newline$", L"\n");
+		Interpreter_addStringVariable (me, L"tab$", L"\t");
+		Interpreter_addStringVariable (me, L"shellDirectory$", Melder_getShellDirectory ());
+		structMelderDir dir = { { 0 } }; Melder_getDefaultDir (& dir);
+		Interpreter_addStringVariable (me, L"defaultDirectory$", Melder_dirToPath (& dir));
+		Interpreter_addStringVariable (me, L"preferencesDirectory$", Melder_dirToPath (& praatDir));
+		Melder_getHomeDir (& dir);
+		Interpreter_addStringVariable (me, L"homeDirectory$", Melder_dirToPath (& dir));
+		Melder_getTempDir (& dir);
+		Interpreter_addStringVariable (me, L"temporaryDirectory$", Melder_dirToPath (& dir));
+		#if defined (macintosh)
+			Interpreter_addNumericVariable (me, L"macintosh", 1);
+			Interpreter_addNumericVariable (me, L"windows", 0);
+			Interpreter_addNumericVariable (me, L"unix", 0);
+		#elif defined (_WIN32)
+			Interpreter_addNumericVariable (me, L"macintosh", 0);
+			Interpreter_addNumericVariable (me, L"windows", 1);
+			Interpreter_addNumericVariable (me, L"unix", 0);
+		#elif defined (UNIX)
+			Interpreter_addNumericVariable (me, L"macintosh", 0);
+			Interpreter_addNumericVariable (me, L"windows", 0);
+			Interpreter_addNumericVariable (me, L"unix", 1);
+		#else
+			Interpreter_addNumericVariable (me, L"macintosh", 0);
+			Interpreter_addNumericVariable (me, L"windows", 0);
+			Interpreter_addNumericVariable (me, L"unix", 0);
+		#endif
+		Interpreter_addNumericVariable (me, L"left", 1);   // to accommodate scripts from before Praat 5.2.06
+		Interpreter_addNumericVariable (me, L"right", 2);   // to accommodate scripts from before Praat 5.2.06
+		Interpreter_addNumericVariable (me, L"mono", 1);   // to accommodate scripts from before Praat 5.2.06
+		Interpreter_addNumericVariable (me, L"stereo", 2);   // to accommodate scripts from before Praat 5.2.06
+		Interpreter_addNumericVariable (me, L"all", 0);   // to accommodate scripts from before Praat 5.2.06
+		Interpreter_addNumericVariable (me, L"average", 0);   // to accommodate scripts from before Praat 5.2.06
+		#define xstr(s) str(s)
+		#define str(s) #s
+		Interpreter_addStringVariable (me, L"praatVersion$", L"" xstr(PRAAT_VERSION_STR));
+		Interpreter_addNumericVariable (me, L"praatVersion", PRAAT_VERSION_NUM);
+		/*
+		* Execute commands.
+		*/
+		#define wordEnd(c)  (c == '\0' || c == ' ' || c == '\t')
+		for (lineNumber = 1; lineNumber <= numberOfLines; lineNumber ++) {
+			if (my stopped) goto end2;
+			int c0, fail = FALSE;
+			wchar_t *p;
+			MelderString_copy (& command2, lines [lineNumber]);
+			c0 = command2. string [0];
+			if (c0 == '\0') continue;
 			/*
-			 * Found a left quote. Search for a matching right quote.
-			 */
-			wchar_t *q = p + 1, varName [300], *r, *s, *colon;
-			int precision = -1, percent = FALSE;
-			while (*q != '\0' && *q != '\'' && q - p < 299) q ++;
-			if (*q == '\0') break;   /* No matching right quote: done with this line. */
-			if (q - p == 1 || q - p >= 299) continue;   /* Ignore empty variable names. */
-			/*
-			 * Found a right quote. Get potential variable name.
-			 */
-			for (r = p + 1, s = varName; q - r > 0; r ++, s ++) *s = *r;
-			*s = '\0';   /* Trailing null byte. */
-			colon = wcschr (varName, ':');
-			if (colon) {
-				precision = wcstol (colon + 1, NULL, 10);
-				if (wcschr (colon + 1, '%')) percent = TRUE;
-				*colon = '\0';
-			}
-			InterpreterVariable var = Interpreter_hasVariable (me, varName);
-			if (var) {
+			* Substitute variables.
+			*/
+			for (p = & command2. string [0]; *p !='\0'; p ++) if (*p == '\'') {
 				/*
-				 * Found a variable (p points to the left quote, q to the right quote). Substitute.
-				 */
-				int headlen = p - command2.string;
-				const wchar_t *string = var -> stringValue ? var -> stringValue :
-					percent ? Melder_percent (var -> numericValue, precision) :
-					precision >= 0 ?  Melder_fixed (var -> numericValue, precision) :
-					Melder_double (var -> numericValue);
-				int arglen = wcslen (string);
-				MelderString_ncopy (& buffer, command2.string, headlen);
-				MelderString_append2 (& buffer, string, q + 1);
-				MelderString_copy (& command2, buffer.string);   // This invalidates p!! (really bad bug 20070203)
-				p = command2.string + headlen + arglen - 1;
-			} else {
-				p = q - 1;   /* Go to before next quote. */
+				* Found a left quote. Search for a matching right quote.
+				*/
+				wchar_t *q = p + 1, varName [300], *r, *s, *colon;
+				int precision = -1, percent = FALSE;
+				while (*q != '\0' && *q != '\'' && q - p < 299) q ++;
+				if (*q == '\0') break;   /* No matching right quote: done with this line. */
+				if (q - p == 1 || q - p >= 299) continue;   /* Ignore empty variable names. */
+				/*
+				* Found a right quote. Get potential variable name.
+				*/
+				for (r = p + 1, s = varName; q - r > 0; r ++, s ++) *s = *r;
+				*s = '\0';   /* Trailing null byte. */
+				colon = wcschr (varName, ':');
+				if (colon) {
+					precision = wcstol (colon + 1, NULL, 10);
+					if (wcschr (colon + 1, '%')) percent = TRUE;
+					*colon = '\0';
+				}
+				InterpreterVariable var = Interpreter_hasVariable (me, varName);
+				if (var) {
+					/*
+					* Found a variable (p points to the left quote, q to the right quote). Substitute.
+					*/
+					int headlen = p - command2.string;
+					const wchar_t *string = var -> stringValue ? var -> stringValue :
+						percent ? Melder_percent (var -> numericValue, precision) :
+						precision >= 0 ?  Melder_fixed (var -> numericValue, precision) :
+						Melder_double (var -> numericValue);
+					int arglen = wcslen (string);
+					MelderString_ncopy (& buffer, command2.string, headlen);
+					MelderString_append2 (& buffer, string, q + 1);
+					MelderString_copy (& command2, buffer.string);   // This invalidates p!! (really bad bug 20070203)
+					p = command2.string + headlen + arglen - 1;
+				} else {
+					p = q - 1;   /* Go to before next quote. */
+				}
 			}
-		}
-		c0 = command2.string [0];   /* Resume in order to allow things like 'c$' = 5 */
-		if ((c0 < 'a' || c0 > 'z') && ! (c0 == '.' && command2.string [1] >= 'a' && command2.string [1] <= 'z')) {
-			praat_executeCommand (me, command2.string); cherror
-		/*
-		 * Interpret control flow and variables.
-		 */
-		} else switch (c0) {
-			case '.':
-				fail = TRUE;
-				break;
-			case 'a':
-				if (wcsnequ (command2.string, L"assert ", 7)) {
-					double value;
-					Interpreter_numericExpression (me, command2.string + 7, & value); cherror
-					if (value == 0.0 || value == NUMundefined) {
-						assertionFailed = TRUE;
-						error6 (L"Script assertion fails in line ", Melder_integer (lineNumber),
-							L" (", value ? L"undefined" : L"false", L"):\n   ", command2.string + 7)
-					}
-				} else if (wcsnequ (command2.string, L"asserterror ", 12)) {
-					MelderString_copy (& assertErrorString, command2.string + 12);
-					assertErrorLineNumber = lineNumber;
-				} else fail = TRUE;
-				break;
-			case 'b':
-				fail = TRUE;
-				break;
-			case 'c':
-				if (wcsnequ (command2.string, L"call ", 5)) {
-					wchar_t *p = command2.string + 5, *callName, *procName;
-					long iline;
-					int hasArguments, callLength;
-					while (*p == ' ' || *p == '\t') p ++;
-					callName = p;
-					while (*p != '\0' && *p != ' ' && *p != '\t') p ++;
-					if (p == callName) error1 (L"Missing procedure name after 'call'.")
-					hasArguments = *p != '\0';
-					*p = '\0';   /* Close procedure name. */
-					callLength = wcslen (callName);
-					for (iline = 1; iline <= numberOfLines; iline ++) {
-						wchar_t *linei = lines [iline], *q;
-						int hasParameters;
-						if (linei [0] != 'p' || linei [1] != 'r' || linei [2] != 'o' || linei [3] != 'c' ||
-						    linei [4] != 'e' || linei [5] != 'd' || linei [6] != 'u' || linei [7] != 'r' ||
-						    linei [8] != 'e' || linei [9] != ' ') continue;
-						q = lines [iline] + 10;
-						while (*q == ' ' || *q == '\t') q ++;
-						procName = q;
-						while (*q != '\0' && *q != ' ' && *q != '\t') q ++;
-						if (q == procName) error1 (L"Missing procedure name after 'procedure'.")
-						hasParameters = *q != '\0';
-						if (q - procName == callLength && wcsnequ (procName, callName, callLength)) {
-							if (hasArguments && ! hasParameters)
-								error3 (L"Call to procedure \"", callName, L"\" has too many arguments.")
-							if (hasParameters && ! hasArguments)
-								error3 (L"Call to procedure \"", callName, L"\" has too few arguments.")
-							if (++ my callDepth > Interpreter_MAX_CALL_DEPTH)
-								error3 (L"Call depth greater than ", Melder_integer (Interpreter_MAX_CALL_DEPTH), L".")
-							wcscpy (my procedureNames [my callDepth], callName);
-							if (hasParameters) {
-								++ p;   /* First argument. */
-								++ q;   /* First parameter. */
-								while (*q) {
-									wchar_t *par, save;
-									static MelderString arg = { 0 };
-									MelderString_empty (& arg);
-									while (*p == ' ' || *p == '\t') p ++;
-									while (*q == ' ' || *q == '\t') q ++;
-									par = q;
-									while (*q != '\0' && *q != ' ' && *q != '\t') q ++;   /* Collect parameter name. */
-									if (*q) {   /* Does anything follow the parameter name? */
-										if (*p == '\"') {
-											p ++;   /* Skip initial quote. */
-											while (*p != '\0') {
-												if (*p == '\"') {   /* Quote signals end-of-string or string-internal quote. */
-													if (p [1] == '\"') {   /* Double quote signals string-internal quote. */
-														MelderString_appendCharacter (& arg, '\"');
-														p += 2;   /* Skip second quote. */
-													} else {   /* Single quote signals end-of-string. */
-														break;
+			c0 = command2.string [0];   /* Resume in order to allow things like 'c$' = 5 */
+			if ((c0 < 'a' || c0 > 'z') && ! (c0 == '.' && command2.string [1] >= 'a' && command2.string [1] <= 'z')) {
+				praat_executeCommand (me, command2.string); cherror
+			/*
+			* Interpret control flow and variables.
+			*/
+			} else switch (c0) {
+				case '.':
+					fail = TRUE;
+					break;
+				case 'a':
+					if (wcsnequ (command2.string, L"assert ", 7)) {
+						double value;
+						Interpreter_numericExpression (me, command2.string + 7, & value); cherror
+						if (value == 0.0 || value == NUMundefined) {
+							assertionFailed = TRUE;
+							error6 (L"Script assertion fails in line ", Melder_integer (lineNumber),
+								L" (", value ? L"undefined" : L"false", L"):\n   ", command2.string + 7)
+						}
+					} else if (wcsnequ (command2.string, L"asserterror ", 12)) {
+						MelderString_copy (& assertErrorString, command2.string + 12);
+						assertErrorLineNumber = lineNumber;
+					} else fail = TRUE;
+					break;
+				case 'b':
+					fail = TRUE;
+					break;
+				case 'c':
+					if (wcsnequ (command2.string, L"call ", 5)) {
+						wchar_t *p = command2.string + 5, *callName, *procName;
+						long iline;
+						int hasArguments, callLength;
+						while (*p == ' ' || *p == '\t') p ++;
+						callName = p;
+						while (*p != '\0' && *p != ' ' && *p != '\t') p ++;
+						if (p == callName) error1 (L"Missing procedure name after 'call'.")
+						hasArguments = *p != '\0';
+						*p = '\0';   /* Close procedure name. */
+						callLength = wcslen (callName);
+						for (iline = 1; iline <= numberOfLines; iline ++) {
+							wchar_t *linei = lines [iline], *q;
+							int hasParameters;
+							if (linei [0] != 'p' || linei [1] != 'r' || linei [2] != 'o' || linei [3] != 'c' ||
+							    linei [4] != 'e' || linei [5] != 'd' || linei [6] != 'u' || linei [7] != 'r' ||
+							    linei [8] != 'e' || linei [9] != ' ') continue;
+							q = lines [iline] + 10;
+							while (*q == ' ' || *q == '\t') q ++;
+							procName = q;
+							while (*q != '\0' && *q != ' ' && *q != '\t') q ++;
+							if (q == procName) error1 (L"Missing procedure name after 'procedure'.")
+							hasParameters = *q != '\0';
+							if (q - procName == callLength && wcsnequ (procName, callName, callLength)) {
+								if (hasArguments && ! hasParameters)
+									error3 (L"Call to procedure \"", callName, L"\" has too many arguments.")
+								if (hasParameters && ! hasArguments)
+									error3 (L"Call to procedure \"", callName, L"\" has too few arguments.")
+								if (++ my callDepth > Interpreter_MAX_CALL_DEPTH)
+									error3 (L"Call depth greater than ", Melder_integer (Interpreter_MAX_CALL_DEPTH), L".")
+								wcscpy (my procedureNames [my callDepth], callName);
+								if (hasParameters) {
+									++ p;   /* First argument. */
+									++ q;   /* First parameter. */
+									while (*q) {
+										wchar_t *par, save;
+										static MelderString arg = { 0 };
+										MelderString_empty (& arg);
+										while (*p == ' ' || *p == '\t') p ++;
+										while (*q == ' ' || *q == '\t') q ++;
+										par = q;
+										while (*q != '\0' && *q != ' ' && *q != '\t') q ++;   /* Collect parameter name. */
+										if (*q) {   /* Does anything follow the parameter name? */
+											if (*p == '\"') {
+												p ++;   /* Skip initial quote. */
+												while (*p != '\0') {
+													if (*p == '\"') {   /* Quote signals end-of-string or string-internal quote. */
+														if (p [1] == '\"') {   /* Double quote signals string-internal quote. */
+															MelderString_appendCharacter (& arg, '\"');
+															p += 2;   /* Skip second quote. */
+														} else {   /* Single quote signals end-of-string. */
+															break;
+														}
+													} else {
+														MelderString_appendCharacter (& arg, *p ++);
 													}
-												} else {
-													MelderString_appendCharacter (& arg, *p ++);
 												}
+											} else {
+												while (*p != '\0' && *p != ' ' && *p != '\t')
+													MelderString_appendCharacter (& arg, *p ++);   /* White space separates. */
 											}
-										} else {
-											while (*p != '\0' && *p != ' ' && *p != '\t')
-												MelderString_appendCharacter (& arg, *p ++);   /* White space separates. */
+											if (*p) { *p = '\0'; p ++; }
+										} else {   /* Else rest of line. */
+											while (*p != '\0')
+												MelderString_appendCharacter (& arg, *p ++);
 										}
-										if (*p) { *p = '\0'; p ++; }
-									} else {   /* Else rest of line. */
-										while (*p != '\0')
-											MelderString_appendCharacter (& arg, *p ++);
-									}
-									if (q [-1] == '$') {
-										save = *q; *q = '\0';
-										InterpreterVariable var = Interpreter_lookUpVariable (me, par); *q = save; cherror
-										Melder_free (var -> stringValue);
-										var -> stringValue = Melder_wcsdup_f (arg.string);
-									} else {
-										double value;
-										my callDepth --;
-										Interpreter_numericExpression (me, arg.string, & value);
-										my callDepth ++;
-										save = *q; *q = '\0'; 
-										InterpreterVariable var = Interpreter_lookUpVariable (me, par); *q = save; cherror
-										var -> numericValue = value;
+										if (q [-1] == '$') {
+											save = *q; *q = '\0';
+											InterpreterVariable var = Interpreter_lookUpVariable (me, par); *q = save; cherror
+											Melder_free (var -> stringValue);
+											var -> stringValue = Melder_wcsdup_f (arg.string);
+										} else {
+											double value;
+											my callDepth --;
+											Interpreter_numericExpression (me, arg.string, & value);
+											my callDepth ++;
+											save = *q; *q = '\0'; 
+											InterpreterVariable var = Interpreter_lookUpVariable (me, par); *q = save; cherror
+											var -> numericValue = value;
+										}
 									}
 								}
-							}
-							if (callDepth == Interpreter_MAX_CALL_DEPTH)
-								error3 (L"Call depth greater than ", Melder_integer (Interpreter_MAX_CALL_DEPTH), L".")
-							callStack [++ callDepth] = lineNumber;
-							lineNumber = iline;
-							break;
-						}
-					}
-					if (iline > numberOfLines) error3 (L"Procedure \"", callName, L"\" not found.")
-				} else fail = TRUE;
-				break;
-			case 'd':
-				if (wcsnequ (command2.string, L"dec ", 4)) {
-					InterpreterVariable var = Interpreter_lookUpVariable (me, command2.string + 4); cherror
-					var -> numericValue -= 1.0;
-				} else fail = TRUE;
-				break;
-			case 'e':
-				if (command2.string [1] == 'n' && command2.string [2] == 'd') {
-					if (wcsnequ (command2.string, L"endif", 5) && wordEnd (command2.string [5])) {
-						/* Ignore. */
-					} else if (wcsnequ (command2.string, L"endfor", 6) && wordEnd (command2.string [6])) {
-						int depth = 0;
-						long iline;
-						for (iline = lineNumber - 1; iline > 0; iline --) {
-							wchar_t *line = lines [iline];
-							if (line [0] == 'f' && line [1] == 'o' && line [2] == 'r' && line [3] == ' ') {
-								if (depth == 0) { lineNumber = iline - 1; fromendfor = TRUE; break; }   /* Go before 'for'. */
-								else depth --;
-							} else if (wcsnequ (lines [iline], L"endfor", 6) && wordEnd (lines [iline] [6])) {
-								depth ++;
+								if (callDepth == Interpreter_MAX_CALL_DEPTH)
+									error3 (L"Call depth greater than ", Melder_integer (Interpreter_MAX_CALL_DEPTH), L".")
+								callStack [++ callDepth] = lineNumber;
+								lineNumber = iline;
+								break;
 							}
 						}
-						if (iline <= 0) error1 (L"Unmatched 'endfor'.")
-					} else if (wcsnequ (command2.string, L"endwhile", 8) && wordEnd (command2.string [8])) {
-						int depth = 0;
-						long iline;
-						for (iline = lineNumber - 1; iline > 0; iline --) {
-							if (wcsnequ (lines [iline], L"while ", 6)) {
-								if (depth == 0) { lineNumber = iline - 1; break; }   /* Go before 'while'. */
-								else depth --;
-							} else if (wcsnequ (lines [iline], L"endwhile", 8) && wordEnd (lines [iline] [8])) {
-								depth ++;
-							}
-						}
-						if (iline <= 0) error1 (L"Unmatched 'endwhile'.")
-					} else if (wcsnequ (command2.string, L"endproc", 7) && wordEnd (command2.string [7])) {
-						if (callDepth == 0) error1 (L"Unmatched 'endproc'.")
-						lineNumber = callStack [callDepth --];
-						-- my callDepth;
+						if (iline > numberOfLines) error3 (L"Procedure \"", callName, L"\" not found.")
 					} else fail = TRUE;
-				} else if (wcsnequ (command2.string, L"else", 4) && wordEnd (command2.string [4])) {
-					int depth = 0;
-					long iline;
-					for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
-						if (wcsnequ (lines [iline], L"endif", 5) && wordEnd (lines [iline] [5])) {
-							if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endif'. */
-							else depth --;
-						} else if (wcsnequ (lines [iline], L"if ", 3)) {
-							depth ++;
-						}
-					}
-					if (iline > numberOfLines) error1 (L"Unmatched 'else'.")
-				} else if (wcsnequ (command2.string, L"elsif ", 6) || wcsnequ (command2.string, L"elif ", 5)) {
-					if (fromif) {
-						double value;
-						fromif = FALSE;
-						Interpreter_numericExpression (me, command2.string + 5, & value); cherror
-						if (value == 0.0) {
+					break;
+				case 'd':
+					if (wcsnequ (command2.string, L"dec ", 4)) {
+						InterpreterVariable var = Interpreter_lookUpVariable (me, command2.string + 4); cherror
+						var -> numericValue -= 1.0;
+					} else fail = TRUE;
+					break;
+				case 'e':
+					if (command2.string [1] == 'n' && command2.string [2] == 'd') {
+						if (wcsnequ (command2.string, L"endif", 5) && wordEnd (command2.string [5])) {
+							/* Ignore. */
+						} else if (wcsnequ (command2.string, L"endfor", 6) && wordEnd (command2.string [6])) {
 							int depth = 0;
 							long iline;
-							for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
-								if (wcsnequ (lines [iline], L"endif", 5) && wordEnd (lines [iline] [5])) {
-									if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endif'. */
+							for (iline = lineNumber - 1; iline > 0; iline --) {
+								wchar_t *line = lines [iline];
+								if (line [0] == 'f' && line [1] == 'o' && line [2] == 'r' && line [3] == ' ') {
+									if (depth == 0) { lineNumber = iline - 1; fromendfor = TRUE; break; }   /* Go before 'for'. */
 									else depth --;
-								} else if (wcsnequ (lines [iline], L"else", 4) && wordEnd (lines [iline] [4])) {
-									if (depth == 0) { lineNumber = iline; break; }   /* Go after 'else'. */
-								} else if ((wcsnequ (lines [iline], L"elsif", 5) && wordEnd (lines [iline] [5]))
-									|| (wcsnequ (lines [iline], L"elif", 4) && wordEnd (lines [iline] [4]))) {
-									if (depth == 0) { lineNumber = iline - 1; fromif = TRUE; break; }   /* Go at next 'elsif' or 'elif'. */
-								} else if (wcsnequ (lines [iline], L"if ", 3)) {
+								} else if (wcsnequ (lines [iline], L"endfor", 6) && wordEnd (lines [iline] [6])) {
 									depth ++;
 								}
 							}
-							if (iline > numberOfLines) error1 (L"Unmatched 'elsif'.")
-						}
-					} else {
+							if (iline <= 0) error1 (L"Unmatched 'endfor'.")
+						} else if (wcsnequ (command2.string, L"endwhile", 8) && wordEnd (command2.string [8])) {
+							int depth = 0;
+							long iline;
+							for (iline = lineNumber - 1; iline > 0; iline --) {
+								if (wcsnequ (lines [iline], L"while ", 6)) {
+									if (depth == 0) { lineNumber = iline - 1; break; }   /* Go before 'while'. */
+									else depth --;
+								} else if (wcsnequ (lines [iline], L"endwhile", 8) && wordEnd (lines [iline] [8])) {
+									depth ++;
+								}
+							}
+							if (iline <= 0) error1 (L"Unmatched 'endwhile'.")
+						} else if (wcsnequ (command2.string, L"endproc", 7) && wordEnd (command2.string [7])) {
+							if (callDepth == 0) error1 (L"Unmatched 'endproc'.")
+							lineNumber = callStack [callDepth --];
+							-- my callDepth;
+						} else fail = TRUE;
+					} else if (wcsnequ (command2.string, L"else", 4) && wordEnd (command2.string [4])) {
 						int depth = 0;
 						long iline;
 						for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
@@ -1017,517 +983,553 @@ int Interpreter_run (Interpreter me, wchar_t *text) {
 								depth ++;
 							}
 						}
-						if (iline > numberOfLines) error1 (L"'elsif' not matched with 'endif'.")
-					}
-				} else if (wcsnequ (command2.string, L"exit", 4)) {
-					if (command2.string [4] == '\0') {
-						lineNumber = numberOfLines;   /* Go after end. */
-					} else {
-						error1 (command2.string + 5)
-					}
-				} else if (wcsnequ (command2.string, L"echo ", 5)) {
-					/*
-					 * Make sure that lines like "echo = 3" will not be regarded as assignments.
-					 */
-					praat_executeCommand (me, command2.string); cherror
-				} else fail = TRUE;
-				break;
-			case 'f':
-				if (command2.string [1] == 'o' && command2.string [2] == 'r' && command2.string [3] == ' ') {   /* for_ */
-					double toValue, loopVariable;
-					wchar_t *frompos = wcsstr (command2.string, L" from "), *topos = wcsstr (command2.string, L" to ");
-					wchar_t *varpos = command2.string + 4, *endvar = frompos;
-					if (! topos) error1 (L"Missing \'to\' in \'for\' loop.")
-					if (! endvar) endvar = topos;
-					while (*endvar == ' ') { *endvar = '\0'; endvar --; }
-					while (*varpos == ' ') varpos ++;
-					if (endvar - varpos < 0) error1 (L"Missing loop variable after \'for\'.")
-					InterpreterVariable var = Interpreter_lookUpVariable (me, varpos);
-					Interpreter_numericExpression (me, topos + 4, & toValue); cherror
-					if (fromendfor) {
-						fromendfor = FALSE;
-						loopVariable = var -> numericValue + 1.0;
-					} else if (frompos) {
-						*topos = '\0';
-						Interpreter_numericExpression (me, frompos + 6, & loopVariable); cherror
-					} else {
-						loopVariable = 1.0;
-					}
-					var -> numericValue = loopVariable;
-					if (loopVariable > toValue) {
-						int depth = 0;
-						long iline;
-						for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
-							if (wcsnequ (lines [iline], L"endfor", 6)) {
-								if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endfor'. */
-								else depth --;
-							} else if (wcsnequ (lines [iline], L"for ", 4)) {
-								depth ++;
+						if (iline > numberOfLines) error1 (L"Unmatched 'else'.")
+					} else if (wcsnequ (command2.string, L"elsif ", 6) || wcsnequ (command2.string, L"elif ", 5)) {
+						if (fromif) {
+							double value;
+							fromif = FALSE;
+							Interpreter_numericExpression (me, command2.string + 5, & value); cherror
+							if (value == 0.0) {
+								int depth = 0;
+								long iline;
+								for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
+									if (wcsnequ (lines [iline], L"endif", 5) && wordEnd (lines [iline] [5])) {
+										if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endif'. */
+										else depth --;
+									} else if (wcsnequ (lines [iline], L"else", 4) && wordEnd (lines [iline] [4])) {
+										if (depth == 0) { lineNumber = iline; break; }   /* Go after 'else'. */
+									} else if ((wcsnequ (lines [iline], L"elsif", 5) && wordEnd (lines [iline] [5]))
+										|| (wcsnequ (lines [iline], L"elif", 4) && wordEnd (lines [iline] [4]))) {
+										if (depth == 0) { lineNumber = iline - 1; fromif = TRUE; break; }   /* Go at next 'elsif' or 'elif'. */
+									} else if (wcsnequ (lines [iline], L"if ", 3)) {
+										depth ++;
+									}
+								}
+								if (iline > numberOfLines) error1 (L"Unmatched 'elsif'.")
 							}
-						}
-						if (iline > numberOfLines) error1 (L"Unmatched 'for'.")
-					}
-				} else if (wcsnequ (command2.string, L"form ", 5)) {
-					long iline;
-					for (iline = lineNumber + 1; iline <= numberOfLines; iline ++)
-						if (wcsnequ (lines [iline], L"endform", 7))
-							{ lineNumber = iline; break; }   /* Go after 'endform'. */
-					if (iline > numberOfLines) error1 (L"Unmatched 'form'.")
-				} else fail = TRUE;
-				break;
-			case 'g':
-				if (wcsnequ (command2.string, L"goto ", 5)) {
-					wchar_t labelName [50], *space;
-					int dojump = TRUE, ilabel;
-					swprintf (labelName, 50, L"%.47ls", command2.string + 5);
-					space = wcschr (labelName, ' ');
-					if (space == labelName) error1 (L"Missing label name after 'goto'.")
-					if (space) {
-						double value;
-						*space = '\0';
-						Interpreter_numericExpression (me, command2.string + 6 + wcslen (labelName), & value); cherror
-						if (value == 0.0) dojump = FALSE;
-					}
-					if (dojump) {
-						ilabel = lookupLabel (me, labelName); cherror
-						lineNumber = my labelLines [ilabel];   /* Loop will add 1. */
-					}
-				} else fail = TRUE;
-				break;
-			case 'h':
-				fail = TRUE;
-				break;
-			case 'i':
-				if (command2.string [1] == 'f' && command2.string [2] == ' ') {   /* if_ */
-					double value;
-					Interpreter_numericExpression (me, command2.string + 3, & value); cherror
-					if (value == 0.0) {
-						int depth = 0;
-						long iline;
-						for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
-							if (wcsnequ (lines [iline], L"endif", 5)) {
-								if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endif'. */
-								else depth --;
-							} else if (wcsnequ (lines [iline], L"else", 4)) {
-								if (depth == 0) { lineNumber = iline; break; }   /* Go after 'else'. */
-							} else if (wcsnequ (lines [iline], L"elsif ", 6) || wcsnequ (lines [iline], L"elif ", 5)) {
-								if (depth == 0) { lineNumber = iline - 1; fromif = TRUE; break; }   /* Go at 'elsif'. */
-							} else if (wcsnequ (lines [iline], L"if ", 3)) {
-								depth ++;
+						} else {
+							int depth = 0;
+							long iline;
+							for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
+								if (wcsnequ (lines [iline], L"endif", 5) && wordEnd (lines [iline] [5])) {
+									if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endif'. */
+									else depth --;
+								} else if (wcsnequ (lines [iline], L"if ", 3)) {
+									depth ++;
+								}
 							}
+							if (iline > numberOfLines) error1 (L"'elsif' not matched with 'endif'.")
 						}
-						if (iline > numberOfLines) error1 (L"Unmatched 'if'.")
-					} else if (value == NUMundefined) {
-						error1 (L"The value of the 'if' condition is undefined.")
-					}
-				} else if (wcsnequ (command2.string, L"inc ", 4)) {
-					InterpreterVariable var = Interpreter_lookUpVariable (me, command2.string + 4); cherror
-					var -> numericValue += 1.0;
-				} else fail = TRUE;
-				break;
-			case 'j':
-				fail = TRUE;
-				break;
-			case 'k':
-				fail = TRUE;
-				break;
-			case 'l':
-				if (wcsnequ (command2.string, L"label ", 6)) {
-					;   /* Ignore labels. */
-				} else fail = TRUE;
-				break;
-			case 'm':
-				fail = TRUE;
-				break;
-			case 'n':
-				fail = TRUE;
-				break;
-			case 'o':
-				fail = TRUE;
-				break;
-			case 'p':
-				if (wcsnequ (command2.string, L"procedure ", 10)) {
-					long iline = lineNumber + 1;
-					for (; iline <= numberOfLines; iline ++) {
-						if (wcsnequ (lines [iline], L"endproc", 7) && wordEnd (lines [iline] [7])) {
-							lineNumber = iline;
-							break;
-						}   /* Go after 'endproc'. */
-					}
-					if (iline > numberOfLines) error1 (L"Unmatched 'proc'.")
-				} else if (wcsnequ (command2.string, L"print", 5)) {
-					/*
-					 * Make sure that lines like "print = 3" will not be regarded as assingments.
-					 */
-					if (command2.string [5] == ' ' || (wcsnequ (command2.string + 5, L"line", 4) && (command2.string [9] == ' ' || command2.string [9] == '\0'))) {
+					} else if (wcsnequ (command2.string, L"exit", 4)) {
+						if (command2.string [4] == '\0') {
+							lineNumber = numberOfLines;   /* Go after end. */
+						} else {
+							error1 (command2.string + 5)
+						}
+					} else if (wcsnequ (command2.string, L"echo ", 5)) {
+						/*
+						* Make sure that lines like "echo = 3" will not be regarded as assignments.
+						*/
 						praat_executeCommand (me, command2.string); cherror
 					} else fail = TRUE;
-				} else fail = TRUE;
-				break;
-			case 'q':
-				fail = TRUE;
-				break;
-			case 'r':
-				if (wcsnequ (command2.string, L"repeat", 6) && wordEnd (command2.string [6])) {
-					/* Ignore. */
-				} else fail = TRUE;
-				break;
-			case 's':
-				if (wcsnequ (command2.string, L"stopwatch", 9) && wordEnd (command2.string [9])) {
-					(void) Melder_stopwatch ();   /* Reset stopwatch. */
-				} else fail = TRUE;
-				break;
-			case 't':
-				fail = TRUE;
-				break;
-			case 'u':
-				if (wcsnequ (command2.string, L"until ", 6)) {
-					double value;
-					Interpreter_numericExpression (me, command2.string + 6, & value); cherror
-					if (value == 0.0) {
-						int depth = 0;
-						long iline;
-						for (iline = lineNumber - 1; iline > 0; iline --) {
-							if (wcsnequ (lines [iline], L"repeat", 6) && wordEnd (lines [iline] [6])) {
-								if (depth == 0) { lineNumber = iline; break; }   /* Go after 'repeat'. */
-								else depth --;
-							} else if (wcsnequ (lines [iline], L"until ", 6)) {
-								depth ++;
-							}
+					break;
+				case 'f':
+					if (command2.string [1] == 'o' && command2.string [2] == 'r' && command2.string [3] == ' ') {   /* for_ */
+						double toValue, loopVariable;
+						wchar_t *frompos = wcsstr (command2.string, L" from "), *topos = wcsstr (command2.string, L" to ");
+						wchar_t *varpos = command2.string + 4, *endvar = frompos;
+						if (! topos) error1 (L"Missing \'to\' in \'for\' loop.")
+						if (! endvar) endvar = topos;
+						while (*endvar == ' ') { *endvar = '\0'; endvar --; }
+						while (*varpos == ' ') varpos ++;
+						if (endvar - varpos < 0) error1 (L"Missing loop variable after \'for\'.")
+						InterpreterVariable var = Interpreter_lookUpVariable (me, varpos);
+						Interpreter_numericExpression (me, topos + 4, & toValue); cherror
+						if (fromendfor) {
+							fromendfor = FALSE;
+							loopVariable = var -> numericValue + 1.0;
+						} else if (frompos) {
+							*topos = '\0';
+							Interpreter_numericExpression (me, frompos + 6, & loopVariable); cherror
+						} else {
+							loopVariable = 1.0;
 						}
-						if (iline <= 0) error1 (L"Unmatched 'until'.")
-					}
-				} else fail = TRUE;
-				break;
-			case 'v':
-				fail = TRUE;
-				break;
-			case 'w':
-				if (wcsnequ (command2.string, L"while ", 6)) {
-					double value;
-					Interpreter_numericExpression (me, command2.string + 6, & value); cherror
-					if (value == 0.0) {
-						int depth = 0;
-						long iline;
-						for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
-							if (wcsnequ (lines [iline], L"endwhile", 8) && wordEnd (lines [iline] [8])) {
-								if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endwhile'. */
-								else depth --;
-							} else if (wcsnequ (lines [iline], L"while ", 6)) {
-								depth ++;
+						var -> numericValue = loopVariable;
+						if (loopVariable > toValue) {
+							int depth = 0;
+							long iline;
+							for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
+								if (wcsnequ (lines [iline], L"endfor", 6)) {
+									if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endfor'. */
+									else depth --;
+								} else if (wcsnequ (lines [iline], L"for ", 4)) {
+									depth ++;
+								}
 							}
+							if (iline > numberOfLines) error1 (L"Unmatched 'for'.")
 						}
-						if (iline > numberOfLines) error1 (L"Unmatched 'while'.")
-					}
-				} else fail = TRUE;
-				break;
-			case 'x':
-				fail = TRUE;
-				break;
-			case 'y':
-				fail = TRUE;
-				break;
-			case 'z':
-				fail = TRUE;
-				break;
-			default: break;
-		}
-		if (fail) {
-			/*
-			 * Found an unknown word starting with a lower-case letter, optionally preceded by a period.
-			 * See whether the word is a variable name.
-			 */
-			wchar_t *p = & command2.string [0];
-			/*
-			 * Variable names consist of a sequence of letters, digits, and underscores,
-			 * optionally preceded by a period and optionally followed by a $ and/or #.
-			 */
-			if (*p == '.') p ++;
-			while (isalnum (*p) || *p == '_' || *p == '.')  p ++;
-			if (*p == '$') {
+					} else if (wcsnequ (command2.string, L"form ", 5)) {
+						long iline;
+						for (iline = lineNumber + 1; iline <= numberOfLines; iline ++)
+							if (wcsnequ (lines [iline], L"endform", 7))
+								{ lineNumber = iline; break; }   /* Go after 'endform'. */
+						if (iline > numberOfLines) error1 (L"Unmatched 'form'.")
+					} else fail = TRUE;
+					break;
+				case 'g':
+					if (wcsnequ (command2.string, L"goto ", 5)) {
+						wchar_t labelName [50], *space;
+						int dojump = TRUE, ilabel;
+						swprintf (labelName, 50, L"%.47ls", command2.string + 5);
+						space = wcschr (labelName, ' ');
+						if (space == labelName) error1 (L"Missing label name after 'goto'.")
+						if (space) {
+							double value;
+							*space = '\0';
+							Interpreter_numericExpression (me, command2.string + 6 + wcslen (labelName), & value); cherror
+							if (value == 0.0) dojump = FALSE;
+						}
+						if (dojump) {
+							ilabel = lookupLabel (me, labelName); cherror
+							lineNumber = my labelLines [ilabel];   /* Loop will add 1. */
+						}
+					} else fail = TRUE;
+					break;
+				case 'h':
+					fail = TRUE;
+					break;
+				case 'i':
+					if (command2.string [1] == 'f' && command2.string [2] == ' ') {   /* if_ */
+						double value;
+						Interpreter_numericExpression (me, command2.string + 3, & value); cherror
+						if (value == 0.0) {
+							int depth = 0;
+							long iline;
+							for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
+								if (wcsnequ (lines [iline], L"endif", 5)) {
+									if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endif'. */
+									else depth --;
+								} else if (wcsnequ (lines [iline], L"else", 4)) {
+									if (depth == 0) { lineNumber = iline; break; }   /* Go after 'else'. */
+								} else if (wcsnequ (lines [iline], L"elsif ", 6) || wcsnequ (lines [iline], L"elif ", 5)) {
+									if (depth == 0) { lineNumber = iline - 1; fromif = TRUE; break; }   /* Go at 'elsif'. */
+								} else if (wcsnequ (lines [iline], L"if ", 3)) {
+									depth ++;
+								}
+							}
+							if (iline > numberOfLines) error1 (L"Unmatched 'if'.")
+						} else if (value == NUMundefined) {
+							error1 (L"The value of the 'if' condition is undefined.")
+						}
+					} else if (wcsnequ (command2.string, L"inc ", 4)) {
+						InterpreterVariable var = Interpreter_lookUpVariable (me, command2.string + 4); cherror
+						var -> numericValue += 1.0;
+					} else fail = TRUE;
+					break;
+				case 'j':
+					fail = TRUE;
+					break;
+				case 'k':
+					fail = TRUE;
+					break;
+				case 'l':
+					if (wcsnequ (command2.string, L"label ", 6)) {
+						;   /* Ignore labels. */
+					} else fail = TRUE;
+					break;
+				case 'm':
+					fail = TRUE;
+					break;
+				case 'n':
+					fail = TRUE;
+					break;
+				case 'o':
+					fail = TRUE;
+					break;
+				case 'p':
+					if (wcsnequ (command2.string, L"procedure ", 10)) {
+						long iline = lineNumber + 1;
+						for (; iline <= numberOfLines; iline ++) {
+							if (wcsnequ (lines [iline], L"endproc", 7) && wordEnd (lines [iline] [7])) {
+								lineNumber = iline;
+								break;
+							}   /* Go after 'endproc'. */
+						}
+						if (iline > numberOfLines) error1 (L"Unmatched 'proc'.")
+					} else if (wcsnequ (command2.string, L"print", 5)) {
+						/*
+						* Make sure that lines like "print = 3" will not be regarded as assingments.
+						*/
+						if (command2.string [5] == ' ' || (wcsnequ (command2.string + 5, L"line", 4) && (command2.string [9] == ' ' || command2.string [9] == '\0'))) {
+							praat_executeCommand (me, command2.string); cherror
+						} else fail = TRUE;
+					} else fail = TRUE;
+					break;
+				case 'q':
+					fail = TRUE;
+					break;
+				case 'r':
+					if (wcsnequ (command2.string, L"repeat", 6) && wordEnd (command2.string [6])) {
+						/* Ignore. */
+					} else fail = TRUE;
+					break;
+				case 's':
+					if (wcsnequ (command2.string, L"stopwatch", 9) && wordEnd (command2.string [9])) {
+						(void) Melder_stopwatch ();   /* Reset stopwatch. */
+					} else fail = TRUE;
+					break;
+				case 't':
+					fail = TRUE;
+					break;
+				case 'u':
+					if (wcsnequ (command2.string, L"until ", 6)) {
+						double value;
+						Interpreter_numericExpression (me, command2.string + 6, & value); cherror
+						if (value == 0.0) {
+							int depth = 0;
+							long iline;
+							for (iline = lineNumber - 1; iline > 0; iline --) {
+								if (wcsnequ (lines [iline], L"repeat", 6) && wordEnd (lines [iline] [6])) {
+									if (depth == 0) { lineNumber = iline; break; }   /* Go after 'repeat'. */
+									else depth --;
+								} else if (wcsnequ (lines [iline], L"until ", 6)) {
+									depth ++;
+								}
+							}
+							if (iline <= 0) error1 (L"Unmatched 'until'.")
+						}
+					} else fail = TRUE;
+					break;
+				case 'v':
+					fail = TRUE;
+					break;
+				case 'w':
+					if (wcsnequ (command2.string, L"while ", 6)) {
+						double value;
+						Interpreter_numericExpression (me, command2.string + 6, & value); cherror
+						if (value == 0.0) {
+							int depth = 0;
+							long iline;
+							for (iline = lineNumber + 1; iline <= numberOfLines; iline ++) {
+								if (wcsnequ (lines [iline], L"endwhile", 8) && wordEnd (lines [iline] [8])) {
+									if (depth == 0) { lineNumber = iline; break; }   /* Go after 'endwhile'. */
+									else depth --;
+								} else if (wcsnequ (lines [iline], L"while ", 6)) {
+									depth ++;
+								}
+							}
+							if (iline > numberOfLines) error1 (L"Unmatched 'while'.")
+						}
+					} else fail = TRUE;
+					break;
+				case 'x':
+					fail = TRUE;
+					break;
+				case 'y':
+					fail = TRUE;
+					break;
+				case 'z':
+					fail = TRUE;
+					break;
+				default: break;
+			}
+			if (fail) {
 				/*
-				 * Assign to a string variable.
-				 */
-				wchar_t *endOfVariable = ++ p;
-				wchar_t *variableName = command2.string;
-				int withFile;
-				while (*p == ' ' || *p == '\t') p ++;   /* Go to first token after variable name. */
-				if (*p == '[') {
+				* Found an unknown word starting with a lower-case letter, optionally preceded by a period.
+				* See whether the word is a variable name.
+				*/
+				wchar_t *p = & command2.string [0];
+				/*
+				* Variable names consist of a sequence of letters, digits, and underscores,
+				* optionally preceded by a period and optionally followed by a $ and/or #.
+				*/
+				if (*p == '.') p ++;
+				while (isalnum (*p) || *p == '_' || *p == '.')  p ++;
+				if (*p == '$') {
 					/*
-					 * This must be an assignment to an indexed string variable.
-					 */
-					*endOfVariable = '\0';
-					static MelderString indexedVariableName = { 0 };
-					MelderString_copy (& indexedVariableName, command2.string);
-					MelderString_appendCharacter (& indexedVariableName, '[');
-					for (;;) {
-						p ++;   // skip opening bracket or comma
-						static MelderString index = { 0 };
-						MelderString_empty (& index);
-						int depth = 0;
-						while ((depth > 0 || (*p != ',' && *p != ']')) && *p != '\n' && *p != '\0') {
-							MelderString_appendCharacter (& index, *p);
-							if (*p == '[') depth ++;
-							else if (*p == ']') depth --;
-							p ++;
+					* Assign to a string variable.
+					*/
+					wchar_t *endOfVariable = ++ p;
+					wchar_t *variableName = command2.string;
+					int withFile;
+					while (*p == ' ' || *p == '\t') p ++;   /* Go to first token after variable name. */
+					if (*p == '[') {
+						/*
+						* This must be an assignment to an indexed string variable.
+						*/
+						*endOfVariable = '\0';
+						static MelderString indexedVariableName = { 0 };
+						MelderString_copy (& indexedVariableName, command2.string);
+						MelderString_appendCharacter (& indexedVariableName, '[');
+						for (;;) {
+							p ++;   // skip opening bracket or comma
+							static MelderString index = { 0 };
+							MelderString_empty (& index);
+							int depth = 0;
+							while ((depth > 0 || (*p != ',' && *p != ']')) && *p != '\n' && *p != '\0') {
+								MelderString_appendCharacter (& index, *p);
+								if (*p == '[') depth ++;
+								else if (*p == ']') depth --;
+								p ++;
+							}
+							if (*p == '\n' || *p == '\0')
+								error1 (L"Missing closing bracket (]) in indexed variable.")
+							double numericIndexValue;
+							Interpreter_numericExpression (me, index.string, & numericIndexValue); cherror
+							MelderString_append (& indexedVariableName, Melder_double (numericIndexValue));
+							MelderString_appendCharacter (& indexedVariableName, *p);
+							if (*p == ']') {
+								break;
+							}
 						}
-						if (*p == '\n' || *p == '\0')
-							error1 (L"Missing closing bracket (]) in indexed variable.")
-						double numericIndexValue;
-						Interpreter_numericExpression (me, index.string, & numericIndexValue); cherror
-						MelderString_append (& indexedVariableName, Melder_double (numericIndexValue));
-						MelderString_appendCharacter (& indexedVariableName, *p);
-						if (*p == ']') {
-							break;
-						}
+						variableName = indexedVariableName.string;
+						p ++;   // skip closing bracket
 					}
-					variableName = indexedVariableName.string;
-					p ++;   // skip closing bracket
-				}
-				while (*p == ' ' || *p == '\t') p ++;   /* Go to first token after (perhaps indexed) variable name. */
-				if (*p == '=') {
-					withFile = 0;   /* Assignment. */
-				} else if (*p == '<') {
-					withFile = 1;   /* Read from file. */
-				} else if (*p == '>') {
-					if (p [1] == '>')
-						withFile = 2, p ++;   /* Append to file. */
-					else
-						withFile = 3;   /* Save to file. */
-				} else error3 (L"Missing '=', '<', or '>' after variable ", variableName, L".")
-				*endOfVariable = '\0';
-				p ++;
-				while (*p == ' ' || *p == '\t') p ++;   /* Go to first token after assignment or I/O symbol. */
-				if (*p == '\0') {
-					if (withFile != 0)
-						error3 (L"Missing file name after variable ", variableName, L".")
-					else
-						error3 (L"Missing expression after variable ", variableName, L".")
-				}
-				if (withFile) {
-					structMelderFile file = { 0 };
-					Melder_relativePathToFile (p, & file); cherror
-					if (withFile == 1) {
-						wchar_t *stringValue = MelderFile_readText (& file); cherror
+					while (*p == ' ' || *p == '\t') p ++;   /* Go to first token after (perhaps indexed) variable name. */
+					if (*p == '=') {
+						withFile = 0;   /* Assignment. */
+					} else if (*p == '<') {
+						withFile = 1;   /* Read from file. */
+					} else if (*p == '>') {
+						if (p [1] == '>')
+							withFile = 2, p ++;   /* Append to file. */
+						else
+							withFile = 3;   /* Save to file. */
+					} else error3 (L"Missing '=', '<', or '>' after variable ", variableName, L".")
+					*endOfVariable = '\0';
+					p ++;
+					while (*p == ' ' || *p == '\t') p ++;   /* Go to first token after assignment or I/O symbol. */
+					if (*p == '\0') {
+						if (withFile != 0)
+							error3 (L"Missing file name after variable ", variableName, L".")
+						else
+							error3 (L"Missing expression after variable ", variableName, L".")
+					}
+					if (withFile) {
+						structMelderFile file = { 0 };
+						Melder_relativePathToFile (p, & file); cherror
+						if (withFile == 1) {
+							wchar_t *stringValue = MelderFile_readText (& file); cherror
+							InterpreterVariable var = Interpreter_lookUpVariable (me, variableName); cherror
+							Melder_free (var -> stringValue);
+							var -> stringValue = stringValue;   /* var becomes owner */
+						} else if (withFile == 2) {
+							if (theCurrentPraatObjects != & theForegroundPraatObjects) error1 (L"Commands that write to a file are not available inside pictures.")
+							InterpreterVariable var = Interpreter_hasVariable (me, variableName); cherror
+							if (! var) error3 (L"Variable ", variableName, L" undefined.")
+							MelderFile_appendText (& file, var -> stringValue); cherror
+						} else {
+							if (theCurrentPraatObjects != & theForegroundPraatObjects) error1 (L"Commands that write to a file are not available inside pictures.")
+							InterpreterVariable var = Interpreter_hasVariable (me, variableName); cherror
+							if (! var) error3 (L"Variable ", variableName, L" undefined.")
+							MelderFile_writeText (& file, var -> stringValue); cherror
+						}
+					} else if (isCommand (p)) {
+						/*
+						* Example: name$ = Get name
+						*/
+						MelderString_empty (& valueString);   // empty because command may print nothing; also makes sure that valueString.string exists
+						Melder_divertInfo (& valueString);
+						praat_executeCommand (me, p);
+						Melder_divertInfo (NULL); cherror
+						InterpreterVariable var = Interpreter_lookUpVariable (me, variableName); cherror
+						Melder_free (var -> stringValue);
+						var -> stringValue = Melder_wcsdup_e (valueString.string); cherror
+					} else {
+						/*
+						* Evaluate a string expression and assign the result to the variable.
+						* Examples:
+						*    sentence$ = subject$ + verb$ + object$
+						*    extension$ = if index (file$, ".") <> 0
+						*       ... then right$ (file$, length (file$) - rindex (file$, "."))
+						*       ... else "" fi
+						*/
+						wchar_t *stringValue;
+						Interpreter_stringExpression (me, p, & stringValue); cherror
 						InterpreterVariable var = Interpreter_lookUpVariable (me, variableName); cherror
 						Melder_free (var -> stringValue);
 						var -> stringValue = stringValue;   /* var becomes owner */
-					} else if (withFile == 2) {
-						if (theCurrentPraatObjects != & theForegroundPraatObjects) error1 (L"Commands that write to a file are not available inside pictures.")
-						InterpreterVariable var = Interpreter_hasVariable (me, variableName); cherror
-						if (! var) error3 (L"Variable ", variableName, L" undefined.")
-						MelderFile_appendText (& file, var -> stringValue); cherror
-					} else {
-						if (theCurrentPraatObjects != & theForegroundPraatObjects) error1 (L"Commands that write to a file are not available inside pictures.")
-						InterpreterVariable var = Interpreter_hasVariable (me, variableName); cherror
-						if (! var) error3 (L"Variable ", variableName, L" undefined.")
-						MelderFile_writeText (& file, var -> stringValue); cherror
 					}
-				} else if (isCommand (p)) {
+				} else if (*p == '#') {
 					/*
-					 * Example: name$ = Get name
-					 */
-					MelderString_empty (& valueString);   // empty because command may print nothing; also makes sure that valueString.string exists
-					Melder_divertInfo (& valueString);
-					praat_executeCommand (me, p);
-					Melder_divertInfo (NULL); cherror
-					InterpreterVariable var = Interpreter_lookUpVariable (me, variableName); cherror
-					Melder_free (var -> stringValue);
-					var -> stringValue = Melder_wcsdup_e (valueString.string); cherror
+					* Assign to a numeric array variable.
+					*/
+					wchar_t *endOfVariable = ++ p;
+					while (*p == ' ' || *p == '\t') p ++;   // Go to first token after variable name.
+					if (*p == '=') {
+						;
+					} else error3 (L"Missing '=' after variable ", command2.string, L".")
+					*endOfVariable = '\0';
+					p ++;
+					while (*p == ' ' || *p == '\t') p ++;   // Go to first token after assignment or I/O symbol.
+					if (*p == '\0') {
+						error3 (L"Missing expression after variable ", command2.string, L".")
+					}
+					struct Formula_NumericArray value;
+					Interpreter_numericArrayExpression (me, p, & value); cherror
+					InterpreterVariable var = Interpreter_lookUpVariable (me, command2.string); cherror
+					NUMdmatrix_free (var -> numericArrayValue. data, 1, 1);
+					var -> numericArrayValue = value;
 				} else {
 					/*
-					 * Evaluate a string expression and assign the result to the variable.
-					 * Examples:
-					 *    sentence$ = subject$ + verb$ + object$
-					 *    extension$ = if index (file$, ".") <> 0
-					 *       ... then right$ (file$, length (file$) - rindex (file$, "."))
-					 *       ... else "" fi
-					 */
-					wchar_t *stringValue;
-					Interpreter_stringExpression (me, p, & stringValue); cherror
-					InterpreterVariable var = Interpreter_lookUpVariable (me, variableName); cherror
-					Melder_free (var -> stringValue);
-					var -> stringValue = stringValue;   /* var becomes owner */
-				}
-			} else if (*p == '#') {
-				/*
-				 * Assign to a numeric array variable.
-				 */
-				wchar_t *endOfVariable = ++ p;
-				while (*p == ' ' || *p == '\t') p ++;   // Go to first token after variable name.
-				if (*p == '=') {
-					;
-				} else error3 (L"Missing '=' after variable ", command2.string, L".")
-				*endOfVariable = '\0';
-				p ++;
-				while (*p == ' ' || *p == '\t') p ++;   // Go to first token after assignment or I/O symbol.
-				if (*p == '\0') {
-					error3 (L"Missing expression after variable ", command2.string, L".")
-				}
-				struct Formula_NumericArray value;
-				Interpreter_numericArrayExpression (me, p, & value); cherror
-				InterpreterVariable var = Interpreter_lookUpVariable (me, command2.string); cherror
-				NUMdmatrix_free (var -> numericArrayValue. data, 1, 1);
-				var -> numericArrayValue = value;
-			} else {
-				/*
-				 * Try to assign to a numeric variable.
-				 */
-				double value;
-				wchar_t *variableName = command2.string;
-				int typeOfAssignment = 0;   /* Plain assignment. */
-				if (*p == '\0') {
-					/*
-					 * Command ends here: it may be a PraatShell command.
-					 */
-					praat_executeCommand (me, command2.string); cherror
-					goto end;
-				}
-				wchar_t *endOfVariable = p;
-				while (*p == ' ' || *p == '\t') p ++;
-				if (*p == '=' || ((*p == '+' || *p == '-' || *p == '*' || *p == '/') && p [1] == '=')) {
-					/*
-					 * This must be an assignment (though: "echo = ..." ???)
-					 */
-					typeOfAssignment = *p == '+' ? 1 : *p == '-' ? 2 : *p == '*' ? 3 : *p == '/' ? 4 : 0;
-					*endOfVariable = '\0';   // Close variable name. FIXME: this can be any weird character, e.g. hallo&
-				} else if (*p == '[') {
-					/*
-					 * This must be an assignment to an indexed numeric variable.
-					 */
-					*endOfVariable = '\0';
-					static MelderString indexedVariableName = { 0 };
-					MelderString_copy (& indexedVariableName, command2.string);
-					MelderString_appendCharacter (& indexedVariableName, '[');
-					for (;;) {
-						p ++;   // skip opening bracket or comma
-						static MelderString index = { 0 };
-						MelderString_empty (& index);
-						int depth = 0;
-						while ((depth > 0 || (*p != ',' && *p != ']')) && *p != '\n' && *p != '\0') {
-							MelderString_appendCharacter (& index, *p);
-							if (*p == '[') depth ++;
-							else if (*p == ']') depth --;
-							p ++;
-						}
-						if (*p == '\n' || *p == '\0')
-							error1 (L"Missing closing bracket (]) in indexed variable.")
-						Interpreter_numericExpression (me, index.string, & value); cherror
-						MelderString_append (& indexedVariableName, Melder_double (value));
-						MelderString_appendCharacter (& indexedVariableName, *p);
-						if (*p == ']') {
-							break;
-						}
+					* Try to assign to a numeric variable.
+					*/
+					double value;
+					wchar_t *variableName = command2.string;
+					int typeOfAssignment = 0;   /* Plain assignment. */
+					if (*p == '\0') {
+						/*
+						* Command ends here: it may be a PraatShell command.
+						*/
+						praat_executeCommand (me, command2.string); cherror
+						goto end;
 					}
-					variableName = indexedVariableName.string;
-					p ++;   // skip closing bracket
+					wchar_t *endOfVariable = p;
 					while (*p == ' ' || *p == '\t') p ++;
 					if (*p == '=' || ((*p == '+' || *p == '-' || *p == '*' || *p == '/') && p [1] == '=')) {
+						/*
+						* This must be an assignment (though: "echo = ..." ???)
+						*/
 						typeOfAssignment = *p == '+' ? 1 : *p == '-' ? 2 : *p == '*' ? 3 : *p == '/' ? 4 : 0;
-					}
-				} else {
-					/*
-					 * Not an assignment: perhaps a PraatShell command (select, echo, execute, pause ...).
-					 */
-					praat_executeCommand (me, variableName); cherror
-					goto end;
-				}
-				p += typeOfAssignment == 0 ? 1 : 2;
-				while (*p == ' ' || *p == '\t') p ++;			
-				if (*p == '\0') error3 (L"Missing expression after variable ", variableName, L".")
-				/*
-				 * Three classes of assignments:
-				 *    var = formula
-				 *    var = Query
-				 *    var = Object creation
-				 */
-				if (isCommand (p)) {
-					/*
-					 * Get the value of the query.
-					 */
-					MelderString_empty (& valueString);
-					Melder_divertInfo (& valueString);
-					MelderString_appendCharacter (& valueString, 1);
-					praat_executeCommand (me, p);
-					if (valueString.string [0] == 1) {
-						int IOBJECT, result = 0, found = 0;
-						WHERE (SELECTED) { result = IOBJECT; found += 1; }
-						if (found > 1) {
-							Melder_divertInfo (NULL);
-							error1 (L"Multiple objects selected. Cannot assign ID to variable.")
-						} else if (found == 0) {
-							Melder_divertInfo (NULL);
-							error1 (L"No objects selected. Cannot assign ID to variable.")
-						} else {
-							value = theCurrentPraatObjects -> list [result]. id;
+						*endOfVariable = '\0';   // Close variable name. FIXME: this can be any weird character, e.g. hallo&
+					} else if (*p == '[') {
+						/*
+						* This must be an assignment to an indexed numeric variable.
+						*/
+						*endOfVariable = '\0';
+						static MelderString indexedVariableName = { 0 };
+						MelderString_copy (& indexedVariableName, command2.string);
+						MelderString_appendCharacter (& indexedVariableName, '[');
+						for (;;) {
+							p ++;   // skip opening bracket or comma
+							static MelderString index = { 0 };
+							MelderString_empty (& index);
+							int depth = 0;
+							while ((depth > 0 || (*p != ',' && *p != ']')) && *p != '\n' && *p != '\0') {
+								MelderString_appendCharacter (& index, *p);
+								if (*p == '[') depth ++;
+								else if (*p == ']') depth --;
+								p ++;
+							}
+							if (*p == '\n' || *p == '\0')
+								error1 (L"Missing closing bracket (]) in indexed variable.")
+							Interpreter_numericExpression (me, index.string, & value); cherror
+							MelderString_append (& indexedVariableName, Melder_double (value));
+							MelderString_appendCharacter (& indexedVariableName, *p);
+							if (*p == ']') {
+								break;
+							}
+						}
+						variableName = indexedVariableName.string;
+						p ++;   // skip closing bracket
+						while (*p == ' ' || *p == '\t') p ++;
+						if (*p == '=' || ((*p == '+' || *p == '-' || *p == '*' || *p == '/') && p [1] == '=')) {
+							typeOfAssignment = *p == '+' ? 1 : *p == '-' ? 2 : *p == '*' ? 3 : *p == '/' ? 4 : 0;
 						}
 					} else {
-						value = Melder_atof (valueString.string);   /* Including --undefined-- */
+						/*
+						* Not an assignment: perhaps a PraatShell command (select, echo, execute, pause ...).
+						*/
+						praat_executeCommand (me, variableName); cherror
+						goto end;
 					}
-					Melder_divertInfo (NULL); cherror
-				} else {
+					p += typeOfAssignment == 0 ? 1 : 2;
+					while (*p == ' ' || *p == '\t') p ++;			
+					if (*p == '\0') error3 (L"Missing expression after variable ", variableName, L".")
 					/*
-					 * Get the value of the formula.
-					 */
-					Interpreter_numericExpression (me, p, & value); cherror
-				}
-				/*
-				 * Assign the value to a variable.
-				 */
-				if (typeOfAssignment == 0) {
-					/*
-					 * Use an existing variable, or create a new one.
-					 */
-					//Melder_casual ("looking up variable %ls", variableName);
-					InterpreterVariable var = Interpreter_lookUpVariable (me, variableName); cherror
-					var -> numericValue = value;
-				} else {
-					/*
-					 * Modify an existing variable.
-					 */
-					InterpreterVariable var = Interpreter_hasVariable (me, variableName); cherror
-					if (var == NULL) error3 (L"Unknown variable ", variableName, L".")
-					if (var -> numericValue == NUMundefined) {
-						/* Keep it that way. */
-					} else {
-						if (typeOfAssignment == 1) {
-							var -> numericValue += value;
-						} else if (typeOfAssignment == 2) {
-							var -> numericValue -= value;
-						} else if (typeOfAssignment == 3) {
-							var -> numericValue *= value;
-						} else if (value == 0) {
-							var -> numericValue = NUMundefined;
+					* Three classes of assignments:
+					*    var = formula
+					*    var = Query
+					*    var = Object creation
+					*/
+					if (isCommand (p)) {
+						/*
+						* Get the value of the query.
+						*/
+						MelderString_empty (& valueString);
+						Melder_divertInfo (& valueString);
+						MelderString_appendCharacter (& valueString, 1);
+						praat_executeCommand (me, p);
+						if (valueString.string [0] == 1) {
+							int IOBJECT, result = 0, found = 0;
+							WHERE (SELECTED) { result = IOBJECT; found += 1; }
+							if (found > 1) {
+								Melder_divertInfo (NULL);
+								error1 (L"Multiple objects selected. Cannot assign ID to variable.")
+							} else if (found == 0) {
+								Melder_divertInfo (NULL);
+								error1 (L"No objects selected. Cannot assign ID to variable.")
+							} else {
+								value = theCurrentPraatObjects -> list [result]. id;
+							}
 						} else {
-							var -> numericValue /= value;
+							value = Melder_atof (valueString.string);   /* Including --undefined-- */
+						}
+						Melder_divertInfo (NULL); cherror
+					} else {
+						/*
+						* Get the value of the formula.
+						*/
+						Interpreter_numericExpression (me, p, & value); cherror
+					}
+					/*
+					* Assign the value to a variable.
+					*/
+					if (typeOfAssignment == 0) {
+						/*
+						* Use an existing variable, or create a new one.
+						*/
+						//Melder_casual ("looking up variable %ls", variableName);
+						InterpreterVariable var = Interpreter_lookUpVariable (me, variableName); cherror
+						var -> numericValue = value;
+					} else {
+						/*
+						* Modify an existing variable.
+						*/
+						InterpreterVariable var = Interpreter_hasVariable (me, variableName); cherror
+						if (var == NULL) error3 (L"Unknown variable ", variableName, L".")
+						if (var -> numericValue == NUMundefined) {
+							/* Keep it that way. */
+						} else {
+							if (typeOfAssignment == 1) {
+								var -> numericValue += value;
+							} else if (typeOfAssignment == 2) {
+								var -> numericValue -= value;
+							} else if (typeOfAssignment == 3) {
+								var -> numericValue *= value;
+							} else if (value == 0) {
+								var -> numericValue = NUMundefined;
+							} else {
+								var -> numericValue /= value;
+							}
 						}
 					}
 				}
-			}
-		} // endif fail
-end:
-		if (assertErrorLineNumber == 0) {
-			iferror goto end2;
-		} else if (assertErrorLineNumber != lineNumber) {
-			if (/*assertErrorLineNumber != lineNumber - 1 ||*/ ! Melder_hasError ()) {
-				Melder_error5 (L"Script assertion fails in line ", Melder_integer (assertErrorLineNumber),
-					L": error " L_LEFT_GUILLEMET L" ", assertErrorString.string, L" " L_RIGHT_GUILLEMET L" not raised. Instead: no error.");
-				goto end2;
-			}
-			if (wcsstr (Melder_getError (), assertErrorString.string)) {
-				Melder_clearError ();
-				assertErrorLineNumber = 0;
-			} else {
-				wchar_t *errorCopy = Melder_wcsdup_f (Melder_getError ());
-				Melder_clearError ();
-				Melder_error6 (L"Script assertion fails in line ", Melder_integer (assertErrorLineNumber),
-					L": error " L_LEFT_GUILLEMET L" ", assertErrorString.string, L" " L_RIGHT_GUILLEMET L" not raised. Instead:\n",
-					errorCopy);
-				Melder_free (errorCopy);
-				goto end2;
-			}
+			} // endif fail
 		}
-	} // endfor lineNumber
+	}
+end:
+	if (assertErrorLineNumber == 0) {
+		iferror goto end2;
+	} else if (assertErrorLineNumber != lineNumber) {
+		if (/*assertErrorLineNumber != lineNumber - 1 ||*/ ! Melder_hasError ()) {
+			Melder_error5 (L"Script assertion fails in line ", Melder_integer (assertErrorLineNumber),
+				L": error " L_LEFT_GUILLEMET L" ", assertErrorString.string, L" " L_RIGHT_GUILLEMET L" not raised. Instead: no error.");
+			goto end2;
+		}
+		if (wcsstr (Melder_getError (), assertErrorString.string)) {
+			Melder_clearError ();
+			assertErrorLineNumber = 0;
+		} else {
+			wchar_t *errorCopy = Melder_wcsdup_f (Melder_getError ());
+			Melder_clearError ();
+			Melder_error6 (L"Script assertion fails in line ", Melder_integer (assertErrorLineNumber),
+				L": error " L_LEFT_GUILLEMET L" ", assertErrorString.string, L" " L_RIGHT_GUILLEMET L" not raised. Instead:\n",
+				errorCopy);
+			Melder_free (errorCopy);
+			goto end2;
+		}
+	}
 end2:
 	iferror {
 		if (! wcsnequ (lines [lineNumber], L"exit ", 5) && ! assertionFailed) {   /* Don't show the message twice! */

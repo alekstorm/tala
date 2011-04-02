@@ -65,7 +65,7 @@ static int classCollection_copy (I, thou) {
 	thy item = Melder_calloc_e (void *, my _capacity); cherror   // filled with NULL
 	thy item --;   // immediately turn from base-0 into base-1
 	for (long i = 1; i <= my size; i ++) {
-		Thing item = my item [i];
+		Thing item = (structThing*)my item [i];
 		if (my _dontOwnItems) {
 			thy item [i] = item;   // reference copy: if me doesn't own the items, then thee shouldn't either   // NOTE: the items don't have to be Data
 		} else {
@@ -102,7 +102,7 @@ static bool classCollection_equal (I, thou) {
 static bool classCollection_canWriteAsEncoding (I, int encoding) {
 	iam (Collection);
 	for (long i = 1; i <= my size; i ++) {
-		Thing thing = my item [i];
+		Thing thing = (structThing*)my item [i];
 		if (thing -> name != NULL && ! Melder_isEncodable (thing -> name, encoding)) return false;
 		if (! Data_canWriteAsEncoding (thing, encoding)) return false;
 	}
@@ -114,7 +114,7 @@ static int classCollection_writeText (I, MelderFile file) {
 	texputi4 (file, my size, L"size", 0,0,0,0,0);
 	texputintro (file, L"item []: ", my size ? NULL : L"(empty)", 0,0,0,0);
 	for (long i = 1; i <= my size; i ++) {
-		Thing thing = my item [i];
+		Thing thing = (structThing*)my item [i];
 		Thing_Table table = thing -> methods;
 		texputintro (file, L"item [", Melder_integer (i), L"]:", 0,0,0);
 		if (! Thing_member (thing, classData) || ! Data_canWriteText (thing))
@@ -195,7 +195,7 @@ static int classCollection_writeBinary (I, FILE *f) {
 	iam (Collection);
 	binputi4 (my size, f);
 	for (long i = 1; i <= my size; i ++) {
-		Thing thing = my item [i];
+		Thing thing = (structThing*)my item [i];
 		Thing_Table table = thing -> methods;
 		if (! Thing_member (thing, classData) || ! Data_canWriteBinary (thing))
 			return Melder_error3 (L"(Collection::writeBinary:) "
@@ -372,7 +372,7 @@ Any Collections_merge (I, thou) {
 		"Objects are of different class (", Thing_className (me), L" and ", Thing_className (thee), L").");
 	if (my _dontOwnItems != thy _dontOwnItems) return Melder_errorp1 (L"(Collections_merge:) "
 		"Cannot mix data and references.");
-	him = Data_copy (me); cherror
+	him = (structCollection*)Data_copy (me); cherror
 	for (long i = 1; i <= thy size; i ++) {
 		Thing tmp;
 		Thing item = (Thing) thy item [i];
@@ -381,7 +381,7 @@ Any Collections_merge (I, thou) {
 		} else {
 			if (! Thing_member (item, classData))
 				error3 (L"(Collections_merge:) Cannot copy item of class ", Thing_className (item), L".")
-			tmp = Data_copy (item); cherror
+			tmp = (structThing*)Data_copy (item); cherror
 		}
 		if (! tmp || ! Collection_addItem (him, tmp)) { forget (tmp); goto end; }
 	}
@@ -663,7 +663,7 @@ int Cyclic_init (Any me, void *itemClass, long initialCapacity) {
 static void cycleLeft (I) {
 	iam (Cyclic);
 	if (my size == 0) return;
-	Data help = my item [1];
+	Data help = (structData*)my item [1];
 	for (long i = 1; i < my size; i ++) my item [i] = my item [i + 1];
 	my item [my size] = help;
 }

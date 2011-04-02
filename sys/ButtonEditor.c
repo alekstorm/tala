@@ -255,11 +255,11 @@ static void which (ButtonEditor me, int show) {
 	HyperPage_goToPage (me, L"Buttons");
 }
 
-static void gui_radiobutton_cb_objects (I, GuiRadioButtonEvent event) { (void) event; which (void_me, 1); }
-static void gui_radiobutton_cb_picture (I, GuiRadioButtonEvent event) { (void) event; which (void_me, 2); }
-static void gui_radiobutton_cb_editors (I, GuiRadioButtonEvent event) { (void) event; which (void_me, 3); }
-static void gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event) { (void) event; which (void_me, 4); }
-static void gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event) { (void) event; which (void_me, 5); }
+static void gui_radiobutton_cb_objects (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 1); }
+static void gui_radiobutton_cb_picture (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 2); }
+static void gui_radiobutton_cb_editors (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 3); }
+static void gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 4); }
+static void gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 5); }
 
 static void createChildren (ButtonEditor me) {
 	#if gtk

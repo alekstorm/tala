@@ -1183,7 +1183,7 @@ char * bingets1 (FILE *f) {
 	unsigned int length = bingetu1 (f);
 	char *result = Melder_malloc_e (char, length + 1);
 	if (! result)
-		return Melder_errorp ("(bingets1:) Cannot create string of length %d.", length);
+		return (char*)Melder_errorp ("(bingets1:) Cannot create string of length %d.", length);
 	if (fread (result, 1, length, f) != length) { Melder_free (result); return NULL; }
 	result [length] = 0;   /* Trailing null byte. */
 	return result;
@@ -1205,7 +1205,7 @@ char * bingets4 (FILE *f) {
 	unsigned long length = bingetu4 (f);
 	char *result = Melder_malloc_e (char, length + 1);
 	if (! result)
-		return Melder_errorp ("(bingets4:) Cannot create string of length %ld.", length);
+		return (char*)Melder_errorp ("(bingets4:) Cannot create string of length %ld.", length);
 	if (fread (result, 1, length, f) != length) { Melder_free (result); return NULL; }
 	result [length] = 0;   /* Trailing null byte. */
 	return result;
@@ -1218,7 +1218,7 @@ wchar_t * bingetw1 (FILE *f) {
 		length = bingetu1 (f);
 		result = Melder_malloc_e (wchar_t, length + 1);
 		if (result == NULL)
-			return Melder_errorp ("(bingetw1:) Cannot create string of length %ld.", length);
+			return (wchar_t*)Melder_errorp ("(bingetw1:) Cannot create string of length %ld.", length);
 		for (unsigned short i = 0; i < length; i ++) {
 			if (sizeof (wchar_t) == 2) {
 				result [i] = bingetu2 (f);
@@ -1226,10 +1226,10 @@ wchar_t * bingetw1 (FILE *f) {
 				unsigned short kar = bingetu2 (f);
 				if ((kar & 0xF800) == 0xD800) {
 					if (kar > 0xDBFF)
-						return Melder_errorp ("(bingetw1:) Incorrect Unicode value (first surrogate member %hX).", kar);
+						return (wchar_t*)Melder_errorp ("(bingetw1:) Incorrect Unicode value (first surrogate member %hX).", kar);
 					unsigned short kar2 = bingetu2 (f);
 					if (kar2 < 0xDC00 || kar2 > 0xDFFF)
-						return Melder_errorp ("(bingetw1:) Incorrect Unicode value (second surrogate member %hX).", kar2);
+						return (wchar_t*)Melder_errorp ("(bingetw1:) Incorrect Unicode value (second surrogate member %hX).", kar2);
 					result [i] = (((kar & 0x3FF) << 10) | (kar2 & 0x3FF)) + 0x10000;
 				} else {
 					result [i] = kar;
@@ -1239,7 +1239,7 @@ wchar_t * bingetw1 (FILE *f) {
 	} else {
 		result = Melder_malloc_e (wchar_t, length + 1);
 		if (result == NULL)
-			return Melder_errorp ("(bingetw1:) Cannot create string of length %ld.", length);
+			return (wchar_t*)Melder_errorp ("(bingetw1:) Cannot create string of length %ld.", length);
 		for (unsigned short i = 0; i < length; i ++) {
 			result [i] = bingetu1 (f);
 		}
@@ -1256,7 +1256,7 @@ wchar_t * bingetw2 (FILE *f) {
 		length = bingetu2 (f);
 		result = Melder_malloc_e (wchar_t, length + 1);
 		if (result == NULL)
-			return Melder_errorp ("(bingetw2:) Cannot create string of length %ld.", length);
+			return (wchar_t*)Melder_errorp ("(bingetw2:) Cannot create string of length %ld.", length);
 		for (unsigned short i = 0; i < length; i ++) {
 			if (sizeof (wchar_t) == 2) {
 				result [i] = bingetu2 (f);
@@ -1264,10 +1264,10 @@ wchar_t * bingetw2 (FILE *f) {
 				unsigned short kar = bingetu2 (f);
 				if ((kar & 0xF800) == 0xD800) {
 					if (kar > 0xDBFF)
-						return Melder_errorp ("(bingetw2:) Incorrect Unicode value (first surrogate member %hX).", kar);
+						return (wchar_t*)Melder_errorp ("(bingetw2:) Incorrect Unicode value (first surrogate member %hX).", kar);
 					unsigned short kar2 = bingetu2 (f);
 					if (kar2 < 0xDC00 || kar2 > 0xDFFF)
-						return Melder_errorp ("(bingetw2:) Incorrect Unicode value (second surrogate member %hX).", kar2);
+						return (wchar_t*)Melder_errorp ("(bingetw2:) Incorrect Unicode value (second surrogate member %hX).", kar2);
 					result [i] = (((kar & 0x3FF) << 10) | (kar2 & 0x3FF)) + 0x10000;
 				} else {
 					result [i] = kar;
@@ -1277,7 +1277,7 @@ wchar_t * bingetw2 (FILE *f) {
 	} else {
 		result = Melder_malloc_e (wchar_t, length + 1);
 		if (result == NULL)
-			return Melder_errorp ("(bingetw2:) Cannot create string of length %ld.", length);
+			return (wchar_t*)Melder_errorp ("(bingetw2:) Cannot create string of length %ld.", length);
 		for (unsigned short i = 0; i < length; i ++) {
 			result [i] = bingetu1 (f);
 		}
@@ -1294,7 +1294,7 @@ wchar_t * bingetw4 (FILE *f) {
 		length = bingetu4 (f);
 		result = Melder_malloc_e (wchar_t, length + 1);
 		if (result == NULL)
-			return Melder_errorp ("(bingetw4:) Cannot create string of length %ld.", length);
+			return (wchar_t*)Melder_errorp ("(bingetw4:) Cannot create string of length %ld.", length);
 		for (unsigned long i = 0; i < length; i ++) {
 			if (sizeof (wchar_t) == 2) {
 				result [i] = bingetu2 (f);
@@ -1302,10 +1302,10 @@ wchar_t * bingetw4 (FILE *f) {
 				unsigned short kar = bingetu2 (f);
 				if ((kar & 0xF800) == 0xD800) {
 					if (kar > 0xDBFF)
-						return Melder_errorp ("(bingetw4:) Incorrect Unicode value (first surrogate member %hX).", kar);
+						return (wchar_t*)Melder_errorp ("(bingetw4:) Incorrect Unicode value (first surrogate member %hX).", kar);
 					unsigned short kar2 = bingetu2 (f);
 					if (kar2 < 0xDC00 || kar2 > 0xDFFF)
-						return Melder_errorp ("(bingetw4:) Incorrect Unicode value (second surrogate member %hX).", kar2);
+						return (wchar_t*)Melder_errorp ("(bingetw4:) Incorrect Unicode value (second surrogate member %hX).", kar2);
 					result [i] = (((kar & 0x3FF) << 10) | (kar2 & 0x3FF)) + 0x10000;
 				} else {
 					result [i] = kar;
@@ -1315,7 +1315,7 @@ wchar_t * bingetw4 (FILE *f) {
 	} else {
 		result = Melder_malloc_e (wchar_t, length + 1);
 		if (result == NULL)
-			return Melder_errorp ("(bingetw4:) Cannot create string of length %ld.", length);
+			return (wchar_t*)Melder_errorp ("(bingetw4:) Cannot create string of length %ld.", length);
 		for (unsigned long i = 0; i < length; i ++) {
 			result [i] = bingetu1 (f);
 		}
@@ -1959,7 +1959,7 @@ char * cacgets1 (CACHE *f) {
 	unsigned int length = (unsigned char) * f -> ptr ++;
 	char *result = Melder_malloc_e (char, length + 1);
 	if (! result)
-		return Melder_errorp ("(cacgets1:) Cannot create a string of length %d.", length);
+		return (char*)Melder_errorp ("(cacgets1:) Cannot create a string of length %d.", length);
 	if (memread (result, 1, length, f) != length) { Melder_free (result); return NULL; }
 	result [length] = 0;   /* Trailing null byte. */
 	return result;
@@ -1969,7 +1969,7 @@ char * cacgets2 (CACHE *f) {
 	unsigned int length = cacgetu2 (f);
 	char *result = Melder_malloc_e (char, length + 1);
 	if (! result)
-		return Melder_errorp ("(cacgets2:) Cannot create a string of length %d.", length);
+		return (char*)Melder_errorp ("(cacgets2:) Cannot create a string of length %d.", length);
 	if (memread (result, 1, length, f) != length) { Melder_free (result); return NULL; }
 	result [length] = 0;   /* Trailing null byte. */
 	return result;
@@ -1979,7 +1979,7 @@ char * cacgets4 (CACHE *f) {
 	unsigned long length = cacgetu4 (f);
 	char *result = Melder_malloc_e (char, length + 1);
 	if (! result)
-		return Melder_errorp ("(cacgets4:) Cannot create a string of length %ld.", length);
+		return (char*)Melder_errorp ("(cacgets4:) Cannot create a string of length %ld.", length);
 	if (memread (result, 1, length, f) != length) { Melder_free (result); return NULL; }
 	result [length] = 0;   /* Trailing null byte. */
 	return result;

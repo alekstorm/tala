@@ -35,6 +35,7 @@
  */
 
 #include <time.h>
+#include "praat.h"
 #include "ScriptEditor.h"
 #include "machine.h"
 #include "EditorM.h"
@@ -149,7 +150,7 @@ GuiObject Editor_addCommand (Any editor, const wchar_t *menuTitle, const wchar_t
 	Editor me = (Editor) editor;
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = my menus -> item [imenu];
+		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
 		if (wcsequ (menuTitle, menu -> menuTitle))
 			return EditorMenu_addCommand (menu, itemTitle, flags, commandCallback);
 	}
@@ -171,7 +172,7 @@ GuiObject Editor_addCommandScript (Any editor, const wchar_t *menuTitle, const w
 	Editor me = (Editor) editor;
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = my menus -> item [imenu];
+		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
 		if (wcsequ (menuTitle, menu -> menuTitle)) {
 			EditorCommand cmd = Thing_new (EditorCommand);
 			cmd -> editor = me;
@@ -199,7 +200,7 @@ void Editor_setMenuSensitive (Any editor, const wchar_t *menuTitle, int sensitiv
 	Editor me = (Editor) editor;
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = my menus -> item [imenu];
+		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
 		if (wcsequ (menuTitle, menu -> menuTitle)) {
 			GuiObject_setSensitive (menu -> menuWidget, sensitive);
 			return;
@@ -210,11 +211,11 @@ void Editor_setMenuSensitive (Any editor, const wchar_t *menuTitle, int sensitiv
 EditorCommand Editor_getMenuCommand (Editor me, const wchar_t *menuTitle, const wchar_t *itemTitle) {
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = my menus -> item [imenu];
+		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
 		if (wcsequ (menuTitle, menu -> menuTitle)) {
 			int numberOfCommands = menu -> commands -> size, icommand;
 			for (icommand = 1; icommand <= numberOfCommands; icommand ++) {
-				EditorCommand command = menu -> commands -> item [icommand];
+				EditorCommand command = (structEditorCommand*)menu -> commands -> item [icommand];
 				if (wcsequ (itemTitle, command -> itemTitle))
 					return command;
 			}
@@ -227,10 +228,10 @@ EditorCommand Editor_getMenuCommand (Editor me, const wchar_t *menuTitle, const 
 int Editor_doMenuCommand (Editor me, const wchar_t *commandTitle, const wchar_t *arguments, Interpreter interpreter) {
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = my menus -> item [imenu];
+		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
 		int numberOfCommands = menu -> commands -> size, icommand;
 		for (icommand = 1; icommand <= numberOfCommands; icommand ++) {
-			EditorCommand command = menu -> commands -> item [icommand];
+			EditorCommand command = (structEditorCommand*)menu -> commands -> item [icommand];
 			if (wcsequ (commandTitle, command -> itemTitle)) {
 				if (! command -> commandCallback (me, command, NULL, arguments, interpreter))
 					return 0;
@@ -479,7 +480,6 @@ static void gui_window_cb_goAway (I) {
 	our goAway (me);
 }
 
-extern void praat_addCommandsToEditor (Editor me);
 int Editor_init (Editor me, GuiObject parent, int x, int y, int width, int height, const wchar_t *title, Any data) {
 	#if gtk
 		GdkScreen *screen = gdk_screen_get_default ();

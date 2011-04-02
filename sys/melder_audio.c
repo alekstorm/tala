@@ -200,7 +200,7 @@ static struct MelderPlay {
 	long sampleRate, numberOfSamples, samplesLeft, samplesSent, samplesPlayed;
 	unsigned int asynchronicity;
 	int numberOfChannels;
-	bool explicit, fakeMono;
+	bool explicit_, fakeMono;
 	int (*callback) (void *closure, long samplesPlayed);
 	void *closure;
 	#if motif
@@ -240,7 +240,7 @@ long MelderAudio_getSamplesPlayed (void) {
 }
 
 bool MelderAudio_stopWasExplicit (void) {
-	return thePlay. explicit;
+	return thePlay. explicit_;
 }
 
 /*
@@ -327,9 +327,9 @@ static bool flush (void) {
 	return true;   /* Remove workProc if called from workProc. */
 }
 
-int MelderAudio_stopPlaying (bool explicit) {
+int MelderAudio_stopPlaying (bool explicit_) {
 	struct MelderPlay *me = & thePlay;
-	my explicit = explicit;
+	my explicit_ = explicit_;
 	if (! MelderAudio_isPlaying || my asynchronicity < kMelder_asynchronicityLevel_ASYNCHRONOUS) return 0;
 	(void) flush ();
 	#if motif
@@ -623,7 +623,7 @@ int MelderAudio_play16 (const short *buffer, long sampleRate, long numberOfSampl
 	#ifdef _WIN32
 		int wasPlaying = MelderAudio_isPlaying;
 	#endif
-	if (MelderAudio_isPlaying) MelderAudio_stopPlaying (MelderAudio_IMPLICIT);   /* Otherwise, keep "explicit" tag. */
+	if (MelderAudio_isPlaying) MelderAudio_stopPlaying (MelderAudio_IMPLICIT);   /* Otherwise, keep "explicit_" tag. */
 	my buffer = buffer;
 	my sampleRate = sampleRate;
 	my numberOfSamples = numberOfSamples;
@@ -638,7 +638,7 @@ int MelderAudio_play16 (const short *buffer, long sampleRate, long numberOfSampl
 		my asynchronicity = preferences. maximumAsynchronicity;
 	my usePortAudio = preferences. outputUsesPortAudio;
 	my blocking = preferences. outputUsesBlocking;
-	my explicit = MelderAudio_IMPLICIT;
+	my explicit_ = MelderAudio_IMPLICIT;
 	my fakeMono = false;
 
 	my samplesLeft = numberOfSamples;
@@ -701,7 +701,7 @@ if (my usePortAudio) {
 							if ((event. message & charCodeMask) == 27 ||
 								((event. modifiers & cmdKey) && (event. message & charCodeMask) == '.'))
 							{
-								my explicit = MelderAudio_EXPLICIT;
+								my explicit_ = MelderAudio_EXPLICIT;
 								interrupted = 1;
 							}
 						}
@@ -709,7 +709,7 @@ if (my usePortAudio) {
 						MSG event;
 						if (PeekMessage (& event, 0, 0, 0, PM_REMOVE) && event. message == WM_KEYDOWN) {
 							if (LOWORD (event. wParam) == VK_ESCAPE) {
-								my explicit = MelderAudio_EXPLICIT;
+								my explicit_ = MelderAudio_EXPLICIT;
 								interrupted = true;
 							}
 						}
@@ -764,7 +764,7 @@ if (my usePortAudio) {
 							if ((event. message & charCodeMask) == 27 ||
 								((event. modifiers & cmdKey) && (event. message & charCodeMask) == '.'))
 							{
-								my explicit = MelderAudio_EXPLICIT;
+								my explicit_ = MelderAudio_EXPLICIT;
 								interrupted = 1;
 							}
 						}
@@ -772,7 +772,7 @@ if (my usePortAudio) {
 						MSG event;
 						if (PeekMessage (& event, 0, 0, 0, PM_REMOVE) && event. message == WM_KEYDOWN) {
 							if (LOWORD (event. wParam) == VK_ESCAPE) {
-								my explicit = MelderAudio_EXPLICIT;
+								my explicit_ = MelderAudio_EXPLICIT;
 								interrupted = true;
 							}
 						}
@@ -830,7 +830,7 @@ if (my usePortAudio) {
 				interrupted = 1;
 			if (my asynchronicity == kMelder_asynchronicityLevel_INTERRUPTABLE &&
 				XCheckIfEvent (XtDisplay (Melder_topShell), & event, predicateProcedure, 0))
-				my explicit = MelderAudio_EXPLICIT, interrupted = 1;
+				my explicit_ = MelderAudio_EXPLICIT, interrupted = 1;
 		}
 		while ((n = ALgetfilled (my port)) > 0 && ! interrupted) {
 			XEvent event;
@@ -840,7 +840,7 @@ if (my usePortAudio) {
 				interrupted = 1;
 			if (my asynchronicity == kMelder_asynchronicityLevel_INTERRUPTABLE &&
 				XCheckIfEvent (XtDisplay (Melder_topShell), & event, predicateProcedure, 0))
-				my explicit = MelderAudio_EXPLICIT, interrupted = 1;
+				my explicit_ = MelderAudio_EXPLICIT, interrupted = 1;
 		}
 	} else /* my asynchronicity == kMelder_asynchronicityLevel_ASYNCHRONOUS */ {
 		my workProcId_motif = XtAppAddWorkProc (Melder_appContext, workProc_motif, (XtPointer) me);
@@ -922,7 +922,7 @@ if (my usePortAudio) {
 					 */
 					if ((event. message & charCodeMask) == 27 ||
 						((event. modifiers & cmdKey) && (event. message & charCodeMask) == '.'))
-						my explicit = MelderAudio_EXPLICIT, interrupted = 1;
+						my explicit_ = MelderAudio_EXPLICIT, interrupted = 1;
 				}
 				if (interrupted) {
 					my samplesPlayed = (Melder_clock () - theStartingTime) * my sampleRate;
@@ -1019,7 +1019,7 @@ if (my usePortAudio) {
 			if (my callback && ! my callback (my closure, my samplesPlayed))
 				break;
 			if (my asynchronicity == kMelder_asynchronicityLevel_INTERRUPTABLE && XCheckIfEvent (XtDisplay (Melder_topShell), & event, predicateProcedure, 0))
-				{ my explicit = MelderAudio_EXPLICIT; break; }
+				{ my explicit_ = MelderAudio_EXPLICIT; break; }
 		}
 	} else {
 		my workProcId_motif = XtAppAddWorkProc (Melder_appContext, workProc_motif, NULL);
@@ -1114,7 +1114,7 @@ if (my usePortAudio) {
 			if (my callback && ! my callback (my closure, my samplesPlayed))
 				interrupted = 1;
 			if (my asynchronicity == kMelder_asynchronicityLevel_INTERRUPTABLE && XCheckIfEvent (XtDisplay (Melder_topShell), & event, predicateProcedure, 0))
-				my explicit = MelderAudio_EXPLICIT, interrupted = 1;
+				my explicit_ = MelderAudio_EXPLICIT, interrupted = 1;
 		}
 		if (! interrupted) {
 			/*
@@ -1129,7 +1129,7 @@ if (my usePortAudio) {
 				if (my callback && ! my callback (my closure, my samplesPlayed))
 					break;
 				if (my asynchronicity == kMelder_asynchronicityLevel_INTERRUPTABLE && XCheckIfEvent (XtDisplay (Melder_topShell), & event, predicateProcedure, 0))
-					{ my explicit = MelderAudio_EXPLICIT; break; }
+					{ my explicit_ = MelderAudio_EXPLICIT; break; }
 			}
 		}
 	} else /* my asynchronicity == kMelder_asynchronicityLevel_ASYNCHRONOUS */ {
@@ -1208,7 +1208,7 @@ if (my usePortAudio) {
 				interrupted = 1;
 			#if motif
 				if (my asynchronicity == kMelder_asynchronicityLevel_INTERRUPTABLE && XCheckIfEvent (XtDisplay (Melder_topShell), & event, predicateProcedure, 0))
-					my explicit = MelderAudio_EXPLICIT, interrupted = 1;
+					my explicit_ = MelderAudio_EXPLICIT, interrupted = 1;
 			#endif
 		}
 		if (! interrupted) {
@@ -1302,7 +1302,7 @@ if (my usePortAudio) {
 				break;
 			if (my asynchronicity == kMelder_asynchronicityLevel_INTERRUPTABLE &&
 			    PeekMessage (& event, 0, 0, 0, PM_REMOVE) && event. message == WM_KEYDOWN) {
-				if (LOWORD (event. wParam) == VK_ESCAPE) { my explicit = MelderAudio_EXPLICIT; break; }
+				if (LOWORD (event. wParam) == VK_ESCAPE) { my explicit_ = MelderAudio_EXPLICIT; break; }
 			}
 		}
 	} else {

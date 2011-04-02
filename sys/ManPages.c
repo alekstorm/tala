@@ -51,7 +51,7 @@ static long lookUp_unsorted (ManPages me, const wchar_t *title);
 static void destroy (I) { iam (ManPages);
 	if (my dynamic && my pages) {
 		for (long ipage = 1; ipage <= my pages -> size; ipage ++) {
-			ManPage page = my pages -> item [ipage];
+			ManPage page = (structManPage*)my pages -> item [ipage];
 			Melder_free (page -> title);
 			Melder_free (page -> author);
 			if (page -> paragraphs) {
@@ -142,7 +142,7 @@ static int readOnePage (ManPages me, MelderReadText text) {
 	iferror return Melder_error1 (L"Cannot find date.");
 	page -> recordingTime = texgetr8 (text);
 	iferror return Melder_error1 (L"Cannot find recording time.");
-	page -> paragraphs = NUMvector (sizeof (struct structManPage_Paragraph), 0, 500);
+	page -> paragraphs = (structManPage_Paragraph*)NUMvector (sizeof (struct structManPage_Paragraph), 0, 500);
 	if (! page -> paragraphs) return 0;
 	for (par = page -> paragraphs;; par ++) {
 		wchar_t link [501], fileName [256];
@@ -295,7 +295,7 @@ static long lookUp_unsorted (ManPages me, const wchar_t *title) {
 	 * First try to match an unaltered 'title' with the titles of the man pages.
 	 */
 	for (i = 1; i <= my pages -> size; i ++) {
-		ManPage page = my pages -> item [i];
+		ManPage page = (structManPage*)my pages -> item [i];
 		if (wcsequ (page -> title, title)) return i;
 	}
 
@@ -307,7 +307,7 @@ static long lookUp_unsorted (ManPages me, const wchar_t *title) {
 		wcscpy (upperTitle, title);
 		upperTitle [0] = toupper (upperTitle [0]);
 		for (i = 1; i <= my pages -> size; i ++) {
-			ManPage page = my pages -> item [i];
+			ManPage page = (structManPage*)my pages -> item [i];
 			if (wcsequ (page -> title, upperTitle)) return i;
 		}
 	}
@@ -319,14 +319,14 @@ static long lookUp_sorted (ManPages me, const wchar_t *title) {
 	ManPage *page;
 	if (! dummy) dummy = Thing_new (ManPage);
 	dummy -> title = title;
-	page = bsearch (& dummy, & my pages -> item [1], my pages -> size, sizeof (ManPage), pageCompare);
+	page = (structManPage**)bsearch (& dummy, & my pages -> item [1], my pages -> size, sizeof (ManPage), pageCompare);
 	if (page) return (page - (ManPage *) & my pages -> item [1]) + 1;
 	if (islower (title [0]) || isupper (title [0])) {
 		wchar_t caseSwitchedTitle [300];
 		wcscpy (caseSwitchedTitle, title);
 		caseSwitchedTitle [0] = islower (title [0]) ? toupper (caseSwitchedTitle [0]) : tolower (caseSwitchedTitle [0]);
 		dummy -> title = caseSwitchedTitle;
-		page = bsearch (& dummy, & my pages -> item [1], my pages -> size, sizeof (ManPage), pageCompare);
+		page = (structManPage**)bsearch (& dummy, & my pages -> item [1], my pages -> size, sizeof (ManPage), pageCompare);
 		if (page) return (page - (ManPage *) & my pages -> item [1]) + 1;
 	}
 	return 0;
@@ -343,7 +343,7 @@ static void grind (ManPages me) {
 	 */
 	grandNlinks = 0;
 	for (ipage = 1; ipage <= my pages -> size; ipage ++) {
-		ManPage page = my pages -> item [ipage];
+		ManPage page = (structManPage*)my pages -> item [ipage];
 		int ipar;
 		for (ipar = 0; page -> paragraphs [ipar]. type; ipar ++) {
 			const wchar_t *text = page -> paragraphs [ipar]. text, *p;
@@ -380,7 +380,7 @@ static void grind (ManPages me) {
 	}
 	ilinkHither = ilinkThither = 0;
 	for (ipage = 1; ipage <= my pages -> size; ipage ++) {
-		ManPage page = my pages -> item [ipage];
+		ManPage page = (structManPage*)my pages -> item [ipage];
 		page -> linksHither = grandLinksHither + ilinkHither;
 		page -> linksThither = grandLinksThither + ilinkThither;
 		ilinkHither += page -> nlinksHither;
@@ -395,7 +395,7 @@ static void grind (ManPages me) {
 	 * Rebuild nlinksHither and nlinksThither.
 	 */
 	for (ipage = 1; ipage <= my pages -> size; ipage ++) {
-		ManPage page = my pages -> item [ipage];
+		ManPage page = (structManPage*)my pages -> item [ipage];
 		int ipar;
 		for (ipar = 0; page -> paragraphs [ipar]. type; ipar ++) {
 			const wchar_t *text = page -> paragraphs [ipar]. text, *p;
@@ -412,7 +412,7 @@ static void grind (ManPages me) {
 						}
 					}
 					if (! alreadyPresent) {
-						ManPage otherPage = my pages -> item [jpage];
+						ManPage otherPage = (structManPage*)my pages -> item [jpage];
 						page -> linksThither [++ page -> nlinksThither] = jpage;
 						otherPage -> linksHither [++ otherPage -> nlinksHither] = ipage;
 					}
@@ -426,7 +426,7 @@ static void grind (ManPages me) {
 }
 
 long ManPages_uniqueLinksHither (ManPages me, long ipage) {
-	ManPage page = my pages -> item [ipage];
+	ManPage page = (structManPage*)my pages -> item [ipage];
 	long result = page -> nlinksHither, ilinkHither, ilinkThither;
 	for (ilinkHither = 1; ilinkHither <= page -> nlinksHither; ilinkHither ++) {
 		long link = page -> linksHither [ilinkHither];
@@ -444,7 +444,7 @@ long ManPages_lookUp (ManPages me, const wchar_t *title) {
 static long ManPages_lookUp_caseSensitive (ManPages me, const wchar_t *title) {
 	if (! my ground) grind (me);
 	for (long i = 1; i <= my pages -> size; i ++) {
-		ManPage page = my pages -> item [i];
+		ManPage page = (structManPage*)my pages -> item [i];
 		if (wcsequ (page -> title, title)) return i;
 	}
 	return 0;
@@ -455,7 +455,7 @@ const wchar_t **ManPages_getTitles (ManPages me, long *numberOfTitles) {
 	if (! my titles) {
 		my titles = (const wchar_t **) NUMpvector (1, my pages -> size);
 		for (long i = 1; i <= my pages -> size; i ++) {
-			ManPage page = my pages -> item [i];
+			ManPage page = (structManPage*)my pages -> item [i];
 			my titles [i] = Melder_wcsdup_f (page -> title);
 		}
 	}
@@ -711,7 +711,7 @@ static const wchar_t *month [] =
 	  L"July", L"August", L"September", L"October", L"November", L"December" };
 
 static void writePageAsHtml (ManPages me, MelderFile file, long ipage, MelderString *buffer) {
-	ManPage page = my pages -> item [ipage];
+	ManPage page = (structManPage*)my pages -> item [ipage];
 	ManPage_Paragraph paragraphs = page -> paragraphs;
 	MelderString_append3 (buffer, L"<html><head><meta name=\"robots\" content=\"index,follow\">\n"
 		L"<title>", page -> title, L"</title></head><body bgcolor=\"#FFFFFF\">\n\n");
@@ -772,7 +772,7 @@ int ManPages_writeAllToHtmlDir (ManPages me, const wchar_t *dirPath) {
 	structMelderDir dir;
 	Melder_pathToDir (dirPath, & dir);
 	for (long ipage = 1; ipage <= my pages -> size; ipage ++) {
-		ManPage page = my pages -> item [ipage];
+		ManPage page = (structManPage*)my pages -> item [ipage];
 		wchar_t fileName [256], *oldText;
 		wcscpy (fileName, page -> title);
 		for (wchar_t *p = fileName; *p; p ++) if (! isAllowedFileNameCharacter (*p)) *p = '_';

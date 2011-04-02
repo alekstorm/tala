@@ -152,21 +152,22 @@ class_methods (DemoEditor, Editor) {
 
 int DemoEditor_init (DemoEditor me, GuiObject parent) {
 	Editor_init (DemoEditor_as_parent (me), parent, 0, 0, 1024, 768, L"", NULL); cherror
-	my graphics = Graphics_create_xmdrawingarea (my drawingArea);
-	Graphics_setColour (my graphics, Graphics_WHITE);
-	Graphics_setWindow (my graphics, 0, 1, 0, 1);
-	Graphics_fillRectangle (my graphics, 0, 1, 0, 1);
-	Graphics_setColour (my graphics, Graphics_BLACK);
-	Graphics_startRecording (my graphics);
-	//Graphics_setViewport (my graphics, 0, 100, 0, 100);
-	//Graphics_setWindow (my graphics, 0, 100, 0, 100);
-	//Graphics_line (my graphics, 0, 100, 100, 0);
+	{
+		my graphics = Graphics_create_xmdrawingarea (my drawingArea);
+		Graphics_setColour (my graphics, Graphics_WHITE);
+		Graphics_setWindow (my graphics, 0, 1, 0, 1);
+		Graphics_fillRectangle (my graphics, 0, 1, 0, 1);
+		Graphics_setColour (my graphics, Graphics_BLACK);
+		Graphics_startRecording (my graphics);
+		//Graphics_setViewport (my graphics, 0, 100, 0, 100);
+		//Graphics_setWindow (my graphics, 0, 100, 0, 100);
+		//Graphics_line (my graphics, 0, 100, 100, 0);
 
-struct structGuiDrawingAreaResizeEvent event = { my drawingArea, 0 };
-event. width = GuiObject_getWidth (my drawingArea);
-event. height = GuiObject_getHeight (my drawingArea);
-gui_drawingarea_cb_resize (me, & event);
-
+		struct structGuiDrawingAreaResizeEvent event = { my drawingArea, 0 };
+		event. width = GuiObject_getWidth (my drawingArea);
+		event. height = GuiObject_getHeight (my drawingArea);
+		gui_drawingarea_cb_resize (me, & event);
+	}
 end:
 	iferror return 0;
 	return 1;
@@ -187,11 +188,11 @@ int Demo_open (void) {
 			//Melder_batch = 0;
 		}
 		if (theDemoEditor == NULL) {
-			theDemoEditor = DemoEditor_create (Melder_topShell);
+			theDemoEditor = DemoEditor_create ((GtkWidget*)Melder_topShell);
 			Melder_assert (theDemoEditor != NULL);
 			//GuiObject_show (theDemoEditor -> dialog);
 			theDemoEditor -> praatPicture = Melder_calloc_f (structPraatPicture, 1);
-			theCurrentPraatPicture = theDemoEditor -> praatPicture;
+			theCurrentPraatPicture = (structPraatPicture*)theDemoEditor -> praatPicture;
 			theCurrentPraatPicture -> graphics = theDemoEditor -> graphics;
 			theCurrentPraatPicture -> font = kGraphics_font_HELVETICA;
 			theCurrentPraatPicture -> fontSize = 10;
@@ -207,7 +208,7 @@ int Demo_open (void) {
 		if (theDemoEditor -> waitingForInput)
 			return Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 				"Please click or type into the Demo window or close it.");
-		theCurrentPraatPicture = theDemoEditor -> praatPicture;
+		theCurrentPraatPicture = (structPraatPicture*)theDemoEditor -> praatPicture;
 	#endif
 	return 1;
 }

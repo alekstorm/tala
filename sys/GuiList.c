@@ -33,10 +33,10 @@
 #if win || mac
 	#define iam_list \
 		Melder_assert (widget -> widgetClass == xmListWidgetClass); \
-		GuiList me = widget -> userData
+		GuiList me = (structGuiList*)widget -> userData
 #else
 	#define iam_list \
-		GuiList me = _GuiObject_getUserData (widget)
+		GuiList me = (structGuiList*)_GuiObject_getUserData (widget)
 #endif
 
 #if win
@@ -493,7 +493,7 @@ long * GuiList_getSelectedPositions (GuiObject widget, long *numberOfSelectedPos
 			selectedPositions = NUMlvector (1, *numberOfSelectedPositions);
 			Melder_assert (selectedPositions != NULL);
 			for (GList *l = g_list_first (list); l != NULL; l = g_list_next (l)) {
-				gint *index = gtk_tree_path_get_indices (l -> data);
+				gint *index = gtk_tree_path_get_indices ((GtkTreePath*)l -> data);
 				selectedPositions [ipos] = index [0] + 1;
 				ipos ++;
 			}
@@ -729,7 +729,7 @@ void GuiList_selectItem (GuiObject widget, long position) {
 }
 
 void GuiList_setDoubleClickCallback (GuiObject widget, void (*callback) (void *boss, GuiListEvent event), void *boss) {
-	GuiList me = _GuiObject_getUserData (widget);
+	GuiList me = (structGuiList*)_GuiObject_getUserData (widget);
 	if (me != NULL) {
 		my doubleClickCallback = callback;
 		my doubleClickBoss = boss;
@@ -737,7 +737,7 @@ void GuiList_setDoubleClickCallback (GuiObject widget, void (*callback) (void *b
 }
 
 void GuiList_setSelectionChangedCallback (GuiObject widget, void (*callback) (void *boss, GuiListEvent event), void *boss) {
-	GuiList me = _GuiObject_getUserData (widget);
+	GuiList me = (structGuiList*)_GuiObject_getUserData (widget);
 	if (me != NULL) {
 		my selectionChangedCallback = callback;
 		my selectionChangedBoss = boss;

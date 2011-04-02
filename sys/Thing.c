@@ -55,7 +55,7 @@ struct structThing_Table theStructThing =
 	{ _Thing_initialize, L"Thing", NULL, sizeof (struct structThing) };
 Thing_Table classThing = & theStructThing;
 static void _Thing_initialize (void *table) {
-	Thing_Table us = table;
+	Thing_Table us = (structThing_Table*)table;
 	us -> destroy = destroy;
 	us -> info = info;
 	us -> nameChanged = nameChanged;
@@ -64,7 +64,7 @@ static void _Thing_initialize (void *table) {
 const wchar_t * Thing_className (I) { iam (Thing); return our _className; }
 
 Any _Thing_new (void *table) {
-	Thing_Table us = table;
+	Thing_Table us = (structThing_Table*)table;
 	Thing me = (Thing) _Melder_calloc_e (1, us -> _size);
 	if (! me) return Melder_errorp ("(Thing_new:) Out of memory.");
 	theTotalNumberOfThings += 1;
@@ -100,7 +100,7 @@ long Thing_listReadableClasses (void) {
 	Melder_clearInfo ();
 	MelderInfo_open ();
 	for (long iclass = 1; iclass <= numberOfReadableClasses; iclass ++) {
-		Thing_Table klas = readableClasses [iclass];
+		Thing_Table klas = (structThing_Table*)readableClasses [iclass];
 		MelderInfo_writeLine3 (Melder_integer (klas -> sequentialUniqueIdOfReadableClass), L"\t", klas -> _className);
 	}
 	MelderInfo_close ();
@@ -132,7 +132,7 @@ void *Thing_classFromClassName (const wchar_t *klas) {
 	 * First try the class names that were registered with Thing_recognizeClassesByName.
 	 */
 	for (i = 1; i <= numberOfReadableClasses; i ++) {
-		Thing_Table table = readableClasses [i];
+		Thing_Table table = (structThing_Table*)readableClasses [i];
 		if (wcsequ (buffer, table -> _className)) {
 			if (! table -> destroy)   /* Table not initialized? */
 				table -> _initialize (table);
@@ -145,7 +145,7 @@ void *Thing_classFromClassName (const wchar_t *klas) {
 	 */
 	for (i = 1; i <= numberOfAliases; i ++) {
 		if (wcsequ (buffer, aliases [i]. otherName)) {
-			Thing_Table table = aliases [i]. readableClass;
+			Thing_Table table = (structThing_Table*)aliases [i]. readableClass;
 			if (! table -> destroy)   /* Table not initialized? */
 				table -> _initialize (table);
 			return table;
@@ -177,19 +177,19 @@ void _Thing_forget (Thing *pme) {
 }
 
 int Thing_subclass (void *klas, void *ancestor) {
-	Thing_Table me = klas;
+	Thing_Table me = (structThing_Table*)klas;
 	while (me != ancestor && me != NULL) me = my _parent;
 	return me != NULL;
 }
 
 int Thing_member (I, void *klas) {
-	Thing me = void_me;
+	Thing me = (structThing*)void_me;
 	if (! me) Melder_fatal ("(Thing_member:) Found NULL object.");
 	return Thing_subclass (my methods, klas);
 }
 
 void * _Thing_check (I, void *klas, const char *fileName, int line) {
-	Thing me = void_me;   /* NOT the macro `iam (Thing);' because that would be recursive. */
+	Thing me = (structThing*)void_me;   /* NOT the macro `iam (Thing);' because that would be recursive. */
 	if (! me) Melder_fatal ("(_Thing_check:) NULL object passed to a function\n"
 		"in file %.100s at line %d.", fileName, line);
 	Thing_Table table = my methods;
@@ -244,7 +244,7 @@ long Thing_getTotalNumberOfThings (void) { return theTotalNumberOfThings; }
 
 void Thing_overrideClass (I, void *klas) {
 	iam (Thing);
-	my methods = klas;
+	my methods = (structThing_Table*)klas;
 	if (! ((Thing_Table) klas) -> destroy)
 		((Thing_Table) klas) -> _initialize (klas);
 }

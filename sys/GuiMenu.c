@@ -45,7 +45,7 @@ GuiObject GuiMenuBar_addMenu2 (GuiObject bar, const wchar_t *title, long flags, 
 	#if gtk
 		*menuTitle = gtk_menu_item_new_with_label (Melder_peekWcsToUtf8 (title));
 		menu = gtk_menu_new ();
-		GtkAccelGroup *ag = GTK_IS_MENU_BAR (bar) ? g_object_get_data (G_OBJECT (bar), "accel-group") : gtk_menu_get_accel_group (GTK_MENU (bar));
+		GtkAccelGroup *ag = (GtkAccelGroup*)(GTK_IS_MENU_BAR (bar) ? g_object_get_data (G_OBJECT (bar), "accel-group") : gtk_menu_get_accel_group (GTK_MENU (bar)));
 		gtk_menu_set_accel_group (GTK_MENU (menu), ag);
 		if (flags & GuiMenu_INSENSITIVE)
 			gtk_widget_set_sensitive (menu, FALSE);
@@ -124,7 +124,7 @@ void GuiMenuItem_check (GuiObject menuItem, bool check) {
 	Melder_assert (menuItem != NULL);
 	#if gtk
 		gulong handlerId = (gulong) g_object_get_data (G_OBJECT (menuItem), "handlerId");
-		void (*commandCallback) (GuiObject, XtPointer, XtPointer) = g_object_get_data (G_OBJECT (menuItem), "commandCallback");
+		void (*commandCallback) (GuiObject, XtPointer, XtPointer) = (void (*)(GtkWidget*, void*, void*))g_object_get_data (G_OBJECT (menuItem), "commandCallback");
 		void *commandClosure = g_object_get_data (G_OBJECT (menuItem), "commandClosure");
 		//Melder_casual ("GuiMenuItem_check %ld %ld %ld", handlerId, commandCallback, commandClosure);
 		g_signal_handler_disconnect (G_OBJECT (menuItem), handlerId);
@@ -242,7 +242,7 @@ GuiObject GuiMenu_addItem (GuiObject menu, const wchar_t *title, long flags,
 				GDK_F1, GDK_F2, GDK_F3, GDK_F4, GDK_F5, GDK_F6, GDK_F7, GDK_F8, GDK_F9, GDK_F10, GDK_F11, GDK_F12,
 				0, 0, 0 };
 
-			GdkModifierType modifiers = 0;
+			int modifiers = 0;
 			if (flags & GuiMenu_COMMAND) modifiers |= GDK_CONTROL_MASK;
 			if (flags & GuiMenu_SHIFT)   modifiers |= GDK_SHIFT_MASK;
 			if (flags & GuiMenu_OPTION)  modifiers |= GDK_MOD1_MASK;
@@ -259,7 +259,7 @@ GuiObject GuiMenu_addItem (GuiObject menu, const wchar_t *title, long flags,
 
 			if (key != 0)
 				gtk_widget_add_accelerator (button, toggle ? "toggled" : "activate",
-					ag, key, modifiers, GTK_ACCEL_VISIBLE);
+					ag, key, (GdkModifierType)modifiers, GTK_ACCEL_VISIBLE);
 
 		#elif win || mac
 			int modifiers = 0;

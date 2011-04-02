@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef _regularExp_h_
 #define _regularExp_h_
 /*******************************************************************************
@@ -121,3 +125,7 @@ void SetREDefaultWordDelimiters (
 void EnableCountingQuantifier (int is_enabled);
 
 #endif /* _regularExp_h_ */
+
+#ifdef __cplusplus
+}
+#endif

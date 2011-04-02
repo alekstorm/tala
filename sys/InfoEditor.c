@@ -61,7 +61,7 @@ void gui_information (wchar_t *message);
 void gui_information (wchar_t *message) {
 	if (! theInfoEditor) {
 		theInfoEditor = Thing_new (InfoEditor);
-		TextEditor_init (InfoEditor_as_parent (theInfoEditor), Melder_topShell, L"");
+		TextEditor_init (InfoEditor_as_parent (theInfoEditor), (GtkWidget*)Melder_topShell, L"");
 		Thing_setName (theInfoEditor, L"Praat Info");
 	}
 	GuiText_setString (theInfoEditor -> textWidget, message);

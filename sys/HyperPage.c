@@ -187,7 +187,7 @@ if (! my printing) {
 	if (/* my y > PAGE_HEIGHT + 2.0 + heightGuess || */ my y < PAGE_HEIGHT - SCREEN_HEIGHT) {
 		my y -= heightGuess;
 	} else {
-		Graphics_setFont (my g, font);
+		Graphics_setFont (my g, (kGraphics_font)font);
 		Graphics_setFontSize (my g, size);
 		Graphics_setWrapWidth (my g, my rightMargin - x - 0.1);
 		Graphics_setSecondIndent (my g, secondIndent);
@@ -212,7 +212,7 @@ if (! my printing) {
 		my y = Graphics_inqTextY (my g);
 	}
 } else {
-	Graphics_setFont (my ps, font);
+	Graphics_setFont (my ps, (kGraphics_font)font);
 	Graphics_setFontSize (my ps, size);
 	my y -= my y == PAPER_TOP - TOP_MARGIN ? 0 : ( my previousBottomSpacing > topSpacing ? my previousBottomSpacing : topSpacing ) * size / 12.0;
 	my y -= size * (1.2/72);
@@ -220,7 +220,7 @@ if (! my printing) {
 		Graphics_nextSheetOfPaper (my ps);
 		if (my pageNumber) my pageNumber ++;
 		HyperPage_initSheetOfPaper (me);
-		Graphics_setFont (my ps, font);
+		Graphics_setFont (my ps, (kGraphics_font)font);
 		Graphics_setFontSize (my ps, size);
 		my y -= size * (1.2/72);
 	}
@@ -343,7 +343,7 @@ if (! my printing) {
 	my y -= size * (1.2/72);
 	if (my y > PAGE_HEIGHT + 2.0 || my y < PAGE_HEIGHT - SCREEN_HEIGHT) {
 	} else {
-		Graphics_setFont (my g, font);
+		Graphics_setFont (my g, (kGraphics_font)font);
 		Graphics_setFontStyle (my g, 0);
 		Graphics_setFontSize (my g, size);
 		Graphics_setWrapWidth (my g, 0);
@@ -352,7 +352,7 @@ if (! my printing) {
 		Graphics_setTextAlignment (my g, Graphics_LEFT, Graphics_BOTTOM);
 	}
 } else {
-	Graphics_setFont (my ps, font);
+	Graphics_setFont (my ps, (kGraphics_font)font);
 	Graphics_setFontStyle (my ps, 0);
 	Graphics_setFontSize (my ps, size);
 	my y -= my y == PAPER_TOP - TOP_MARGIN ? 0 : ( my previousBottomSpacing > topSpacing ? my previousBottomSpacing : topSpacing ) * size / 12.0;
@@ -361,7 +361,7 @@ if (! my printing) {
 		Graphics_nextSheetOfPaper (my ps);
 		if (my pageNumber) my pageNumber ++;
 		HyperPage_initSheetOfPaper (me);
-		Graphics_setFont (my ps, font);
+		Graphics_setFont (my ps, (kGraphics_font)font);
 		Graphics_setFontSize (my ps, size);
 		my y -= size * (1.2/72);
 	}
@@ -386,7 +386,7 @@ if (! my printing) {
 		my y -= height_inches;
 	} else {
 		my y -= height_inches;
-		Graphics_setFont (my g, font);
+		Graphics_setFont (my g, (kGraphics_font)font);
 		Graphics_setFontStyle (my g, 0);
 		Graphics_setFontSize (my g, size);
 		my x = width_inches > my rightMargin ? 0 : 0.5 * (my rightMargin - width_inches);
@@ -398,7 +398,7 @@ if (! my printing) {
 		Graphics_setTextAlignment (my g, Graphics_LEFT, Graphics_BOTTOM);
 	}
 } else {
-	Graphics_setFont (my ps, font);
+	Graphics_setFont (my ps, (kGraphics_font)font);
 	Graphics_setFontStyle (my ps, 0);
 	Graphics_setFontSize (my ps, size);
 	my y -= my y == PAPER_TOP - TOP_MARGIN ? 0 : ( my previousBottomSpacing > topSpacing ? my previousBottomSpacing : topSpacing ) * size / 12.0;
@@ -407,7 +407,7 @@ if (! my printing) {
 		Graphics_nextSheetOfPaper (my ps);
 		if (my pageNumber) my pageNumber ++;
 		HyperPage_initSheetOfPaper (me);
-		Graphics_setFont (my ps, font);
+		Graphics_setFont (my ps, (kGraphics_font)font);
 		Graphics_setFontSize (my ps, size);
 		my y -= height_inches;
 	}
@@ -438,7 +438,7 @@ if (! my printing) {
 		my y -= true_height_inches;
 	} else {
 		my y -= true_height_inches;
-		Graphics_setFont (my g, font);
+		Graphics_setFont (my g, (kGraphics_font)font);
 		Graphics_setFontStyle (my g, 0);
 		Graphics_setFontSize (my g, size);
 		my x = true_width_inches > my rightMargin ? 0 : 0.5 * (my rightMargin - true_width_inches);
@@ -451,11 +451,11 @@ if (! my printing) {
 			if (my praatApplication == NULL) my praatApplication = Melder_calloc_f (structPraatApplication, 1);
 			if (my praatObjects == NULL) my praatObjects = Melder_calloc_f (structPraatObjects, 1);
 			if (my praatPicture == NULL) my praatPicture = Melder_calloc_f (structPraatPicture, 1);
-			theCurrentPraatApplication = my praatApplication;
+			theCurrentPraatApplication = (structPraatApplication*)my praatApplication;
 			theCurrentPraatApplication -> batch = true;   // prevent creation of editor windows
 			theCurrentPraatApplication -> topShell = theForegroundPraatApplication. topShell;   // needed for UiForm_create () in dialogs
-			theCurrentPraatObjects = my praatObjects;
-			theCurrentPraatPicture = my praatPicture;
+			theCurrentPraatObjects = (structPraatObjects*)my praatObjects;
+			theCurrentPraatPicture = (structPraatPicture*)my praatPicture;
 			theCurrentPraatPicture -> graphics = my g;   // has to draw into HyperPage rather than Picture window
 			theCurrentPraatPicture -> font = font;
 			theCurrentPraatPicture -> fontSize = size;
@@ -521,7 +521,7 @@ if (! my printing) {
 		Graphics_setTextAlignment (my g, Graphics_LEFT, Graphics_BOTTOM);
 	}
 } else {
-	Graphics_setFont (my ps, font);
+	Graphics_setFont (my ps, (kGraphics_font)font);
 	Graphics_setFontStyle (my ps, 0);
 	Graphics_setFontSize (my ps, size);
 	my y -= my y == PAPER_TOP - TOP_MARGIN ? 0 : ( my previousBottomSpacing > topSpacing ? my previousBottomSpacing : topSpacing ) * size / 12.0;
@@ -530,7 +530,7 @@ if (! my printing) {
 		Graphics_nextSheetOfPaper (my ps);
 		if (my pageNumber) my pageNumber ++;
 		HyperPage_initSheetOfPaper (me);
-		Graphics_setFont (my ps, font);
+		Graphics_setFont (my ps, (kGraphics_font)font);
 		Graphics_setFontSize (my ps, size);
 		my y -= true_height_inches;
 	}
@@ -545,10 +545,10 @@ if (! my printing) {
 		if (my praatApplication == NULL) my praatApplication = Melder_calloc_f (structPraatApplication, 1);
 		if (my praatObjects == NULL) my praatObjects = Melder_calloc_f (structPraatObjects, 1);
 		if (my praatPicture == NULL) my praatPicture = Melder_calloc_f (structPraatPicture, 1);
-		theCurrentPraatApplication = my praatApplication;
+		theCurrentPraatApplication = (structPraatApplication*)my praatApplication;
 		theCurrentPraatApplication -> batch = true;
-		theCurrentPraatObjects = my praatObjects;
-		theCurrentPraatPicture = my praatPicture;
+		theCurrentPraatObjects = (structPraatObjects*)my praatObjects;
+		theCurrentPraatPicture = (structPraatPicture*)my praatPicture;
 		theCurrentPraatPicture -> graphics = my ps;
 		theCurrentPraatPicture -> font = font;
 		theCurrentPraatPicture -> fontSize = size;
@@ -665,7 +665,7 @@ static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 if (gtk && event -> type != BUTTON_PRESS) return;
 	if (! my links) return;
 	for (long ilink = 1; ilink <= my links -> size; ilink ++) {
-		HyperLink link = my links -> item [ilink];
+		HyperLink link = (structHyperLink*)my links -> item [ilink];
 		if (event -> y > link -> y2DC && event -> y < link -> y1DC && event -> x > link -> x1DC && event -> x < link -> x2DC) {
 			saveHistory (me, my currentPageTitle);
 			if (! HyperPage_goToPage (me, link -> name)) {
@@ -730,7 +730,7 @@ static int menu_cb_font (EDITOR_ARGS) {
 				my font == kGraphics_font_HELVETICA ? 2 : my font == kGraphics_font_PALATINO ? 3 : 1);
 	EDITOR_DO
 		int font = GET_INTEGER (L"Font");
-		prefs_font = my font = font == 1 ? kGraphics_font_TIMES : kGraphics_font_HELVETICA;
+		prefs_font = (kGraphics_font)(my font = font == 1 ? kGraphics_font_TIMES : kGraphics_font_HELVETICA);
 		if (my g) Graphics_updateWs (my g);
 	EDITOR_END
 }
@@ -1078,30 +1078,32 @@ static void createChildren (HyperPage me) {
 int HyperPage_init (HyperPage me, GuiObject parent, const wchar_t *title, Any data) {
 	resolution = Gui_getResolution (parent);
 	Editor_init (HyperPage_as_parent (me), parent, 0, 0, 6 * resolution + 30, 800, title, data); cherror
-	#if motif
-		Melder_assert (XtWindow (my drawingArea));
-	#endif
-	my g = Graphics_create_xmdrawingarea (my drawingArea);
-	Graphics_setAtSignIsLink (my g, TRUE);
-	Graphics_setDollarSignIsCode (my g, TRUE);
-	Graphics_setFont (my g, kGraphics_font_TIMES);
-	if (prefs_font != kGraphics_font_TIMES && prefs_font != kGraphics_font_HELVETICA)
-		prefs_font = kGraphics_font_TIMES;   // Ensure Unicode compatibility.
-	my font = prefs_font;
-	setFontSize (me, prefs_fontSize);	
+	{
+		#if motif
+			Melder_assert (XtWindow (my drawingArea));
+		#endif
+		my g = Graphics_create_xmdrawingarea (my drawingArea);
+		Graphics_setAtSignIsLink (my g, TRUE);
+		Graphics_setDollarSignIsCode (my g, TRUE);
+		Graphics_setFont (my g, kGraphics_font_TIMES);
+		if (prefs_font != kGraphics_font_TIMES && prefs_font != kGraphics_font_HELVETICA)
+			prefs_font = kGraphics_font_TIMES;   // Ensure Unicode compatibility.
+		my font = prefs_font;
+		setFontSize (me, prefs_fontSize);	
 
-struct structGuiDrawingAreaResizeEvent event = { my drawingArea, 0 };
-event. width = GuiObject_getWidth (my drawingArea);
-event. height = GuiObject_getHeight (my drawingArea);
-gui_drawingarea_cb_resize (me, & event);
+		struct structGuiDrawingAreaResizeEvent event = { my drawingArea, 0 };
+		event. width = GuiObject_getWidth (my drawingArea);
+		event. height = GuiObject_getHeight (my drawingArea);
+		gui_drawingarea_cb_resize (me, & event);
 
-	#if gtk
-		g_signal_connect (G_OBJECT (my verticalScrollBar), "value-changed", G_CALLBACK (gui_cb_verticalScroll), me);
-	#elif motif
-		XtAddCallback (my verticalScrollBar, XmNvalueChangedCallback, gui_cb_verticalScroll, (XtPointer) me);
-		XtAddCallback (my verticalScrollBar, XmNdragCallback, gui_cb_verticalScroll, (XtPointer) me);
-	#endif
-	updateVerticalScrollBar (me);   /* Scroll to the top (my top == 0). */
+		#if gtk
+			g_signal_connect (G_OBJECT (my verticalScrollBar), "value-changed", G_CALLBACK (gui_cb_verticalScroll), me);
+		#elif motif
+			XtAddCallback (my verticalScrollBar, XmNvalueChangedCallback, gui_cb_verticalScroll, (XtPointer) me);
+			XtAddCallback (my verticalScrollBar, XmNdragCallback, gui_cb_verticalScroll, (XtPointer) me);
+		#endif
+		updateVerticalScrollBar (me);   /* Scroll to the top (my top == 0). */
+	}
 end:
 	iferror return 0;
 	return 1;

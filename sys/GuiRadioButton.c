@@ -31,10 +31,10 @@
 #if win || mac
 	#define iam_radiobutton \
 		Melder_assert (widget -> widgetClass == xmToggleButtonWidgetClass); \
-		GuiRadioButton me = widget -> userData
+		GuiRadioButton me = (structGuiRadioButton*)widget -> userData
 #else
 	#define iam_radiobutton \
-		GuiRadioButton me = _GuiObject_getUserData (widget)
+		GuiRadioButton me = (structGuiRadioButton*)_GuiObject_getUserData (widget)
 #endif
 
 typedef struct structGuiRadioButton {

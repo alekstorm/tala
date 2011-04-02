@@ -148,24 +148,24 @@ static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 //	g_debug("EXPOSE DRAWING AREA");
 	
 	// save old cairo contexts
-	cairo_t *cgr = Graphics_x_getCR (my graphics);
+	cairo_t *cgr = (cairo_t*)Graphics_x_getCR (my graphics);
 	Melder_assert (cgr != NULL);
-	cairo_t *csgr = Graphics_x_getCR (my selectionGraphics);
+	cairo_t *csgr = (cairo_t*)Graphics_x_getCR (my selectionGraphics);
 	
 	// set new cairo contexts
 	Graphics_x_setCR (my graphics, gdk_cairo_create (GDK_DRAWABLE (event -> widget -> window)));
 	Graphics_x_setCR (my selectionGraphics, gdk_cairo_create (GDK_DRAWABLE (event -> widget -> window)));
 	// - Graphics_x_setCR(my graphics, Graphics_x_getCR(my selectionGraphics));
 	// g_debug ("%d %d %d %d\n", event->x, event->y, event->width, event->height);
-	cairo_rectangle (Graphics_x_getCR (my graphics), (double) event->x, (double) event->y, (double) event->width, (double) event->height);
-	cairo_clip (Graphics_x_getCR (my graphics));
+	cairo_rectangle ((cairo_t*)Graphics_x_getCR (my graphics), (double) event->x, (double) event->y, (double) event->width, (double) event->height);
+	cairo_clip ((cairo_t*)Graphics_x_getCR (my graphics));
 	drawMarkers (me);
-	Graphics_play (my graphics, my graphics);
+	Graphics_play ((structGraphics*)my graphics, (structGraphics*)my graphics);
 	drawSelection (me, 1);
 //	cairo_set_source_rgb(Graphics_x_getCR (my graphics), test / 3.0, test / 2.0, test);
 //	cairo_fill(Graphics_x_getCR (my graphics));
-	cairo_destroy (Graphics_x_getCR (my selectionGraphics));
-	cairo_destroy (Graphics_x_getCR (my graphics));
+	cairo_destroy ((cairo_t*)Graphics_x_getCR (my selectionGraphics));
+	cairo_destroy ((cairo_t*)Graphics_x_getCR (my graphics));
 
 	// restore old cairo contexts
 	Graphics_x_setCR (my graphics, cgr);
@@ -698,7 +698,7 @@ int Picture_writeToEpsFile (Picture me, MelderFile file, int includeFonts, int u
 		my selx1, my selx2, my sely1, my sely2, includeFonts, useSilipaPS);
 	if (! ps)
 		return Melder_error3 (L"Cannot create EPS file ", MelderFile_messageName (file), L".");
-	Graphics_play (my graphics, ps);
+	Graphics_play ((structGraphics*)my graphics, ps);
 	forget (ps);
 	MelderFile_setMacTypeAndCreator (file, 'EPSF', 'vgrd');
 
@@ -746,14 +746,14 @@ int Picture_writeToPdfFile (Picture me, MelderFile file) {
 		my selx1, my selx2, my sely1, my sely2);
 	if (graphics == NULL)
 		return Melder_error3 (L"Cannot create PDF file ", MelderFile_messageName (file), L".");
-	Graphics_play (my graphics, graphics);
+	Graphics_play ((structGraphics*)my graphics, graphics);
 	forget (graphics);
 	return 1;
 }
 
 static void print (I, Graphics printer) {
 	iam (Picture);
-	Graphics_play (my graphics, printer);
+	Graphics_play ((structGraphics*)my graphics, printer);
 }
 
 void Picture_print (Picture me) {

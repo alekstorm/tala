@@ -45,7 +45,7 @@ static void createHelpMenuItems (StringsEditor me, EditorMenu menu) {
 }
 
 static void updateList (StringsEditor me) {
-	Strings strings = my data;
+	Strings strings = (structStrings*)my data;
 	GuiList_deleteAllItems (my list);
 	for (long i = 1; i <= strings -> numberOfStrings; i ++)
 		GuiList_insertItem (my list, strings -> strings [i], 0);
@@ -54,7 +54,7 @@ static void updateList (StringsEditor me) {
 static void gui_button_cb_insert (I, GuiButtonEvent event) {
 	(void) event;
 	iam (StringsEditor);
-	Strings strings = my data;
+	Strings strings = (structStrings*)my data;
 	/*
 	 * Find the first selected item.
 	 */
@@ -82,7 +82,7 @@ static void gui_button_cb_insert (I, GuiButtonEvent event) {
 static void gui_button_cb_append (I, GuiButtonEvent event) {
 	(void) event;
 	iam (StringsEditor);
-	Strings strings = my data;
+	Strings strings = (structStrings*)my data;
 	wchar_t *text = GuiText_getString (my text);
 	/*
 	 * Change the data.
@@ -106,7 +106,7 @@ static void gui_button_cb_remove (I, GuiButtonEvent event) {
 	iam (StringsEditor);
 	long numberOfSelected, *selected = GuiList_getSelectedPositions (my list, & numberOfSelected);
 	for (long iselected = numberOfSelected; iselected >= 1; iselected --) {
-		Strings_remove (my data, selected [iselected]);
+		Strings_remove ((structStrings*)my data, selected [iselected]);
 	}
 	NUMlvector_free (selected, 1);
 	updateList (me);
@@ -116,7 +116,7 @@ static void gui_button_cb_remove (I, GuiButtonEvent event) {
 static void gui_button_cb_replace (I, GuiButtonEvent event) {
 	(void) event;
 	iam (StringsEditor);
-	Strings strings = my data;
+	Strings strings = (structStrings*)my data;
 	long numberOfSelected, *selected = GuiList_getSelectedPositions (my list, & numberOfSelected);
 	wchar_t *text = GuiText_getString (my text);
 	for (long iselected = 1; iselected <= numberOfSelected; iselected ++) {
@@ -130,7 +130,7 @@ static void gui_button_cb_replace (I, GuiButtonEvent event) {
 static void gui_list_cb_doubleClick (GuiObject widget, void *void_me, long item) {
 	(void) widget;
 	iam (StringsEditor);
-	Strings strings = my data;
+	Strings strings = (structStrings*)my data;
 	if (item <= strings -> numberOfStrings)
 		GuiText_setString (my text, strings -> strings [item]);
 }

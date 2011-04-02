@@ -36,7 +36,7 @@ static double totalNumberOfAllocations = 0, totalNumberOfDeallocations = 0, tota
 void MelderString_free (MelderString *me) {
 	if (my string == NULL) return;
 	Melder_free (my string);
-	if (Melder_debug == 34) fprintf (stderr, "from MelderString_free\t%ld\t%ld\t%ld\n", (long) my string, my bufferSize, sizeof (wchar_t));
+	if (Melder_debug == 34) fprintf (stderr, "from MelderString_free\t%ld\t%ld\t%i\n", (long) my string, my bufferSize, sizeof (wchar_t));
 	totalNumberOfDeallocations += 1;
 	totalDeallocationSize += my bufferSize * sizeof (wchar_t);
 	my bufferSize = 0;
@@ -65,8 +65,8 @@ void MelderString16_free (MelderString16 *me) {
 		} \
 		long bytesNeeded = sizeNeeded * sizeof (type); \
 		Melder_assert (bytesNeeded > 0); \
-		my string = Melder_realloc_f (my string, bytesNeeded); \
-		if (Melder_debug == 34) fprintf (stderr, "from MelderString:expandIfNecessary\t%ld\t%ld\t%ld\n", (long) my string, sizeNeeded, sizeof (type)); \
+		my string = (type*)Melder_realloc_f (my string, bytesNeeded); \
+		if (Melder_debug == 34) fprintf (stderr, "from MelderString:expandIfNecessary\t%ld\t%ld\t%i\n", (long) my string, sizeNeeded, sizeof (type)); \
 		if (my string == NULL) { my bufferSize = 0; goto end; } \
 		totalNumberOfAllocations += 1; \
 		totalAllocationSize += bytesNeeded; \

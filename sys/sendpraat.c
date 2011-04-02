@@ -246,14 +246,14 @@ char *sendpraat (void *display, const char *programName, long timeOut, const cha
 			gevent. send_event = 1;
 			gevent. message_type = gdk_atom_intern_static_string ("SENDPRAAT");
 			gevent. data_format = 8;
-			if (! gdk_event_send_client_message_for_display (display, (GdkEvent *) & gevent, wid)) {
-				if (! displaySupplied) gdk_display_close (display);
+			if (! gdk_event_send_client_message_for_display ((GdkDisplay*)display, (GdkEvent *) & gevent, wid)) {
+				if (! displaySupplied) gdk_display_close ((GdkDisplay*)display);
 				sprintf (errorMessage, "Cannot send message to %s (window %ld). "
 					"The program %s may have been started by a different user, "
 					"or may have crashed.", programName, wid, programName);
 				return errorMessage;
 			}
-			if (! displaySupplied) gdk_display_close (display);
+			if (! displaySupplied) gdk_display_close ((GdkDisplay*)display);
 		}
 		/*
 		 * Wait for the running program to notify us of completion,
@@ -468,14 +468,14 @@ wchar_t *sendpraatW (void *display, const wchar_t *programName, long timeOut, co
 			gevent. send_event = 1;
 			gevent. message_type = gdk_atom_intern_static_string ("SENDPRAAT");
 			gevent. data_format = 8;
-			if (! gdk_event_send_client_message_for_display (display, (GdkEvent *) & gevent, wid)) {
-				if (! displaySupplied) gdk_display_close (display);
+			if (! gdk_event_send_client_message_for_display ((GdkDisplay*)display, (GdkEvent *) & gevent, wid)) {
+				if (! displaySupplied) gdk_display_close ((GdkDisplay*)display);
 				swprintf (errorMessageW, 1000, L"Cannot send message to %ls (window %ld). "
 					"The program %ls may have been started by a different user, "
 					"or may have crashed.", programName, wid, programName);
 				return errorMessageW;
 			}
-			if (! displaySupplied) gdk_display_close (display);
+			if (! displaySupplied) gdk_display_close ((GdkDisplay*)display);
 		}
 		/*
 		 * Wait for the running program to notify us of completion,

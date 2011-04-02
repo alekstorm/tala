@@ -43,7 +43,7 @@ static Collection theScriptEditors;
 int ScriptEditors_dirty (void) {
 	if (! theScriptEditors) return FALSE;
 	for (long i = 1; i <= theScriptEditors -> size; i ++) {
-		ScriptEditor me = theScriptEditors -> item [i];
+		ScriptEditor me = (structScriptEditor*)theScriptEditors -> item [i];
 		if (my dirty) return TRUE;
 	}
 	return FALSE;
@@ -362,7 +362,7 @@ end:
 ScriptEditor ScriptEditor_createFromScript (GuiObject parent, Any voidEditor, Script script) {
 	if (theScriptEditors) {
 		for (long ieditor = 1; ieditor <= theScriptEditors -> size; ieditor ++) {
-			ScriptEditor editor = theScriptEditors -> item [ieditor];
+			ScriptEditor editor = (structScriptEditor*)theScriptEditors -> item [ieditor];
 			if (MelderFile_equal (& script -> file, & editor -> file)) {
 				Editor_raise (ScriptEditor_as_Editor (editor));
 				Melder_error3 (L"Script ", MelderFile_messageName (& script -> file), L" is already open.");

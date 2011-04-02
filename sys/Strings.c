@@ -164,7 +164,7 @@ static Strings Strings_createAsFileOrDirectoryList (const wchar_t *path, int typ
 		d = opendir (buffer8 [0] ? buffer8 : ".");
 		if (d == NULL) error3 (L"Cannot open directory ", searchDirectory. string, L".")
 		//Melder_casual ("opened");
-		my strings = NUMpvector (1, 1000000); cherror
+		my strings = (wchar_t**)NUMpvector (1, 1000000); cherror
 		struct dirent *entry;
 		while ((entry = readdir (d)) != NULL) {
 			MelderString_copy (& filePath, searchDirectory. string [0] ? searchDirectory. string : L".");
@@ -238,25 +238,26 @@ Strings Strings_createAsDirectoryList (const wchar_t *path) {
 Strings Strings_readFromRawTextFile (MelderFile file) {
 	Strings me = NULL;
 	MelderReadText text = MelderReadText_createFromFile (file); cherror
+	{
+		/*
+		 * Count number of strings.
+		 */
+		long n = MelderReadText_getNumberOfLines (text);
 
-	/*
-	 * Count number of strings.
-	 */
-	long n = MelderReadText_getNumberOfLines (text);
+		/*
+		 * Create.
+		 */
+		me = Thing_new (Strings);
+		if (n > 0) my strings = (wchar_t**)NUMpvector (1, n); cherror
+		my numberOfStrings = n;
 
-	/*
-	 * Create.
-	 */
-	me = Thing_new (Strings);
-	if (n > 0) my strings = NUMpvector (1, n); cherror
-	my numberOfStrings = n;
-
-	/*
-	 * Read strings.
-	 */
-	for (long i = 1; i <= n; i ++) {
-		wchar_t *line = MelderReadText_readLine (text); cherror
-		my strings [i] = Melder_wcsdup_e (line); cherror
+		/*
+		 * Read strings.
+		 */
+		for (long i = 1; i <= n; i ++) {
+			wchar_t *line = MelderReadText_readLine (text); cherror
+			my strings [i] = Melder_wcsdup_e (line); cherror
+		}
 	}
 
 end:

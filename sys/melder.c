@@ -256,7 +256,7 @@ static int waitWhileProgress (double progress, const wchar_t *message, GuiObject
 	} else {
 		if (progress <= 0.0) progress = 0.0;
 		GuiObject_show (dia);   // TODO: prevent raising to the front
-		wchar_t *newline = wcschr (message, '\n');
+		wchar_t *newline = (wchar_t*)wcschr (message, '\n');
 		if (newline != NULL) {
 			static MelderString buffer = { 0 };
 			MelderString_copy (& buffer, message);
@@ -295,7 +295,7 @@ static void progress_cancel_btn_press (void *wid, GuiButtonEvent event) {
 #endif
 
 static void _Melder_dia_init (GuiObject *dia, GuiObject *scale, GuiObject *label1, GuiObject *label2, GuiObject *cancelButton) {
-	*dia = GuiDialog_create (Melder_topShell, 200, 100, Gui_AUTOMATIC, Gui_AUTOMATIC, L"Work in progress",
+	*dia = GuiDialog_create ((GtkWidget*)Melder_topShell, 200, 100, Gui_AUTOMATIC, Gui_AUTOMATIC, L"Work in progress",
 		#if gtk
 			progress_dia_close, cancelButton,
 		#else
@@ -690,7 +690,7 @@ static void gui_error (wchar_t *message) {
 		MessageBox (NULL, message, L"Message", MB_OK);
 	#endif
 	if (memoryIsLow) {
-		theMessageFund = malloc (theMessageFund_SIZE);
+		theMessageFund = (char*)malloc (theMessageFund_SIZE);
 		if (theMessageFund == NULL) {
 			#if gtk
 				GuiObject dialog = gtk_message_dialog_new (GTK_WINDOW (Melder_topShell), GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -723,7 +723,7 @@ static void gui_warning (wchar_t *message) {
 
 void MelderGui_create (void *appContext, void *parent) {
 	extern void gui_information (wchar_t *);   // BUG: no prototype
-	theMessageFund = malloc (theMessageFund_SIZE);
+	theMessageFund = (char*)malloc (theMessageFund_SIZE);
 	assert (theMessageFund != NULL);
 	Melder_appContext = appContext;
 	Melder_topShell = (GuiObject) parent;

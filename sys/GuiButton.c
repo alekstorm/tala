@@ -132,7 +132,7 @@ GuiObject GuiButton_create (GuiObject parent, int left, int right, int top, int 
 			GtkWidget *shell = gtk_widget_get_toplevel (my widget);
 			gtk_window_set_default (GTK_WINDOW (shell), my widget);
 		} else if (1) {
-			gtk_button_set_focus_on_click (my widget, false);
+			gtk_button_set_focus_on_click ((GtkButton*)my widget, false);
 			GTK_WIDGET_UNSET_FLAGS (my widget, GTK_CAN_DEFAULT);
 		}
 		g_signal_connect (G_OBJECT (my widget), "destroy",

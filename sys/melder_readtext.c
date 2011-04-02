@@ -271,7 +271,7 @@ static wchar_t * _MelderFile_readText (MelderFile file, char **string8) {
 	}
 end:
 	if (text == NULL)
-		return Melder_errorp3 (L"Error reading file ", MelderFile_messageName (file), L".");
+		return (wchar_t*)Melder_errorp3 (L"Error reading file ", MelderFile_messageName (file), L".");
 	return text;
 }
 

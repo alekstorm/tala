@@ -122,7 +122,7 @@ void MelderInfo_close (void) {
 		if (theInfos -> length == 0 || theInfos -> string [theInfos -> length - 1] != '\n') {   // Only if no newline there yet.
 			MelderString_appendCharacter (theInfos, '\n');
 		}
-		theInformation (theInfos -> string ? theInfos -> string : L"");
+		theInformation ((wchar_t*)(theInfos -> string ? theInfos -> string : L""));
 	}
 }
 
@@ -149,7 +149,7 @@ void Melder_clearInfo (void) {
 }
 
 wchar_t * Melder_getInfo (void) {
-	return theInfos -> string ? theInfos -> string : L"";
+	return (wchar_t*)(theInfos -> string ? theInfos -> string : L"");
 }
 
 void Melder_print (const wchar_t *s) {

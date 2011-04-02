@@ -288,7 +288,7 @@ static void gui_button_cb_change (I, GuiButtonEvent event) {
 		my root -> dataChangedCallback (my root, my root -> dataChangedClosure, NULL);   /* Notify owner. */
 	update (me);
 	for (i = 1; i <= my root -> children -> size; i ++) {
-		DataSubEditor subeditor = my root -> children -> item [i];
+		DataSubEditor subeditor = (structDataSubEditor*)my root -> children -> item [i];
 		if (subeditor != me) update (subeditor);
 	}
 	return;
@@ -500,7 +500,7 @@ static wchar_t * singleTypeToText (void *address, int type, void *tagType, Melde
 			if (string == NULL) { MelderString_empty (buffer); return buffer -> string; }   // Convert NULL string to empty string.
 			return string;   // May be much longer than the usual size of 'buffer'.
 		} break;
-		default: return L"(unknown)";
+		default: return (wchar_t*)L"(unknown)";
 	}
 	return buffer -> string;   // Mind the special return for strings above.
 }
@@ -663,7 +663,7 @@ end:
 static long classVectorEditor_countFields (VectorEditor me) {
 	long numberOfElements = my maximum - my minimum + 1;
 	if (my description -> type == structwa)
-		return numberOfElements * (Data_Description_countMembers (my description -> tagType) + 1);
+		return numberOfElements * (Data_Description_countMembers ((structData_Description*)my description -> tagType) + 1);
 	else
 		return numberOfElements;
 }
@@ -672,7 +672,7 @@ static void classVectorEditor_showMembers (VectorEditor me) {
 	long firstElement, ielement;
 	int type = my description -> type, isSingleType = type <= maxsingletypewa;
 	int elementSize = type == structwa ?
-		Data_Description_countMembers (my description -> tagType) + 1 : 1;
+		Data_Description_countMembers ((structData_Description*)my description -> tagType) + 1 : 1;
 	firstElement = my minimum + (my topField - 1) / elementSize;
 
 	for (ielement = firstElement; ielement <= my maximum; ielement ++) {
@@ -723,7 +723,7 @@ static void classVectorEditor_showMembers (VectorEditor me) {
 				GuiLabel_setString (fieldData -> label, buffer.string);
 				GuiObject_show (fieldData -> label);
 			}
-			showStructMembers (me, elementAddress, my description -> tagType, skip, history.string);
+			showStructMembers (me, elementAddress, (structData_Description*)my description -> tagType, skip, history.string);
 		} else if (type == objectwa) {
 			static MelderString history = { 0 };
 			MelderString_copy (& history, my name);
@@ -776,7 +776,7 @@ end:
 static long classMatrixEditor_countFields (MatrixEditor me) {
 	long numberOfElements = (my maximum - my minimum + 1) * (my max2 - my min2 + 1);
 	if (my description -> type == structwa)
-		return numberOfElements * (Data_Description_countMembers (my description -> tagType) + 1);
+		return numberOfElements * (Data_Description_countMembers ((structData_Description*)my description -> tagType) + 1);
 	else
 		return numberOfElements;
 }
@@ -785,7 +785,7 @@ static void classMatrixEditor_showMembers (MatrixEditor me) {
 	long firstRow, firstColumn;
 	int type = my description -> type, isSingleType = type <= maxsingletypewa;
 	int elementSize = type == structwa ?
-		Data_Description_countMembers (my description -> tagType) + 1 : 1;
+		Data_Description_countMembers ((structData_Description*)my description -> tagType) + 1 : 1;
 	int rowSize = elementSize * (my max2 - my min2 + 1);
 	firstRow = my minimum + (my topField - 1) / rowSize;
 	firstColumn = my min2 + (my topField - 1 - (firstRow - my minimum) * rowSize) / elementSize;
@@ -889,7 +889,7 @@ static void classDataEditor_destroy (I) {
 	/* Tell my children not to notify me when they die. */
 
 	for (i = 1; i <= my children -> size; i ++) {
-		DataSubEditor child = my children -> item [i];
+		DataSubEditor child = (structDataSubEditor*)my children -> item [i];
 		child -> root = NULL;
 	}
 
@@ -908,7 +908,7 @@ static void classDataEditor_dataChanged (DataEditor me) {
 	 * so that we do not know if any of the subeditors contain valid data.
 	 */
 	for (int i = my children -> size; i >= 1; i --) {
-		DataSubEditor subeditor = my children -> item [i];
+		DataSubEditor subeditor = (structDataSubEditor*)my children -> item [i];
 		Collection_subtractItem (my children, i);
 		forget (subeditor);
 	}

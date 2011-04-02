@@ -49,10 +49,10 @@
 #if win || mac
 	#define iam_text \
 		Melder_assert (widget -> widgetClass == xmTextWidgetClass); \
-		GuiText me = widget -> userData
+		GuiText me = (structGuiText*)widget -> userData
 #else
 	#define iam_text \
-		GuiText me = _GuiObject_getUserData (widget)
+		GuiText me = (structGuiText*)_GuiObject_getUserData (widget)
 #endif
 
 #if !mac
@@ -647,7 +647,7 @@ void _GuiText_exit (void) {
 			if (my prev->first == last) {
 				// most common for backspace key presses
 				he = my prev;
-				text_new = realloc(text_new, sizeof(*text_new) * (he->last - first + 1));
+				text_new = (gchar*)realloc(text_new, sizeof(*text_new) * (he->last - first + 1));
 				memcpy(text_new + last - first, he->text, sizeof(*text_new) * (he->last - he->first + 1));
 				free(he->text);
 				he->text = text_new;
@@ -656,7 +656,7 @@ void _GuiText_exit (void) {
 			} else if (my prev->last == first) {
 				// most common for ordinary text insertion
 				he = my prev;
-				he->text = realloc(he->text, sizeof(*he->text) * (last - he->first + 1));
+				he->text = (gchar*)realloc(he->text, sizeof(*he->text) * (last - he->first + 1));
 				memcpy(he->text + he->last - he->first, text_new, sizeof(*he->text) * (last - first + 1));
 				free(text_new);
 				he->last = last;
@@ -664,7 +664,7 @@ void _GuiText_exit (void) {
 			} else if (deleted && my prev->first == first) {
 				// most common for delete key presses
 				he = my prev;
-				he->text = realloc(he->text, sizeof(*he->text) * (last - first + he->last - he->first + 1));
+				he->text = (gchar*)realloc(he->text, sizeof(*he->text) * (last - first + he->last - he->first + 1));
 				memcpy(he->text + he->last - he->first, text_new, sizeof(*he->text) * (last - first + 1));
 				free(text_new);
 				he->last = last + he->last - he->first;
@@ -688,8 +688,8 @@ void _GuiText_exit (void) {
 					 *     n >= 1 characters          n characters           1 character          1 character
 					 *
 					 * So merge those four events into two events by expanding del_mult by del_one and ins_mult by current */
-					del_mult->text = realloc(del_mult->text, sizeof(*del_mult->text) * (to3 - from1 + 1));
-					ins_mult->text = realloc(ins_mult->text, sizeof(*ins_mult->text) * (to3 - from1 + 1));
+					del_mult->text = (gchar*)realloc(del_mult->text, sizeof(*del_mult->text) * (to3 - from1 + 1));
+					ins_mult->text = (gchar*)realloc(ins_mult->text, sizeof(*ins_mult->text) * (to3 - from1 + 1));
 					memcpy(del_mult->text + to1 - from1, del_one->text, sizeof(*del_mult->text) * (to3 - to1 + 1));
 					memcpy(ins_mult->text + to1 - from1, text_new     , sizeof(*del_mult->text) * (to3 - to1 + 1));
 					del_mult->last = to3;
@@ -724,7 +724,7 @@ void _GuiText_exit (void) {
 		
 		history_entry *he = history_addAndMerge(void_me, text_new, first, last, deleted);
 		if (he == NULL) {
-			he = malloc(sizeof(history_entry));
+			he = (history_entry*)malloc(sizeof(history_entry));
 			he->first = first;
 			he->last = last;
 			he->type_del = deleted;
@@ -820,7 +820,7 @@ void _GuiText_exit (void) {
 		(void) ed;
 		iam (GuiText);
 		if (my history_change) return;
-		gchar *text = malloc (sizeof (gchar) * (len + 1));
+		gchar *text = (gchar*)malloc (sizeof (gchar) * (len + 1));
 		strcpy (text, utf8_text);
 		history_add (me, text, *from, *from + len, 0);
 	}
@@ -838,7 +838,7 @@ void _GuiText_exit (void) {
 		iam (GuiText);
 		if (my history_change) return;
 		int from_pos = gtk_text_iter_get_offset (from);
-		gchar *text = malloc (sizeof (gchar) * (len + 1));
+		gchar *text = (gchar*)malloc (sizeof (gchar) * (len + 1));
 		strcpy (text, utf8_text);
 		history_add (me, text, from_pos, from_pos + len, 0);
 	}
@@ -1204,11 +1204,11 @@ void GuiText_remove (GuiObject widget) {
 
 void GuiText_replace (GuiObject widget, long from_pos, long to_pos, const wchar_t *text) {
 	#if gtk
-		gchar *new = Melder_peekWcsToUtf8 (text);
+		gchar *new_ = Melder_peekWcsToUtf8 (text);
 		if (G_OBJECT_TYPE (G_OBJECT (widget)) == GTK_TYPE_ENTRY) {
 			gtk_editable_delete_text (GTK_EDITABLE (widget), from_pos, to_pos);
 			gint from_pos_gint = from_pos;
-			gtk_editable_insert_text (GTK_EDITABLE (widget), new, g_utf8_strlen (new, -1), & from_pos_gint);
+			gtk_editable_insert_text (GTK_EDITABLE (widget), new_, g_utf8_strlen (new_, -1), & from_pos_gint);
 		} else if (G_OBJECT_TYPE (G_OBJECT (widget)) == GTK_TYPE_TEXT_VIEW) {
 			GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(widget));
 			GtkTextIter from_it, to_it;
@@ -1216,7 +1216,7 @@ void GuiText_replace (GuiObject widget, long from_pos, long to_pos, const wchar_
 			gtk_text_buffer_get_iter_at_offset (buffer, & to_it, to_pos);
 			gtk_text_buffer_delete_interactive (buffer, & from_it, & to_it,
 				gtk_text_view_get_editable (GTK_TEXT_VIEW (widget)));
-			gtk_text_buffer_insert_interactive (buffer, & from_it, new, g_utf8_strlen (new, -1),
+			gtk_text_buffer_insert_interactive (buffer, & from_it, new_, g_utf8_strlen (new_, -1),
 				gtk_text_view_get_editable (GTK_TEXT_VIEW (widget)));
 		}
 	#elif win

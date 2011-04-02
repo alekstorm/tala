@@ -33,10 +33,10 @@
 #if win || mac
 	#define iam_checkbutton \
 		Melder_assert (widget -> widgetClass == xmToggleButtonWidgetClass); \
-		GuiCheckButton me = widget -> userData
+		GuiCheckButton me = (structGuiCheckButton*)widget -> userData
 #else
 	#define iam_checkbutton \
-		GuiCheckButton me = _GuiObject_getUserData (widget)
+		GuiCheckButton me = (structGuiCheckButton*)_GuiObject_getUserData (widget)
 #endif
 
 typedef struct structGuiCheckButton {

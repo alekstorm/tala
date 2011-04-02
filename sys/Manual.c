@@ -34,6 +34,7 @@
  */
 
 #include <ctype.h>
+#include "praatP.h"
 #include "Manual.h"
 #include "Printer.h"
 #include "machine.h"
@@ -53,13 +54,13 @@ static const wchar_t *month [] =
 static int menu_cb_writeOneToHtmlFile (EDITOR_ARGS) {
 	EDITOR_IAM (Manual);
 	EDITOR_FORM_WRITE (L"Save as HTML file", 0)
-		ManPages manPages = my data;
+		ManPages manPages = (structManPages*)my data;
 		wchar_t *p = defaultName;
 		wcscpy (p, ((ManPage) manPages -> pages -> item [my path]) -> title);
 		while (*p) { if (! isalnum (*p) && *p != '_') *p = '_'; p ++; }
 		wcscat (defaultName, L".html");
 	EDITOR_DO_WRITE
-		if (! ManPages_writeOneToHtmlFile (my data, my path, file)) return 0;
+		if (! ManPages_writeOneToHtmlFile ((structManPages*)my data, my path, file)) return 0;
 	EDITOR_END
 }
 
@@ -74,14 +75,14 @@ static int menu_cb_writeAllToHtmlDir (EDITOR_ARGS) {
 		SET_STRING (L"directory", Melder_dirToPath (& currentDirectory))
 	EDITOR_DO
 		wchar_t *directory = GET_STRING (L"directory");
-		if (! ManPages_writeAllToHtmlDir (my data, directory)) return 0;
+		if (! ManPages_writeAllToHtmlDir ((structManPages*)my data, directory)) return 0;
 	EDITOR_END
 }
 
 static int menu_cb_searchForPageList (EDITOR_ARGS) {
 	EDITOR_IAM (Manual);
 	EDITOR_FORM (L"Search for page", 0)
-		ManPages manPages = my data;
+		ManPages manPages = (structManPages*)my data;
 		long numberOfPages;
 		const wchar_t **pages = ManPages_getTitles (manPages, & numberOfPages);
 		LIST (L"Page", manPages -> pages -> size, pages, 1)
@@ -93,13 +94,13 @@ static int menu_cb_searchForPageList (EDITOR_ARGS) {
 
 static void destroy (I) {
 	iam (Manual);
-	ManPages pages = my data;
+	ManPages pages = (structManPages*)my data;
 	if (pages && pages -> dynamic) forget (pages);
 	inherited (Manual) destroy (me);
 }
 
 static void draw (Manual me) {
-	ManPages manPages = my data;
+	ManPages manPages = (structManPages*)my data;
 	ManPage page;
 	ManPage_Paragraph paragraph;
 	#if motif
@@ -111,13 +112,13 @@ static void draw (Manual me) {
 		HyperPage_intro (me, L"The best matches to your query seem to be:");
 		for (i = 1; i <= my numberOfMatches; i ++) {
 			wchar_t link [300];
-			page = manPages -> pages -> item [my matches [i]];
+			page = (structManPage*)manPages -> pages -> item [my matches [i]];
 			swprintf (link, 300, L"\\bu @@%ls", page -> title);
 			HyperPage_listItem (me, link);
 		}
 		return;
 	}
-	page = manPages -> pages -> item [my path];
+	page = (structManPage*)manPages -> pages -> item [my path];
 	if (! my paragraphs) return;
 	HyperPage_pageTitle (me, page -> title);
 	for (paragraph = & page -> paragraphs [0]; paragraph -> type != 0; paragraph ++) {
@@ -199,7 +200,7 @@ static void draw (Manual me) {
 
 static void print (I, Graphics graphics) {
 	iam (Manual);
-	ManPages manPages = my data;
+	ManPages manPages = (structManPages*)my data;
 	long numberOfPages = manPages -> pages -> size, savePage = my path;
 	my ps = graphics;
 	Graphics_setDollarSignIsCode (my ps, TRUE);
@@ -207,7 +208,7 @@ static void print (I, Graphics graphics) {
 	my printing = TRUE;
 	HyperPage_initSheetOfPaper ((HyperPage) me);
 	for (long ipage = 1; ipage <= numberOfPages; ipage ++) {
-		ManPage page = manPages -> pages -> item [ipage];
+		ManPage page = (structManPage*)manPages -> pages -> item [ipage];
 		if (my printPagesStartingWith == NULL ||
 		    Melder_stringMatchesCriterion (page -> title, kMelder_string_STARTS_WITH, my printPagesStartingWith))
 		{
@@ -243,7 +244,7 @@ static int menu_cb_printRange (EDITOR_ARGS) {
 		INTEGER (L"First page number", L"1")
 		BOOLEAN (L"Suppress \"Links to this page\"", FALSE)
 	EDITOR_OK
-		ManPages manPages = my data;
+		ManPages manPages = (structManPages*)my data;
 		time_t today = time (NULL);
 		char dateA [50];
 		#ifdef UNIX
@@ -258,7 +259,7 @@ static int menu_cb_printRange (EDITOR_ARGS) {
 		SET_STRING (L"Right or outside header", my name)
 		if (my pageNumber) SET_INTEGER (L"First page number", my pageNumber + 1)
 		if (my path >= 1 && my path <= manPages -> pages -> size) {
-			ManPage page = manPages -> pages -> item [my path];
+			ManPage page = (structManPage*)manPages -> pages -> item [my path];
 			SET_STRING (L"Print pages starting with", page -> title);
 		}
 	EDITOR_DO
@@ -282,7 +283,7 @@ static double *goodnessOfMatch;
 
 static double searchToken (ManPages me, long ipage, wchar_t *token) {
 	double goodness = 0.0;
-	ManPage page = my pages -> item [ipage];
+	ManPage page = (structManPage*)my pages -> item [ipage];
 	struct structManPage_Paragraph *par = & page -> paragraphs [0];
 	if (! token [0]) return 1.0;
 	/*
@@ -318,7 +319,7 @@ static double searchToken (ManPages me, long ipage, wchar_t *token) {
 }
 
 static void search (Manual me, const wchar_t *query) {
-	ManPages manPages = my data;
+	ManPages manPages = (structManPages*)my data;
 	long numberOfPages = manPages -> pages -> size, ipage, imatch;
 	static MelderString searchText = { 0 };
 	wchar_t *p;
@@ -369,7 +370,7 @@ void Manual_search (Manual me, const wchar_t *query) {
 static void gui_button_cb_home (I, GuiButtonEvent event) {
 	(void) event;
 	iam (Manual);
-	ManPages pages = my data;
+	ManPages pages = (structManPages*)my data;
 	long iHome = ManPages_lookUp (pages, L"Intro");
 	HyperPage_goToPage_i (me, iHome ? iHome : 1);
 }
@@ -377,8 +378,8 @@ static void gui_button_cb_home (I, GuiButtonEvent event) {
 static void gui_button_cb_record (I, GuiButtonEvent event) {
 	(void) event;
 	iam (Manual);
-	ManPages manPages = my data;
-	ManPage manPage = my path < 1 ? NULL : manPages -> pages -> item [my path];
+	ManPages manPages = (structManPages*)my data;
+	ManPage manPage = (structManPage*)(my path < 1 ? NULL : manPages -> pages -> item [my path]);
 	GuiObject_setSensitive (my recordButton, false);
 	GuiObject_setSensitive (my playButton, false);
 	GuiObject_setSensitive (my publishButton, false);
@@ -431,7 +432,7 @@ static void gui_cb_search (GUI_ARGS) {
 }
 
 static void createChildren (Manual me) {
-	ManPages pages = my data;   /* Has been installed here by Editor_init (). */
+	ManPages pages = (structManPages*)my data;   /* Has been installed here by Editor_init (). */
 #if defined (macintosh)
 	#define STRING_SPACING 8
 #else
@@ -482,12 +483,12 @@ static void createHelpMenuItems (Manual me, EditorMenu menu) {
 
 static void defaultHeaders (EditorCommand cmd) {
 	Manual me = (Manual) cmd -> editor;
-	ManPages manPages = my data;
+	ManPages manPages = (structManPages*)my data;
 	if (my path) {
 		wchar_t string [400];
 		static const wchar_t *month [] =
 			{ L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun", L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec" };
-		ManPage page = manPages -> pages -> item [my path];
+		ManPage page = (structManPage*)manPages -> pages -> item [my path];
 		long date = page -> date;
 		SET_STRING (L"Right or outside header", page -> title)
 		SET_STRING (L"Left or inside footer", page -> author)
@@ -499,7 +500,7 @@ static void defaultHeaders (EditorCommand cmd) {
 }
 
 static long getNumberOfPages (Manual me) {
-	ManPages manPages = my data;
+	ManPages manPages = (structManPages*)my data;
 	return manPages -> pages -> size;
 }
 
@@ -508,7 +509,7 @@ static long getCurrentPageNumber (Manual me) {
 }
 
 static int goToPage_i (Manual me, long i) {
-	ManPages manPages = my data;
+	ManPages manPages = (structManPages*)my data;
 	ManPage page;
 	ManPage_Paragraph par;
 	if (i < 1 || i > manPages -> pages -> size) {
@@ -519,7 +520,7 @@ static int goToPage_i (Manual me, long i) {
 		} else return Melder_error3 (L"Page ", Melder_integer (i), L" not found.");
 	}
 	my path = i;
-	page = manPages -> pages -> item [my path];
+	page = (structManPage*)manPages -> pages -> item [my path];
 	my paragraphs = page -> paragraphs;
 	my numberOfParagraphs = 0;
 	par = my paragraphs;
@@ -530,7 +531,7 @@ static int goToPage_i (Manual me, long i) {
 }
 
 static int goToPage (Manual me, const wchar_t *title) {
-	ManPages manPages = my data;
+	ManPages manPages = (structManPages*)my data;
 	if (title [0] == '\\' && title [1] == 'F' && title [2] == 'I') {
 		structMelderFile file = { 0 };
 		MelderDir_relativePathToFile (& manPages -> rootDirectory, title + 3, & file);
@@ -540,8 +541,6 @@ static int goToPage (Manual me, const wchar_t *title) {
 		structMelderDir saveDir = { { 0 } };
 		Melder_getDefaultDir (& saveDir);
 		Melder_setDefaultDir (& manPages -> rootDirectory);
-		void praat_background (void);   // BUG
-		void praat_foreground (void);   // BUG
 		praat_background ();
 		if (! praat_executeScriptFromFileNameWithArguments (title + 3)) {
 			praat_foreground ();
@@ -581,7 +580,7 @@ class_methods (Manual, HyperPage) {
 }
 
 int Manual_init (Manual me, GuiObject parent, const wchar_t *title, Any data) {
-	ManPages manPages = data;
+	ManPages manPages = (structManPages*)data;
 	wchar_t windowTitle [101];
 	long i;
 	ManPage page;
@@ -589,7 +588,7 @@ int Manual_init (Manual me, GuiObject parent, const wchar_t *title, Any data) {
 	if (! (i = ManPages_lookUp (manPages, title)))
 		return Melder_error3 (L"Page \"", title, L"\" not found.");
 	my path = i;
-	page = manPages -> pages -> item [i];
+	page = (structManPage*)manPages -> pages -> item [i];
 	my paragraphs = page -> paragraphs;
 	my numberOfParagraphs = 0;
 	par = my paragraphs;

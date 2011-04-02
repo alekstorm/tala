@@ -882,14 +882,14 @@ char * MelderFile_readLine (MelderFile me) {
 	}
 	for (i = 0; 1; i ++) {
 		int c;
-		if (i >= capacity && ! (buffer = Melder_realloc_e (buffer, capacity *= 2))) {
+		if (i >= capacity && ! (buffer = (char*)Melder_realloc_e (buffer, capacity *= 2))) {
 			Melder_error ("(MelderFile_readLine:) No memory to extend string buffer to %ld bytes.", capacity);
 			/*
 			 * If the buffer overflows the available memory,
 			 * half the buffer will also be quite large!
 			 * So shrink it.
 			 */
-			buffer = Melder_realloc_f (buffer, capacity = 100);
+			buffer = (char*)Melder_realloc_f (buffer, capacity = 100);
 			fclose (my filePointer);
 			my filePointer = NULL;
 			return NULL;

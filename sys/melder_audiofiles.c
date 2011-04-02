@@ -183,7 +183,7 @@ end:
 }
 
 static wchar_t *audioFileTypeString [] = { L"none", L"AIFF", L"AIFC", L"WAV", L"NeXT/Sun", L"NIST", L"Sound Designer II", L"FLAC", L"MP3" };
-wchar_t * Melder_audioFileTypeString (int audioFileType) { return audioFileType > Melder_NUMBER_OF_AUDIO_FILE_TYPES ? L"unknown" : audioFileTypeString [audioFileType]; }
+wchar_t * Melder_audioFileTypeString (int audioFileType) { return (wchar_t*)(audioFileType > Melder_NUMBER_OF_AUDIO_FILE_TYPES ? L"unknown" : audioFileTypeString [audioFileType]); }
 static wchar_t *macAudioFileType [1+Melder_NUMBER_OF_AUDIO_FILE_TYPES]
 	= { L"", L"AIFF", L"AIFC", L"WAVE", L"ULAW", L"NIST", L"Sd2f", L"FLAC", L"MP3" };
 wchar_t * Melder_macAudioFileType (int audioFileType) { return macAudioFileType [audioFileType]; }
@@ -510,7 +510,7 @@ static int Melder_checkNextSunFile (FILE *f, int *numberOfChannels, int *encodin
 }
 
 static int nistGetValue (const char *header, const char *object, double *rval, char *sval) {
-	char obj [30], type [10], *match = strstr (header, object);
+	char obj [30], type [10], *match = (char*)strstr (header, object);
 	if (! match) return 0;
 	if (sscanf (match, "%s%s%s", obj, type, sval) != 3) return 0;
 	if (strequ (type, "-i") || strequ (type, "-r")) *rval = atof (sval);

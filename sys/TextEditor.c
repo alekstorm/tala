@@ -102,7 +102,7 @@ static void classTextEditor_nameChanged (I) {
 static int openDocument (TextEditor me, MelderFile file) {
 	if (theOpenTextEditors) {
 		for (long ieditor = 1; ieditor <= theOpenTextEditors -> size; ieditor ++) {
-			TextEditor editor = theOpenTextEditors -> item [ieditor];
+			TextEditor editor = (structTextEditor*)theOpenTextEditors -> item [ieditor];
 			if (editor != me && MelderFile_equal (file, & editor -> file)) {
 				Editor_raise (TextEditor_as_Editor (editor));
 				Melder_error3 (L"Text file ", MelderFile_messageName (file), L" is already open.");

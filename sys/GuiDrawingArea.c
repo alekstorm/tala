@@ -284,12 +284,12 @@ GuiObject GuiDrawingArea_create (GuiObject parent, int left, int right, int top,
 	my resizeBoss = boss;
 	#if gtk
 		my widget = gtk_drawing_area_new ();
-		GdkEventMask mask = GDK_EXPOSURE_MASK; // receive exposure events
+		int mask = GDK_EXPOSURE_MASK; // receive exposure events
 		mask |= GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK; // receive click events
 		mask |= GDK_BUTTON_MOTION_MASK;        // receive motion notifies when a button is pressed
 		mask |= GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK;
 		mask |= GDK_POINTER_MOTION_HINT_MASK;  // receive fewer motion notify events (the cb might take time)
-		gtk_widget_set_events (my widget, mask);
+		gtk_widget_set_events (my widget, (GdkEventMask)mask);
 		// TODO: maybe make this a composite widget and use connect_after for expose?
 		// see http://library.gnome.org/devel/gdk/stable/gdk-Windows.html#COMPOSITED-WINDOWS
 		g_signal_connect (G_OBJECT(my widget), "expose-event",
@@ -353,7 +353,7 @@ GuiObject GuiDrawingArea_createShown (GuiObject parent, int left, int right, int
 }
 
 void GuiDrawingArea_setExposeCallback (GuiObject widget, void (*callback) (void *boss, GuiDrawingAreaExposeEvent event), void *boss) {
-	GuiDrawingArea me = _GuiObject_getUserData (widget);
+	GuiDrawingArea me = (structGuiDrawingArea*)_GuiObject_getUserData (widget);
 	if (me != NULL) {
 		my exposeCallback = callback;
 		my exposeBoss = boss;
@@ -361,7 +361,7 @@ void GuiDrawingArea_setExposeCallback (GuiObject widget, void (*callback) (void 
 }
 
 void GuiDrawingArea_setClickCallback (GuiObject widget, void (*callback) (void *boss, GuiDrawingAreaClickEvent event), void *boss) {
-	GuiDrawingArea me = _GuiObject_getUserData (widget);
+	GuiDrawingArea me = (structGuiDrawingArea*)_GuiObject_getUserData (widget);
 	if (me != NULL) {
 		my clickCallback = callback;
 		my clickBoss = boss;

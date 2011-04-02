@@ -98,7 +98,7 @@ void UiInfile_do (I) {
 		return;
 	}
 	for (long ifile = 1; ifile <= infileNames -> size; ifile ++) {
-		SimpleString infileName = infileNames -> item [ifile];
+		SimpleString infileName = (structSimpleString*)infileNames -> item [ifile];
 		Melder_pathToFile (infileName -> string, & my file);
 		UiHistory_write (L"\n");
 		UiHistory_write (my invokingButtonTitle);
