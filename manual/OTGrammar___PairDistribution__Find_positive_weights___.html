@@ -1,0 +1,34 @@
+<html><head><meta name="robots" content="index,follow">
+<title>OTGrammar & PairDistribution: Find positive weights...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+OTGrammar & PairDistribution: Find positive weights...
+</b></font></table></table>
+<p>
+A command to change the weights of the selected <a href="OTGrammar.html">OTGrammar</a> on the basis of the language data in the selected <a href="PairDistribution.html">PairDistribution</a>.</p>
+<p>
+This command works only if the decision strategy of the selected OTGrammar is HarmonicGrammar, LinearOT, PositiveHG, or ExponentialHG. Also, the selected PairDistribution must contain exactly one non-zero-probability output for every possible input of the grammar.</p>
+<p>
+The procedure follows the linear programming method by <a href="Pater__Potts___Bhatt__2007_.html">Pater, Potts & Bhatt (2007)</a>. This method tries to find a special correct weighting of the constraints, namely one that minimizes the sum of the constraint weights.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Weight floor</b> (standard value: 1.0)
+<dd>
+After the command finishes, every weight will have at least this value.
+<dt>
+<b>Margin of separation</b> (standard value: 1.0)
+<dd>
+After the command finishes, the harmony of every optimal (and correct) output candidate will be at least this much greater than the harmony of any competitor in the same tableau.
+</dl>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, March 31, 2008</p>
+</address>
+</body>
+</html>

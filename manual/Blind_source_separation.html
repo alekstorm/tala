@@ -1,0 +1,56 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Blind source separation</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Blind source separation
+</b></font></table></table>
+<p>
+Blind source separation (BSS) is a technique for estimating individual source components from their mixtures at multiple sensors. It is called <i>blind</i> because we don't use any other information besides the mixtures. </p>
+<p>
+For example, imagine a room with a number of persons present and a number of microphones for recording. When one or more persons are speaking at the same time, each microphone registers a different <i>mixture</i> of individual speaker's audio signals. It is the task of BSS to untangle these mixtures into their sources, i.e. the individual speaker's audio signals. In general, this is a difficult problem because of several complicating factors. </p>
+<ul>
+<li>
+&nbsp;Different locations of speakers and microphones in the room: the individual speaker's audio signals do not reach all microphones at the same time. 
+<li>
+&nbsp;Room acoustics: the signal that reaches a microphone is composed of the signal that <i>directly</i> travels to the microphone and parts that come from room reverberations and echos. 
+<li>
+&nbsp;Varying distances to microphones: one ore more speakers might be moving. This makes the mixing time dependent.
+</ul>
+<p>
+If the number of sources is <i>larger</i> than the number of sensors we speak of an <i>overdetermined</i> problem. If the number of sensors and the number of sources are <i>equal</i> we speak of a <i>determined</i> problem. The more difficult problem is the <i>underdetermined</i> one where the number of sensors is <i>less</i> than the number of sources. </p>
+<h3>
+Typology of mixtures</h3>
+<p>
+In general two different types of mixtures are considered in the literature: <i>instantaneous mixtures</i> and <i>convolutive mixtures</i>. </p>
+<dl>
+<dt>
+<i>Instantaneous mixtures</i>
+<dd>
+where the mixing is instantaneous, corresponds to the model <b>Y</b>=<b>A</b>&#183;<b>X</b>. In this model <b>Y</b> is a matrix with the recorded microphone sounds, <b>A</b> is a so-called <i>mixing matrix</i> and <b>X</b> is a matrix with the independent source signals. Essentially the model says that the signal that each microphone records is a (possibly different) linear combination of the <i>same</i> source signals.  If we would know the mixing matrix <b>A</b> we could easily solve the model above for <b>X</b> by standard means. However, in general we don't know <b>A</b> and <b>X</b> and there are an infinite number of possible decompositions for <b>Y</b>. The problem is however solvable by making some (mild) assumptions about <b>A</b> and <b>X</b>. 
+<dt>
+<i>Convolutive mixtures</i>
+<dd>
+are mixtures where the mixing is of convolutive nature, i.e. the model is 
+</dl>
+<table width="100%"><tr><td align=middle>
+<i>y<sub>i</sub> (n)</i> = &#931;<sub><i>j</sub></i><sup><i>d</i></sup>&#931;<sub><i></i>&#964;</sub><sup>M<sub><i>ij</sub></i>-1</sup> <i>h<sub>ij</sub>(&#964;)x<sub>j</sub>(n-&#964;) + N<sub>i</sub>(n)</i>, for <i>i</i>=1..m.</table>
+<dl>
+<dd>
+Here <i>y<sub>i</sub> (n) is the </i>n-th sample of the <i>i</i>-th microphone signal, <i>m</i> is the number of microphones, <i>h<sub>ij</sub>(&#964;)</i> is the multi-input multi-output linear filter with the source-microphone impulse responses that characterize the propagation of the sound in the room and <i>N<sub>i</sub></i> is a noise source. This model is typically much harder to solve than the previous one because of the <i>h<sub>ij</sub>(&#964;)</i> filter term that can have thousands of coefficients. For example, the typical <a href="reverberation_time.html">reverberation time</a> of a room is approximately 0.3 s which corresponds to 2400 samples, i.e. filter coefficients, for an 8 kHz sampled sound.
+</dl>
+<h3>
+Solving the blind source separation for instantaneous mixtures</h3>
+<p>
+Various techniques exist for solving the blind source separation problem for <i>instantaneous</i> mixtures. Very popular ones make make use of second order statistics (SOS) by trying to simultaneously diagonalize a large number of cross-correlation matrices. Other techniques like independent component analysis use higher order statistics (HOS) to find the independent components, i.e. the sources.</p>
+<p>
+Given the decomposition problem <b>Y</b>=<b>A</b>&#183;<b>X</b>, we can see that the solution is determined only upto a permutation and a scaling of the components. This is called the <i>indeterminancy problem</i> of BSS. This can be seen as follows: given a permutation matrix <b>P</b>, i.e. a matrix which contains only zeros except for one 1 in every row and column, and a diagonal scaling matrix <b>D</b>, any scaling and permutation of the independent components <b>X</b><sub><i>n</sub></i>=(<b>D</b>&#183;<b>P</b>)&#183;<b>X</b> can be compensated by the reversed scaling of the mixing matrix <b>A</b><sub><i>n</sub></i>=<b>A</b>&#183;(<b>D</b>&#183;<b>P</b>)<sup>-1</sup> because <b>A</b>&#183;(<b>D</b>&#183;<b>P</b>)<sup>-1</sup>&#183;(<b>D</b>&#183;<b>P</b>)&#183;<b>X</b> = <b>A</b>&#183;<b>X</b> = <b>Y</b>. </p>
+<h3>
+Solving the blind source separation for convolutive mixtures</h3>
+<p>
+Solutions for <i>convolutive</i> mixture problems are much harder to achieve. One normally starts by transforming the problem to the frequency domain where the convolution is turned into a multiplication. The problem then translates into a separate <i>instantaneous</i> mixing problem for <i>each</i> frequency in the frequency domain. It is here that the indeterminacy problem hits us because it is not clear beforehand how to combine the independent components of each frequency bin.</p>
+<hr>
+<address>
+	<p>&copy; djmw, January 13, 2011</p>
+</address>
+</body>
+</html>

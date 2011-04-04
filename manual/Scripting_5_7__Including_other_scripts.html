@@ -1,0 +1,48 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 5.7. Including other scripts</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 5.7. Including other scripts
+</b></font></table></table>
+<p>
+You can include other scripts within your script:</p>
+<code>
+a = 5<br></code>
+<code>
+include square.praat<br></code>
+<code>
+echo 'a'<br></code>
+<p>
+The Info window will show the result 25 if the file square.praat is as follows:</p>
+<code>
+a = a * a<br></code>
+<p>
+The inclusion is done before any other part of the script is considered, so you can use the <b>form</b> statement and all variables in it. Usually, however, you will put some procedure definitions in the include file, that is what it seems to be most useful for. Watch out, however, for using variable names in the include file: the example above shows that there is no such thing as a separate name space.</p>
+<p>
+Since including other scripts is the first thing Praat will do when considering a script, you cannot use variable substitution. For instance, the following will not work:</p>
+<code>
+scriptName$ = "myscript.praat"<br></code>
+<code>
+#This will *not* work:<br></code>
+<code>
+include 'scriptName$'<br></code>
+<code>
+#That did *not* work!!!<br></code>
+<p>
+You can use full or relative file names. For instance, the file square.praat is expected to be in the same directory as the script that says <i>include square.praat</i>. If you use the ScriptEditor, you will first have to save the script that you are editing before any relative file names become meaningful (this is the same as with other uses of relative file names in scripts).</p>
+<p>
+You can <i>nest</i> include files, i.e., included scripts can include other scripts. However, relative file names are always evaluated relative to the directory of the outermost script.</p>
+<p>
+The <b>include</b> statement can only be at the start of a line: you cannot put any spaces in front of it.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_5__Language_elements_reference.html">Scripting 5. Language elements reference</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, May 30, 2008</p>
+</address>
+</body>
+</html>

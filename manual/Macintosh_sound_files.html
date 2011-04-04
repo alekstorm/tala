@@ -1,0 +1,34 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Macintosh sound files</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Macintosh sound files
+</b></font></table></table>
+<p>
+A way for storing a <a href="Sound.html">Sound</a> object on disk.</p>
+<h3>
+File format</h3>
+<p>
+The double-clickable sound file of the Macintosh (8 bits per sample). Cannot be ported to other machines, because the sound is in the <a href="Resource_fork.html">resource fork</a>.</p>
+<h3>
+Reading</h3>
+<p>
+With <a href="Read_from_file___.html">Read from file...</a>.</p>
+<p>
+To read a Sound from a Macintosh sound file on disk, use <a href="Read_from_file___.html">Read from file...</a> (Macintosh only).</p>
+<p>
+The 8-bit sample values are divided by 128 so that the amplitude of the resulting Sound is between &#8211;1.0 and +1.0.</p>
+<p>
+The resulting Sound will appear in the list of objects; its name will be equal to the file name, without extension.</p>
+<h3>
+Saving</h3>
+<p>
+With <b>Save as Mac sound file...</b>. Praat asks you for a file name. After you click OK, 0.5 is added to the samples of the Sound, they are multiplied by 128 and quantized between 0 and 255; the result is written to the file in 8-bit linear Macintosh sound-file format.</p>
+<p>
+To avoid clipping, keep the absolute amplitude below 1.000. If the maximum sound pressure level is 91 dB (top = 127), the quantization threshold for a sine wave is (top = 1/2) 43 dB.</p>
+<hr>
+<address>
+	<p>&copy; ppgb, January 31, 2011</p>
+</address>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 7.2. Scripting an editor from within</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 7.2. Scripting an editor from within
+</b></font></table></table>
+<p>
+This section will show how you can permanently extend the functionality of an editor.</p>
+<p>
+As an example, consider the following problem: you want to see a graphic representation of the spectrum of the sound around the cursor position in the SoundEditor. To achieve this, follow these steps:</p>
+<dl>
+<dd>
+1. Create a Sound.
+<dd>
+2. View it in a SoundEditor by clicking <a href="View___Edit.html">View & Edit</a>.
+<dd>
+3. Choose <b>New editor script</b> from the <a href="File_menu.html">File menu</a> in the SoundEditor. The resulting <a href="ScriptEditor.html">ScriptEditor</a> will have a name like "untitled script [Sound hallo]".
+<dd>
+4. Type the following lines into the ScriptEditor:
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+cursor = Get cursor<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Select... cursor-0.02 cursor+0.02<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Extract windowed selection... slice Kaiser2 2 no<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>endeditor</b><br></code>
+<code>&nbsp;&nbsp;&nbsp;
+To Spectrum... yes<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+View &amp; Edit<br></code>
+<p>
+If you choose <b>Run</b> from the <b>Run</b> menu in the ScriptEditor, a region of 40 milliseconds around the current cursor position in the SoundEditor will become selected. This piece will be copied to the list of objects, after applying a double Kaiser window (total length 80 ms). Thus, a Sound named "slice" will appear in the list. Subsequently, a Spectrum object also called "slice" will appear in the list, and a SpectrumEditor titled "Spectrum slice" will finally appear on your screen.</p>
+<dl>
+<dd>
+5. Save the script to disk, e.g. as /us/miep/spectrum.praat. The title of the ScriptEditor will change accordingly.
+<dd>
+6. Since you will want this script to be available in all future SoundEditors, you choose <b>Add to menu...</b> from the <b>File</b> menu. For the <i>Window</i>, you specify "SoundEditor" (this is preset). For the <i>Menu</i>, you may want to choose "Spectrum" instead of the preset value ("File"). For the name of the <i>Command</i>, you type something like "Show spectrum at cursor" (instead of "Do it..."). Then you click <b>OK</b>.
+</dl>
+<p>
+The command will be visible in every SoundEditor that you create from now on. To see this, close the one visible SoundEditor, select the original Sound, choose <b>View &amp; Edit</b> again, and inspect the <b>Spectrum</b> menu. You can now view the spectrum around the cursor just by choosing this menu command.</p>
+<p>
+After you leave Praat and start it again, the command will continue to appear in the SoundEditor. If you don't like the command any longer, you can remove it with the <a href="ButtonEditor.html">ButtonEditor</a>, which you can start by choosing <b>Buttons</b> from the <b>Preferences</b> submenu of the <a href="Praat_menu.html">Praat menu</a>.</p>
+<h3>
+Improving your script</h3>
+<p>
+The above spectrum-viewing example has a number of disadvantages. It clutters the object list with a number of indiscriminable Sounds and Spectra called "slice", and the spectrum is shown up to the Nyquist frequency while we may just be interested in the lower 5000 Hz. Furthermore, the original selection in the SoundEditor is lost.</p>
+<p>
+To improve the script, we open it again with <b>Open editor script...</b> from the <b>File</b> menu in the SoundEditor. After every change, we can run it with <b>Run</b> from the <b>Run</b> menu again; alternatively, we could save it (with <b>Save</b> from the <b>File</b> menu) and choose our new "Show spectrum at cursor" button (this button will always run the version on disk, never the one viewed in a ScriptEditor).</p>
+<p>
+To zoom in on the first 5000 Hz, we add the following code at the end of our script:</p>
+<code>
+<b>editor</b> Spectrum slice<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Zoom... 0 5000<br></code>
+<p>
+To get rid of the "Sound slice", we can add:</p>
+<code>
+<b>endeditor</b><br></code>
+<code>
+<b>select</b> Sound slice<br></code>
+<code>
+Remove<br></code>
+<p>
+Note that <b></b><code>endeditor</code> is needed to change from the environment of a SpectrumEditor to the environment of the object &amp; picture windows.</p>
+<p>
+If you now choose the "Show spectrum at cursor" button for several cursor positions, you will notice that all those editors have the same name. To remedy the ambiguity of the line <code><b>editor</b> Spectrum slice</code>, we give each slice a better name. For example, if the cursor was at 635 milliseconds, the slice could be named "635ms". We can achieve this by changing the extraction in the following way:</p>
+<code>
+milliseconds = round (cursor*1000)<br></code>
+<code>
+Extract windowed selection... 'milliseconds'ms Kaiser2 2 no<br></code>
+<p>
+The names of the Sound and Spectrum objects will now have more chance of being unique. Two lines will have to be edited trivially.</p>
+<p>
+Finally, we will reset the selection to the original. At the top of the script, we add two lines to remember the positions of the selection markers:</p>
+<code>
+start = Get start of selection<br></code>
+<code>
+end = Get end of selection<br></code>
+<p>
+At the bottom, we reset the selection:</p>
+<code>
+<b>editor</b><br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Select... start end<br></code>
+<p>
+Note that the <b></b><code>editor</code> directive if not followed by the name of an editor, returns the script to the original environment.</p>
+<p>
+The complete script is:</p>
+<code>&nbsp;&nbsp;&nbsp;
+start = Get start of selection<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+end = Get end of selection<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+cursor = Get cursor<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Select... cursor-0.02 cursor+0.02<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+# Create a name. E.g. "670ms" means at 670 milliseconds.<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+milliseconds = round (cursor*1000)<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Extract windowed selection... 'milliseconds'ms Kaiser2 2 no<br></code>
+<code>
+<b>endeditor</b><br></code>
+<code>
+To Spectrum... yes<br></code>
+<code>
+View &amp; Edit<br></code>
+<code>
+<b>editor</b> Spectrum 'milliseconds'ms<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Zoom... 0 5000<br></code>
+<code>
+<b>endeditor</b><br></code>
+<code>
+<b>select</b> Sound 'milliseconds'ms<br></code>
+<code>
+Remove<br></code>
+<code>
+<b>editor</b><br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Select... start end<br></code>
+<p>
+This script is useful as it stands. It is good enough for safe use. For instance, if the created Sound object has the same name as an already existing Sound object, it will be the newly created Sound object that will be removed in the <code>Remove</code> line, because <b></b><code>select</code> always selects the most recently created object in case of ambiguity.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_7__Scripting_the_editors.html">Scripting 7. Scripting the editors</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 28, 2011</p>
+</address>
+</body>
+</html>

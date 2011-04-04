@@ -1,0 +1,26 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Get high index from time...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Get high index from time...
+</b></font></table></table>
+<p>
+A <a href="Query.html">query</a> to ask the selected tier object (<a href="DurationTier.html">DurationTier</a>, <a href="IntensityTier.html">IntensityTier</a>, <a href="PitchTier.html">PitchTier</a>) which point is nearest to, but no earlier than, the specified time.</p>
+<h3>
+Setting</h3>
+<dl>
+<dt>
+<b>Time (s)</b>
+<dd>
+the time from which you want to get the point index.
+</dl>
+<h3>
+Return value</h3>
+<p>
+This query returns the index of the point with the lowest time greater than or equal to <b>Time</b>. It is <a href="undefined.html">undefined</a> if there are no points. It is the number of points plus 1 (offright) if the specified time is greater than the time of the last point.</p>
+<hr>
+<address>
+	<p>&copy; ppgb, December 30, 2010</p>
+</address>
+</body>
+</html>

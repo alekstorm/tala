@@ -743,8 +743,6 @@ void praat_HMM_init (void)
 	praat_addAction1 (classStrings, 0, L"To HMM_ObservationSequence", 0, praat_HIDDEN, DO_Strings_to_HMM_ObservationSequence);
 	praat_addAction1 (classTableOfReal, 0, L"To GaussianMixture (row labels)...", L"To Covariance", praat_HIDDEN + praat_DEPTH_1, DO_TableOfReal_to_GaussianMixture_fromRowlabels);
 	praat_addAction1 (classTableOfReal, 0, L"To GaussianMixture...", L"To Covariance", praat_HIDDEN + praat_DEPTH_1, DO_TableOfReal_to_GaussianMixture);
-
-	INCLUDE_MANPAGES (manual_HMM)
 }
 
 /* End of file praat_HMM_init.c */

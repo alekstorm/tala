@@ -1,0 +1,30 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Eigen & Matrix: Project...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Eigen & Matrix: Project...
+</b></font></table></table>
+<p>
+A command to project the columns of the <a href="Matrix.html">Matrix</a> object onto the eigenspace of the <a href="Eigen.html">Eigen</a> object.</p>
+<h3>
+Setting</h3>
+<dl>
+<dt>
+<b>Number of dimensions</b>
+<dd>
+defines the dimension, i.e., the number of rows, of the resulting object.
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+Project each column of the Matrix on the coordinate system given by the eigenvectors of the Eigen object. This can be done as follows:</p>
+<table width="100%"><tr><td align=middle>
+<i>y</i><sub><i>ji</sub></i> = &#931;<sub><i>k</i>=1..<i>numberOfColums</sub></i> <i>e</i><sub>jk</sub> <i>x</i><sub><i>ki</sub></i>, where</table>
+<p>
+<i>y</i><sub><i>ji</sub></i> is the <i>j</i>-th element of the <i>i</i>-th column of the resulting (matrix) object, <i>e</i><sub><i>jk</sub></i> is the <i>k</i>-th element of the <i>j</i>-th eigenvector and, <i>x</i><sub><i>ki</sub></i> is the <i>k</i>-th element of the <i>i</i>-th column of the selected matrix object.</p>
+<hr>
+<address>
+	<p>&copy; djmw, April 7, 2004</p>
+</address>
+</body>
+</html>

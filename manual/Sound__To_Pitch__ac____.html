@@ -1,0 +1,91 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: To Pitch (ac)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: To Pitch (ac)...
+</b></font></table></table>
+<p>
+A command that creates a <a href="Pitch.html">Pitch</a> object from every selected <a href="Sound.html">Sound</a> object.</p>
+<h3>
+Purpose</h3>
+<p>
+to perform a pitch analysis based on an autocorrelation method.</p>
+<h3>
+Usage</h3>
+<p>
+Normally, you will instead use <a href="Sound__To_Pitch___.html">Sound: To Pitch...</a>, which uses the same method. The command described here is mainly for experimenting with the parameters, or for the analysis of non-speech signals, which may require different standard settings of the parameters.</p>
+<h3>
+Algorithm</h3>
+<p>
+The algorithm performs an acoustic periodicity detection on the basis of an accurate autocorrelation method, as described in <a href="Boersma__1993_.html">Boersma (1993)</a>. This method is more accurate, noise-resistant, and robust, than methods based on cepstrum or combs, or the original autocorrelation methods. The reason why other methods were invented, was the failure to recognize the fact that if you want to estimate a signal's short-term autocorrelation function on the basis of a windowed signal, you should divide the autocorrelation function of the windowed signal by the autocorrelation function of the window:</p>
+<p>
+<i>r</i><sub><i>x</sub></i> (<i></i>&#964;) &#8776; <i>r</i><sub><i>xw</sub></i> (<i></i>&#964;) / <i>r</i><sub><i>w</sub></i> (<i></i>&#964;)</p>
+<h3>
+Settings</h3>
+<p>
+The settings that control the recruitment of the candidates are:</p>
+<dl>
+<dt>
+<b>Time step (s)</b> (standard value: 0.0)
+<dd>
+the measurement interval (frame duration), in seconds. If you supply 0, Praat will use a time step of 0.75 / (<i>pitch floor</i>), e.g. 0.01 seconds if the pitch floor is 75 Hz; in this example, Praat computes 100 pitch values per second.
+<dt>
+<b>Pitch floor (Hz)</b> (standard value: 75 Hz)
+<dd>
+candidates below this frequency will not be recruited. This parameter determines the effective length of the analysis window: it will be 3 longest periods long, i.e., if the pitch floor is 75 Hz, the window will be effectively 3/75 = 0.04 seconds long.
+</dl>
+<p>
+Note that if you set the time step to zero, the analysis windows for consecutive measurements will overlap appreciably: Praat will always compute 4 pitch values within one window length, i.e., the degree of <i>oversampling</i> is 4.</p>
+<dl>
+<dt>
+<b>Very accurate</b> (standard value: <i>off</i>)
+<dd>
+if <i>off</i>, the window is a Hanning window with a physical length of  3 / (<i>pitch floor</i>). If <i>on</i>, the window is a Gaussian window with a physical length of  6 / (<i>pitch floor</i>), i.e. twice the effective length.
+</dl>
+<p>
+A post-processing algorithm seeks the cheapest path through the candidates. The settings that determine the cheapest path are:</p>
+<dl>
+<dt>
+<b>Pitch ceiling (Hz)</b> (standard value: 600 Hz)
+<dd>
+candidates above this frequency will be ignored.
+<dt>
+<b>Silence threshold</b> (standard value: 0.03)
+<dd>
+frames that do not contain amplitudes above this threshold (relative to the global maximum amplitude), are probably silent.
+<dt>
+<b>Voicing threshold</b> (standard value: 0.45)
+<dd>
+the strength of the unvoiced candidate, relative to the maximum possible autocorrelation. To increase the number of unvoiced decisions, increase this value.
+<dt>
+<b>Octave cost</b> (standard value: 0.01 per octave)
+<dd>
+degree of favouring of high-frequency candidates, relative to the maximum possible autocorrelation. This is necessary because even (or: especially) in the case of a perfectly periodic signal, all undertones of <i>F</i><sub>0</sub> are equally strong candidates as <i>F</i><sub>0</sub> itself. To more strongly favour recruitment of high-frequency candidates, increase this value.
+<dt>
+<b>Octave-jump cost</b> (standard value: 0.35)
+<dd>
+degree of disfavouring of pitch changes, relative to the maximum possible autocorrelation. To decrease the number of large frequency jumps, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 0.01 s / <i>TimeStep</i> to get the value in the way it is used in the formulas in the article.
+<dt>
+<b>Voiced / unvoiced cost</b> (standard value: 0.14)
+<dd>
+degree of disfavouring of voiced/unvoiced transitions, relative to the maximum possible autocorrelation. To decrease the number of voiced/unvoiced transitions, increase this value. In contrast with what is described in the article, this value will be corrected for the time step: multiply by 0.01 s / <i>TimeStep</i> to get the value in the way it is used in the formulas in the article.
+</dl>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Advanced_pitch_settings___.html">Advanced pitch settings...</a>
+<li><a href="FAQ__Pitch_analysis.html">FAQ: Pitch analysis</a>
+<li><a href="Fast_Fourier_Transform.html">Fast Fourier Transform</a>
+<li><a href="Periodicity_menu.html">Periodicity menu</a>
+<li><a href="PitchEditor.html">PitchEditor</a>
+<li><a href="Sound__To_Pitch__cc____.html">Sound: To Pitch (cc)...</a>
+<li><a href="Sound__To_PointProcess__periodic__cc____.html">Sound: To PointProcess (periodic, cc)...</a>
+<li><a href="Sound__To_PointProcess__periodic__peaks____.html">Sound: To PointProcess (periodic, peaks)...</a>
+<li><a href="Voice_6__Automating_voice_analysis_with_a_script.html">Voice 6. Automating voice analysis with a script</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, September 16, 2003</p>
+</address>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Get frame number from time...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Get frame number from time...
+</b></font></table></table>
+<p>
+A command that becomes available in the <b>Query</b> menu if you select a sound-analysis object that is a function of time and that is evenly sampled in time (<a href="Pitch.html">Pitch</a>, <a href="Formant.html">Formant</a>, <a href="Intensity.html">Intensity</a>, <a href="Harmonicity.html">Harmonicity</a>).</p>
+<p>
+The Info window will tell you the frame number belonging to the time that you specify. The result is presented as a real number.</p>
+<h3>
+Setting</h3>
+<dl>
+<dt>
+<b>Time (s)</b>
+<dd>
+the time (in seconds) for which you want to know the frame number.
+</dl>
+<h3>
+Example</h3>
+<p>
+If the Pitch object has a time step of 10 ms, and the first frame is centred around 18 ms, the frame number associated with a time of 0.1 seconds is 9.2.</p>
+<h3>
+Scripting</h3>
+<p>
+You can use this command to put the nearest frame centre into a script variable:</p>
+<code>
+select Pitch hallo<br></code>
+<code>
+frame = Get frame from time... 0.1<br></code>
+<code>
+nearestFrame = round (frame)<br></code>
+<p>
+In this case, the value will not be written into the Info window. To round down or up, use</p>
+<code>
+leftFrame = floor (frame)<br></code>
+<code>
+rightFrame = ceiling (frame)<br></code>
+<h3>
+Algorithm</h3>
+<p>
+the result is</p>
+<table width="100%"><tr><td align=middle>
+1 + (<i>time</i> &#8211; <i>t</i><sub>1</sub>) / &#916;<i>t</i></table>
+<p>
+where <i>t</i><sub>1</sub> is the time associated with the centre of the first frame, and &#916;<i>t</i> is the time step.</p>
+<h3>
+Details for hackers</h3>
+<p>
+If you select one of the above objects and click <a href="Inspect.html">Inspect</a>, you can see how the relation between frame numbers and times is stored in the object: <i>t</i><sub>1</sub> is the <b>x1</b> attribute, and &#916;<i>t</i> is the <b>dx</b> attribute.</p>
+<hr>
+<address>
+	<p>&copy; ppgb, May 5, 2004</p>
+</address>
+</body>
+</html>

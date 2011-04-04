@@ -1,0 +1,117 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 1. Your first scripts</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 1. Your first scripts
+</b></font></table></table>
+<p>
+This page tells you how to create, run and save a script. To get a feel for how it works, you are advised to try out all the steps.</p>
+<h3>
+1. A minimal script</h3>
+<p>
+Suppose that you want to create a script that allows you to play a selected Sound object twice. You first create an empty script, by choosing <a href="New_Praat_script.html">New Praat script</a> from the <b>Praat</b> menu in the <b>Praat Objects</b> window. A <a href="ScriptEditor.html">ScriptEditor</a> window will appear on your screen:</p>
+<p>
+Select inner viewport... 0.2 5.8 0.2 4-0.2
+Axes... 0 100*5.6 100*(4-0.4) 0
+Paint rectangle... 0.8 0 560 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Paint circle... {1,1,0.25} 40 15 8
+Draw line... 40-7 15 40+7 15
+Paint circle... {0.25,1,0.25} 65 15 8
+Draw rectangle... 65-5 65+5 15-5 15+5
+Helvetica
+Text... 280 centre 15 half untitled script
+Paint rectangle... 0.9 0 560 30 60
+Text... 5 left 45 half File   Edit   Search   Convert   Font   Run   Help
+Draw line... 0 30 560 30
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+Draw rectangle... 0 560 0 360
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+;Text... 50 centre 50 half 'fontSize'
+</p>
+<p>
+In this window, you type</p>
+<code>
+Play<br></code>
+<code>
+Play<br></code>
+<p>
+Now select a Sound in the <b>Praat Objects</b> window. As you expect from selecting a Sound, a <b>Play</b> button will appear in the dynamic menu. If you now choose <b>Run</b> from the <b>Run</b> menu in the ScriptEditor, Praat will play the sound twice. This works because <b>Play</b> is a command that becomes available in the dynamic menu when you select a Sound.</p>
+<h3>
+2. Some more commands</h3>
+<p>
+In the above example, you could use the <b>Play</b> command because that was the text on a button currently available in the dynamic menu. Apart from these selection-dependent (dynamic) commands, you can also use all fixed commands from the menus of the <a href="Object_window.html">Object window</a> and the <a href="Picture_window.html">Picture window</a>. For instance, try the following script:</p>
+<code>
+Erase all<br></code>
+<code>
+Draw inner box<br></code>
+<code>
+Play<br></code>
+<code>
+Play<br></code>
+<code>
+Erase all<br></code>
+<p>
+When you run this script, you'll see a rectangle appear in the <b>Praat Picture</b> window (that's what the command <b>Draw inner box</b> in the <b>Margins</b> menu does), then you'll hear the Sound play tiwce, then you'll see the rectangle disappear from the Picture window (that's what the command <b>Erase all</b> from the <b>Edit</b> menu does).</p>
+<p>
+Here we see that the Praat scripting language is an example of a <i>procedural programming language</i>, which means that the five <i>statements</i> are executed in the order in which they appear in the script, i.e. first <b>Erase all</b>, then <b>Draw inner box</b>, then <b>Play</b> twice, and finally <b>Erase all</b>.</p>
+<h3>
+3. Experimenting with your script</h3>
+<p>
+You don't have to be afraid of making mistakes. Here are a couple that you can try to make.</p>
+<p>
+First, try to run the script when a Sound is not selected (e.g. you create a Pitch object from it and keep that selected, or you throw away the Sound). You will notice that Praat gives you an error message saying <b>The command "Play" is not available for the current selection</b>. Indeed, if you select a Pitch or if you select nothing, then no command <b>Play</b> appears in the dynamic menu, so the script cannot execute it. Note that the commands <b>Erase all</b> and <b>Draw inner box</b> are still available, because they continue to be present in the menus of the Picture window; therefore, the script will execute the first two lines (<code>Erase all </code>and<code> Draw inner box</code>) and stop running at the third line, i.e. at your first<code> Play</code>. The result is that the "box" will stay visible in the Picture window, because the fifth line of the script, which should erase the box, is never executed.</p>
+<p>
+Second, try to mistype a command (there's a good chance you already did it by accident), e.g. write<code> PLay </code>instead of<code> Play</code>, or<code> Draw inner bocks </code>or whatever. Again, you are likely to get a message saying that that command is not available. Such messages are the most common messages that you'll see when writing scripts; now you know that they mean either that you mistyped something or that you made the wrong selection.</p>
+<h3>
+4. Saving your script</h3>
+<p>
+The <b>File</b> menu of the ScriptEditor has a command <b>Save</b>, with which you can save your script as a file on disk, for instance under the name<code> test.praat</code>.</p>
+<p>
+Please try this with the five-line script you just typed. After saving the script, the name of the script file will appear in the window title:</p>
+<p>
+Select inner viewport... 0.2 5.8 0.2 4-0.2
+Axes... 0 100*5.6 100*(4-0.4) 0
+Paint rectangle... 0.8 0 560 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Paint circle... {1,1,0.25} 40 15 8
+Draw line... 40-7 15 40+7 15
+Paint circle... {0.25,1,0.25} 65 15 8
+Draw rectangle... 65-5 65+5 15-5 15+5
+Helvetica
+Text... 280 centre 15 half Script "/Users/Rose/Desktop/test.praat"
+Paint rectangle... 0.9 0 560 30 60
+Text... 5 left 45 half File   Edit   Search   Convert   Font   Run   Help
+Draw line... 0 30 560 30
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+Courier
+Text... 0 left 75 half <font size=-1>Erase all</font>
+Text... 0 left 90 half <font size=-1>Draw inner box</font>
+Text... 0 left 105 half <font size=-1>Play</font>
+Text... 0 left 120 half <font size=-1>Play</font>
+Text... 0 left 135 half <font size=-1>Erase all</font>
+Draw rectangle... 0 560 0 360
+</p>
+<p>
+After you save your script, you can close the ScriptEditor window without losing the script: you can reopen the script file by using <a href="Open_Praat_script___.html">Open Praat script...</a> from the <b>Praat</b> menu, or by choosing <b>New Praat script</b> again, followed by <b>Open...</b> from the ScriptEditor's <b>File</b> menu.</p>
+<p>
+It advisable to use<code> .praat </code>as the extension for script file names. On the Mac, if you double-click a<code> .praat </code>file, Praat will automatically start up and show the script. On the Mac and on Windows, if you drag a<code> .praat </code>file on the Praat icon, Praat will also start up and show the script.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_2__How_to_script_settings_windows.html">Scripting 2. How to script settings windows</a>
+<li><a href="Scripting_3__Simple_language_elements.html">Scripting 3. Simple language elements</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 3, 2011</p>
+</address>
+</body>
+</html>

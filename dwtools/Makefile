@@ -25,7 +25,6 @@ OBJECTS = Activation.o AffineTransform.o \
 	LFCC.o LongSound_extensions.o \
 	KlattGrid.o KlattGridEditors.o KlattTable.o \
 	MelFilter_and_MFCC.o MFCC.o \
-	manual_dwtools.o manual_BSS.o manual_HMM.o manual_KlattGrid.o manual_MDS.o manual_Permutation.o \
 	Minimizers.o \
 	Matrix_extensions.o \
 	Matrix_Categories.o MDS.o \

@@ -5295,8 +5295,6 @@ void praat_uvafon_David_init (void)
 	INCLUDE_LIBRARY (praat_KlattGrid_init)
 	INCLUDE_LIBRARY (praat_HMM_init)
 	INCLUDE_LIBRARY (praat_BSS_init)
-	INCLUDE_MANPAGES (manual_dwtools_init)
-	INCLUDE_MANPAGES (manual_Permutation_init)
 }
 
 /* End of file praat_David.c */

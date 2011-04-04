@@ -1,0 +1,48 @@
+<html><head><meta name="robots" content="index,follow">
+<title>GaussianMixture & TableOfReal: To GaussianMixture (CEMM)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+GaussianMixture & TableOfReal: To GaussianMixture (CEMM)...
+</b></font></table></table>
+<p>
+Find the best <a href="GaussianMixture.html">GaussianMixture</a> from the data according to a iterative component-wise optimization algorithm by which components may be deleted.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Minimum number of components</b>
+<dd>
+defines the minimum number of components that have to survive the minimization process. If a value of zero is chosen all components will survive and no deletions will take place.
+<dt>
+<b>Tolerance of minimizer</b>
+<dd>
+defines when to stop optimizing. If the relative difference between the likelihoods at two successive iteration steps differs by less then the tolerance we stop, i.e. when |(<i>L</i>(<i>i</i>-1)-<i>L</i>(<i>i</i>))/<i>L</i>(<i>i</i>)| &lt; <i>tolerance</i>. 
+<dt>
+<b>Maximum number of iterations</b>
+<dd>
+defines another stop criterion. Iteration stops whenever the number of iterations reaches this value.
+<dt>
+<b>Stability coefficient lambda</b>
+<dd>
+defines the fraction of the totat covariance that is added to the covariance of each component to prevent these matrices from becoming singular.
+<dt>
+<b>Criterion based on</b>
+<dd>
+defines whether the function to be optimized is the log likelihood or the related miminum description length.
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+The component-wise optimization algorithm is described in <a href="Figueiredo___Jain__2002_.html">Figueiredo & Jain (2002)</a> where the function to be optimized is the minimum description length defined as:</p>
+<table width="100%"><tr><td align=middle>
+<i>L</i>(&#952;,<i>Y</i>) = <i>N</i>/2 &#931;<sub><i>m</i>=1</sub><sup><i>k</i></sup> ln(<i>n</i>&#945;<sub><i>k</sub></i>/12) + <i>k</i>/2 ln(<i>n</i>/12) + <i>k</i>(<i>N</i>+1)/2 - ln <i>p</i>(<i>Y</i>|&#952;),</table>
+<p>
+where <i>k</i> is the number of components,  <i>N</i> is the number of parameters of one component, i.e. <i>d</i>+<i>d</i>(<i>d</i>+1)/2 for a full covariance matrix of dimension <i>d</i> with means and <i>d</i>+<i>d</i> for a diagonal matrix with means;  <i>n</i> is the number of data vectors. The term ln <i>p</i>(<i>Y</i>|&#952;) is the log likelihood of the data given the model.</p>
+<p>
+For the optimization we either optimize the complete function <i>L</i>(&#952;,<i>Y</i>) or only the likelihood ln <i>p</i>(<i>Y</i>|&#952;) term.</p>
+<hr>
+<address>
+	<p>&copy; djmw, November 20, 2010</p>
+</address>
+</body>
+</html>

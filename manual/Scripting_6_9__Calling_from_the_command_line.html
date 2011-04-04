@@ -1,0 +1,59 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 6.9. Calling from the command line</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 6.9. Calling from the command line
+</b></font></table></table>
+<p>
+Previous sections of this tutorial have shown you how to run a Praat script from the Script window. However, you can also call a Praat script from the command line (text console) instead. Information that would normally show up in the Info window, then goes to <i>stdout</i>, and error messages go to <i>stderr</i>. You cannot use commands like <b>View &amp; Edit</b>.</p>
+<h3>
+Command lines on Unix and Macintosh</h3>
+<p>
+On Unix or MacOS X, you call Praat scripts from the command line like this:</p>
+<code>
+&gt; /people/mietta/praat doit.praat 50 hallo<br></code>
+<p>
+or</p>
+<code>
+&gt; /Applications/Praat.app/Contents/MacOS/Praat doit.praat 50 hallo<br></code>
+<p>
+This opens Praat, runs the script <b>doit.praat</b> with arguments "50" and "hallo", and closes Praat.</p>
+<p>
+You also have the possibility of running the program interactively from the command line:</p>
+<code>
+&gt; /people/mietta/praat -<br></code>
+<p>
+You can then type in any of the fixed and dynamic commands, and commands that handle object selection, like <b>select</b>. This method also works in pipes:</p>
+<code>
+&gt; echo "Statistics..." | /people/mietta/praat -<br></code>
+<h3>
+Command lines on Windows</h3>
+<p>
+On Windows, you call Praat scripts from the command line like this:</p>
+<code>
+e:\praatcon.exe e:\doit.praat 50 hallo<br></code>
+<p>
+Note that you use the program <b>praatcon.exe</b> instead of <b>praat.exe</b>. The script will write to the console output in UTF-16 Little Endian encoding. If you want to use ISO Latin-1 encoding instead, or if you want to use praatcon's output in a pipe or redirect it to a file, use <b>praatcon -a</b> instead.</p>
+<h3>
+How to get arguments into the script</h3>
+<p>
+In the above example, the script <b>doit.praat</b> requires two arguments. In the script <b>doit.praat</b>, you use <b>form</b> and <b>endform</b> to receive these arguments. See <a href="Scripting_6_1__Arguments_to_the_script.html">Scripting 6.1. Arguments to the script</a>. As with the <b>execute</b> command, Praat will not present a form window, but simply execute the script with the arguments given on the command line. The example given in <a href="Scripting_6_1__Arguments_to_the_script.html">Scripting 6.1. Arguments to the script</a> will be called in the following way:</p>
+<code>
+&gt; /people/mietta/praat playSine.praat 550 0.9<br></code>
+<p>
+or</p>
+<code>
+e:\praatcon.exe playSine.praat 550 0.9<br></code>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_6__Communication_outside_the_script.html">Scripting 6. Communication outside the script</a>
+<li><a href="Scripting_6_2__Writing_to_the_Info_window.html">Scripting 6.2. Writing to the Info window</a>
+<li><a href="Scripting_8_1__The_sendpraat_subroutine.html">Scripting 8.1. The sendpraat subroutine</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 28, 2011</p>
+</address>
+</body>
+</html>

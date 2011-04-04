@@ -9,7 +9,7 @@ OBJECTS = FFNet.o \
 	FFNet_Eigen.o FFNet_Matrix.o FFNet_Pattern.o \
 	FFNet_Activation_Categories.o FFNet_Pattern_Activation.o \
 	FFNet_Pattern_Categories.o \
-	praat_FFNet_init.o manual_FFNet.o
+	praat_FFNet_init.o
 
 .PHONY: all clean
 

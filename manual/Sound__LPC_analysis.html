@@ -1,0 +1,40 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: LPC analysis</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: LPC analysis
+</b></font></table></table>
+<p>
+You can perform this analysis by selecting one or more <a href="Sound.html">Sound</a> objects and choosing the appropriate command to generate an <a href="LPC.html">LPC</a>.</p>
+<p>
+The acronym LPC stands for Linear Predictive Coding.</p>
+<p>
+In the LPC analysis one tries to predict <i>x</i><sub><i>n</sub></i> on the basis of the <i>p</i> previous samples,</p>
+<table width="100%"><tr><td align=middle>
+<i>x</i>&#8242;<sub><i>n</sub></i> = &#8721; <i>a</i><sub><i>k</sub></i> <i>x</i><sub><i>n-k</i></sub></table>
+<p>
+then {<i>a</i><sub>1</sub>, <i>a</i><sub>2</sub>, ..., <i>a</i><sub><i>p</sub></i>} can be chosen to minimize the prediction power <i>Q<sub>p</sub></i> where</p>
+<table width="100%"><tr><td align=middle>
+<i>Q<sub>p</sub></i> = E[ |<i>x</i><sub><i>n</sub></i> - <i>x</i>&#8242;<sub><i>n</sub></i>|<sup>2</sup>].</table>
+<p>
+Several different algorithms exist for minimizing <i>Q<sub>p</sub></i>:</p>
+<ul>
+<li>
+&nbsp;<a href="Sound__To_LPC__autocorrelation____.html">To LPC (autocorrelation)...</a>
+<li>
+&nbsp;<a href="Sound__To_LPC__covariance____.html">To LPC (covariance)...</a>
+<li>
+&nbsp;<a href="Sound__To_LPC__burg____.html">To LPC (burg)...</a>
+<li>
+&nbsp;<a href="Sound__To_LPC__marple____.html">To LPC (marple)...</a>
+</ul>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Source-filter_synthesis_4__Using_existing_sounds.html">Source-filter synthesis 4. Using existing sounds</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, January 26, 1997</p>
+</address>
+</body>
+</html>

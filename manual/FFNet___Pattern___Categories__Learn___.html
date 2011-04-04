@@ -1,0 +1,56 @@
+<html><head><meta name="robots" content="index,follow">
+<title>FFNet & Pattern & Categories: Learn...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+FFNet & Pattern & Categories: Learn...
+</b></font></table></table>
+<p>
+You can choose this command after selecting one <a href="Pattern.html">Pattern</a>, one <a href="Categories.html">Categories</a> and one <a href="FFNet.html">FFNet</a>.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Maximum number of epochs</b>
+<dd>
+the maximum number of times that the complete <b>Pattern</b> dataset will be presented to the neural net.
+<dt>
+<b>Tolerance of minimizer</b>
+<dd>
+when the difference in costs between two successive learning cycles is smaller than this value, the minimization process will be stopped.
+</dl>
+<p>
+<b>Cost function</b></p>
+<dl>
+<dd>
+Minimum-squared-error:
+<dd>
+&nbsp;&nbsp;<i>costs</i> = &#8721;<sub><i>allPatterns</sub></i> &#8721;<sub><i>allOutputs</sub></i> (<i>o</i><sub><i>k</sub></i> - d<sub><i>k</sub></i>)<sup>2</sup>, where
+<dd>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>o</i><sub><i>k</sub></i> : actual output of unit <i>k</i>
+<dd>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i>d</i><sub><i>k</sub></i> : desired output of unit <i>k</i>
+<dd>
+Minimum-cross-entropy:
+<dd>
+&nbsp;&nbsp;<i>costs</i> = - &#8721;<sub><i>allPatterns</sub></i> &#8721;<sub><i>allOutputs</sub></i> (<i>d</i><sub><i>k</sub></i> &#183; ln <i>o</i><sub><i>k</sub></i> + (1-<i>d</i><sub><i>k</sub></i>) &#183; ln (1-<i>o</i><sub><i>k</sub></i>))
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+The minimization procedure is a variant of conjugate gradient minimization, see for example <a href="Press_et_al___1992_.html">Press et al. (1992)</a>, chapter 10, or <a href="Nocedal___Wright__1999_.html">Nocedal & Wright (1999)</a>, chapter 5.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Feedforward_neural_networks_1_1__The_learning_phase.html">Feedforward neural networks 1.1. The learning phase</a>
+<li><a href="Feedforward_neural_networks_2__Quick_start.html">Feedforward neural networks 2. Quick start</a>
+<li><a href="Feedforward_neural_networks_4__Command_overview.html">Feedforward neural networks 4. Command overview</a>
+<li><a href="FFNet___Pattern___Activation__Get_average_costs___.html">FFNet & Pattern & Activation: Get average costs...</a>
+<li><a href="FFNet___Pattern___Activation__Get_total_costs___.html">FFNet & Pattern & Activation: Get total costs...</a>
+<li><a href="FFNet___Pattern___Categories__Get_average_costs___.html">FFNet & Pattern & Categories: Get average costs...</a>
+<li><a href="FFNet___Pattern___Categories__Get_total_costs___.html">FFNet & Pattern & Categories: Get total costs...</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, May 11, 2004</p>
+</address>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<html><head><meta name="robots" content="index,follow">
+<title>stress</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+stress
+</b></font></table></table>
+<p>
+A badness-of-fit measure for the entire MDS representation.</p>
+<p>
+Several measures exist.</p>
+<h3>
+Raw stress</h3>
+<table width="100%"><tr><td align=middle>
+<i></i>&#963;<sub><i>r</sub></i> (<b>d</b>&#8242;, <b>X</b>) = &#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i>(<i>d</i>&#8242;<sub><i>ij</sub></i> &#8211; <i>d</i><sub><i>ij</sub></i>(<b>X</b>))<sup>2</sup></table>
+<table width="100%"><tr><td align=middle>
+= &#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i><i>d</i>&#8242;<sub><i>ij</sub></i><sup>2</sup> + &#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i><i>d</i><sub><i>ij</sub></i><sup>2</sup>(<b>X</b>) &#8211; 2 &#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i><i>d</i>&#8242;<sub><i>ij</sub></i><i>d</i><sub><i>ij</sub></i>(<b>X</b>)</table>
+<table width="100%"><tr><td align=middle>
+= <i></i>&#951;<sub><i>d</i>&#8242;</sub><sup>2</sup> + <i></i>&#951;<sup>2</sup>(<b>X</b>) &#8211; 2<i></i>&#961;(<b>d</b>&#8242;, <b>X</b>)</table>
+<p>
+where the <i>d</i>&#8242;<sub><i>ij</sub></i> are the <a href="disparities.html">disparities</a> that are the result from the transformation of the dissimilarities, i.e., <i>f</i>(<i></i>&#948;<sub><i>ij</sub></i>). Raw stress can be misleading because it is dependent on the normalization of the disparities. The following measure tries to circumvent this inconvenience.</p>
+<h3>
+Normalized stress</h3>
+<table width="100%"><tr><td align=middle>
+<i></i>&#963;<sub><i>n</sub></i> = &#963;<sub><i>r</sub></i> / <i></i>&#951;<sub><i>d</i>&#8242;</sub><sup>2</sup></table>
+<p>
+This is the stress function that we minimize by iterative majorization. It goes back to <a href="De_Leeuw__1977_.html">De Leeuw (1977)</a>.</p>
+<h3>
+Kruskal's stress-1</h3>
+<table width="100%"><tr><td align=middle>
+<i></i>&#963;<sub>1</sub> = &#8730; (&#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i>(<i>d</i>&#8242;<sub><i>ij</sub></i> &#8211; <i>d</i><sub><i>ij</sub></i>(<b>X</b>))<sup>2</sup> / &#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i><i>d</i><sub><i>ij</sub></i><sup>2</sup>(<b>X</b>))<sup>1/2</sup></table>
+<p>
+In this measure, which is due to <a href="Kruskal__1964_.html">Kruskal (1964)</a>, stress is expressed in relation to the size of <b>X</b>.</p>
+<h3>
+Kruskal's stress-2</h3>
+<table width="100%"><tr><td align=middle>
+<i></i>&#963;<sub>2</sub> = &#8730; (&#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i>(<i>d</i>&#8242;<sub><i>ij</sub></i> &#8211; <i>d</i><sub><i>ij</sub></i>(<b>X</b>))<sup>2</sup> / &#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i>(<i>d</i><sub><i>ij</sub></i>(<b>X</b>) - <i>averageDistance</i>)<sup>2</sup>)<sup>1/2</sup>.</table>
+<p>
+In general, this measure results in a stress value that is approximately twice the value for stress-1.</p>
+<h3>
+Relation between <i></i>&#963;<sub>1</sub> and <i></i>&#963;<sub>n</sub></h3>
+<p>
+When we have calculated <i></i>&#963;<sub><i>n</sub></i> for Configuration <b>X</b>, disparities <b>d</b>&#8242; and Weight <b>W</b> we cannot directly use <b>X</b>, <b>d</b>&#8242; and <b>W</b> to calculate <i></i>&#963;<sub>1</sub> because the scale of <b>X</b> is not necessarily optimal for <i></i>&#963;<sub>1</sub>. We allow therefore a scale factor <i>b</i> &gt; 0 and try to calculate  <i></i>&#963;<sub>1</sub> (<b>d</b>&#8242;, <i>b</i> <b>X</b>). We minimize the resulting expression for <i>b</i> and substitute the result back into the formula for stress, i.e.,</p>
+<table width="100%"><tr><td align=middle>
+<i></i>&#963;<sub>1</sub><sup>2</sup> (<b>d</b>&#8242;, <i>b</i> <b>X</b>) = (<i></i>&#951;<sub><i>d</i>&#8242;</sub><sup>2</sup> + <i>b</i><sup>2</sup> <i></i>&#951;<sup>2</sup>(<b>X</b>) &#8211; 2 <i>b</i> <i></i>&#961;(<b>d</b>&#8242;, <b>X</b>)) / <i>b</i><sup>2</sup> <i></i>&#951;<sup>2</sup>(<b>X</b>)</table>
+<table width="100%"><tr><td align=middle>
+d<i></i>&#963;<sub>1</sub><sup>2</sup> (<i>b</i>) / d<i>b</i> == 0, gives</table>
+<table width="100%"><tr><td align=middle>
+<i>b</i> = <i></i>&#951;<sub><i>d</i>&#8242;</sub><sup>2</sup> / <i></i>&#961;</table>
+<table width="100%"><tr><td align=middle>
+<i></i>&#963;<sub>1</sub><sup>2</sup> =  (1 - <i></i>&#961;<sup>2</sup> / (<i></i>&#951;<sub><i>d</i>&#8242;</sub><sup>2</sup>&#183;<i></i>&#951;<sup>2</sup>(<b>X</b>)))</table>
+<p>
+This means that <i></i>&#963;<sub>1</sub> = &#8730; <i></i>&#963;<sub><i>n</sub></i>.</p>
+<h3>
+Relation between <i></i>&#963;<sub>2</sub> and <i></i>&#963;<sub>n</sub></h3>
+<p>
+We can do the same trick as before for <i></i>&#963;<sub>2</sub>:</p>
+<table width="100%"><tr><td align=middle>
+<i></i>&#963;<sub>2</sub><sup>2</sup> (<b>d</b>&#8242;, <i>b</i> <b>X</b>) = (<i></i>&#951;<sub><i>d</i>&#8242;</sub><sup>2</sup> + <i>b</i><sup>2</sup> <i></i>&#951;<sup>2</sup>(<b>X</b>) &#8211; 2 <i>b</i> <i></i>&#961;(<b>d</b>&#8242;, <b>X</b>)) / (<i>b</i><sup>2</sup> &#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i>(<i>d</i><sub><i>ij</sub></i>(<b>X</b>) - <i>averageDistance</i>)<sup>2</sup>)</table>
+<p>
+From which we derive:</p>
+<table width="100%"><tr><td align=middle>
+<i></i>&#963;<sub>2</sub> = &#8730; ((<i></i>&#951;<sub><i>d</i>&#8242;</sub><sup>2</sup> &#183; <i></i>&#951;<sup>2</sup>(<b>X</b>) - <i></i>&#961;<sup>2</sup>(<b>d</b>&#8242;, <b>X</b>)) / (<i></i>&#951;<sub><i>d</i>&#8242;</sub><sup>2</sup> &#183; &#8721;<sub><i>i</i>&lt;<i>j</sub></i> <i>w</i><sub><i>ij</sub></i>(<i>d</i><sub><i>ij</sub></i>(<b>X</b>) - <i>averageDistance</i>)<sup>2</sup>))</table>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Dissimilarity___Configuration___Weight__Get_stress___.html">Dissimilarity & Configuration & Weight: Get stress...</a>
+<li><a href="Dissimilarity___Configuration___Weight__To_Configuratio.html">Dissimilarity & Configuration & Weight: To Configuration...</a>
+<li><a href="Dissimilarity___Configuration__Get_stress__absolute_mds.html">Dissimilarity & Configuration: Get stress (absolute mds)...</a>
+<li><a href="Dissimilarity___Configuration__Get_stress__i-spline_mds.html">Dissimilarity & Configuration: Get stress (i-spline mds)...</a>
+<li><a href="Dissimilarity___Configuration__Get_stress__interval_mds.html">Dissimilarity & Configuration: Get stress (interval mds)...</a>
+<li><a href="Dissimilarity___Configuration__Get_stress__monotone_mds.html">Dissimilarity & Configuration: Get stress (monotone mds)...</a>
+<li><a href="Dissimilarity___Configuration__Get_stress__ratio_mds___.html">Dissimilarity & Configuration: Get stress (ratio mds)...</a>
+<li><a href="Dissimilarity___Weight__To_Configuration___.html">Dissimilarity & Weight: To Configuration...</a>
+<li><a href="Dissimilarity___Weight__To_Configuration___.html">Dissimilarity & Weight: To Configuration...</a>
+<li><a href="Kruskal_analysis.html">Kruskal analysis</a>
+<li><a href="MDS_models.html">MDS models</a>
+<li><a href="Multidimensional_scaling.html">Multidimensional scaling</a>
+<li><a href="Weight.html">Weight</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, January 8, 1998</p>
+</address>
+</body>
+</html>

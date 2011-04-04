@@ -1,0 +1,34 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Feedforward neural networks 2. Quick start</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Feedforward neural networks 2. Quick start
+</b></font></table></table>
+<p>
+You may create the iris example set with the <a href="Create_iris_example___.html">Create iris example...</a> command that you will find under the <b>Neural nets</b> option in the <b>New</b> menu. Three new objects will appear in the <a href="List_of_Objects.html">List of Objects</a>: a <a href="FFNet.html">FFNet</a>, a <a href="Categories.html">Categories</a> and a <a href="Pattern.html">Pattern</a>.</p>
+<p>
+The <b>Pattern</b> contains the <a href="iris_data_set.html">iris data set</a> in a 150 rows by 4 columns matrix. To  guarantee that every cell in the Pattern is in the [0,1] interval, all measurement values were divided by 10. In the <b>Categories</b> the three iris species <i>setosa</i>, <i>versicolor</i>, and <i>virginica</i> were categorized with the numbers <b>1</b>, <b>2</b> and <b>3</b>, respectively. Because there are 4 data columns in the Pattern and 3 different iris species in the Categories, the newly created <b>FFNet</b> has 4 inputs and 3 outputs. If you have entered a positive number in one of the fields in the form, the FFNet will have this number of units in a <i>hidden layer</i>. The name of the newly created FFNet will reflect its topology. If you did opt for the default, 0 hidden units, the FFNet will be named 4-3.</p>
+<h3>
+Learning the iris data</h3>
+<p>
+The first thing you probably might want to do is to let the <b>FFNet</b> learn the association in each pattern-category pair.  To do this select all three objects together and choose <a href="FFNet___Pattern___Categories__Learn___.html">Learn...</a>. A form will appear, asking you to supply some settings for the learning algorithm. Learning starts after you have clicked the OK-button. Since the example network does not have too many weights that need to be adjusted and the learning data set is very small and computers nowadays are very fast, this will only take a very short time.</p>
+<h3>
+Classify</h3>
+<p>
+Now, if you are curious how well the FFNet has learned the iris data, you may select the <b>FFNet</b> and the <b>Pattern</b> together and choose <a href="FFNet___Pattern__To_Categories___.html">To Categories...</a>. A new <b>Categories</b> appears in the <b>List of Objects</b> with the name <i>4</i>-3_iris (if <i>4-3</i> was the name of the FFNet and <i>iris</i><i></i> the name of the Pattern). We have two different Categories in the list of objects, the topmost one has the original categories, the other the categories as were assigned by the FFNet classifier. The obvious thing to do now is to compare the original categories with the assigned categories by making a <a href="Confusion.html">confusion table</a>. Select the two <b>Categories</b> and choose <a href="Categories__To_Confusion.html">To Confusion</a> and a newly created <a href="Confusion.html">Confusion</a> appears. Pressing the <a href="Info.html">Info</a> button will show you an info window with, among others, the fraction correct. </p>
+<p>
+You might also want to <a href="Feedforward_neural_networks_3__FFNet_versus_discriminan.html">compare the FFNet classifier with a discriminant classifier</a>.</p>
+<h3>
+Create other neural net topologies</h3>
+<p>
+With a <b>Pattern</b> and a <b>Categories</b> selected together, you can for example create a new <b>FFNet</b> of a different topology.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Feedforward_neural_networks.html">Feedforward neural networks</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, April 26, 2004</p>
+</address>
+</body>
+</html>

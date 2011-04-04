@@ -1,0 +1,30 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: Filter (gammatone)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: Filter (gammatone)...
+</b></font></table></table>
+<p>
+A command to filter a Sound by a fourth order gammatone bandpass filter.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Centre frequency (Hz)</b>, <b>Bandwidth (Hz)</b>
+<dd>
+determine the passband of the filter.
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+The impulse response of the filter is a 4-th order <a href="gammatone.html">gammatone</a>. This filter is implemented as a simple 8-th order recursive digital filter with 4 zeros and 8 poles (these 8 poles consist of one conjugate pole pair to the 4-th power). In the Z-domain its formula is: </p>
+<table width="100%"><tr><td align=middle>
+<i><b>H</i></b> (<i>z</i>) = (1 + &#8721;<sub><i>i</i>=1..4</sub> <i>a</i><sub><i>i</sub></i><i>z</i><sup><i></i>&#8211;i</sup>) / (1 + &#8721;<sub><i>j</i>=1..8</sub> <i>b</i><sub><i>j</sub></i><i>z</i><sup><i></i>&#8211;j</sup>)</table>
+<p>
+The derivation of the filter coefficients <i>a</i><sub><i>i</sub></i> and <i>b</i><sub><i>j</sub></i> is according to <a href="Slaney__1993_.html">Slaney (1993)</a>. The gain of the filter is scaled to unity at the centre frequency.</p>
+<hr>
+<address>
+	<p>&copy; djmw, July 12, 1998</p>
+</address>
+</body>
+</html>

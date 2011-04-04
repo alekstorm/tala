@@ -1,0 +1,40 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Printing</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Printing
+</b></font></table></table>
+<p>
+The best results will be obtained on PostScript printers, since these have built-in facilities for images (e.g. spectrograms) and rotated text. However, the printed page will look reasonable on colour inkjet printers as well.</p>
+<h3>
+1. Printing on Unix</h3>
+<p>
+Most Unix networks (i.e. SGI, Solaris, HPUX) are traditionally connected to a PostScript printer. When you tell Praat to print a picture or manual page, Praat will write the picture to a temporary PostScript file and send this file to a printer with the <i>print command</i> (typically <code>lp</code>), which you can change with <a href="PostScript_settings___.html">PostScript settings...</a>.</p>
+<p>
+On Linux, you do not need a PostScript printer to print PostScript directly, because the <b>lpr</b> program sends PostScript files through the GhostScript program, which is a part of all modern Linux distributions. The print command is typically <code>lpr %s</code>. By changing the print command (with <a href="PostScript_settings___.html">PostScript settings...</a>), you can change it to something fancier. For instance, if you want to save the woods and print two pages on one sheet of paper, you change it to <code>cat %s | mpage -2 -o -f -m0 | lpr</code>.</p>
+<h3>
+2. Indirect printing with GhostView</h3>
+<p>
+If you don't have a PostScript printer, and you still want PostScript quality, you can save the picture to an EPS file (<a href="Save_as_EPS_file___.html">Save as EPS file...</a>). You can then view this file with the freely available GhostView<sup>&#8482;</sup> program, which you can download from <b>http://pages.cs.wisc.edu/~ghost/</b>.</p>
+<h3>
+3. Indirect printing with your word processor</h3>
+<p>
+If you save your picture to an EPS file, you will be able to include it as a picture in your favourite word processor (Microsoft<sup>&#174;</sup> Word<sup>&#8482;</sup>, LaTeX...). See <a href="Save_as_EPS_file___.html">Save as EPS file...</a>.</p>
+<p>
+If you don't have a PostScript printer, you could again use GhostView<sup>&#8482;</sup> to print your document to any printer, after you printed your document to a PostScript file. You can do the same if you are the lucky owner of Adobe<sup>&#174;</sup> Acrobat<sup>&#8482;</sup> Distiller<sup>&#8482;</sup>, which is more reliable than GhostView but is also expensive.</p>
+<h3>
+4. Creating a PDF file</h3>
+<p>
+If you have Distiller or GhostView, you can print the entire Word<sup>&#8482;</sup> or LaTeX document to a PostScript file, and convert this to a PDF file, which anyone in the world can view and print with the free Adobe<sup>&#174;</sup> Acrobat<sup>&#8482;</sup> Reader program.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Acknowledgments.html">Acknowledgments</a>
+<li><a href="Intro.html">Intro</a>
+<li><a href="Print___.html">Print...</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 29, 2011</p>
+</address>
+</body>
+</html>

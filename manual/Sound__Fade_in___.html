@@ -1,0 +1,56 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: Fade in...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: Fade in...
+</b></font></table></table>
+<p>
+A command to gradually increase the amplitude of a selected <a href="Sound.html">Sound</a>.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Channel</b>
+<dd>
+determines whether you want to fade all channels or only the left of the right channel.
+<dt>
+<b>Time (s)</b>
+<dd>
+determines where the fade-in will take place. If <i>time</i> is earlier than the start time of the sound, the start time of the sound wil be used.
+<dt>
+<b>Fade time (s)</b>
+<dd>
+determines the start point and the endpoint of the fade-in with respect to the <i>time</i> argument. Depending on the sign of <i>fadeTime</i>, <i>time</i> is either the start or the end position of the fade-in. If <i>fadeTime</i> is positive, fade-in will take place between <i>time</i> and <i>time+fadeTime</i>. If <i>fadeTime</i> is negative, fade-in wil take place between <i>time+fadeTime</i> and <i>time</i>.
+<dt>
+<b>Silent from start</b>
+<dd>
+when on, makes the sound silent before the fade-in starts. When off, the sound before the fade-in starts will not be changed. 
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+Multiplication with the first half period of a (1-cos(x))/2 function. </p>
+<h3>
+Cross-fading two sounds</h3>
+<p>
+The following script cross-fades two sounds s1 and s2 at time 1 second and leaves the result in s2.</p>
+<code>&nbsp;&nbsp;&nbsp;
+crossFTime = 0.5<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+t = 1<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Create Sound from formula... s1 Mono 0 2 44100 sin(2*pi*500*x)<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Fade out... All t-crossFTime/2 crossFTime y<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Create Sound from formula... s2 Mono 0 2 44100 sin(2*pi*1000*x)<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Fade in... All t-crossFTime/2 crossFTime y<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Formula... self+Sound_s1[]<br></code>
+<hr>
+<address>
+	<p>&copy; djmw, March 14, 2008</p>
+</address>
+</body>
+</html>

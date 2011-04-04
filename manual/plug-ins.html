@@ -1,0 +1,77 @@
+<html><head><meta name="robots" content="index,follow">
+<title>plug-ins</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+plug-ins
+</b></font></table></table>
+<p>
+Experienced Praat script writers can distribute their product as a plug-in to Praat.</p>
+<h3>
+The Praat plug-in mechanism</h3>
+<p>
+When Praat starts up, it will execute all Praat scripts called <b>setup.praat</b> that reside in directories whose name starts with <b>plugin_</b> and that themselves reside in your Praat <a href="preferences_directory.html">preferences directory</a>.</p>
+<h3>
+How to write a Praat plug-in</h3>
+<p>
+Suppose that you have a set of Praat scripts specialized in the analysis and synthesis of vocalizations of guinea pigs, and that these scripts are called <b>analyseQueak.praat</b> and <b>createQueak.praat</b> ("queak" is what guinea pigs tend to say). With the <a href="ScriptEditor.html">ScriptEditor</a>, you have put the script <b>analyseQueak.praat</b> in the dynamic menu that appears if the user selects a Sound object, and you have put the script <b>createQueak.praat</b> in the <a href="New_menu.html">New menu</a>. Only the latter script requires the user to supply some settings in a form, so the two menu commands are <b>Analyse queak</b> (without dots) and <b>Create queak...</b> (with three dots), respectively. Suppose now that you want to distribute those two commands to other guinea pig vocalization researchers.</p>
+<p>
+What you do is that you create a Praat script called <b>setup.praat</b> (in the same directory as the two other scripts), that contains the following two lines:</p>
+<code>
+<a href="Add_action_command___.html">Add action command...</a> Sound 1 "" 0 "" 0 "Analyse queak" "" 0 analyseQueak.praat<br></code>
+<code>
+<a href="Add_menu_command___.html">Add menu command...</a> Objects New "Create queak..." "" 0 createQueak.praat<br></code>
+<p>
+(If you ran this script, Praat would install those two commands in the correct menus, and remember them in the <a href="buttons_file.html">buttons file</a>; but you are now going to install them in a different way.)</p>
+<p>
+You now put the three scripts in a new directory called <b>plugin_Queak</b>, and put this directory in your Praat preferences directory. If you are on Windows, you will now have a directory called something like <b>C:\Documents and Settings\Your Name\Praat\plugin_Queak</b>.</p>
+<p>
+If you now start up Praat, Praat will automatically execute the script <b>C:\Documents and Settings\Your Name\Praat\plugin_Queak\setup.praat</b> and thereby install the two buttons. The two buttons will <i>not</i> be remembered in the buttons file, but they will be installed at every Praat start-up. De-installation involves removing (or renaming) the <b>plugin_Queak</b> directory.</p>
+<p>
+To distribute the Queak plug-in among your colleague guinea pig researchers, you can use any installer program to put the <b>plugin_Queak</b> directory into the user's Praat preferences directory; or you could ask those colleagues to move the <b>plugin_Queak</b> directory there by hand.</p>
+<h3>
+The structure of your plug-in directory</h3>
+<p>
+In the example <b>setup.praat</b> file above, the names of the scripts <b>analyseQueak.praat</b> and <b>createQueak.praat</b> occur without any directory information. This works because Praat regards these file names as being relative to the directory where <b>setup.praat</b> is located. If your plug-in is much larger than two scripts, you may want to put subdirectories into the directory <b>plugin_Queak</b>. For instance, if you put <b>analyseQueak.praat</b> into the subdirectory <b>analysis</b>, your line in the <b>setup.praat</b> script would look as follows:</p>
+<code>
+<a href="Add_action_command___.html">Add action command...</a> Sound 1 "" 0 "" 0 "Analyse queak" "" 0 analysis/analyseQueak.praat<br></code>
+<p>
+The forward slash ("/") in this example makes your plug-in platform-independent: it will work unchanged on Windows, Macintosh, and Unix.</p>
+<p>
+Nothing prevents you from adding data files to your plug-in. For instance, your <b>plugin_Queak</b> directory could contain a subdirectory <b>sounds</b> full of guinea pig recordings, and you could make them available in the New or Open menu.</p>
+<h3>
+Using a plug-in for site-wide customization</h3>
+<p>
+If your local guinea pig research group shares a number of Praat scripts, these can be made available to everybody in the following way:</p>
+<dl>
+<dd>
+1. Create a script that adds buttons to the fixed and dynamic menus, using the commands <a href="Add_menu_command___.html">Add menu command...</a> and <a href="Add_action_command___.html">Add action command...</a>. This script could be a slightly edited copy of someone's <a href="buttons_file.html">buttons file</a>.
+<dd>
+2. Put this script where everybody can see it, for instance in <b>U:\MaldenGuineaPigResearchButtons.praat</b>, where U is your shared computer.
+<dd>
+3. Create a file <b>setup.praat</b> that contains only the following line:
+</dl>
+<code>&nbsp;&nbsp;&nbsp;
+execute U:\MaldenGuineaPigResearchButtons.praat<br></code>
+<dl>
+<dd>
+4. Put the <b>setup.praat</b> file in a new directory called <b>plugin_MaldenGuineaPigResearch</b>, and distribute this directory among your local colleagues.
+</dl>
+<p>
+This procedure allows all members of the group to automatically enjoy all the later changes in your custom command set.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Add_to_dynamic_menu___.html">Add to dynamic menu...</a>
+<li><a href="Add_to_fixed_menu___.html">Add to fixed menu...</a>
+<li><a href="ButtonEditor.html">ButtonEditor</a>
+<li><a href="Hidden_commands.html">Hidden commands</a>
+<li><a href="initialization_script.html">initialization script</a>
+<li><a href="plugins.html">plugins</a>
+<li><a href="Programming_with_Praat.html">Programming with Praat</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 29, 2007</p>
+</address>
+</body>
+</html>

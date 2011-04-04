@@ -678,7 +678,4 @@ void praat_uvafon_FFNet_init (void)
 	praat_addAction3 (classFFNet, 1, classPattern, 1, classCategories, 1, L"Learn", 0, 0, 0);
 	praat_addAction3 (classFFNet, 1, classPattern, 1, classCategories, 1, L"Learn...", 0, 0, DO_FFNet_Pattern_Categories_learnSM);
 	praat_addAction3 (classFFNet, 1, classPattern, 1, classCategories, 1, L"Learn slow...", 0, 0, DO_FFNet_Pattern_Categories_learnSD);
-
-    INCLUDE_MANPAGES (manual_FFNet_init)
-
 }

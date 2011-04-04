@@ -1,0 +1,544 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 2. How to script settings windows</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 2. How to script settings windows
+</b></font></table></table>
+<p>
+Not all menu commands are as simple as those on the <a href="Scripting_1__Your_first_scripts.html">previous page</a>, which act immediately once you choose them from a menu (e.g. <b>Play</b>, <b>Erase all</b>). Most commands in Praat require the user to supply additional information; these are the commands whose title ends in "...".</p>
+<p>
+For instance, when you select a Sound, the command <b>Draw...</b> will appear in the <b>Draw</b> menu, and when you click it, Praat will present you with a <i>settings window</i>, which asks you to supply six pieces of additional information, i.e. six so-called <i>settings</i> (or in programming jargon: <i>arguments</i>):</p>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+4*0.4
+height = 100*(1+4*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half Sound: Draw
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Time range (s):
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.0
+Text... 380 left y half 0.0 (= all)
+Helvetica
+y += 40
+Text... 255 right y half Vertical range:
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.0
+Text... 380 left y half 0.0 (= auto)
+Helvetica
+y += 40
+if 1
+    Paint rectangle... yellow 265 279 y-7 y+7
+    Text special... 272 centre y half Times fontSize*1.2 0 <b>&#8730;
+else
+    Paint rectangle... white 265 279 y-7 y+7
+endif
+Draw rectangle... 265 279 y-7 y+7
+Text... 281 left y half Garnish
+y += 40
+Text... 255 right y half Drawing method:
+Paint rounded rectangle... 'buttonColour<code></code>' 265 505 y-12 y+12 1.0
+Draw rounded rectangle... 265 505 y-12 y+12 2.0
+Text... 270 left y half Curve
+Helvetica
+y += 40
+</b></p>
+<p>
+In this example, all the settings have their standard values: you want to draw the whole time domain of the Sound, you want to have autoscaling vertically, you want to see garnishings around the picture (a box, labelled axes, and numbers), and you want the waveform to be drawn as a curve. Pressing the OK button in the above window is equivalent to executing the following script line:</p>
+<code>
+Draw... 0 0 0 0 yes Curve<br></code>
+<p>
+You see that in a script, all of the arguments are supplied on the same line as the command, in the same order as in the settings window, counted from top to bottom (and, within a line, from left to right). The texts "(= all)" and "(= auto)" above are just Praat's explanations of what it means to type a zero in those fields (namely "draw all times" and "use vertical autoscaling", respectively); in a script they are superfluous and you shouldn't write them.</p>
+<p>
+If you want to draw the sound with different settings, say from 1 to 3.2 seconds, scaled between -1 and +1 instead of automatically, with garnishings off, and with the waveform drawn as poles, you would have the following settings window:</p>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+4*0.4
+height = 100*(1+4*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half Sound: Draw
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Time range (s):
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half 1.0
+Text... 380 left y half 3.2
+Helvetica
+y += 40
+Text... 255 right y half Vertical range:
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half -1
+Text... 380 left y half 1
+Helvetica
+y += 40
+if 0
+    Paint rectangle... yellow 265 279 y-7 y+7
+    Text special... 272 centre y half Times fontSize*1.2 0 <b>&#8730;
+else
+    Paint rectangle... white 265 279 y-7 y+7
+endif
+Draw rectangle... 265 279 y-7 y+7
+Text... 281 left y half Garnish
+y += 40
+Text... 255 right y half Drawing method:
+Paint rounded rectangle... 'buttonColour<code></code>' 265 505 y-12 y+12 1.0
+Draw rounded rectangle... 265 505 y-12 y+12 2.0
+Text... 270 left y half Poles
+Helvetica
+y += 40
+</b></p>
+<p>
+In a script this would look like</p>
+<code>
+Draw... 1.0 3.2 -1 1 no Poles<br></code>
+<h3>
+1. Numeric arguments</h3>
+<p>
+The first four arguments in the above examples are <i>numeric arguments</i>: they are (real or integer) numbers. You just write them in the script as you would write them into the settings window.</p>
+<h3>
+2. Boolean (yes/no) arguments</h3>
+<p>
+The fifth argument in the above examples (<b>Garnish</b>) is a <i>boolean argument</i> (yes/no choice) and is represented by a <i>check button</i>. In the script you write it as <code>yes</code> or <code>no</code> (or as 1 or 0).</p>
+<h3>
+3. Multiple-choice arguments</h3>
+<p>
+The sixth argument in the above examples (<b>Drawing method</b>) is a <i>multiple-choice argument</i> and is represented by an <i>option menu</i>. In the script you write the text of the choice, i.e. <code>Curve</code> or <code>Poles</code> in the examples.</p>
+<p>
+A multiple choice argument is sometimes represented by a <i>radio box</i> instead of by an option menu. For instance, the last example above could equally well have looked like</p>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+6.1*0.4
+height = 100*(1+6.1*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half Sound: Draw
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Time range (s):
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half 1.0
+Text... 380 left y half 3.2
+Helvetica
+y += 40
+Text... 255 right y half Vertical range:
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half -1
+Text... 380 left y half 1
+Helvetica
+y += 40
+if 0
+    Paint rectangle... yellow 265 279 y-7 y+7
+    Text special... 272 centre y half Times fontSize*1.2 0 <b>&#8730;
+else
+    Paint rectangle... white 265 279 y-7 y+7
+endif
+Draw rectangle... 265 279 y-7 y+7
+Text... 281 left y half Garnish
+y += 40
+if "Drawing method" &lt;&gt; ""
+    Text... 255 right y half Drawing method:
+endif
+if 0
+    Paint circle... yellow 272 y 7
+    Paint circle... black 272 y 3
+else
+    Paint circle... white 272 y 7
+endif
+Draw circle... 272 y 7
+Text... 281 left y half Curve
+y += 40
+y -= 12
+if "" &lt;&gt; ""
+    Text... 255 right y half :
+endif
+if 0
+    Paint circle... yellow 272 y 7
+    Paint circle... black 272 y 3
+else
+    Paint circle... white 272 y 7
+endif
+Draw circle... 272 y 7
+Text... 281 left y half Bars
+y += 40
+y -= 12
+if "" &lt;&gt; ""
+    Text... 255 right y half :
+endif
+if 1
+    Paint circle... yellow 272 y 7
+    Paint circle... black 272 y 3
+else
+    Paint circle... white 272 y 7
+endif
+Draw circle... 272 y 7
+Text... 281 left y half Poles
+y += 40
+y -= 12
+if "" &lt;&gt; ""
+    Text... 255 right y half :
+endif
+if 0
+    Paint circle... yellow 272 y 7
+    Paint circle... black 272 y 3
+else
+    Paint circle... white 272 y 7
+endif
+Draw circle... 272 y 7
+Text... 281 left y half Speckles
+y += 40
+</b></p>
+<p>
+In supplying arguments to a command in a script, there is no difference between an option menu and a radio box. This last example will therefore again look like the following in a script:</p>
+<code>
+Draw... 1.0 3.2 -1 1 no Poles<br></code>
+<h3>
+4. Text arguments</h3>
+<p>
+Consider another frequently used menu command, namely <b>Create Sound from formula...</b> in the <b>New</b> menu:</p>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+6.6*0.4
+height = 100*(1+6.6*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half Create Sound from formula
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Name:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half sine
+Helvetica
+y += 40
+Text... 255 right y half Number of channels:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 1
+Helvetica
+y += 40
+Text... 255 right y half Start time (s):
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.0
+Helvetica
+y += 40
+Text... 255 right y half End time (s):
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 1.0
+Helvetica
+y += 40
+Text... 255 right y half Sampling frequency (Hz):
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 44100
+Helvetica
+y += 40
+Text... 12 left y half Formula:
+y += 24
+Paint rectangle... white 15 505 y-12 y+12
+Draw rectangle... 15 505 y-12 y+12
+;Courier
+Text... 15 left y half 1/2 * sin(2*pi*377*x)
+Helvetica
+y += 40
+</p>
+<p>
+In a script this would look like:</p>
+<code>
+Create Sound from formula... sine 1 0.0 1.0 44100 1/2 * sin(2*pi*377*x)<br></code>
+<p>
+Both the first argument (<b>Name</b>) and the sixth argument (<b>Formula</b>) are <i>text arguments</i>. They are written in a script just as you would type them into the settings window. Well, <i>mostly</i> (see 6 and 7 below)...</p>
+<h3>
+5. File arguments</h3>
+<p>
+The commands from the Open and Save menus, and several other commands whose names start with <b>Read</b>, <b>Open</b>, or <b>Save</b>, present a <i>file selector window</i> instead of a typical Praat settings window. File selector windows ask the user to supply a single argument: the file name.</p>
+<p>
+In a script, you can supply the complete <i>path</i>, including the directory (folder) hierarchy and the name of the file. On Unix, it goes like this (if you are user "miep"):</p>
+<code>
+Read from file... /home/miep/sounds/animals/miauw.aifc<br></code>
+<p>
+or just</p>
+<code>
+Read from file... ~/sounds/animals/miauw.aifc<br></code>
+<p>
+where "~" is the Unix way to refer to your home directory.</p>
+<p>
+Instead of these complete path names, you can use <i>relative</i> path names. These are taken as relative to the directory in which your script resides.</p>
+<p>
+On Unix, a relative path name starts without a "/". So if your script is <i>/home/miep/sounds/analysis.praat</i>, the above line could be</p>
+<code>
+Read from file... animals/miauw.aifc<br></code>
+<p>
+Finally, your script may not be in a directory <i>above</i> the directory from which you like to read, but in a directory on the side, like /home/miep/scripts. The command would then read</p>
+<code>
+Read from file... ../animals/miauw.aifc<br></code>
+<h3>
+6. Space paranoia</h3>
+<p>
+The thing that separates the arguments in a script line is the <i>space</i> character (" "). This can become problematic if the argument itself also contains spaces, as can happen in text arguments such as in <b>Formula</b> above under 4 (because "1/2 * sin(2*pi*377*x)" contains two spaces). If the text argument with spaces is the last argument (as <b>Formula</b> is above), then there's actually no problem: Praat knows that the <b>Create Sound from formula...</b> command takes six arguments; the sixth argument is simply everything that follows the first five arguments, so Praat can figure out that those last two spaces aren't meant to separate arguments.</p>
+<p>
+For this reason, most texts in Praat's settings windows appear in the last (bottom) field. When they don't, you have to use double quotes around the text argument with spaces. For instance, consider the command <b>Report difference (Student t)...</b> (for Table objects):</p>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+2.6*0.4
+height = 100*(1+2.6*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half Report difference (Student t)
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Columns:
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half F0 before
+Text... 380 left y half F0 after
+Helvetica
+y += 40
+Text... 255 right y half One-tailed unconfidence:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.025
+Helvetica
+y += 40
+</p>
+<p>
+This command performs a paired-samples t-test between the columns <code>F0 before</code> and <code>F0 after</code>. In a script this would look like:</p>
+<code>
+Report difference (Student t)... "F0 before" "F0 after" 0.025<br></code>
+<p>
+The quotes around the first argument tell Praat that the space between <code>F0</code> and <code>before</code> is part of the argument, i.e. part of the first column name.</p>
+<p>
+The last, and most confusing, strange thing that can happen is if a (non-last) text argument contains quotes itself. In such a case, you enclose the argument between quotes, and you double each quote that appears inside the argument. For example, the following window</p>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+2.6*0.4
+height = 100*(1+2.6*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half Report difference (Student t)
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Columns:
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half F0 "before"
+Text... 380 left y half F0 "after"
+Helvetica
+y += 40
+Text... 255 right y half One-tailed unconfidence:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.025
+Helvetica
+y += 40
+</p>
+<p>
+is scripted as</p>
+<code>
+Report difference (Student t)... "F0 ""before""" "F0 ""after""" 0.025<br></code>
+<h3>
+7. How to supply arguments automatically</h3>
+<p>
+Now you know all the ways to write the arguments of commands in a script line, including some weird cases. If you dislike manually copying arguments from settings windows into your script, or if you are still not sure how a complicated argument should be written in a script, you can use the <a href="History_mechanism.html">history mechanism</a>: choose <a href="Clear_history.html">Clear history</a> from the <b>Edit</b> menu in your <a href="ScriptEditor.html">ScriptEditor</a>, click your command button, edit the arguments, and click <b>OK</b>. The command will be executed. Then choose <a href="Paste_history.html">Paste history</a>, and the command line, including the arguments (with correct quotes, for example), will appear in the ScriptEditor at the position of the text cursor. You can build whole new scripts on the basis of this mechanism.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_3__Simple_language_elements.html">Scripting 3. Simple language elements</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 6, 2011</p>
+</address>
+</body>
+</html>

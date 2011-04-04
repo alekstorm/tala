@@ -1,0 +1,56 @@
+<html><head><meta name="robots" content="index,follow">
+<title>GaussianMixture & TableOfReal: Get likelihood value...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+GaussianMixture & TableOfReal: Get likelihood value...
+</b></font></table></table>
+<p>
+Calculates how well the <a href="GaussianMixture.html">GaussianMixture</a> model fits the data according to a criterion.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Maximum likelihood</b>
+</dl>
+<table width="100%"><tr><td align=middle>
+ML = &#931;<sub><i>i</i>=1..<i>n</sub></i> log (&#931;<sub><i>m</i>=1..<i>k</sub></i> &#945;<sub><i>k</sub></i> <i>p</i><sub><i>ik</i></sub>)</table>
+<dl>
+<dt>
+<b>Minimum message length</b>
+</dl>
+<table width="100%"><tr><td align=middle>
+DL = ML - 0.5(N&#183;&#931;<sub><i>m</i>=1..<i>k</sub></i> log(<i>n</i>&#945;<sub><i>m</sub></i>/12) -<i>k</i>&#183;log(<i>n</i>/12) -<i>k</i>(<i>N</i>+1))</table>
+<dl>
+<dt>
+<b>Bayes information</b>
+</dl>
+<table width="100%"><tr><td align=middle>
+BIC = 2&#183;ML - k&#183;N&#183;log(n)</table>
+<dl>
+<dt>
+<b>Akaike information</b>
+</dl>
+<table width="100%"><tr><td align=middle>
+AIC = 2(ML - k&#183;N) </table>
+<dl>
+<dt>
+<b>Akaike corrected</b>
+</dl>
+<table width="100%"><tr><td align=middle>
+AICc = 2(ML - k&#183;N&#183;n/(n-k&#183;N-1))</table>
+<dl>
+<dt>
+<b>Complete-data ML</b>
+</dl>
+<table width="100%"><tr><td align=middle>
+&#931;<sub><i>i</i>=1..<i>n</sub></i>&#931;<sub><i>m</i>=1..<i>k</sub></i> &#947;<sub><i>im</i></sub> log (&#947;<sub><i>im</i></sub>)</table>
+<p>
+In the formulas above <i>n</i> is the number of data points, <i>k</i> is the number of mixture components, <i>N</i> is the number of parameters in one component, i.e. <i>d</i> + <i>d</i>(<i>d</i>+1)/2 for a full covariance matrix of dimension <i>d</i> with means. The &#945;<sub><i>k</sub></i> are the mixing probabilities, the <i>p</i><sub><i>ik</i></sub> are the probabilities for the <i>i</i>-th data vector in the <i>k</i>-th component. The &#947;<sub><i>ik</i></sub> are defined as </p>
+<table width="100%"><tr><td align=middle>
+&#947;<sub><i>im</i></sub>= &#945;<sub><i>m</sub></i>&#183;<i>p</i><sub><i>im</i></sub> /(&#931;<sub><i>j</i>=1..<i>k</sub></i> &#945;<sub><i>j</sub></i>&#183;<i>p</i><sub><i>ij</i></sub>).</table>
+<hr>
+<address>
+	<p>&copy; djmw, November 25, 2010</p>
+</address>
+</body>
+</html>

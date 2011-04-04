@@ -1,0 +1,100 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Dissimilarity: To Configuration (kruskal)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Dissimilarity: To Configuration (kruskal)...
+</b></font></table></table>
+<p>
+A command that creates a <a href="Configuration.html">Configuration</a> object from a <a href="Dissimilarity.html">Dissimilarity</a> object.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Number of dimensions</b> (standard value: 2)
+<dd>
+The dimensionality of the Configuration.
+<dt>
+<b>Distance metric<i></i> (standard value: 2, i.e. Euclidean)</b>
+<dd>
+the general distance between points <b>x</b><sub><i>i</sub></i> and <b>x</b><sub><i>j</sub></i> (<i>i</i>,<i>j</i> = 1..<i>numberOfPoints</i>) is:
+<dd>
+(&#8721;<sub><i>k</i>=1..<i>numberOfDimensions</sub></i> |<i>x</i><sub><i>ik</sub></i> &#8211;<i>x</i><sub><i>jk</sub></i>|<sup><i>metric</i></sup>)<sup>1/<i>metric</i></sup>
+<dt>
+<b>Sort distances</b>
+<dd>
+determines the handling of ties in the data. When off, whenever two or more dissimilarities are equal we do not care whether the fitted distances are equal or not. Consequently, no constraints are imposed on the fitted distances. When on, however, we impose the constaint that the fitted distances be equal whenever the dissimilarities are equal.
+</dl>
+<p>
+For the calculation of stress:</p>
+<dl>
+<dt>
+<b>Formula1 (default)</b>
+</dl>
+<table width="100%"><tr><td align=middle>
+<i>stress</i> = &#8730;(&#8721;(<i>distance</i><sub><i>k</sub></i> &#8211; <i>fittedDistance</i><sub><i>k</sub></i>)<sup>2</sup> / &#8721; <i>distance</i><sub><i>k</sub></i><sup>2</sup>)</table>
+<dl>
+<dt>
+<b>Formula2</b>
+</dl>
+<table width="100%"><tr><td align=middle>
+<i>stress</i> = &#8730;(&#8721;(<i>distance</i><sub><i>k</sub></i> &#8211; <i>fittedDistance</i><sub><i>k</sub></i>)<sup>2</sup> / &#8721; (<i>distance</i><sub><i>k</sub></i> &#8211; <i>averageDistance</i>)<sup>2</sup>)</table>
+<dl>
+<dd>
+Note that values of stress 2 are generally more than double those of stress 1 for the same degree of fit.
+</dl>
+<p>
+Finding the optimal Configuration involves a minimization process:</p>
+<dl>
+<dt>
+<b>Tolerance</b>
+<dd>
+When successive values for the stress differ less than <i>Tolerance</i> the minimization process stops.
+<dt>
+<b>Maximum number of iterations</b>
+<dd>
+Minimization stops after this number of iterations has been reached.
+<dt>
+<b>Number of repetitions</b>
+<dd>
+When chosen larger than 1, the minimalization process will be repeated, each time with another random start configuration. The configuration that results in minimum stress will be saved.
+</dl>
+<h3>
+Precautions</h3>
+<p>
+When there are few objects it is impossible to recover many dimensions. A rough rule of thumb is that there should be at least twice as many number of observations, i.e. the <i>numberOfPoints</i> &#183; (<i>numberOfPoints</i> - 1) / 2 (dis)similarities, than parameters to be estimated, i.e. the <i>numberOfPoints</i> &#183; <i>numberOfDimensions</i> position coordinates. A practical guide is:</p>
+<dl>
+<dd>
+for <i>numberOfDimensions</i> = 1 you need &#8805; 5 objects
+<dd>
+for <i>numberOfDimensions</i> = 2 you need &#8805; 9 objects
+<dd>
+for <i>numberOfDimensions</i> = 3 you need &#8805; 13 objects
+</dl>
+<p>
+There is no feasible way to be certain that you have found the true global minimum. However, by using a great number of different random starting configurations to scale the same data it is often possible to obtain practical certainty. Although the procedure for obtaining an initial configuration is based on a <i>linear</i> relation between distance and (dis)similarity, it gives a very good approximation of the optimal <b>Configuration</b> and the <b>Minimizer</b> practically always finds the global minimum from it (I guess...).  A way to find out is to try the <i>numberOfRepetitions</i> parameter which gives you the possibility to fit many times and each time start with another random initial configuration.</p>
+<h3>
+Algorithm</h3>
+<dl>
+<dd>
+1. The Dissimilarity object is converted to a Distance object in the same way as in <a href="Dissimilarity__To_Distance___.html">Dissimilarity: To Distance...</a>.)
+<dd>
+2. From the Distance object an initial Configuration is found by first transforming the Distance object to a matrix with scalar products of distances and subsequently solving for the first <i>numberOfDimensions</i> eigenvectors of this matrix.
+<dd>
+3. A minimalization algorithm is started that tries to minimize a function. In this function:
+<dd>
+&#8226; 3.1 We normalize the current Configuration from the minimizer
+<dd>
+&#8226; 3.2 Calculate a new Distance object from the configuration
+<dd>
+&#8226; 3.3 Do a monotone regression of this Distance on the Dissimilarity. This results in a new Distance object.
+<dd>
+&#8226; 3.4 Calculate stress from this Distance and the Distance obtained from Dissimilarity.
+</dl>
+<p>
+The optimization process is ccontrolledby a conjugate gradient minimization algorithm that tries to minimize the <i>stress</i> function. In <a href="Kruskal__1964_.html">Kruskal (1964)</a>, a steepest descent algorithm is used wwhichis less efficient. </p>
+<hr>
+<address>
+	<p>&copy; djmw, April 7, 2004</p>
+</address>
+</body>
+</html>

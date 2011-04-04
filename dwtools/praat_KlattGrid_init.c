@@ -1207,8 +1207,6 @@ Add nasal/tracheal antiformant and bandwidth tier
 #undef KlattGrid_REPLACE_FORMANTGRID_ACTION
 
 	praat_addAction2 (classKlattGrid, 1, classSound, 1, L"Filter by vocal tract...", 0, 1, DO_Sound_KlattGrid_filterByVocalTract);
-
-	INCLUDE_MANPAGES (manual_KlattGrid)
 }
 
 

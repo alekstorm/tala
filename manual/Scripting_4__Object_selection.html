@@ -1,0 +1,213 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 4. Object selection</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 4. Object selection
+</b></font></table></table>
+<p>
+This chapter is about how to select objects from your script, and how to find out what objects are currently selected.</p>
+<h3>
+Selecting objects</h3>
+<p>
+To simulate the mouse-clicked and dragged selection in the list of objects, you have the following commands:</p>
+<dl>
+<dt>
+<b>select</b> <i>object</i>
+<dd>
+selects one object, and deselects all others. If there are more objects with the same name, the most recently created one (i.e., the one nearest to the bottom of the list of objects) is selected:
+</dl>
+<code>&nbsp;&nbsp;&nbsp;
+<b>select</b> Sound hallo<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Play<br></code>
+<dl>
+<dt>
+<b>plus</b> <i>object</i>
+<dd>
+adds one object to the current selection.
+<dt>
+<b>minus</b> <i>object</i>
+<dd>
+removes one object from the current selection.
+<dt>
+<b>select all</b>
+<dd>
+selects all objects (please try not to use this, because it will remove even the objects that your script did not create!):
+</dl>
+<code>&nbsp;&nbsp;&nbsp;
+<b>select all</b><br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Remove<br></code>
+<p>
+In the Praat shell, newly created objects are automatically selected. This is also true in scripts:</p>
+<code>
+! Generate a sine wave, play it, and draw its spectrum.<br></code>
+<code>
+Create Sound from formula... sine377 1 0 1 44100<br></code>
+<code>
+... 0.9 * sin (2 * pi * 377 * x)<br></code>
+<code>
+Play<br></code>
+<code>
+To Spectrum... yes<br></code>
+<code>
+! Draw the Spectrum:<br></code>
+<code>
+Draw... 0 5000 20 80 yes<br></code>
+<code>
+! Remove the created Spectrum and Sound:<br></code>
+<code>
+<b>plus</b> Sound sine377<br></code>
+<code>
+Remove<br></code>
+<p>
+Instead of by name, you can also select objects by their sequential ID:</p>
+<code>
+<b>select</b> 43<br></code>
+<p>
+This selects the 43rd object that you created since you started the program (see below).</p>
+<h3>
+Querying selected objects</h3>
+<p>
+You can get the name of a selected object into a string variable. For instance, the following reads the name of the second selected Sound (as counted from the top of the list of objects) into the variable <i>name</i>$:</p>
+<code>
+name$ = <b>selected$</b> ("Sound", 2)<br></code>
+<p>
+If the Sound was called "Sound hallo", the variable <i>name</i>$ will contain the string "hallo". To get the name of the topmost selected Sound object, you can leave out the number:</p>
+<code>
+name$ = <b>selected$</b> ("Sound")<br></code>
+<p>
+To get the full name (type + name) of the third selected object, you do:</p>
+<code>
+fullName$ = <b>selected$</b> (3)<br></code>
+<p>
+To get the full name of the topmost selected object, you do:</p>
+<code>
+fullName$ = <b>selected$</b> ()<br></code>
+<p>
+To get the type and name out of the full name, you do:</p>
+<code>
+type$ = extractWord$ (fullName$, "")<br></code>
+<code>
+name$ = extractLine$ (fullName$, " ")<br></code>
+<p>
+Negative numbers count from the bottom. Thus, to get the name of the bottom-most selected Sound object, you say</p>
+<code>
+name$ = <b>selected$</b> ("Sound", -1)<br></code>
+<p>
+You would use <b>selected$</b> for drawing the object name in a picture:</p>
+<code>
+Draw... 0 0 0 0 yes<br></code>
+<code>
+name$ = <b>selected$</b> ("Sound")<br></code>
+<code>
+Text top... no This is sound 'name$'<br></code>
+<p>
+For identifying previously selected objects, this method is not very suitable, since there may be multiple objects with the same name:</p>
+<code>
+# The following two lines are OK:<br></code>
+<code>
+soundName$ = <b>selected$</b> ("Sound", -1)<br></code>
+<code>
+pitchName$ = <b>selected$</b> ("Pitch")<br></code>
+<code>
+# But the following line is questionable, since it doesn't<br></code>
+<code>
+# necessarily select the previously selected Sound again:<br></code>
+<code>
+<b>select</b> Pitch 'pitchName$'<br></code>
+<p>
+Instead of this error-prone approach, you should get the object's unique ID. The correct version of our example becomes:</p>
+<code>
+sound = <b>selected</b> ("Sound", -1)<br></code>
+<code>
+pitch = <b>selected</b> ("Pitch")<br></code>
+<code>
+# Correct:<br></code>
+<code>
+<b>select</b> pitch<br></code>
+<p>
+To get the number of selected Sound objects into a variable, use</p>
+<code>
+numberOfSelectedSounds = <b>numberOfSelected</b> ("Sound")<br></code>
+<p>
+To get the number of selected objects into a variable, use</p>
+<code>
+numberOfSelectedObjects = <b>numberOfSelected</b> ()<br></code>
+<h3>
+Example: doing something to every selected Sound</h3>
+<code>
+n = <b>numberOfSelected</b> ("Sound")<br></code>
+<code>
+<b>for</b> i to n<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+sound'i' = <b>selected</b> ("Sound", i)<br></code>
+<code>
+<b>endfor</b><br></code>
+<code>
+# Median pitches of all selected sounds:<br></code>
+<code>
+<b>for</b> i to n<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>select</b> sound'i'<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+To Pitch... 0.0 75 600<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+f0 = Get quantile... 0 0 0.50 Hertz<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Remove<br></code>
+<code>
+<b>endfor</b><br></code>
+<code>
+# Restore selection:<br></code>
+<code>
+<b>if</b> n &gt;= 1<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>select</b> sound1<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>for</b> i from 2 to n<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>plus</b> sound'i'<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>endfor</b><br></code>
+<code>
+<b>endif</b><br></code>
+<h3>
+A shortcut</h3>
+<p>
+Instead of</p>
+<code>
+Create Sound from formula... sine 1 0 1 44100<br></code>
+<code>
+... 0.5 * sin(2*pi*1000*x)<br></code>
+<code>
+sound = <b>selected</b> ("Sound")<br></code>
+<p>
+you can just write</p>
+<code>
+sound = Create Sound from formula... sine 1 0 1 44100<br></code>
+<code>
+... 0.5 * sin(2*pi*1000*x)<br></code>
+<p>
+and instead of</p>
+<code>
+To Pitch... 0.0 75 600<br></code>
+<code>
+pitch = <b>selected</b> ("Pitch")<br></code>
+<p>
+you can write</p>
+<code>
+pitch = To Pitch... 0.0 75 600<br></code>
+<p>
+This only works if the command creates a single object.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 8, 2011</p>
+</address>
+</body>
+</html>

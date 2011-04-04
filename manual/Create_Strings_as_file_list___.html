@@ -1,0 +1,78 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Create Strings as file list...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Create Strings as file list...
+</b></font></table></table>
+<p>
+A command in the <a href="New_menu.html">New menu</a> to create a <a href="Strings.html">Strings</a> object containing a list of files in a given directory.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Name</b>
+<dd>
+the name of the resulting Strings object, usually "fileList".
+<dt>
+<b>Path</b>
+<dd>
+the directory name, with an optional wildcard for selecting files.
+</dl>
+<h3>
+Behaviour</h3>
+<p>
+The resulting Strings object will contain an alphabetical list of file names, without the preceding path through the directory structures. If there are not files that match <i>path</i>, the Strings object will contain no strings.</p>
+<h3>
+Usage</h3>
+<p>
+There are two ways to specify the path.</p>
+<p>
+One way is to specify a directory name only. On Unix, you could type <b>/usr/people/miep/sounds</b> or <b>/usr/people/miep/sounds/</b>, for instance. On Windows, <b>C:\Document and Settings\Miep\Sounds</b> or <b>C:\Document and Settings\Miep\Sounds\</b>. On Macintosh, <b>/Users/miep/Sounds</b> or <b>/Users/miep/Sounds/</b>. Any of these return a list of all the files in the specified directory.</p>
+<p>
+The other way is to specify a wildcard (a single asterisk) for the file names. To get a list of all the files whose names start with "hal" and end in ".wav", type <b>/usr/people/miep/sounds/hal*.wav</b>, <b>C:\Document and Settings\Miep\Sounds\hal*.wav</b>, or <b>/Users/miep/Sounds/hal*.wav</b>.</p>
+<h3>
+Script usage</h3>
+<p>
+In a script, you can use this command to cycle through the files in a directory. For instance, to read in all the sound files in a specified directory, you could use the following script:</p>
+<code>
+directory$ = "/usr/people/miep/sounds"<br></code>
+<code>
+Create Strings as file list... list 'directory$'/*.wav<br></code>
+<code>
+numberOfFiles = Get number of strings<br></code>
+<code>
+for ifile to numberOfFiles<br></code>
+<code>
+&nbsp;&nbsp;&nbsp;select Strings list<br></code>
+<code>
+&nbsp;&nbsp;&nbsp;fileName$ = Get string... ifile<br></code>
+<code>
+&nbsp;&nbsp;&nbsp;Read from file... 'directory$'/'fileName$'<br></code>
+<code>
+endfor<br></code>
+<p>
+If the script has been saved to a script file, you can use paths that are relative to the directory where you saved the script. Thus, with</p>
+<code>
+Create Strings as file list... list *.wav<br></code>
+<p>
+you get a list of all the .wav files that are in the same directory as the script that contains this line. And to get a list of all the .wav files in the directory Sounds that resides in the same directory as your script, you can do</p>
+<code>
+Create Strings as file list... list Sounds/*.wav<br></code>
+<p>
+As is usual in Praat scripting, the forward slash ("/") in this example can be used on all platforms, including Windows. This makes your script portable across platforms.</p>
+<h3>
+See also</h3>
+<p>
+To get a list of directories instead of files, use <a href="Create_Strings_as_directory_list___.html">Create Strings as directory list...</a>.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="FAQ__Scripts.html">FAQ: Scripts</a>
+<li><a href="Scripting_6_4__Files.html">Scripting 6.4. Files</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, September 19, 2006</p>
+</address>
+</body>
+</html>

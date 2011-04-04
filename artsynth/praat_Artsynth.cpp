@@ -325,8 +325,6 @@ END
 
 DIRECT (ArticulatorySynthesisTutorial) Melder_help (L"Articulatory synthesis"); END
 
-extern "C" void manual_Artsynth_init (ManPages me);
-
 extern "C" void praat_uvafon_Artsynth_init (void);
 extern "C" void praat_uvafon_Artsynth_init (void) {
 	Thing_recognizeClassesByName (classArt, classArtword, classSpeaker, NULL);
@@ -393,8 +391,6 @@ extern "C" void praat_uvafon_Artsynth_init (void) {
 	praat_addAction1 (classVocalTract, 0, L"Formula...", 0, 0, DO_VocalTract_formula);
 	praat_addAction1 (classVocalTract, 0, L"Hack", 0, 0, 0);
 	praat_addAction1 (classVocalTract, 0, L"To Matrix", 0, 0, DO_VocalTract_to_Matrix);
-
-	manual_Artsynth_init (theCurrentPraatApplication -> manPages);
 }
 
 /* End of file praat_Artsynth.cpp */

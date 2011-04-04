@@ -1,0 +1,45 @@
+<html><head><meta name="robots" content="index,follow">
+<title>SoundRecorder</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+SoundRecorder
+</b></font></table></table>
+<p>
+With the Praat SoundRecorder window you can record a mono or stereo sound for subsequent viewing and analysis in Praat. The SoundRecorder appears on your screen if you choose <a href="Record_mono_Sound___.html">Record mono Sound...</a> or <a href="Record_stereo_Sound___.html">Record stereo Sound...</a> from the <a href="New_menu.html">New menu</a>.</p>
+<p>
+Depending on your system, the SoundRecorder window may allow you to choose the sampling frequency, the input gain, and the input device (microphone, line, or digital). The sound input level is monitored continuously with one or two meters. The resulting sound has 16 bits per sample, like sounds on an audio CD.</p>
+<h3>
+Usage</h3>
+<p>
+To record the sound, use the Record and Stop buttons in the SoundRecorder window. Click <b>Save to list</b> to copy the recorded sound to the object window (or <b>Save left channel to list</b> or <b>Save right channel to list</b> to copy the left or right channel if you have a stereo sound). The name of the resulting Sound object will be taken from the text field next to the button clicked.</p>
+<h3>
+Size of the recording buffer</h3>
+<p>
+The size of the recording buffer determines how many seconds of sound you can record. For instance, if the recording buffer is 20 megabytes (the standard value), you can record 220 seconds in stereo (440 seconds in mono) at a sampling frequency of 22050 Hz, or 110 seconds in stereo (220 seconds in mono) at a sampling frequency of 44100 Hz. You can change the size of the recording buffer with <b>Sound input prefs...</b> from the Preferences menu.</p>
+<p>
+If you recorded a very long sound, it is probable that you cannot copy it to the list of objects. In such a case, you can still write the sound to disk with one of the <b>Save</b> commands in the <b>File</b> menu. You can then open such a long sound file in Praat with <a href="Open_long_sound_file___.html">Open long sound file...</a> from the Open menu.</p>
+<h3>
+The File menu</h3>
+<p>
+If your computer has little memory, a very long recorded sound can be too big to be copied to the list of objects. Fortunately, the File menu contains commands to save the recording to a sound file on disk, so that you will never have to lose your recording.</p>
+<h3>
+Sound pressure calibration</h3>
+<p>
+Your computer's sound-recording software returns integer values between -32768 and 32767. Praat divides them by 32768 before putting them into a Sound object, so that the values in the Sound objects are always between -1 and +1.</p>
+<p>
+The Praat program considers these numbers to be air pressures in units of Pascal, but they are probably not the actual true air pressures that went into the microphone. For how to obtain the true air pressures, perform a <a href="sound_pressure_calibration.html">sound pressure calibration</a>.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Intro_1_1__Recording_a_sound.html">Intro 1.1. Recording a sound</a>
+<li><a href="Intro_2_1__Saving_a_sound_to_disk.html">Intro 2.1. Saving a sound to disk</a>
+<li><a href="Play.html">Play</a>
+<li><a href="Sound.html">Sound</a>
+<li><a href="Types_of_objects.html">Types of objects</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 29, 2011</p>
+</address>
+</body>
+</html>

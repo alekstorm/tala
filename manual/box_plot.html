@@ -1,0 +1,65 @@
+<html><head><meta name="robots" content="index,follow">
+<title>box plot</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+box plot
+</b></font></table></table>
+<p>
+A box plot provides a simple graphical summary of data. These plots originate from the work of <a href="Tukey__1977_.html">Tukey (1977)</a>.</p>
+<h3>
+Definitions</h3>
+<p>
+The following figure shows an annotated box plot.</p>
+<p><font size=-2>[sorry, no pictures yet in the web version of this manual]</font></p>
+<p>
+To understand the box plot we need the following definitions:</p>
+<dl>
+<dd>
+<i>q25</i> = lower quartile, 25%of the data lie below this value
+<dd>
+<i>q50</i> = median, 50%of the data lie below this value
+<dd>
+<i>q75</i> = upper quartile, 25%of the data lie above this value
+</dl>
+<p>
+The following definitions all depend on these quantiles:</p>
+<dl>
+<dd>
+<i>hspread</i> = |<i>q75</i> &#8211; <i>q25</i>| (50%interval)
+<dd>
+<i>lowerOuterFence</i> = <i>q25</i> &#8211; 3.0 * <i>hspread</i> (not in figure)
+<dd>
+<i>lowerInnerFence</i> = <i>q25</i> &#8211; 1.5 * <i>hspread</i> (not in figure)
+<dd>
+<i>upperInnerFence</i> = <i>q75</i> + 1.5 * <i>hspread</i>
+<dd>
+<i>upperOuterFence</i> = <i>q75</i> + 3.0 * <i>hspread</i>
+<dd>
+<i>lowerWhisker</i> = smallest data value larger then <i>lowerInnerFence</i>
+<dd>
+<i>upperWhisker</i> = largest data value smaller then <i>upperInnerFence</i>
+</dl>
+<p>
+The box plot is a summary of the data in which:</p>
+<ul>
+<li>
+&nbsp;the horizontal lines of the rectangle correspond to <i>q25</i>, <i>q50</i> and <i>q75</i>, respectively.
+<li>
+&nbsp;the dotted line corresponds to the mean.
+<li>
+&nbsp;the outliers outside the <i>outerFences</i> are drawn with an 'o'.
+<li>
+&nbsp;the outliers in the intervals (<i>lowerOuterFence</i>, <i>lowerInnerFence</i>) and (<i>upperInnerFence</i>, <i>upperOuterFence</i>) are drawn with an '*'.
+<li>
+&nbsp;the whisker lines outside the rectangle connect <i>q25</i> with <i>lowerWhisker</i>, and, <i>q75</i> with <i>upperWhisker</i>, respectively. With no outliers present, the whiskers mark minimum and/or maximum of the data.
+</ul>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="TableOfReal__Draw_box_plots___.html">TableOfReal: Draw box plots...</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, May 24, 2000</p>
+</address>
+</body>
+</html>

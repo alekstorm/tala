@@ -12,7 +12,7 @@ OBJECTS = Cepstrum.o Cepstrumc.o Cepstrum_and_Spectrum.o \
 	LPC_and_Tube.o \
 	Sound_and_LPC.o  Sound_and_LPC_robust.o \
 	Sound_and_Cepstrum.o Tube.o \
-	praat_LPC_init.o manual_LPC.o
+	praat_LPC_init.o
 
 .PHONY: all clean
 

@@ -1,0 +1,64 @@
+<html><head><meta name="robots" content="index,follow">
+<title>TableOfReal: Draw biplot...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+TableOfReal: Draw biplot...
+</b></font></table></table>
+<p>
+A command to draw a biplot for each column in the selected <a href="TableOfReal.html">TableOfReal</a> object.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Xmin</b>, <b>Xmax</b>, <b>Ymin</b>, <b>Ymax</b>
+<dd>
+determine the drawing boundaries.
+<dt>
+<b>Split factor</b>
+<dd>
+determines the weighing of the row and column structure (see below).
+</dl>
+<h3>
+Behaviour</h3>
+<dl>
+<dd>
+1. Get the <a href="singular_value_decomposition.html">singular value decomposition</a> <b>U</b> <b></b>&#931; <b>V</b>&#8242; of the table.
+<dd>
+2. Calculate weighing factors <i></i>&#955; for row and columns
+</dl>
+<table width="100%"><tr><td align=middle>
+<i></i>&#955;<sub>r,1</sub> = <i></i>&#963;<sub>1</sub><sup><i>splitFactor</i></sup></table>
+<table width="100%"><tr><td align=middle>
+<i></i>&#955;<sub>c,1</sub> = <i></i>&#963;<sub>1</sub><sup>1-<i>splitFactor</i></sup></table>
+<table width="100%"><tr><td align=middle>
+<i></i>&#955;<sub>r,2</sub> = <i></i>&#963;<sub>2</sub><sup><i>splitFactor</i></sup></table>
+<table width="100%"><tr><td align=middle>
+<i></i>&#955;<sub>c,2</sub> = <i></i>&#963;<sub>2</sub><sup>1-<i>splitFactor</i></sup></table>
+<dl>
+<dd>
+where <i></i>&#963;<sub>1</sub> and <i></i>&#963;<sub>2</sub> are the first and the second singular values
+<dd>
+3. For the rows (<i>i</i> from 1..<i>numberOfRows</i>) form:
+</dl>
+<table width="100%"><tr><td align=middle>
+<i>xr</i><sub><i>i</sub></i> = <i>U</i><sub><i>i1</sub></i>  <i></i>&#955;<sub><i>r</i>,1</sub></table>
+<table width="100%"><tr><td align=middle>
+<i>yr</i><sub><i>i</sub></i> = <i>U</i><sub><i>i2</sub></i>  <i></i>&#955;<sub><i>r</i>,2</sub></table>
+<dl>
+<dd>
+4. For the columns (<i>i</i> from 1..<i>numberOfColumns</i>) form:
+</dl>
+<table width="100%"><tr><td align=middle>
+<i>xc</i><sub><i>i</sub></i> = <i>V</i><sub><i>i1</sub></i>  <i></i>&#955;<sub><i>c</i>,1</sub></table>
+<table width="100%"><tr><td align=middle>
+<i>yc</i><sub><i>i</sub></i> = <i>V</i><sub><i>i2</sub></i>  <i></i>&#955;<sub><i>c</i>,2</sub></table>
+<dl>
+<dd>
+5. Plot the points (<i>xr</i><sub><i>i</sub></i>, yr<sub><i>i</sub></i>) and (<i>xc</i><sub><i>i</sub></i>, yc<sub><i>i</sub></i>) in the same figure with the corresponding row and column labels.
+</dl>
+<hr>
+<address>
+	<p>&copy; djmw, June 3, 2002</p>
+</address>
+</body>
+</html>

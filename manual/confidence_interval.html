@@ -1,0 +1,35 @@
+<html><head><meta name="robots" content="index,follow">
+<title>confidence interval</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+confidence interval
+</b></font></table></table>
+<p>
+The confidence interval gives an estimated range of values which is likely to include an unknown population parameter. The estimated range is calculated from a given set of observations.</p>
+<h3>
+Examples</h3>
+<p>
+At the &#945; level of significance a two sided confidence interval for the true mean &#956; for normally distributed data with mean <i>mean</i> and known standard deviation <i></i>&#963; can be constructed as:</p>
+<table width="100%"><tr><td align=middle>
+<i>mean</i> - <i>z</i><sub>&#945;/2</sub> &#963; / &#8730;<i>N</i> &#8804; &#956; &#8804; <i>mean</i> + <i>z</i><sub>&#945;/2</sub> &#963; / &#8730;<i>N</i>,</table>
+<p>
+where <i>z</i><sub>&#945;/2</sub> = invGaussQ (&#945;/2) and <i>N</i> is the number of observations.</p>
+<p>
+If the standard deviation is <i>not</i> known, we have to estimate its value (<i>s</i>) from the data and the formula above becomes:</p>
+<table width="100%"><tr><td align=middle>
+<i>mean</i> - <i>t</i><sub><i>&#945;/2;N</i></sub> <i>s</i> / &#8730;<i>N</i> &#8804; &#956; &#8804; <i>mean</i> + <i>t</i><sub><i>&#945;/2;N</i></sub> <i>s</i> / &#8730;<i>N</i>,</table>
+<p>
+where <i>t</i><sub><i>&#945;/2;N</i></sub> = invStudentQ (<i></i>&#945;/2, <i>N</i>-1).</p>
+<p>
+For <i></i>&#945;=0.05 and <i>N</i>=20 we get <i>z</i><sub>0.025</sub>=1.96 and <i>t</i><sub>0.025;20</sub>=2.039. This shows that when we have to estimate the standard deviation from the data, the confidence interval is wider than when the standard deviation is known beforehand.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="confidence_level.html">confidence level</a>
+<li><a href="Correlation__Confidence_intervals___.html">Correlation: Confidence intervals...</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, November 5, 2001</p>
+</address>
+</body>
+</html>

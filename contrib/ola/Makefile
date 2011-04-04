@@ -9,7 +9,7 @@ CFLAGS = $(DEFS) -I ../../dwtools -I ../../fon -I ../../sys -I ../../dwsys -I ..
 CPPFLAGS = $(CFLAGS)
 
 OBJECTS = KNN.o \
-   KNN_threads.o Pattern_to_Categories_cluster.o KNN_prune.o FeatureWeights.o praat_contrib_Ola_KNN.o manual_KNN.o
+   KNN_threads.o Pattern_to_Categories_cluster.o KNN_prune.o FeatureWeights.o praat_contrib_Ola_KNN.o
 
 .PHONY: all clean
 

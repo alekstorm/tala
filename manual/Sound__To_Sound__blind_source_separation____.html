@@ -1,0 +1,145 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: To Sound (blind source separation)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: To Sound (blind source separation)...
+</b></font></table></table>
+<p>
+Analyze the selected multi-channel sound into its independent components by an iterative method.</p>
+<p>
+The method to find the independent components tries to simultaneously diagonalize a number of <a href="CrossCorrelationTable.html">CrossCorrelationTable</a>s that are calculated from the multi-channel sound at different lag times.</p>
+<h3>
+Settings</h3>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+6*0.4
+height = 100*(1+6*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half Sound: To Sound (blind source separation)
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Time range (s):
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.0
+Text... 380 left y half 10.0
+Helvetica
+y += 40
+Text... 255 right y half Number of cross-correlations:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 20
+Helvetica
+y += 40
+Text... 255 right y half Lag times:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.002
+Helvetica
+y += 40
+Text... 255 right y half Maximum number of iterations:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 100
+Helvetica
+y += 40
+Text... 255 right y half Tolerance:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.001
+Helvetica
+y += 40
+Text... 255 right y half Diagonalization method:
+Paint rounded rectangle... 'buttonColour<code></code>' 265 505 y-12 y+12 1.0
+Draw rounded rectangle... 265 505 y-12 y+12 2.0
+Text... 270 left y half ffdiag
+Helvetica
+y += 40
+</p>
+<dl>
+<dt>
+<b>Time range (s)</b>
+<dd>
+defines the time range over which the <b>CrossCorrelationTable</b>s of the sound will be calculated.
+<dt>
+<b>Number of cross-correlations</b>
+<dd>
+defines the number of <b>CrossCorrelationTable</b>s to be calculated.
+<dt>
+<b>Lag times</b>
+<dd>
+defines the lag time <i></i>&#964;<sub>0</sub> for the <b>CrossCorrelationTable</b>s. These tables are calculated at lag times <i></i>&#964;<sub>k</sub>=(<i>k</i> - 1)<i></i>&#964;<sub>0</sub>, where <i>k</i> runs from 1 to <i>numberOfCrosscorrelations</i>.
+<dt>
+<b>Maximum number of iterations</b>
+<dd>
+defines a stopping criterion for the iteration. The iteration will stops when this number is reached.
+<dt>
+<b>Tolerance</b>
+<dd>
+defines another stopping criterion that depends on the method used.
+<dt>
+<b>Diagonalization method</b>
+<dd>
+defines the method to determine the independent components.
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+This method tries to decompose the sound according to the <i>instantaneous</i> mixing model</p>
+<table width="100%"><tr><td align=middle>
+<b>Y</b>=<b>A</b>&#183;<b>X</b>.</table>
+<p>
+In this model <b>Y</b> is a matrix with the selected multi-channel sound, <b>A</b> is a so-called <i>mixing matrix</i> and <b>X</b> is a matrix with the independent components. Essentially the model says that each channel in the multi-channel sound is a linear combination of the independent sound components in <b>X</b>. If we would know the mixing matrix <b>A</b> we could easily solve the model above for <b>X</b> by standard means. However, if we don't know <b>A</b> and we don't know <b>X</b>, the decomposition of <b>Y</b> is underdetermined as there are an infinite number of possibilities. </p>
+<p>
+One approach to solve the equation above is to make assumptions about the statistical properties of the components in the matrix <b>X</b>: it turns out that a sufficient assumption is to assume that the components in <b>X</b> at each time instant are <i>statistically independent</i>. This is not an unrealistic assumption in many cases, although in practice it need not be exactly the case. Another assumption is that the mixing matrix is constant.</p>
+<p>
+The theory says that statistically independent signals are not correlated (although the reverse is not always true: signals that are not correlated don't have to be statistically independent). The methods implemented here all follow this lead as follows. If we calculate the <a href="CrossCorrelationTable.html">CrossCorrelationTable</a> for the left and the right side signals of the equation above, then, for the multi-channel sound <b>Y</b> this will result in a cross-correlation matrix <b>C</b>. For the right side we obtain <b>A</b>&#183;<b>D</b>&#183;<b>A</b>&#8242;, where <b>D</b> is a diagonal matrix because all the cross-correlations between different independent components are zero by definition. This results in the following identity: </p>
+<table width="100%"><tr><td align=middle>
+<b>C</b>(&#964;)=<b>A</b>&#183;<b>D</b>(&#964;)&#183;<b>A</b>&#8242;, for all values of the lag time &#964;.</table>
+<p>
+This equation says that, given the model, the cross-correlation matrix can be diagonalized for all values of the lag time <i>by the same transformation matrix</i> <b>A</b>.</p>
+<p>
+If we calculate the cross-correlation matrices for a number of different lag times, say 20, we then have to obtain the matrix <b>A</b> that diagonalizes them all. Unfortunately there is no closed form solution that diagonalizes more than two matrices at the same time and we have to resort to iterative algorithms for joint diagonalization. </p>
+<p>
+Two of these algorithms are the <b>qdiag</b> method as described in <a href="Vollgraf___Obermayer__2006_.html">Vollgraf & Obermayer (2006)</a> and the <b>ffdiag</b> method as described in <a href="Ziehe_et_al___2004_.html">Ziehe et al. (2004)</a>. </p>
+<p>
+Unfortunately the convergence criteria of these two algorithms cannot easily be compared as the criterion for the <b>ffdiag</b> algorithm is the relative change of the square root of the sum of the squared off-diagonal elements of the transformed cross-correlation matrices and the criterion for <b>qdiag</b> is the largest change in the eigenvectors norm during an iteration.</p>
+<hr>
+<address>
+	<p>&copy; djmw, February 12, 2011</p>
+</address>
+</body>
+</html>

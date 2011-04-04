@@ -1,0 +1,46 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: To TextGrid (silences)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: To TextGrid (silences)...
+</b></font></table></table>
+<p>
+A command that creates a <a href="TextGrid.html">TextGrid</a> in which the silent and sounding intervals of the selected <a href="Sound.html">Sound</a> are marked.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Silence threshold (dB)</b>
+<dd>
+determines the maximum silence intensity value in dB with respect to the maximum intensity. For example, if <i>imax</i> is the maximum intensity in dB then the maximum silence intensity is calculated as <i>imax - silenceThreshold</i>; intervals with an intensity smaller than this value are considered as silent intervals.
+<dt>
+<b>Minimum silent interval duration (s)</b>
+<dd>
+determines the minimum duration for an interval to be considered as silent. If you don't want the closure for a plosive to count as silent then use a large enough value.
+<dt>
+<b>Minimum sounding interval duration (s)</b>
+<dd>
+determines the minimum duration for an interval to be <b>not</b> considered as silent. This offers the possibility to filter out small intense bursts of relatively short duration.
+<dt>
+<b>Silent interval label</b>
+<dd>
+determines the label for a silent interval in the TextGrid.
+<dt>
+<b>Sounding interval label</b>
+<dd>
+determines the label for a sounding interval in the TextGrid.
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+First the intensity is determined according to the <a href="Sound__To_Intensity___.html">Sound: To Intensity...</a> command. Next the silent and sounding intervas are determined as in the <a href="Intensity__To_TextGrid__silences____.html">Intensity: To TextGrid (silences)...</a> command.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, December 5, 2006</p>
+</address>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Add to dynamic menu...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Add to dynamic menu...
+</b></font></table></table>
+<p>
+A command in the <b>File</b> menu of the <a href="ScriptEditor.html">ScriptEditor</a>.</p>
+<p>
+With this command, you add a button to the dynamic menu in the <a href="Object_window.html">Object window</a>. This button will only be visible if the specified combination of objects is selected. Clicking the button will invoke the specified <a href="Praat_script.html">Praat script</a>.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<i>Class 1</i>
+<dd>
+the name of the class of the object to be selected. For instance, if a button should only appear if the user selects a Sound, this would be "Sound".
+<dt>
+<i>Number 1</i>
+<dd>
+the number of objects of <i>class1</i> that have to be selected. For most built-in commands, this number is unspecified (0); e.g., the user can choose <b>Draw</b>... or <b>To Spectrum</b> regardless of whether she selected 1, 2, 3, or more Sound objects. If the number of selected objects is different from <i>number1</i>, the button will be visible but insensitive.
+<dt>
+<i>Class 2</i>
+<dd>
+the name of the class of the second object to be selected, different from <i>class1</i>. Normally the empty string ("").
+<dt>
+<i>Number 2</i>
+<dd>
+the number of selected objects of <i>class2</i>.
+<dt>
+<i>Class 3</i>
+<dd>
+the name of the class of the third object to be selected, different from <i>class1</i> and <i>class2</i>. Normally the empty string ("").
+<dt>
+<i>Number 3</i>
+<dd>
+the number of selected objects of <i>class3</i>.
+<dt>
+<i>Command</i>
+<dd>
+the title of the new command button (or label, or submenu title). To get a separator line instead of a command text (only in a submenu), you specify a unique string that starts with a hyphen ('-'); the <a href="ButtonEditor.html">ButtonEditor</a> may contain some examples of this. If the command starts with "Save as ", it will be placed in the <a href="Save_menu.html">Save menu</a>.
+<dt>
+<i>After command</i>
+<dd>
+a button title in the dynamic menu or submenu where you want your new button. If you specify the empty string (""), your button will be put at the bottom. You can specify a push button, a label (subheader), or a cascade button (submenu title) here.
+<dt>
+<i>Depth</i>
+<dd>
+0 if you want your button in the main menu, 1 if you want it in a submenu.
+<dt>
+<i>Script</i>
+<dd>
+the full path name of the script to invoke. If you saved the script you are editing, its name will already have been filled in here. If you do not specify a script, you will get a separating label or cascading menu title instead, depending on the <i>depth</i> of the following command.
+</dl>
+<h3>
+Example</h3>
+<p>
+If one object of class Sound is selected, you want a submenu called "Filters" after the <b>Convolve</b> button, containing the commands "Autocorrelation" and "Band filter...", separated by a horizontal separator line:</p>
+<code>
+Add to dynamic menu... Sound 0 "" 0 "" 0 "Filters -" "Convolve" 0<br></code>
+<code>
+Add to dynamic menu... Sound 1 "" 0 "" 0 "Autocorrelation" "Filters -" 1 /u/praats/demo/autocorrelation.praat<br></code>
+<code>
+Add to dynamic menu... Sound 0 "" 0 "" 0 "-- band filter --" "Autocorrelation" 1<br></code>
+<code>
+Add to dynamic menu... Sound 1 "" 0 "" 0 "Band filter..." "-- band filter --" 1 /u/praats/demo/bandFilter.praat<br></code>
+<p>
+Note that "Filters -" will be a submenu title, <i>because</i> it is followed by subcommands (<i>depth</i> 1). Note that <i>number1</i> is 1 only for the executable buttons; for the cascade button and the separator line, this number is ignored.</p>
+<h3>
+Usage convention</h3>
+<p>
+Please adhere to the convention that commands that take arguments, end in three dots (...).</p>
+<h3>
+Using this command in a script</h3>
+<p>
+To add a dynamic button from a script (perhaps your <a href="initialization_script.html">initialization script</a> or a <a href="plug-ins.html">plug-in</a>), use the hidden shell command <a href="Add_action_command___.html">Add action command...</a> instead.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Add_to_fixed_menu___.html">Add to fixed menu...</a>
+<li><a href="History_mechanism.html">History mechanism</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 29, 2011</p>
+</address>
+</body>
+</html>

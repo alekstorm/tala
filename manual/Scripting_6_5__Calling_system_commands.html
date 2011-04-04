@@ -1,0 +1,83 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 6.5. Calling system commands</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 6.5. Calling system commands
+</b></font></table></table>
+<p>
+From a Praat script you can call system commands. These are the same commands that you would normally type into a terminal window or into the Window command line prompt.</p>
+<dl>
+<dt>
+<b>system</b> <i>command</i>
+<dd>
+executes a system command.
+</dl>
+<p>
+Some system commands are identical on all platforms (Macintosh, Windows, Unix):</p>
+<code>
+<b>system</b> mkdir sounds<br></code>
+<p>
+which creates a new directory <b>sounds</b> in the directory of the script. Some other system commands are different on different platforms. For instance, to throw away all WAV files in the script's directory, you would write</p>
+<code>
+<b>system</b> del *.wav<br></code>
+<p>
+on Windows, but</p>
+<code>
+<b>system</b> rm *.wav<br></code>
+<p>
+on Macintosh and Unix.</p>
+<p>
+The script will stop running if a system command returns an error. For instance,</p>
+<code>
+<b>system</b> mkdir sounds<br></code>
+<p>
+will stop the script if the directory <b>sounds</b> already exists. In order to prevent this, you can tell Praat to ignore the return value of the system command:</p>
+<dl>
+<dt>
+<b>system_nocheck</b> <i>command</i>
+<dd>
+executes a system command, ignoring any errors.
+</dl>
+<p>
+Thus, to make sure that the directory <b>sounds</b> exists, you would write</p>
+<code>
+<b>system_nocheck</b> mkdir sounds<br></code>
+<dl>
+<dt>
+<b>environment$ (</b><i>symbol-string</i><b></b>)
+<dd>
+returns the value of an environment variable, e.g.
+</dl>
+<code>&nbsp;&nbsp;&nbsp;
+homeDirectory$ = <b>environment$</b> ("HOME")<br></code>
+<dl>
+<dt>
+<b>stopwatch</b>
+<dd>
+returns the time that has elapsed since the previous <b>stopwatch</b>.
+</dl>
+<p>
+Here is a Praat script that measures how long it takes to do a million assignments:</p>
+<code>
+stopwatch<br></code>
+<code>
+for i to 1000000<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+a = 1.23456789e123<br></code>
+<code>
+endfor<br></code>
+<code>
+time = stopwatch<br></code>
+<code>
+echo 'a' 'time:3'<br></code>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_6__Communication_outside_the_script.html">Scripting 6. Communication outside the script</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 6, 2008</p>
+</address>
+</body>
+</html>

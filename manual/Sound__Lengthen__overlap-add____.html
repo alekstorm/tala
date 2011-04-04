@@ -1,0 +1,38 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: Lengthen (overlap-add)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: Lengthen (overlap-add)...
+</b></font></table></table>
+<p>
+A command to convert each selected <a href="Sound.html">Sound</a> object into a longer new <a href="Sound.html">Sound</a> object.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Minimum frequency (Hz)</b>
+<dd>
+the minimum pitch used in the periodicity analysis. The standard value is 75 Hz. For the voice of a young child, set this to 150 Hz.The shortest voiceless interval in the decomposition is taken as 1.5 divided by <i>minimum frequency</i>.
+<dt>
+<b>Maximum frequency (Hz)</b>
+<dd>
+the maximum pitch used in the periodicity analysis. The standard value is 600 Hz. For an adult male voice, set this to 300 Hz.
+<dt>
+<b>Factor</b>
+<dd>
+the factor with which the sound will be lengthened. The standard value is 1.5. If you take a value less than 1, the resulting sound will be shorter than the original. A value larger than 3 will not work.
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+<a href="overlap-add.html">overlap-add</a>.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, September 16, 2003</p>
+</address>
+</body>
+</html>

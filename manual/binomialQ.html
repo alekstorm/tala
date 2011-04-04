@@ -1,0 +1,68 @@
+<html><head><meta name="robots" content="index,follow">
+<title>binomialQ</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+binomialQ
+</b></font></table></table>
+<p>
+A function that can be used in <a href="Formulas.html">Formulas</a>. The complement of the cumulative binomial distribution.</p>
+<h3>
+Syntax</h3>
+<dl>
+<dt>
+<code>binomialQ (<i>p</i>, <i>k</i>, <i>n</i>)</code>
+<dd>
+the probability that in <i>n</i> trials an event with probability <i>p</i> will occur at least <i>k</i> times.
+</dl>
+<h3>
+Calculator example</h3>
+<p>
+A die is suspected to yield more sixes than a perfect die would do. In order to test this suspicion, you throw it 1,000 times. The result is 211 sixes.</p>
+<p>
+The probability that a perfect die yields at least 211 sixes is, according to <a href="Calculator___.html">Calculator...</a>, <code>binomialQ (1/6, 211, 1000)</code> = 0.000152.</p>
+<h3>
+Script example</h3>
+<p>
+You convert 1000 values of pitch targets in Hz to the nearest note on the piano keyboard. 597 of those values turn out to be in the A, B, C, D, E, F, or G regions (the white keys), and 403 values turn out to be in the A#, C#, D#, F#, or G# regions (the black keys). Do our subjects have a preference for the white keys? The following script computes the probability that in the case of no preference the subjects would target the white keys at least 597 times. This is compared with a <i></i>&#967;<sup>2</sup> test.</p>
+<code>
+a = 597<br></code>
+<code>
+b = 403<br></code>
+<code>
+p = 7/12 ; no preference<br></code>
+<code>
+echo *** Binomial test 'a', 'b', p = 'p:6' ***<br></code>
+<code>
+pbin = binomialQ (p, a, a+b)<br></code>
+<code>
+printline P (binomial) = 'pbin:6'<br></code>
+<code>
+# Chi-square test with Yates correction:<br></code>
+<code>
+x2 = (a - 1/2 - p * (a+b))^2/(p*(a+b)) + (b + 1/2 - (1-p) * (a+b))^2/((1-p)*(a+b))<br></code>
+<code>
+px2 = chiSquareQ (x2, 1)<br></code>
+<code>
+printline P (chi-square) = 'px2:6'<br></code>
+<p>
+The result is:</p>
+<code>
+*** Binomial test 597, 403, p = 0.583333 ***<br></code>
+<code>
+P (binomial) = 0.199330<br></code>
+<code>
+P (chi-square) = 0.398365<br></code>
+<p>
+The <i></i>&#967;<sup>2</sup> test is two-sided (it signals a preference for the white or for the black keys), so it has twice the probability of the binomial test.</p>
+<p>
+We cannot conclude from this test that people have a preference for the white keys. Of course, we cannot conclude either that people do not have such a preference.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Formulas_4__Mathematical_functions.html">Formulas 4. Mathematical functions</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, December 4, 2002</p>
+</address>
+</body>
+</html>

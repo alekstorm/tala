@@ -1,0 +1,277 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Demo window</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Demo window
+</b></font></table></table>
+<p>
+The Demo window is a window in which you can draw and ask for user input. You can use it for demonstrations, presentations, simulations, adaptive listening experiments, and stand-alone programs (see <a href="Scripting_9__Turning_a_script_into_a_stand-alone_progra.html">Scripting 9. Turning a script into a stand-alone program</a>).</p>
+<p>
+The Demo window is Praat's least visible window: you can create it only through a script. Try the following script after selecting a Sound object:</p>
+<code>
+demo Draw... 0 3 -1 1 yes curve<br></code>
+<p>
+You see the Demo window turning up on the screen, with the Sound painted into it. It works because the <b>Draw...</b> command is available in the Objects window when you select a Sound. Then try:</p>
+<code>
+demo Draw line... 0 -1 3 1<br></code>
+<p>
+You see a line drawn from (0 seconds, -1 Pa) to (3 seconds, +1 Pascal) in the waveform. It works because the <b>Draw line...</b> command is available in the Picture window. Then try:</p>
+<code>
+demo Erase all<br></code>
+<code>
+demo Red<br></code>
+<code>
+demo Axes... 0 100 0 100<br></code>
+<code>
+demo Text... 50 centre 50 half Hello<br></code>
+<p>
+You see a text appearing in red, in the centre of the window. This works because you are using commands from the Picture window, including the <a href="Axes___.html">Axes...</a> command, which sets the world coordinates to something else than before (before, the world coordinates were determined by the Sound).</p>
+<p>
+Now suppose you want the Sound to appear in the top half of the window, and some texts in the bottom left and bottom right corners of the window. You can use <a href="Select_outer_viewport___.html">Select outer viewport...</a> and <a href="Select_inner_viewport___.html">Select inner viewport...</a>, if you know that the size of the Demo window is "100" horizontally and "100" vertically (rather than 12&#215;12, as the Picture window), and that the point (0, 0) lies in the bottom left (rather than the top left, as in the Picture window):</p>
+<code>
+demo Erase all<br></code>
+<code>
+demo Black<br></code>
+<code>
+demo Times<br></code>
+<code>
+demo 24<br></code>
+<code>
+demo Select outer viewport... 0 100 50 100<br></code>
+<code>
+demo Draw... 0 0 0 0 yes curve<br></code>
+<code>
+demo Select inner viewport... 0 100 0 100<br></code>
+<code>
+demo Axes... 0 10 0 10<br></code>
+<code>
+demo Text... 0 left 0 bottom Left bottom corner<br></code>
+<code>
+demo Text... 10 right 0 bottom Right bottom corner<br></code>
+<p>
+As the title page of a presentation, you could do:</p>
+<code>
+demo Erase all<br></code>
+<code>
+demo Select inner viewport... 0 100 0 100<br></code>
+<code>
+demo Axes... 0 100 0 100<br></code>
+<code>
+demo Paint rectangle... purple 0 100 0 100<br></code>
+<code>
+demo Pink<br></code>
+<code>
+demo Text... 50 centre 50 half This is my title<br></code>
+<h3>
+Getting user input</h3>
+<p>
+For almost all applications, you will want the user (or the participant in an experiment) to be able to click on things in the Demo window, or to control the Demo window by pressing keys. Here is a presentation with two screens:</p>
+<code>
+demo Erase all<br></code>
+<code>
+demo Select inner viewport... 0 100 0 100<br></code>
+<code>
+demo Axes... 0 100 0 100<br></code>
+<code>
+demo Paint rectangle... purple 0 100 0 100<br></code>
+<code>
+demo Pink<br></code>
+<code>
+demo Text... 50 centre 50 half This is the first page<br></code>
+<code>
+<b>demoWaitForInput</b> ( )<br></code>
+<code>
+demo Erase all<br></code>
+<code>
+demo Paint rectangle... purple 0 100 0 100<br></code>
+<code>
+demo Text... 50 centre 50 half This is the second page<br></code>
+<p>
+In this example, you go from the first to the second screen either by clicking with the mouse or by pressing any key. You will usually want to be more selective in your choice of user actions to respond to. The function <b>demoWaitForInput</b> always returns 1, so that you can use it nicely in a loop, in which you can react selectively:</p>
+<code>
+label FIRST_SCREEN<br></code>
+<code>
+demo Erase all<br></code>
+<code>
+demo Black<br></code>
+<code>
+demo Times<br></code>
+<code>
+demo 24<br></code>
+<code>
+demo Select inner viewport... 0 100 0 100<br></code>
+<code>
+demo Axes... 0 100 0 100<br></code>
+<code>
+demo Paint rectangle... purple 0 100 0 100<br></code>
+<code>
+demo Pink<br></code>
+<code>
+demo Text... 50 centre 50 half This is the first page<br></code>
+<code>
+while demoWaitForInput ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+if <b>demoClicked</b> ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+goto SECOND_SCREEN<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+elsif <b>demoKeyPressed</b> ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if <b>demoKey$</b> ( ) = "&#8594;" or demoKey$ ( ) = " "<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+goto SECOND_SCREEN<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+endif<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+endif<br></code>
+<code>
+endwhile<br></code>
+<code>
+label SECOND_SCREEN<br></code>
+<code>
+demo Erase all<br></code>
+<code>
+demo Paint rectangle... purple 0 100 0 100<br></code>
+<code>
+demo Text... 50 centre 50 half This is the second page<br></code>
+<code>
+while demoWaitForInput ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+if demoClicked ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+goto END<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+elsif demoKeyPressed ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if demoKey$ ( ) = "&#8592;"<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+goto FIRST_SCREEN<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+elsif demoKey$ ( ) = "&#8594;" or demoKey$ ( ) = " "<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+goto END<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+endif<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+endif<br></code>
+<code>
+endwhile<br></code>
+<code>
+label END<br></code>
+<p>
+This script allows you to use the arrow keys and the space bar to navigate between the two screens. A shorter version is:</p>
+<code>
+label FIRST_SCREEN<br></code>
+<code>
+demo Erase all<br></code>
+<code>
+demo Black<br></code>
+<code>
+demo Times<br></code>
+<code>
+demo 24<br></code>
+<code>
+demo Select inner viewport... 0 100 0 100<br></code>
+<code>
+demo Axes... 0 100 0 100<br></code>
+<code>
+demo Paint rectangle... purple 0 100 0 100<br></code>
+<code>
+demo Pink<br></code>
+<code>
+demo Text... 50 centre 50 half This is the first page<br></code>
+<code>
+while demoWaitForInput ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+goto SECOND_SCREEN <b>demoInput</b> ("&#8226;&#8594; ")<br></code>
+<code>
+endwhile<br></code>
+<code>
+label SECOND_SCREEN<br></code>
+<code>
+demo Erase all<br></code>
+<code>
+demo Paint rectangle... purple 0 100 0 100<br></code>
+<code>
+demo Text... 50 centre 50 half This is the second page<br></code>
+<code>
+while demoWaitForInput ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+goto END demoInput ("&#8226;&#8594; ")<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+goto FIRST_SCREEN demoInput ("&#8592;")<br></code>
+<code>
+endwhile<br></code>
+<code>
+label END<br></code>
+<p>
+This uses two tricks, namely the possibility of following the <b>goto</b> statement by a condition and using <b>demoInput</b> to quickly test for multiple possible inputs (the bullet represents a mouse click).</p>
+<h3>
+Getting click locations</h3>
+<p>
+You can use the functions <b>demoX</b> and <b>demoY</b> to see where the user has clicked. These function respond in world coordinates. To see whether the user has clicked in the sound that occupies the upper half of the screne in the above example, you do</p>
+<code>
+while demoWaitForInput ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+if demoClicked ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Select outer viewport... 0 100 50 100<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Axes... 0 3 -1 1<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if <b>demoX</b> ( ) &gt;= 0 and demoX ( ) &lt; 3 and <b>demoY</b> ( ) &gt;= -1 and demoY ( ) &lt; 1<br></code>
+<p>
+The last line can be shortened to:</p>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if <b>demoClickedIn</b> (0, 3, -1, 1)<br></code>
+<p>
+Another example of when you want to know the click location is when you test for a click on a button that you drew on the screen:</p>
+<code>
+demo Paint rounded rectangle... pink 30 70 16 24<br></code>
+<code>
+demo Text... 50 centre 20 half Analyse<br></code>
+<code>
+while demoWaitForInput ( )<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+goto ANALYSE demoClickedIn (30, 70, 16, 24)<br></code>
+<h3>
+Full-screen viewing</h3>
+<p>
+When you click in the "zoom box" (the green button in the title bar of the Demo window on the Mac), the Demo window will zoom out very strongly: it will fill up the whole screen. The menu bar becomes invisible, although you can still make it temporarily visible and accessible by moving the mouse to the upper edge of the screen. The Dock also becomes invisible, although you can make it temporarily visible and accessible by moving the mouse to the edge of the screen (the left, bottom, or right edge, depending on where your Dock normally is). When you click the zoom box again, the Demo window is restored to its original size. See also Tips and Tricks below.</p>
+<h3>
+Miscellaneous</h3>
+<p>
+In the above examples, things will often get drawn to the screen with some delay, i.e., you may not see the erasures and paintings happening. This is because several operating systems use <i>buffering</i> of graphics. These systems will draw the graphics only just before getting user input. This means that <b>demoWaitForInput</b> is the place where your drawings will typically be painted on the screen. If you want painting to happen earlier (e.g. in animations), you can use <b>demoShow ( )</b>.</p>
+<p>
+To see whether any function keys are pressed (during a mouse click or key press), you can use <b>demoShiftKeyPressed ( )</b>, <b>demoCommandKeyPressed ( )</b>, <b>demoOptionKeyPressed ( )</b>, and <b>demoExtraControlKeyPressed ( )</b>.</p>
+<p>
+To put some text in the title bar of the Demo window, try</p>
+<code>
+<b>demoWindowTitle</b> ("This is the title of my presentation")<br></code>
+<h3>
+Tips and Tricks</h3>
+<p>
+If you resize the Demo window with the handle in the bottom left, or if you zoom the window out to the full screen, you may see that the relative positions of the contents of the window will change. Also, clicking on buttons and in parts of the window may yield unexpected <i>x</i> and <i>y</i> values. It is therefore advisable to resize the window only if you are on a page that you can get out of by pressing a key, or by clicking anywhere in the window without using <b>demoX</b>, <b>demoY</b> or <b>demoClickedIn</b>.</p>
+<p>
+If you click away the Demo window while it is waiting for input, you get a message saying "You interrupted the script...". If you do not want to see this message, you should make sure that the user can reach the end of the script, for instance by pressing the &#8594; key on the last page. To make sure the user sees that the script has ended, you could end it with <b>demo Erase all</b>.</p>
+<p>
+Your demo can save its preferences in a directory of its choice, e.g. in <b>'preferencesDirectory$'/../GuineaPigAnalyzer</b> if your demo is called GuineaPigAnalyzer. If you want to be less conspicuous and like to use the Praat preferences directory instead, please use the <b>apps</b> subdirectory, in this way:</p>
+<code>
+createDirectory (preferencesDirectory$ + "/apps")<br></code>
+<code>
+createDirectory (preferencesDirectory$ + "/apps/GuineaPigAnalyzer")<br></code>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="ExperimentMFC_1__When_to_use_Praat.html">ExperimentMFC 1. When to use Praat</a>
+<li><a href="Insert_picture_from_file___.html">Insert picture from file...</a>
+<li><a href="Intro.html">Intro</a>
+<li><a href="ManPages.html">ManPages</a>
+<li><a href="Scripting_6_6__Controlling_the_user.html">Scripting 6.6. Controlling the user</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, December 4, 2010</p>
+</address>
+</body>
+</html>

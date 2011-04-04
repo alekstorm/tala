@@ -1,0 +1,40 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: De-emphasize (in-line)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: De-emphasize (in-line)...
+</b></font></table></table>
+<p>
+A command to change the spectral slope of every selected <a href="Sound.html">Sound</a> object.</p>
+<p>
+The reverse of <a href="Sound__Pre-emphasize__in-line____.html">Sound: Pre-emphasize (in-line)...</a>. For an example, see <a href="Source-filter_synthesis.html">Source-filter synthesis</a>.</p>
+<p>
+This is the in-line version of <a href="Sound__Filter__de-emphasis____.html">Sound: Filter (de-emphasis)...</a>, i.e., it does not create a new Sound object but modifies an existing object.</p>
+<h3>
+Setting</h3>
+<dl>
+<dt>
+<b>From frequency (Hz)</b>
+<dd>
+the frequency <i>F</i> above which the spectral slope will decrease by 6 dB/octave.
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+The de-emphasis factor <i></i>&#945; is computed as</p>
+<table width="100%"><tr><td align=middle>
+<i></i>&#945; = exp (-2 <i></i>&#960; <i>F</i> &#916;<i>t</i>)</table>
+<p>
+where &#916;<i>t</i> is the sampling period of the sound. Every sample <i>x</i><sub><i>i</sub></i> of the sound, except <i>x</i><sub>1</sub>, is then changed, going up from the second sample:</p>
+<table width="100%"><tr><td align=middle>
+<i>x</i><sub><i>i</sub></i> = <i>x</i><sub><i>i</sub></i> + <i></i>&#945; <i>x</i><sub><i>i</i>-1</sub></table>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Filtering.html">Filtering</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, March 9, 2003</p>
+</address>
+</body>
+</html>

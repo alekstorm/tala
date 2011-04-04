@@ -1,0 +1,212 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 3.1. Hello world</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 3.1. Hello world
+</b></font></table></table>
+<p>
+Many manuals of computer programming languages start with their answer on the following question:</p>
+<p>
+<i>How do I write the text "Hello world" on the screen?</i></p>
+<p>
+For the Praat scripting language, there are two answers.</p>
+<h3>
+1. "Hello world" in the Info window</h3>
+<p>
+The simplest answer is that you open the ScriptEditor window with <b>New Praat script</b> from the <b>Praat</b> menu, then type the following line into the ScriptEditor window:</p>
+<code>
+echo Hello world<br></code>
+<p>
+and finally choose <b>Run</b> from the <b>Run</b> menu.</p>
+<p>
+When you try this, the result should be that the Info window comes to the front, and that it shows the text <code>Hello world</code>:</p>
+<p>
+Select inner viewport... 0.2 5.8 0.2 3-0.2
+Axes... 0 100*5.6 100*(3-0.4) 0
+Paint rectangle... 0.8 0 560 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Paint circle... {1,1,0.25} 40 15 8
+Draw line... 40-7 15 40+7 15
+Paint circle... {0.25,1,0.25} 65 15 8
+Draw rectangle... 65-5 65+5 15-5 15+5
+Helvetica
+Text... 280 centre 15 half Praat Info
+Paint rectangle... 0.9 0 560 30 60
+Text... 5 left 45 half File   Edit   Search   Convert   Font   Help
+Draw line... 0 30 560 30
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+Courier
+Text... 0 left 75 half <font size=-1>Hello world</font>
+Draw rectangle... 0 560 0 260
+</p>
+<p>
+Now suppose that you to write two lines instead of just one, so you try a script with two lines:</p>
+<code>
+echo Hello world<br></code>
+<code>
+echo How do you do?<br></code>
+<p>
+This turns out not to do what you want: it seems to write only the text <code>How do you do?</code>. This happens because the <b>echo</b> command first erases the Info window, then writes the line of text. So the first line of the script did write the text <code>Hello world</code>, but the second line wiped it out and wrote <code>How do you do?</code> instead. The script that does what you want is</p>
+<code>
+echo Hello world<br></code>
+<code>
+printline How do you do?<br></code>
+<p>
+Now the result will be</p>
+<p>
+Select inner viewport... 0.2 5.8 0.2 3-0.2
+Axes... 0 100*5.6 100*(3-0.4) 0
+Paint rectangle... 0.8 0 560 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Paint circle... {1,1,0.25} 40 15 8
+Draw line... 40-7 15 40+7 15
+Paint circle... {0.25,1,0.25} 65 15 8
+Draw rectangle... 65-5 65+5 15-5 15+5
+Helvetica
+Text... 280 centre 15 half Praat Info
+Paint rectangle... 0.9 0 560 30 60
+Text... 5 left 45 half File   Edit   Search   Convert   Font   Help
+Draw line... 0 30 560 30
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+Courier
+Text... 0 left 75 half <font size=-1>Hello world</font>
+Text... 0 left 90 half <font size=-1>How do you do?</font>
+Draw rectangle... 0 560 0 260
+</p>
+<p>
+This works because <b>printline</b> write a line without erasing the Info window first.</p>
+<p>
+Finally, try the following script:</p>
+<code>
+printline Another try<br></code>
+<code>
+printline Goodbye<br></code>
+<p>
+The result could be</p>
+<p>
+Select inner viewport... 0.2 5.8 0.2 3-0.2
+Axes... 0 100*5.6 100*(3-0.4) 0
+Paint rectangle... 0.8 0 560 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Paint circle... {1,1,0.25} 40 15 8
+Draw line... 40-7 15 40+7 15
+Paint circle... {0.25,1,0.25} 65 15 8
+Draw rectangle... 65-5 65+5 15-5 15+5
+Helvetica
+Text... 280 centre 15 half Praat Info
+Paint rectangle... 0.9 0 560 30 60
+Text... 5 left 45 half File   Edit   Search   Convert   Font   Help
+Draw line... 0 30 560 30
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+Courier
+Text... 0 left 75 half <font size=-1>Hello world</font>
+Text... 0 left 90 half <font size=-1>How do you do?</font>
+Text... 0 left 105 half <font size=-1>Another try</font>
+Text... 0 left 120 half <font size=-1>Goodbye</font>
+Draw rectangle... 0 560 0 260
+</p>
+<p>
+In other words, <b>printline</b> writes lines into the Info window without erasing it, even if you run a script anew. This is why many Praat scripts that write into the Info window do an <b>echo</b> first, and follow it be a series of <b>printlines</b>.</p>
+<p>
+For more information on these commands, see <a href="Scripting_6_2__Writing_to_the_Info_window.html">Scripting 6.2. Writing to the Info window</a>.</p>
+<h3>
+2. "Hello world" in the Picture window.</h3>
+<p>
+You can also show text in the Picture window. If you are an experienced Praat user, you have probably used the comamnd <b>Text top...</b> before. You can use it do draw a text at the top of the current <i>viewport</i>, which is the part of the Picture window where the next drawing will occur and which is marked by the pink <i>margins</i>. Thus, when you select the top 4&#215;3 inches of the Picture window (with the mouse), set the font size to 12 (with the <b>Pen</b> menu), and run the script</p>
+<code>
+Text top... yes Hello world<br></code>
+<p>
+then you'll see</p>
+<p>
+Select inner viewport... 0.2 5.8 0.2 4.5-0.2
+Axes... 0 100*5.6 100*(4.5-0.4) 0
+Paint rectangle... 0.8 0 560 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Paint circle... {1,1,0.25} 40 15 8
+Draw line... 40-7 15 40+7 15
+Paint circle... {0.25,1,0.25} 65 15 8
+Draw rectangle... 65-5 65+5 15-5 15+5
+Helvetica
+Text... 280 centre 15 half Praat Picture
+Paint rectangle... 0.9 0 560 30 60
+Text... 5 left 45 half File   Edit   Margins   World   Select   Pen   Font   Help
+Draw line... 0 30 560 30
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+worldHeight = 4.5 - 1
+Select inner viewport... 0.2 5.8 0.8 0.8+worldHeight
+Axes... 0 5.6 worldHeight 0
+vpLeft = 0
+vpRight = 4
+vpTop = 0
+vpBottom = 3
+Paint rectangle... Pink vpLeft vpRight vpTop vpBottom
+Paint rectangle... White vpLeft+0.69 vpRight-0.69 vpTop+0.46 vpBottom-0.46
+Yellow
+Draw line... 3 0 3 worldHeight
+for i to worldHeight/3
+   Draw line... 0 i*3 5.6 i*3
+Red
+for i to 5
+   Text special... i centre 0 top Helvetica fontSize/1.2 0 'i'
+endfor
+for i to worldHeight
+   Text special... 0 left i half Helvetica fontSize/1.2 0 'i'
+endfor
+Black
+Draw line... 0 0 5.6 0
+Select outer viewport... 0.2 4.2 0.8 12
+Times
+Text top... yes Hello world
+Select inner viewport... 0.2 5.8 0.2 4.3
+Axes... 0 1 0 1
+Draw rectangle... 0 1 0 1
+</p>
+<p>
+So this works the same as when you choose <b>Text top...</b> from the <b>Margins</b> menu by hand, with <b>Far</b> switched on.</p>
+<p>
+If you want your script to always show the same text at the same position, with nothing else in the picture, then you can make your script a bit more extensive:</p>
+<code>
+Erase all<br></code>
+<code>
+Times<br></code>
+<code>
+12<br></code>
+<code>
+Select outer viewport... 0 4 0 3<br></code>
+<code>
+Text top... yes Hello world<br></code>
+<p>
+In this script, line 1 erases the Picture window, so that nothing besides your text can appear in the Picture window.</p>
+<p>
+Line 2 executes the command <b>Times</b> from the <b>Font</b> menu, so that the script will always draw the text in Times, even if you choose <b>Helvetica</b> in the <b>Font</b> menu with the mouse before you run the script (after the script has run, you'll see that <b>Times</b> is chosen in the <b>Font</b> menu).</p>
+<p>
+Line 3 executes the command <b>12</b> from the <b>Font</b> menu, setting the font size to 12 and setting the width of the pink margins accordingly.</p>
+<p>
+Line 4 executes the command <a href="Select_outer_viewport___.html">Select outer viewport...</a> from the <b>Select</b> menu. This performs an action that you would normally do by dragging the mouse, namely selecting the part of the Picture window that runs from 0 to 4 inches horizontally and from 0 to 3 inches vertically. After running the script, the <i>viewport</i> is indeed [0, 4] &#215; [0, 3], as you can clearly see from the pink margins above.</p>
+<p>
+Line 5 finally writes the text.</p>
+<p>
+For more information on these commands, see <a href="Picture_window.html">Picture window</a>.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_3__Simple_language_elements.html">Scripting 3. Simple language elements</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 8, 2011</p>
+</address>
+</body>
+</html>

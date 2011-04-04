@@ -1,0 +1,34 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: Get power...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: Get power...
+</b></font></table></table>
+<p>
+A command available in the <b>Query</b> menu if you select a <a href="Sound.html">Sound</a> object. The Info window will show the power within a specified time window. If the unit of sound amplitude is Pa (Pascal), the unit of power will be Pa<sup>2</sup>.</p>
+<h3>
+Setting</h3>
+<dl>
+<dt>
+<b>Time range (s)</b>
+<dd>
+the time range (<i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>). Values outside this range are ignored. If <i>t</i><sub>1</sub> is not less than <i>t</i><sub>2</sub>, the entire time domain of the sound is considered.
+</dl>
+<h3>
+Mathematical definition</h3>
+<p>
+The power is defined as</p>
+<table width="100%"><tr><td align=middle>
+1/(<i>t</i><sub>2</sub>-<i>t</i><sub>1</sub>)  &#8747;<sub><i>t</i>1</sub><sup><i>t</i>2</sup> <i>x</i><sup>2</sup>(<i>t</i>) <i>dt</i></table>
+<p>
+where <i>x</i>(<i>t</i>) is the amplitude of the sound. For how stereo sounds are handled, see <a href="Sound__Get_energy___.html">Sound: Get energy...</a>.</p>
+<h3>
+See also</h3>
+<p>
+For an interpretation of the power as the sound power in air, see <a href="Sound__Get_power_in_air.html">Sound: Get power in air</a>. For the total energy, see <a href="Sound__Get_energy___.html">Sound: Get energy...</a>.</p>
+<hr>
+<address>
+	<p>&copy; ppgb, January 29, 2007</p>
+</address>
+</body>
+</html>

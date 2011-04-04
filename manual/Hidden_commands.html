@@ -1,0 +1,30 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Hidden commands</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Hidden commands
+</b></font></table></table>
+<p>
+Some commands in Praat's fixed and dynamic menus are hidden by default. You can still call hidden commands from scripts, run them by clicking on them in a <a href="ButtonEditor.html">ButtonEditor</a>, or make them visible with the help of the <a href="ButtonEditor.html">ButtonEditor</a>.</p>
+<p>
+To hide commands that are visible by default, use the <a href="ButtonEditor.html">ButtonEditor</a>.</p>
+<h3>
+What commands are hidden by default?</h3>
+<p>
+Commands that are expected to be of very limited use, are hidden by default. Examples are:</p>
+<dl>
+<dd>
+1. The commands <a href="Add_menu_command___.html">Add menu command...</a>, <b>Hide menu command...</b>, <b>Show menu command...</b>, <a href="Add_action_command___.html">Add action command...</a>, <b>Hide action command...</b>, and <b>Show action command...</b> in the <b>Praat</b> menu of the <a href="Object_window.html">Object window</a>. These are used in the <a href="buttons_file.html">buttons file</a> and could be used by an <a href="initialization_script.html">initialization script</a> or a <a href="plug-ins.html">plug-in</a> as well; in an interactive session, however, the functionality of these commands is part of the <a href="ScriptEditor.html">ScriptEditor</a> and the <a href="ButtonEditor.html">ButtonEditor</a>.
+<dd>
+2. The command <b>Read from old Praat picture file...</b> in the <b>File</b> menu of the <a href="Picture_window.html">Picture window</a>. For reading a file format that was in use before May, 1995.
+<dd>
+3. In the Praat program, the action <b>Sound: Save as Sesam file...</b>. Writes a file format in common use in the Netherlands on Vax machines. In the Dutch phonetics departments, the plugs were pulled from the Vaxes in 1994.
+<dd>
+4. In the Praat program, the action <b>Sound: To Cochleagram (edb)...</b>. Needed by one person in 1994. An interesting, but undocumented procedure (De Boer's gammatone filter bank plus Meddis &amp; Hewitt's synapse model), which does not create a normally interpretable Cochleagram object.
+</dl>
+<hr>
+<address>
+	<p>&copy; ppgb, January 29, 2011</p>
+</address>
+</body>
+</html>

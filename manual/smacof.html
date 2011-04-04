@@ -1,0 +1,44 @@
+<html><head><meta name="robots" content="index,follow">
+<title>smacof</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+smacof
+</b></font></table></table>
+<p>
+Scaling by Majorizing a Complicated Function, the iterative algorithm to find an optimal Configuration.</p>
+<dl>
+<dd>
+1.  Initialize
+<dd>
+&nbsp;&nbsp;&nbsp;1.a. Get initial Configuration <b>Z</b>
+<dd>
+&nbsp;&nbsp;&nbsp;1.b. Set stress <i></i>&#963;<sub><i>n</sub></i><sup>[0]</sup> to a very large value.
+<dd>
+&nbsp;&nbsp;&nbsp;1.c. Set iteration counter <i>k</i> = 0
+<dd>
+2.  Increase iteration counter by one: <i>k</i> = <i>k</i> + 1
+<dd>
+3.  Calculate distances <i>d</i><sub><i>ij</sub></i>(<b>Z</b>).
+<dd>
+4.  Transform dissimilarities <i></i>&#948;<sub><i>ij</sub></i> into disparities <i>d</i>&#8242;<sub><i>ij</sub></i>.
+<dd>
+5.  Standardize the disparities so that <i></i>&#951;<sub><i>d</i>&#8242;</sub><sup>2</sup> = <i>n</i>(<i>n</i>&#8211;1)/2.
+<dd>
+6.  Compute the Guttman transform <b>X</b><sup>[<i>k</i>]</sup> of <b>Z</b>.
+<dd>
+7.  Compute new distances <i>d</i><sub><i>ij</sub></i>(<b>X</b><sup>[<i>k</i>]</sup>).
+<dd>
+8.  Compute normalized stress <i></i>&#963;<sub><i>n</sub></i> (<b>d</b>&#8242;, <b>X</b><sup>[<i>k</i>]</sup>)
+<dd>
+9.  If |<i></i>&#963;<sub><i>n</sub></i><sup>[<i>k</i>]</sup> &#8211; <i></i>&#963;<sub><i>n</sub></i><sup>[<i>k</i>&#8211;1]</sup>| / <i></i>&#963;<sub><i>n</sub></i><sup>[<i>k</i>&#8211;1]</sup> &lt; <i></i>&#949; or <i>k</i> &gt; <i>maximumNumberOfIterations</i>, then stop
+<dd>
+10. Set <b>Z</b> = <b>X</b><sup>[<i>k</i>]</sup>, and go to 2.
+</dl>
+<p>
+This algorithm goes back to <a href="De_Leeuw__1977_.html">De Leeuw (1977)</a>.</p>
+<hr>
+<address>
+	<p>&copy; djmw, January 19, 1998</p>
+</address>
+</body>
+</html>

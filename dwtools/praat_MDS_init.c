@@ -1764,9 +1764,6 @@ void praat_uvafon_MDS_init (void)
 	praat_addAction3 (classDistance, 0, classConfiguration, 1, classSalience, 1, L"Get VAF...", 0, 1, DO_Distance_Configuration_Salience_vaf);
 	praat_addAction3 (classDistance, 0, classConfiguration, 1, classSalience, 1, L"Analyse", 0, 0, 0);
 	praat_addAction3 (classDistance, 0, classConfiguration, 1, classSalience, 1, L"To Configuration (indscal)...", 0, 0, DO_Distance_Configuration_Salience_indscal);
-
-
-	INCLUDE_MANPAGES (manual_MDS_init)
 }
 
 /* End of file praat_MDS_init.c */

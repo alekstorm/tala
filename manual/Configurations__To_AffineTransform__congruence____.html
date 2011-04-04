@@ -1,0 +1,38 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Configurations: To AffineTransform (congruence)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Configurations: To AffineTransform (congruence)...
+</b></font></table></table>
+<p>
+A command that creates an <a href="AffineTransform.html">AffineTransform</a> object from two selected <a href="Configuration.html">Configuration</a> objects.</p>
+<p>
+We calculate the affine transform that transforms the second selected Configuration object to match the first selected Configuration object as closely as possible. The degree of proportionality is the congruence between corresponding dimensions.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Maximum number of iterations</b>
+<dd>
+sets a limit to the number of iterations.
+<dt>
+<b>Tolerance</b>
+<dd>
+also determines when the iteration stops. This happens if |<i>f</i>(<b>T</b><sub><i>i</sub></i>)&#8211;<i>f</i>(<b>T</b><sub><i>i</i>+1</sub>)| &lt; <i>tolerance</i> &#183; <i>f</i>(<b>T</b><sub><i>i</sub></i>), where <i>f</i>(<b>T</b><sub><i>i</sub></i>) is the sum of the congruences for the <i>i</i><sup>th</sup> iteration (see below).
+</dl>
+<p>
+The iteration process stops when either the <i>maximum number of iterations</i> is reached or the <i>tolerance</i> criterion is met, which ever one is first.</p>
+<h3>
+Algorithm</h3>
+<p>
+Sometimes the criterion used in a <a href="Procrustes_transform.html">Procrustes transform</a> is too restrictive for comparing two configurations. This criterion is only zero when the positions in the rotated configuration (<b>A</b><b>T</b>) equal the positions in the other configuration (<b>B</b>). <a href="Brokken__1983_.html">Brokken (1983)</a> proposed an algorithm to maximize instead the sum of congruences between corresponding dimensions of <b>AT</b> and <b>B</b>. Specifically he proposed to maximize</p>
+<table width="100%"><tr><td align=middle>
+<i>f</i>(<b>T</b>) = &#8721;<sub><i>i</i>=1..<i>numberOfDimensions</sub></i> <b>t</b>&#8242;<sub><i>i</sub></i><b>A</b>&#8242;<b>b</b><sub><i>i</sub></i> / ((<b>t</b>&#8242;<sub><i>i</sub></i><b>A</b>&#8242;<b>A</b><b>t</b><sub><i>i</sub></i>)<sup>1/2</sup>(<b>b</b>&#8242;<sub><i>i</sub></i><b>b</b><sub><i>i</sub></i>)<sup>1/2</sup>),</table>
+<p>
+where <b>t</b>&#8242;<sub><i>i</sub></i> and <b>b</b>&#8242;<sub><i>i</sub></i> are the <i>i</i><sup>th</sup> column of <b>T</b> and <b>B</b>, respectively.  A direct solution for <b>T</b> is not available, it can only be obtained by an iterative procedure. The implemented algorithm is from <a href="Kiers___Groenen__1996_.html">Kiers & Groenen (1996)</a> and shows excellent convergence properties.</p>
+<hr>
+<address>
+	<p>&copy; djmw, April 7, 2004</p>
+</address>
+</body>
+</html>

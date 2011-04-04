@@ -1,0 +1,248 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 6.6. Controlling the user</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 6.6. Controlling the user
+</b></font></table></table>
+<p>
+You can temporarily halt a Praat script:</p>
+<dl>
+<dt>
+<b>pause</b> <i>text</i>
+<dd>
+suspends execution of the script, and allows the user to interrupt it. A message window will appear with the <i>text</i> and the buttons Stop and Continue:
+</dl>
+<code>
+<b>pause</b> The next file will be beerbeet.TextGrid<br></code>
+<p>
+In the pause window you can include the same kinds of arguments as in a <a href="Scripting_6_1__Arguments_to_the_script.html">form</a>. Here is an extensive example:</p>
+<code>
+echo script<br></code>
+<code>
+compression = 1<br></code>
+<code>
+number_of_channels = 2<br></code>
+<code>
+worth = 3<br></code>
+<code>
+for i to 5<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>beginPause</b> ("Hi")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>comment</b> ("Type a lot of nonsense below.")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>natural</b> ("Number of people", 10)<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>real</b> ("Worth", worth+1)<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>positive</b> ("Sampling frequency (Hz)", "44100.0 (= CD quality)")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>word</b> ("hi", "hhh")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>sentence</b> ("lo", "two words")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>text</b> ("ko", "jkgkjhkj g gdfg dfg")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>boolean</b> ("You like it?", 1)<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+if worth &lt; 6<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>choice</b> ("Compression", compression)<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("lossless (FLAC)")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("MP3")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("Ogg")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+endif<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>optionMenu</b> ("Number of channels", number_of_channels)<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("mono")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("stereo")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("quadro")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>comment</b> ("Then click Stop or one of the continuation buttons.")<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+clicked = <b>endPause</b> ("Continue", "Next", "Proceed", 2)<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+printline 'number_of_people' 'worth' 'sampling_frequency' 'clicked'<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+printline Compression: 'compression' ('compression$')<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+printline Number of channels: 'number_of_channels$'<br></code>
+<code>
+endfor<br></code>
+<p>
+This example uses several tricks. A useful one is seen with <i>number_of_channels</i>: this is at the same time the value that is passed to <b>optionMenu</b> (and therefore determines the setting of the "Number of channels" menu when the window appears) and the name of the variable in which the user's chosen value of "Number of channels" is stored (because "number_of_channels" is what you get by replacing the spaces in "Number of channels" with underscores and turning its first letter to lower case.</p>
+<p>
+Your own pause windows are not likely to be as rich as the above example. For instance, the example has three continuation buttons (the second of these is the default button, i.e. the button that you can "click" by pressing the Enter or Return key). You will often use only one continuation button, for instance</p>
+<code>
+<b>endPause</b> ("Continue", 1)<br></code>
+<p>
+or</p>
+<code>
+<b>endPause</b> ("Finish", 1)<br></code>
+<p>
+or</p>
+<code>
+<b>endPause</b> ("OK", 1)<br></code>
+<p>
+If your script shows multiple different pause windows, then it is in fact a <i>wizard</i>, and it becomes useful to have</p>
+<code>
+<b>endPause</b> ("Next", 1)<br></code>
+<p>
+for most of them, and</p>
+<code>
+<b>endPause</b> ("Finish", 1)<br></code>
+<p>
+for the last one.</p>
+<p>
+The possibility of multiple continuation buttons can save the user a mouse click. The following script, for instance, requires two mouse clicks per sound:</p>
+<code>
+for i to 20<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Read from file... sound'i'.wav<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Play<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Remove<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>beginPause</b> ("Rate the quality")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>comment</b> ("How good is the sound on a scale from 1 to 7?")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>choice</b> ("Quality", 4)<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("1")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("2")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("3")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("4")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("5")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("6")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("7")<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>endPause</b> (if i = 20 then "Finish" else "Next" fi, 1)<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+printline 'quality'<br></code>
+<code>
+endfor<br></code>
+<p>
+The following script works faster:</p>
+<code>
+for i to 20<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Read from file... sound'i'.wav<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Play<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Remove<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>beginPause</b> ("Rate the quality")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>comment</b> ("How good is the sound on a scale from 1 to 7?")<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+quality = <b>endPause</b> ("1", "2", "3", "4", "5", "6", "7", 0)<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+printline 'quality'<br></code>
+<code>
+endfor<br></code>
+<p>
+In this example, the 0 at the end of <b>endPause</b> means that there is no default button.</p>
+<h3>
+File selection</h3>
+<p>
+If you want the user to choose a file name for reading (opening), do</p>
+<code>
+fileName$ = <b>chooseReadFile$</b> ("Open a table file")<br></code>
+<code>
+if fileName$ &lt;&gt; ""<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+table = Read Table from tab-separated file... 'fileName$'<br></code>
+<code>
+endif<br></code>
+<p>
+A file selector window will appear, with (in this example) "Open a table file" as the title. If the user clicks <b>OK</b>, the variable <code>fileName$</code> will contain the name of the file that the user selected; if the user clicks <b>Cancel</b>, the variable <code>fileName$</code> will contain the empty string ("").</p>
+<p>
+If you want the user to choose a file name for writing (saving), do</p>
+<code>
+select mySound<br></code>
+<code>
+fileName$ = <b>chooseWriteFile$</b> ("Save as a WAV file", "mySound.wav")<br></code>
+<code>
+if fileName$ &lt;&gt; ""<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Save as WAV file... 'fileName$'<br></code>
+<code>
+endif<br></code>
+<p>
+A file selector window will appear, with (in this example) "Save as a WAV file" as the title and "mySound.wav" as the suggested file name (which the user can change). If the user clicks <b>OK</b>, the form will ask for confirmation if the file name that the user typed already exists. If the user clicks <b>OK</b> with a new file name, or clicks <b>OK</b> in the confirmation window, the variable <code>fileName$</code> will contain the file name that the user typed; if the user clicks <b>Cancel</b> at any point, the variable <code>fileName$</code> will contain the empty string ("").</p>
+<p>
+If you want the user to choose a directory (folder) name, do</p>
+<code>
+directoryName$ = <b>chooseDirectory$</b> ("Choose a directory to save all the new files in")<br></code>
+<code>
+if directoryName$ &lt;&gt; ""<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+for i to numberOfSelectedSounds<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+select sound [i]<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Save as WAV file... 'directoryName$'/sound'i'.wav<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+endfor<br></code>
+<code>
+endif<br></code>
+<p>
+A directory selector window will appear, with (in this example) "Choose a directory to save all the new files in" as the title. If the user clicks <b>OK</b>, the variable <code>directoryName$</code> will contain the name of the directory that the user selected; if the user clicks <b>Cancel</b>, the variable <code>directoryName$</code> will contain the empty string ("").</p>
+<h3>
+A non-pausing pause window without a Stop button</h3>
+<p>
+Especially if you use the pause window within the <a href="Demo_window.html">Demo window</a>, you may not want to give the user the capability of ending the script by hitting <b>Stop</b> or closing the pause window. In that case, you can add an extra argument to <b>endPause</b> that denotes the cancel button:</p>
+<code>
+<b>beginPause</b> ("Learning settings")<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>positive</b> ("Learning rate", "0.01")<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>choice</b> ("Directions", 3)<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("Forward")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("Backward")<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> ("Bidirectional")<br></code>
+<code>
+clicked = <b>endPause</b> ("Cancel", "OK", 2, 1)<br></code>
+<code>
+if clicked = 2<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+learningRate = learning_rate<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+includeForward = directions = 1 or directions = 3<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+includeBackward = directions = 2 or directions = 3<br></code>
+<code>
+endif<br></code>
+<p>
+In this example, the default button is 2 (i.e. <b>OK</b>), and the cancel button is 1 (i.e. <b>Cancel</b>). The form will now contain no <b>Stop</b> button, and if the user closes the window, this will be the same as clicking <b>Cancel</b>, namely that <code>clicked</code> will be 1 (because the Cancel button is the first button) and the variables <code>learning_rate</code>, <code>directions</code> and <code>directions$</code> will not be changed (i.e. they might remain undefined).</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_6__Communication_outside_the_script.html">Scripting 6. Communication outside the script</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, February 1, 2011</p>
+</address>
+</body>
+</html>

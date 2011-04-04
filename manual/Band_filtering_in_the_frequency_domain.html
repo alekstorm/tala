@@ -1,0 +1,43 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Band filtering in the frequency domain</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Band filtering in the frequency domain
+</b></font></table></table>
+<p>
+We describe how band filtering in the frequency domain is performed.</p>
+<p>
+We start with a <a href="Sound.html">Sound</a> and end with a filter bank representation of this sound. We assume a standard analysis context: a sound divided into frames according to a certain <i>window length</i> and <i>time step</i>. We will simulate a filterbank with <i>N</i> filters.</p>
+<p>
+The algorithm for each sound frame proceeds in the following way:</p>
+<dl>
+<dd>
+1. Apply a Gaussian window to the sound frame.
+<dd>
+2. Convert the windowed frame into a <a href="Spectrum.html">Spectrum</a> object.
+<dd>
+3. Convert the spectral amplitudes to <i>energy</i> values by squaring the real and imaginary parts and multiplying by <i>df</i>, the frequency distance between two successive frequency points in the spectrum. Since the Spectrum object only contains positive frequencies, we have to multiply all energy values, except the first and the last frequency, by another factor of 2 to compensate for negative frequencies.
+<dd>
+4. For each of the <i>N</i> filters in the filter bank: determine the inner product of its filter function with the energies as determined in the previous step. The result of each inner product is the energy in the corresponding filter.
+<dd>
+5. Convert the energies in each filter to power by dividing by the <i>window length</i>.
+<dd>
+6. Correct the power, due to the windowing of the frame, by dividing by the integral of the <i>squared</i> windowing function.
+<dd>
+7. Convert all power values to <i>dB</i>'s according to 10 * log10 (<i>power</i> / 4 10<sup>-10</sup>).
+</dl>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Filtering.html">Filtering</a>
+<li><a href="Sound___Pitch__To_FormantFilter___.html">Sound & Pitch: To FormantFilter...</a>
+<li><a href="Sound__To_BarkFilter___.html">Sound: To BarkFilter...</a>
+<li><a href="Sound__To_FormantFilter___.html">Sound: To FormantFilter...</a>
+<li><a href="Sound__To_MelFilter___.html">Sound: To MelFilter...</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, April 4, 2001</p>
+</address>
+</body>
+</html>

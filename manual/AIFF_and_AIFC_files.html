@@ -1,0 +1,32 @@
+<html><head><meta name="robots" content="index,follow">
+<title>AIFF and AIFC files</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+AIFF and AIFC files
+</b></font></table></table>
+<p>
+Ways for storing a <a href="Sound.html">Sound</a> object on disk.</p>
+<h3>
+File format</h3>
+<h3>
+Reading</h3>
+<p>
+<a href="Read_from_file___.html">Read from file...</a> recognizes AIFF and AIFC files with 8-bit and 16-bit encoding, but not compressed AIFC files. It recognizes any sampling frequency. The two channels of stereo files are averaged. <b>Read two Sounds from AIFF file...</b> reads both channels separately and names them <i>left</i> and <i>right</i>.</p>
+<p>
+The sample values are divided by 2<sup>(<i>numberOfBitsPerSample</i> &#8211; 1)</sup>, so that the amplitude of the resulting Sound is between &#8211;1.0 and +1.0; the maximum sound pressure level for a sine wave is therefore: 20 &#183; <sup>10</sup>log (&#8730;2 / 2&#183;10<sup>&#8211;5</sup>) = 91 dB.</p>
+<p>
+The resulting Sound will appear in the List of Objects; its name will be equal to the file name, without extension.</p>
+<h3>
+Saving</h3>
+<p>
+With <a href="Save_as_AIFF_file___.html">Save as AIFF file...</a>.</p>
+<p>
+The samples of the Sound are multiplied by 32768 and quantized between &#8211;32768 and 32767.</p>
+<p>
+To avoid clipping, keep the absolute amplitude below 1.000. If the maximum sound pressure level is 91 dB (top = 32767), the quantization threshold is (top = 1/2) &#8211;5 dB.</p>
+<hr>
+<address>
+	<p>&copy; ppgb, January 31, 2011</p>
+</address>
+</body>
+</html>

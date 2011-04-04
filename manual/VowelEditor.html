@@ -1,0 +1,118 @@
+<html><head><meta name="robots" content="index,follow">
+<title>VowelEditor</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+VowelEditor
+</b></font></table></table>
+<p>
+An Editor for generating vowel-like <a href="Sound.html">Sound</a>s from mouse movements.</p>
+<h3>
+How to get a sound</h3>
+<p>
+With the mouse button down, you can move the mouse cursor around in the plane spanned by the first two formants. While you move the cursor around, the positions you trace will be indicated by  blue dots. After you release the mouse button, the color of the trajectory will change to black and you will hear the vowel-like sound whose first two formants follow this trajectory. The small bars on the trajectory are time markers. Default they are at 50 milliseconds apart and they may give you an indication of the speed you traversed the trajectory.</p>
+<h3>
+The interface</h3>
+<p>
+In the lower part of the editor a number of buttons and fields are displayed.</p>
+<dl>
+<dt>
+<b>Play</b>
+<dd>
+will play the trajectory.
+<dt>
+<b>Reverse</b>
+<dd>
+will reverse the trajectory and play it.
+<dt>
+<b>Publish</b>
+<dd>
+will publish the sound in the list of objects.
+<dt>
+<b>Duration (s)</b>
+<dd>
+allows to modify the duration of the current trajectory. 
+<dt>
+<b>Extend (s)</b>
+<dd>
+determines the duration of the straight line trajectory that connects the endpoint of the current trajectory with the startpoint of a new trajectory. You may extend the current trajectory by starting a new trajectory with the shift button pressed. After you finished the new trajectory, three trajectories will be appended: the current one, the straight line one and the new one.
+<dt>
+<b>Start F0 (Hz)</b>
+<dd>
+determines the fundamental frequency at the start of the trajectory.
+<dt>
+<b>F0 slope (oct/s)</b>
+<dd>
+determines how many octaves the pitch will changes during the course of the trajectory.
+</dl>
+<p>
+The bottom line in the Editor displays the first and second formant frequency and the fundamental frequency at the start point and the endpoint of the trajectory.</p>
+<h3>
+Editing</h3>
+<dl>
+<dt>
+<b>Show one vowel mark...</b>
+<dd>
+Show extra marker in the editor.
+<dt>
+<b>Show vowel marks...</b>
+<dd>
+Show or don't show reference vowel marker sets for American English or Dutch. 
+<dt>
+<b>Set F0...</b>
+<dd>
+Set pitch and slope.
+<dt>
+<b>Set F3 &amp; F4...</b>
+<dd>
+Set the frequencies and bandwidths for the third and fourth formant.
+<dt>
+<b>Reverse trajectory</b>
+<dd>
+Reverses the trajectory (like editor button).
+<dt>
+<b>Modify trajectory duration...</b>
+<dd>
+Modifies trajectory duration (like editor field).
+<dt>
+<b>New trajectory...</b>
+<dd>
+Set startpoint, endpoint and duration of a new trajectory.
+<dt>
+<b>Extend trajectory...</b>
+<dd>
+Extend current trajectory to...
+<dt>
+<b>Shift trajectory...</b>
+<dd>
+Shift current trajectory.
+<dt>
+<b>Show trajectory time markers every...</b>
+<dd>
+
+</dl>
+<h3>
+Publishing</h3>
+<dl>
+<dt>
+<b>Publish Sound</b>
+<dt>
+<b>Extract FormantTier</b>
+<dt>
+<b>Extract PitchTier</b>
+<dd>
+Publish the Sound, the PitchTier and the FormantTier from the trajectory.
+<dt>
+<b>Draw trajectory...</b>
+<dd>
+Draws the trajectory in the picture window
+</dl>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Acknowledgments.html">Acknowledgments</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, March 28, 2008</p>
+</address>
+</body>
+</html>

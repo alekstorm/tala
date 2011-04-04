@@ -1178,7 +1178,4 @@ void praat_contrib_Ola_KNN_init (void)
     praat_addAction1 (classKNN, 0, L"& Pattern & Categories: Learn?", 0, 0, DO_hint_KNN_and_Pattern_and_Categories_learn);
     praat_addAction1 (classKNN, 0, L"& Pattern & Categories: Evaluate?", 0, 0, DO_hint_KNN_and_Pattern_and_Categories_evaluate);
     praat_addAction1 (classKNN, 0, L"& Pattern & Categories & FeatureWeights: Evaluate?", 0, 0, DO_hint_KNN_and_Pattern_and_Categories_and_FeatureWeights_evaluate);
-
-
-    INCLUDE_MANPAGES (manual_KNN_init)
 }

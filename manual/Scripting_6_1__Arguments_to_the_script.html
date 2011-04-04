@@ -1,0 +1,211 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 6.1. Arguments to the script</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 6.1. Arguments to the script
+</b></font></table></table>
+<p>
+You can cause a Praat script to prompt for arguments. The file <code>playSine.praat</code> may contain the following:</p>
+<code>
+<b>form</b> Play a sine wave<br></code>
+<code>
+&nbsp;&nbsp;&nbsp;<b>positive</b> Sine_frequency_(Hz) 377<br></code>
+<code>
+&nbsp;&nbsp;&nbsp;<b>positive</b> Gain_(0..1) 0.3 (= not too loud)<br></code>
+<code>
+<b>endform</b><br></code>
+<code>
+Create Sound from formula... sine'sine_frequency' Mono 0 1 44100   'gain' * sin (2*pi*'sine_frequency'*x)<br></code>
+<code>
+Play<br></code>
+<code>
+Remove<br></code>
+<p>
+When running this script, the interpreter puts a settings window (<i>form</i>) on your screen, entitled "Play a sine wave", with two fields, titled "Sine frequency (Hz)" and "Gain", that have been provided with the standard values "377" and "0.3 (= not too loud)", which you can change before clicking <b>OK</b>.</p>
+<p>
+As you see, the underscores have been replaced with spaces: that looks better in the form. Inside the script, the field names can be accessed as variables: these do contain the underscores, since they must not contain spaces, but the parentheses (Hz) have been chopped off. Note that the first letter of these variables is converted to lower case, so that you can assign to them in your script.</p>
+<p>
+Inside the script, the value "0.3 (= not too loud)" will be known as "0.3", because this is a numeric field.</p>
+<p>
+You can use the following field types in your forms:</p>
+<dl>
+<dt>
+<b>real</b> <i>variable</i> <i>initialValue</i>
+<dd>
+for real numbers.
+<dt>
+<b>positive</b> <i>variable</i> <i>initialValue</i>
+<dd>
+for positive real numbers: the form issues an error message if the number that you enter is negative or zero; further on in the script, the number may take on any value.
+<dt>
+<b>integer</b> <i>variable</i> <i>initialValue</i>
+<dd>
+for whole numbers: the form reads the number as an integer; further on in the script, the number may take on any real value.
+<dt>
+<b>natural</b> <i>variable</i> <i>initialValue</i>
+<dd>
+for positive whole numbers: the form issues an error message if the number that you enter is negative or zero; further on in the script, the number may take on any real value.
+<dt>
+<b>word</b> <i>variable</i> <i>initialValue</i>
+<dd>
+for a string without spaces: the form only reads up to the first space ("oh yes" becomes "oh"); further on in the script, the string may contain spaces.
+<dt>
+<b>sentence</b> <i>variable</i> <i>initialValue</i>
+<dd>
+for any short string.
+<dt>
+<b>text</b> <i>variable</i> <i>initialValue</i>
+<dd>
+for any possibly long string (the variable name will not be shown in the form).
+<dt>
+<b>boolean</b> <i>variable</i> <i>initialValue</i>
+<dd>
+a check box will be shown; the value is 0 if off, 1 if on.
+<dt>
+<b>choice</b> <i>variable</i> <i>initialValue</i>
+<dd>
+a radio box will be shown; the value is 1 or higher. This is followed by a series of:
+<dt>
+<b>button</b> <i>text</i>
+<dd>
+a button in a radio box.
+<dt>
+<b>comment</b> <i>text</i>
+<dd>
+a line with any text.
+</dl>
+<p>
+Inside the script, strings are known as string variables, numbers as numeric variables. Consider the following form:</p>
+<code>
+<b>form</b> Sink it<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>sentence</b> Name_of_the_ship Titanic<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>real</b> Distance_to_the_iceberg_(m) 500.0<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>natural</b> Number_of_people 1800<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>natural</b> Number_of_boats 10<br></code>
+<code>
+<b>endform</b><br></code>
+<p>
+In the script following this form, the variables will be known as <i>name_of_the_ship$</i>, <i>distance_to_the_iceberg</i>, <i>number_of_people</i>, and <i>number_of_boats</i>.</p>
+<p>
+The variable associated with a radio box will get a numeric as well as a string value:</p>
+<code>
+<b>form</b> Fill attributes<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>comment</b> Choose any colour and texture for your paintings<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>choice</b> Colour: 5<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>button</b> Dark red<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>button</b> Sea green<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>button</b> Navy blue<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>button</b> Canary yellow<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>button</b> Black<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>button</b> White<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>choice</b> Texture: 1<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>button</b> Smooth<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>button</b> Rough<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>button</b> With holes<br></code>
+<code>
+<b>endform</b><br></code>
+<code>
+<b>echo</b> You chose the colour 'colour$' and texture 'texture$'.<br></code>
+<p>
+This shows two radio boxes. In the Colour box, the fifth button (Black) is the standard value here. If you click on "Navy blue" and then <b><i>OK</i></b>, the variable <i>colour</i> will have the value "3", and the variable <i>colour$</i> will have the value "Navy blue". Note that the trailing colon is chopped off, and that the button and comment texts may contain spaces. So you can test the value of the Colour box in either of the following ways:</p>
+<code>
+if colour = 4<br></code>
+<p>
+or</p>
+<code>
+if colour$ = "Canary yellow"<br></code>
+<p>
+The field types <b>optionmenu</b> and <b>option</b> are completely analogous to <b>choice</b> and <b>button</b>, but use up much less space on the screen:</p>
+<code>
+<b>form</b> Fill attributes<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>comment</b> Choose any colour and texture for your paintings<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>optionmenu</b> Colour: 5<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> Dark red<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> Sea green<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> Navy blue<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> Canary yellow<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> Black<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> White<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>optionmenu</b> Texture: 1<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> Smooth<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> Rough<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>option</b> With holes<br></code>
+<code>
+<b>endform</b><br></code>
+<code>
+<b>echo</b> You chose the colour 'colour$' and texture 'texture$'.<br></code>
+<p>
+You can combine two short fields into one by using <i>left</i> and <i>right</i>:</p>
+<code>
+<b>form</b> Get duration<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>natural</b> left_Year_range 1940<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+<b>natural</b> right_Year_range 1945<br></code>
+<code>
+<b>endform</b><br></code>
+<code>
+duration = right_Year_range - left_Year_range<br></code>
+<code>
+<b>echo</b> The duration is 'duration' years.<br></code>
+<p>
+The interpreter will only show the single text "Year range", followed by two small text fields.</p>
+<h3>
+Calling a script from another script</h3>
+<p>
+Scripts can be nested: the file <i>doremi.praat</i> may contain the following:</p>
+<code>
+<b>execute</b> playSine.praat 550 0.9<br></code>
+<code>
+<b>execute</b> playSine.praat 615 0.9<br></code>
+<code>
+<b>execute</b> playSine.praat 687 0.9<br></code>
+<p>
+With the <b>execute</b> command, Praat will not display a form window, but simply execute the script with the two arguments that you supply on the same line (e.g. 550 and 0.9).</p>
+<p>
+Arguments (except for the last) that contain spaces must be put between double quotes, and values for <b>choice</b> must be passed as strings:</p>
+<code>
+<b>execute</b> "fill attributes.praat" "Navy blue" With holes<br></code>
+<p>
+You can pass values for <b>boolean</b> either as "yes" and "no" or 1 and 0.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_6__Communication_outside_the_script.html">Scripting 6. Communication outside the script</a>
+<li><a href="Scripting_6_6__Controlling_the_user.html">Scripting 6.6. Controlling the user</a>
+<li><a href="Scripting_6_9__Calling_from_the_command_line.html">Scripting 6.9. Calling from the command line</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, February 25, 2007</p>
+</address>
+</body>
+</html>

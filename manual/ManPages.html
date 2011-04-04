@@ -1,0 +1,238 @@
+<html><head><meta name="robots" content="index,follow">
+<title>ManPages</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+ManPages
+</b></font></table></table>
+<p>
+You can create a documentation or education system with files that you and others can read into Praat (with the <a href="Read_from_file___.html">Read from file...</a> command). Your files will become a hypertext system very similar to the usual <a href="Manual.html">Manual</a>.</p>
+<h3>
+Example 1: a single document</h3>
+<p>
+If you create a single ManPages text file, it will look like a manual with a single page. Here is an example:</p>
+<code>
+ManPagesTextFile<br></code>
+<code>
+"Welkom" "miep" 19970820 0<br></code>
+<code>
+&lt;intro&gt; "Hallo allemaal!"<br></code>
+<code>
+&lt;entry&gt; "Belangrijk..."<br></code>
+<code>
+&lt;normal&gt; "Hoogge\e""erd publiek!"<br></code>
+<code>
+&lt;normal&gt; "Einde."<br></code>
+<p>
+A ManPages text file should start with the following information:</p>
+<dl>
+<dd>
+1. The word "ManPagesTextFile" on the first line.
+<dd>
+2. The title of the manual page, between double quotes. This will be drawn at the top of the page. The name of the ManPages text file should be derived from this title (see below).
+<dd>
+3. The author of the manual page, between double quotes. This will be drawn at the bottom of the page.
+<dd>
+4. The date you created or modified the page, in the format year &#8211; month (two digits) &#8211; day (two digits), without spaces.
+<dd>
+5. The recording time. If this is not zero, three sound buttons (see below) will appear at the top of the page.
+<dd>
+6. A sequence of paragraph types and texts. You put the types between &lt; and &gt;, and the texts between double quotes (if your text contains a double quote, you should write two double quotes).
+</dl>
+<p>
+The format of a ManPages text file is rather free, as long as the first line is correct, the four required pieces of information are there in the correct order, and there is a correct alternation between paragraph texts and types. If you put multiple elements on a line, there should be at least one space between them. You may distribute texts across multiple lines, as long as you do not add any spaces:</p>
+<code>
+&lt;normal&gt; "Hoogge\e""erd<br></code>
+<code>
+publiek!"<br></code>
+<p>
+This will have exactly the same effect as above.</p>
+<h3>
+Example 2: multiple documents</h3>
+<p>
+The above example with a single document is not very useful. You will usually want to refer to other documents:</p>
+<code>
+ManPagesTextFile<br></code>
+<code>
+"Welcome" "Paul Boersma" 19970820 1.0<br></code>
+<code>
+&lt;intro&gt; "Welcome to Paul's transcription course."<br></code>
+<code>
+&lt;entry&gt; "Groups of speech sounds"<br></code>
+<code>
+&lt;normal&gt; "You can listen to the following sounds<br></code>
+<code>
+from the languages of the world,<br></code>
+<code>
+pronounced by a single speaker (me):&#8221;<br></code>
+<code>
+&lt;list_item&gt; "@Vowels, quite problematic for Dutch students!"<br></code>
+<code>
+&lt;list_item&gt; "@@Dorsal fricatives@, equally problematic!"<br></code>
+<p>
+With the symbol `@', you create a <i>link</i> to another ManPages text file. A link will be drawn in blue on your screen. In this example, you have created links to the files <b>Vowels.man</b> and <b>Dorsal_fricatives.man</b> in the same directory as the current file (all <b>.man</b> files have to be in the same directory; this makes it likely that their names are unique). If the link contains spaces or other non-alphanumeric symbols, you have to use three `@' symbols, as shown; with a single word, you may use a single `@'.</p>
+<p>
+In resolving the file name, the ManPages system replaces spaces and other special symbols with underscores, and converts any initial lower-case character by its upper-case variant. For instance, if your link is "@@back vowels@", the file name will be <b>Back_vowels.man</b>.</p>
+<p>
+The title in the second line of <b>Back_vowels.man</b> must be equal to the link name, though capitalization of the first letter is allowed. Thus, the title of <b>Back_vowels.man</b> will probably be "Back vowels". Likewise, the starting file with the title "Welcome" should have the name <b>Welcome.man</b> if any other files refer to it.</p>
+<h3>
+Paragraph types</h3>
+<p>
+A normal paragraph will have type &lt;normal&gt;. The hypertext system will leave a blank space between paragraphs with this type. The first paragraph of a manual page will normally have the type &lt;intro&gt;. Though this may look the same as &lt;normal&gt;, the search system of the <a href="Manual.html">Manual</a> may take account of the distinction.</p>
+<p>
+Headings (like the title "Paragraph types" of this subsection) have type &lt;entry&gt;. This will be drawn in a larger character size.</p>
+<p>
+For lists, you use the type &lt;list_item&gt;. You will often combine this with <i>button</i> symbols, like in the following:</p>
+<code>
+&lt;normal&gt; "Choose a colour:"<br></code>
+<code>
+&lt;list_item&gt; "\bu @Red."<br></code>
+<code>
+&lt;list_item&gt; "\bu @Green."<br></code>
+<code>
+&lt;list_item&gt; "\bu @Blue."<br></code>
+<p>
+For text that should appear with a fixed character width, you use the type &lt;code&gt;.</p>
+<p>
+For a paragraph that should be connected with the following paragraph without leaving a blank space (probably a list item or a definition), you use the type &lt;tag&gt;.</p>
+<p>
+For a paragraph with a blank left margin, you use the type &lt;definition&gt;.</p>
+<p>
+For a paragraph with an embedded script (a picture), you use the type &lt;script&gt; (see below).</p>
+<h3>
+Special symbols and styles</h3>
+<p>
+You can use all of Praat's <a href="Special_symbols.html">special symbols</a> and <a href="Text_styles.html">text styles</a>, except that some <i>single</i> text-style symbols have different meanings:</p>
+<ul>
+<li>
+&nbsp;A single percent sign introduces a word in italic: <code>%pot</code> gives <i>pot</i>.
+<li>
+&nbsp;A single number sign introduces a word in bold: <code>#pot</code> gives <b>pot</b>.
+<li>
+&nbsp;A single dollar sign introduces a word in monospace: <code>$pot</code> gives <code>pot</code>.
+<li>
+&nbsp;A single underscore is rendered as an underscore: <code>a_b</code> gives a_b.
+</ul>
+<p>
+To create a single italic, bold, or subscripted letter, you revert to the usual technique for stretches of italic, bold, or subscripted text. So, to get <i>F</i><sub>1</sub>, you type <code>%F__1_.</code></p>
+<h3>
+Sound links</h3>
+<p>
+Your text may contain links to sound files. They are drawn in blue. The format is:</p>
+<code>
+&lt;normal&gt; "You should know that @@\FIct.aifc|\ct@ is more open than @@\FIo.aifc|o@."<br></code>
+<p>
+On your screen, you will see an <b></b>&#596; and an <b>o</b> symbol, both drawn in blue. If you click on one of these sound links, one of the sound files <b>ct.aifc</b> or <b>o.aifc</b> will be played.</p>
+<p>
+The format of the sound link "<code>@@\FIo.aifc|o@</code>" is to be understood as follows. The pipe symbol separates the link information (\FIo.aifc) from the viewable link text (o). The link information is introduced with a symbol (\FI) that tells the manual system that a sound file name follows. The manual system reads this file, sees that it contains a sound, and plays that sound.</p>
+<p>
+You can use relative path names, e.g., \FIsounds/o.aifc refers to the file <b>o.aifc</b> in the subdirectory <b>sounds</b>, which must be contained in the same directory as the <b>.man</b> files. To make sure that your manual pages run on all platforms (Windows, Macintosh, Unix), you will want to use the forward slash (/) to separate the directory name(s) from the file name, as in this example (i.e. you avoid the backslash (\) that is usual on Windows computers).</p>
+<h3>
+Pictures as embedded scripts</h3>
+<p>
+Your text may contain Praat scripts. They typically draw a picture in your manual page, with the font and font size of the manual until you specify otherwise in the script. The format is:</p>
+<code>
+&lt;script&gt; 4.5 4 "<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Draw inner box<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Axes... 0 100 0 100<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Text... 50 Centre 50 Half Hello!!<br></code>
+<code>
+&#8221;<br></code>
+<p>
+The two numbers after <b>&lt;script&gt;</b> are the width and the height of the picture (the "outer viewport") in inches, if the font size of the manual is 12. If the font size is larger, the viewport will be scaled up accordingly.</p>
+<p>
+Please note that the script is enclosed within double quotes. Therefore, you will have to double any double quotes that occur in the script.</p>
+<p>
+If needed, a script like this can create objects in the object list of the manual. However, you have to make sure that you remove them after use:</p>
+<code>
+&lt;script&gt; 6 3 "<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Create Sound from formula... sineWithNoise Mono 0.0 1.0 44100 1/2*sin(2*pi*377*x)+randomGauss(0,0.1)<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+To Spectrogram... 0.005 5000 0.002 20 Gaussian<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Paint... 0 0 0 0 100.0 yes 50.0 6.0 0.0 yes<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+plus Sound sineWithNoise<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Remove<br></code>
+<code>
+&#8221;<br></code>
+<p>
+Note that unlike the previous script, this script does not set the font and font size. This means that the drawing will use the font and font size of the manual page, which is usually what you want.</p>
+<p>
+For obvious safety reasons, embedded scripts cannot contain commands that change the contents of any disk or send messages. Thus, commands like <b>Save as WAV file...</b>, <b>filedelete out.txt</b>, <b>string$ &gt;&gt; out.txt</b>, <b>system</b>, or <b>sendpraat</b> are forbidden. Several other commands, such as <b>pause</b> and <b>editor</b>, are irrelevant inside pictures and are therefore forbidden as well. Note that commands like <b>echo</b>, <b>Read from file...</b>, and <b>execute</b> are still available (with the last two, you can use relative paths; with <b>execute</b>, you can only run scripts that do not contain any of the forbidden commands).</p>
+<p>
+The commands <b>Set outer viewport...</b> and <b>Set inner viewport...</b> are available; they count in inches (if the font size of the manual is 12). The (0, 0) point is in the upper left corner, as in the Picture window, so that you can test your picture with a normal Praat script; for instance, the following script draw a cross in the bottom half of the picture and a rectangle in the upper half:</p>
+<code>
+&lt;script&gt; 4.5 4 "<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Axes... 0 100 0 100<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Select inner viewport... 0 4.5 0 2<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Draw line... 0 0 100 100<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Draw line... 0 100 100 0<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Select inner viewport... 0 4.5 2 4<br></code>
+<code>&nbsp;&nbsp;&nbsp;
+Draw rectangle... 0 100 0 100<br></code>
+<code>
+&#8221;<br></code>
+<p>
+Axes... 0 100 0 100
+Select inner viewport... 0 4.5 0 2
+Draw line... 0 0 100 100
+Draw line... 0 100 100 0
+Select inner viewport... 0 4.5 2 4
+Draw rectangle... 0 100 0 100
+</p>
+<h3>
+Script links</h3>
+<p>
+Your text may contain links to Praat scripts. They are drawn in blue. The format is:</p>
+<code>
+&lt;normal&gt; "Here is a script that @@\SCdraw.praat|draws@ what you have selected."<br></code>
+<p>
+On your screen, you will see the word <b>draws</b>, drawn in blue. If you click on it, the script <b>draw.praat</b> will be executed. The string "<code>\SC</code>" indicates that a script file name follows. As with sounds, you can use relative file paths. The script can take arguments:</p>
+<code>
+&lt;normal&gt; "This script @@\SCload2files.praat hello.wav hello.TextGrid|loads@ some files."<br></code>
+<p>
+If the script file name or any arguments except the last contain spaces, they have to be enclosed within double quotes, which have to be doubled again in the ManPage code:</p>
+<code>
+&lt;normal&gt; "Here is a script that @@\SC""my scripts/draw.praat""|draws@ what you have selected."<br></code>
+<code>
+&lt;normal&gt; "This script @@\SC""my scripts/load2files.praat"" ""my sounds/hello.wav"" my textgrids/hello.TextGrid|loads@ some files."<br></code>
+<p>
+For safety reasons, the user will see a warning about "trusting the author of the manual pages" if you include script links in your manual.</p>
+<h3>
+How to separate link information and link text</h3>
+<p>
+The separation between link information and viewable link text, as seen in the above description of sound and script links, is actually a general mechanism in the hypertext system. For instance, if you want to see the text "x" in blue on your screen, and create a link from it to the page "Dorsal fricatives", you specify the link as <code>@@Dorsal fricatives|x@</code>.</p>
+<h3>
+Sound buttons</h3>
+<p>
+If the <i>recording time</i> in the second line is not 0, three buttons will appear near the top of the page:</p>
+<p>
+1. The <b>Record</b> button allows you to record a sound from the microphone.</p>
+<p>
+2. The <b>Play</b> button allows you to play this recorded sound. In this way, you can compare your own utterances with the sounds behind the sound links, for example.</p>
+<p>
+3. The <b>Copy last played to list</b> button copies the latest sound to the list of objects, allowing you to perform analyses on it, save it to disk, et cetera. The latest sound may be a sound that you recorded with the <b>Record</b> button, a sound that you played with the <b>Play</b> button, or a sound that you played by clicking on a sound link, whichever occurred most recently.</p>
+<h3>
+And beyond</h3>
+<p>
+If you need even more flexibility than ManPages offer you, consider using the <a href="Demo_window.html">Demo window</a> instead.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 29, 2011</p>
+</address>
+</body>
+</html>

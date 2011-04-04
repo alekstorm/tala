@@ -1,0 +1,36 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Formulas 6. Control structures</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Formulas 6. Control structures
+</b></font></table></table>
+<h3>
+if ... then ... else ... fi</h3>
+<p>
+You can use conditional expressions in all formulas. For example, </p>
+<code>
+3 * if 52% * 3809 &gt; 2000 then 5 else 6 fi<br></code>
+<p>
+evaluates to 15. Instead of <i>fi</i>, you can also use <i>endif</i>.</p>
+<p>
+Another example: you can clip the absolute amplitude of a Sound to 0.5 by supplying the following formula:</p>
+<code>
+if abs(self)&gt;0.5 then if self&gt;0 then 0.5 else -0.5 fi else self fi<br></code>
+<h3>
+The semicolon</h3>
+<p>
+The semicolon ends the evaluation of the formula. This can be convenient if you do not want to overwrite a long formula in your text field: the formula</p>
+<code>
+800;sqrt(2)*sin(2*pi*103*0.5)+10^(-40/20)*randomGauss(0,1)<br></code>
+<p>
+evaluates to 800.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Formulas.html">Formulas</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, May 19, 2003</p>
+</address>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<html><head><meta name="robots" content="index,follow">
+<title>OT learning 2.9. Output distributions</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+OT learning 2.9. Output distributions
+</b></font></table></table>
+<p>
+To ask the grammar to produce <i>many</i> outputs for a specified input form, and collect them in a <a href="Strings.html">Strings</a> object, you select an <a href="OTGrammar.html">OTGrammar</a> and choose <a href="OTGrammar__Input_to_outputs___.html">Input to outputs...</a>.</p>
+<p>
+For example, select the object "OTGrammar assimilation" from our place assimilation example (<a href="OT_learning_2_6__Variable_output.html">\SS2.6</a>), and click <b>Input to outputs...</b>. In the resulting dialog, you specify 1000 trials, a noise strength of 2.0, and "an+pa" for the input form.</p>
+<p>
+After you click OK, a <a href="Strings.html">Strings</a> object will appear in the list. If you click Info, you will see that it contains 1000 strings. If you click Inspect, you will see that most of the strings are "ampa", but some of them are "anpa". These are the output forms computed from 1000 evaluations for the input /an+pa/.</p>
+<p>
+To count how many instances of [ampa] and [anpa] were generated, you select the <a href="Strings.html">Strings</a> object and click <a href="Strings__To_Distributions.html">To Distributions</a>. You will see a new <a href="Distributions.html">Distributions</a> object appear in the list. If you draw this to the Picture window (with <b>Draw as numbers...</b>), you will see something like:</p>
+<dl>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>ampa<td width=100 align=middle>815</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>anpa<td width=100 align=middle>185</table>
+</dl>
+<p>
+which means that our grammar, when fed with 1000 /an+pa/ inputs, produced [ampa] 815 times, and [anpa] 185 times, which is consistent with our initial guess that a ranking difference of 2.7 would cause approximately an 80% - 20% distribution of [ampa] and [anpa].</p>
+<h3>
+Checking the distribution hypothesis</h3>
+<p>
+To see whether the guess of a 2.7 ranking difference is correct, we perform 1,000,000 trials instead of 1000. The output distribution (if you have enough memory in your computer) becomes something like (set the <i>Precision</i> to 7 in the drawing dialog):</p>
+<dl>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>ampa<td width=100 align=middle>830080</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>anpa<td width=100 align=middle>169920</table>
+</dl>
+<p>
+The expected values under the 80% - 20% distribution hypothesis are:</p>
+<dl>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>ampa<td width=100 align=middle>800000</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>anpa<td width=100 align=middle>200000</table>
+</dl>
+<p>
+We compute (e.g. with <a href="Calculator___.html">Calculator...</a>) a <i></i>&#967;<sup>2</sup> of 30080<sup>2</sup>/800000 + 30080<sup>2</sup>/200000 = 5655.04, which, of course, is much too high for a distribution with a single degree of freedom. So the ranking difference must be smaller. If it is 2.4 (change the ranking of *G<font size=-1>ESTURE</font> to 102.4), the numbers become something like</p>
+<dl>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>ampa<td width=100 align=middle>801974</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>anpa<td width=100 align=middle>198026</table>
+</dl>
+<p>
+which gives a <i></i>&#967;<sup>2</sup> of 24.35. By using the Calculator with the formula <code>chiSquareQ (24.35, 1)</code>, we find that values larger than this have a probability of 8&#183;10<sup>-7</sup> under the 80% - 20% distribution hypothesis, which must therefore be rejected again.</p>
+<p>
+Rather than continuing this iterative procedure to find the correct ranking values for an 80% - 20% grammar, we will use the Gradual Learning Algorithm (<a href="OT_learning_5__Learning_a_stochastic_grammar.html">\SS5</a>) to determine the rankings automatically, without any memory of past events other than the memory associated with maintaining the ranking values.</p>
+<h3>
+Measuring all inputs</h3>
+<p>
+To measure the outcomes of all the possible inputs at once, you select an <a href="OTGrammar.html">OTGrammar</a> and choose <a href="OTGrammar__To_output_Distributions___.html">To output Distributions...</a>. As an example, try this on our place assimilation grammar. You can supply 1000000 for the number of trials, and the usual 2.0 for the standard deviation of the noise. After you click OK, a <a href="Distributions.html">Distributions</a> object will appear in the list. If you draw this to the Picture window, the result will look like:</p>
+<dl>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>/an+pa/ &#8594; anpa<td width=100 align=middle>169855</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>/an+pa/ &#8594; ampa<td width=100 align=middle>830145</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>/at+ma/ &#8594; atma<td width=100 align=middle>999492</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>/at+ma/ &#8594; apma<td width=100 align=middle>508</table>
+</dl>
+<p>
+We see that the number of [apma] outputs is not zero. This is due to the difference of 9.3 between the rankings of *R<font size=-1>EPLACE</font> (t, p) and *G<font size=-1>ESTURE</font>. If you rank *R<font size=-1>EPLACE</font> (t, p) at 116.0, the number of produced [apma] reduces to about one in a million, as you can easily check with some patience.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="OT_learning.html">OT learning</a>
+<li><a href="OT_learning_2__The_grammar.html">OT learning 2. The grammar</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, February 2, 2000</p>
+</address>
+</body>
+</html>

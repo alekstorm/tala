@@ -1,0 +1,93 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Create tongue-root grammar...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Create tongue-root grammar...
+</b></font></table></table>
+<p>
+A command in the <a href="New_menu.html">New menu</a> for creating an <a href="OTGrammar.html">OTGrammar</a> object with a tongue-root-harmony grammar.</p>
+<p>
+These OTGrammar grammars only accept inputs of the form V<sub>1</sub>tV<sub>2</sub>, where V<sub>1</sub> and V<sub>2</sub> are chosen from the six front vowels i, &#618;, e, &#949;, &#601;, and a. In a text field, these vowels should be typed as <code><b>i</b></code>, <code><b>\ic</b></code>, <code><b>e</b></code>, <code><b>\ep</b></code>, <code><b>\sw</b></code>, and <code><b>a</b></code>, respectively (see <a href="Special_symbols.html">Special symbols</a>).</p>
+<p>
+The following phonological features are relevant:</p>
+<dl>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle><td width=100 align=middle>ATR<td width=100 align=middle>RTR</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>high<td width=100 align=middle>i<td width=100 align=middle>&#618;</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>mid<td width=100 align=middle>e<td width=100 align=middle>&#949;</table>
+<dd>
+<table border=0 cellpadding=0 cellspacing=0><tr><td width=100 align=middle>low<td width=100 align=middle>&#601;<td width=100 align=middle>a</table>
+</dl>
+<h3>
+Constraints</h3>
+<p>
+The resulting OTGrammar will usually contain at least the following five constraints:</p>
+<dl>
+<dt>
+*[rtr / hi]
+<dd>
+"do not implement [retracted tongue root] if the vowel is high."
+<dt>
+*[atr / lo]
+<dd>
+"do not implement [advanced tongue root] if the vowel is low."
+<dt>
+P<font size=-1>ARSE</font> (rtr)
+<dd>
+"make an underlying [retracted tongue root] specification surface."
+<dt>
+P<font size=-1>ARSE</font> (atr)
+<dd>
+"make an underlying [advanced tongue root] specification surface."
+<dt>
+*G<font size=-1>ESTURE</font> (contour)
+<dd>
+"do not go from advanced to retracted tongue root, nor the other way around, within a word."
+</dl>
+<p>
+This set of constraints thus comprises: </p>
+<ul>
+<li>
+&nbsp;two <i><b>grounding conditions</b></i> (<a href="Archangeli___Pulleyblank__1994_.html">Archangeli & Pulleyblank (1994)</a>), which we can see as gestural constraints;
+<li>
+&nbsp;two <i><b>faithfulness constraints</b></i>, which favour the similarity between input and output, and can be seen as implementing the principle of maximization of perceptual contrast;
+<li>
+&nbsp;a <i><b>harmony constraint</b></i>, which, if crucially ranked higher than at least one faithfulness constraint, forces <i><b>tongue-root harmony</b></i>.
+</ul>
+<p>
+In addition, there may be the following four constraints:</p>
+<dl>
+<dt>
+*[rtr / mid]
+<dd>
+"do not implement [retracted tongue root] if the vowel is mid; universally ranked lower than *[rtr / hi]."
+<dt>
+*[rtr / lo]
+<dd>
+"do not implement [retracted tongue root] if the vowel is low; universally ranked lower than *[rtr / mid]."
+<dt>
+*[atr / mid]
+<dd>
+"do not implement [advanced tongue root] if the vowel is mid; universally ranked lower than *[atr / lo]."
+<dt>
+*[atr / hi]
+<dd>
+"do not implement [advanced tongue root] if the vowel is high; universally ranked lower than *[atr / mid]."
+</dl>
+<p>
+The universal rankings referred to are due to the <i><b>local-ranking principle</b></i> (<a href="Boersma__1998_.html">Boersma (1998)</a>). A learning algorithm may enforce this principle, e.g., if *[rtr / hi] falls down the ranking scale, *[rtr / mid] may be pushed along.</p>
+<p>
+For information on learning these tongue-root grammars, see <a href="OT_learning.html">OT learning</a> and <a href="Boersma__2000_.html">Boersma (2000)</a>.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="OT_learning_3_2__Data_from_another_grammar.html">OT learning 3.2. Data from another grammar</a>
+<li><a href="OT_learning_4__Learning_an_ordinal_grammar.html">OT learning 4. Learning an ordinal grammar</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, December 4, 2002</p>
+</address>
+</body>
+</html>

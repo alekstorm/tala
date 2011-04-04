@@ -1,0 +1,130 @@
+<html><head><meta name="robots" content="index,follow">
+<title>PointProcess: Get jitter (ppq5)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+PointProcess: Get jitter (ppq5)...
+</b></font></table></table>
+<p>
+A command that becomes available in the <b>Query</b> submenu when you select a <a href="PointProcess.html">PointProcess</a> object.</p>
+<p>
+This command will write into the Info window the <i>five-point Period Perturbation Quotient</i>, a jitter measure defined as the average absolute difference between an interval and the average of it and its four closest neighbours, divided by the average interval (an interval is the time between two consecutive points).</p>
+<p>
+As jitter is often used as a measure of voice quality (see <a href="Voice_2__Jitter.html">Voice 2. Jitter</a>), the intervals are often considered to be <i>glottal periods</i>. For this reason, the command has settings that can limit the possible duration of the interval (or period) or the possible difference in the durations of consecutive intervals (periods).</p>
+<h3>
+1. The command window</h3>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+4*0.4
+height = 100*(1+4*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half PointProcess: Get jitter (rap)
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Time range (s):
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.0
+Text... 380 left y half 0.0 (= all)
+Helvetica
+y += 40
+Text... 255 right y half Period floor (s):
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.0001
+Helvetica
+y += 40
+Text... 255 right y half Period ceiling (s):
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.02
+Helvetica
+y += 40
+Text... 255 right y half Maximum period factor:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 1.3
+Helvetica
+y += 40
+</p>
+<dl>
+<dt>
+<b>Time range (s)</b>
+<dd>
+the start time and end time of the part of the PointProcess that will be measured. Points outside this range will be ignored.
+<dt>
+<b>Period floor (s)</b>
+<dd>
+the shortest possible interval that will be used in the computation of jitter, in seconds. If an interval is shorter than this, it will be ignored in the computation of jitter (and the previous and next intervals will not be regarded as consecutive). This setting will normally be very small, say 0.1 ms.
+<dt>
+<b>Period ceiling (s)</b>
+<dd>
+the longest possible interval that will be used in the computation of jitter, in seconds. If an interval is longer than this, it will be ignored in the computation of jitter (and the previous and next intervals will not be regarded as consecutive). For example, if the minimum frequency of periodicity is 50 Hz, set this argument to 0.02 seconds; intervals longer than that could be regarded as voiceless stretches and will be ignored in the computation.
+<dt>
+<b>Maximum period factor</b>
+<dd>
+the largest possible difference between consecutive intervals that will be used in the computation of jitter. If the ratio of the durations of two consecutive intervals is greater than this, this pair of intervals will be ignored in the computation of jitter (each of the intervals could still take part in the computation of jitter in a comparison with its neighbour on the other side).
+</dl>
+<h3>
+2. Usage</h3>
+<p>
+The jitter can be used as a measure of voice quality. See <a href="Voice_2__Jitter.html">Voice 2. Jitter</a>.</p>
+<h3>
+3. Algorithm</h3>
+<p>
+The five-point Period Perturbation Quotient (PPQ5) is defined in terms of five consecutive intervals, as follows.</p>
+<p>
+First, we define the absolute (i.e. non-relative) PPQ5 (in seconds):</p>
+<table width="100%"><tr><td align=middle>
+<i>absPPQ5</i>(seconds) = &#8721;<sub><i>i</i>=3</sub><sup><i>N</i>-2</sup> |<i>T</i><sub><i>i</sub></i> - (<i>T</i><sub><i>i</i>-2</sub> + <i>T</i><sub><i>i</i>-1</sub> + <i>T</i><sub><i>i</sub></i> + <i>T</i><sub><i>i</i>+1</sub> + <i>T</i><sub><i>i</i>+2</sub>) / 5| / (<i>N</i> - 4)</table>
+<p>
+where <i>T</i><sub><i>i</sub></i> is the duration of the <i>i</i>th interval and <i>N</i> is the number of intervals. If an interval <i>T</i><sub><i>i</i>-2</sub> or <i>T</i><sub><i>i</i>-1</sub> or <i>T</i><sub><i>i</sub></i> or <i>T</i><sub><i>i</i>+1</sub> or <i>T</i><sub><i>i</i>+2</sub> is not between <b>Period floor</b> and <b>Period ceiling</b>, or if <i>T</i><sub><i>i</i>-2</sub>/<i>T</i><sub><i>i</i>-1</sub> or <i>T</i><sub><i>i</i>-1</sub>/<i>T</i><sub><i>i</i>-2</sub> or <i>T</i><sub><i>i</i>-1</sub>/<i>T</i><sub><i>i</sub></i> or <i>T</i><sub><i>i</sub></i>/<i>T</i><sub><i>i</i>-1</sub> or <i>T</i><sub><i>i</i>+1</sub>/<i>T</i><sub><i>i</sub></i> or <i>T</i><sub><i>i</sub></i>/<i>T</i><sub><i>i</i>+1</sub> or <i>T</i><sub><i>i</i>+2</sub>/<i>T</i><sub><i>i</i>+1</sub> or <i>T</i><sub><i>i</i>+1</sub>/<i>T</i><sub><i>i</i>+2</sub> is greater than <b>Maximum period factor</b>, the term |<i>T</i><sub><i>i</sub></i> - (<i>T</i><sub><i>i</i>-2</sub> + <i>T</i><sub><i>i</i>-1</sub> + <i>T</i><sub><i>i</sub></i> + <i>T</i><sub><i>i</i>+1</sub> + <i>T</i><sub><i>i</i>+2</sub>) / 5| is not counted in the sum, and <i>N</i> is lowered by 1 (if <i>N</i> ends up being less than 5, the result of the command is <a href="undefined.html">undefined</a>).</p>
+<p>
+Second, we define the mean period as</p>
+<table width="100%"><tr><td align=middle>
+<i>meanPeriod</i>(seconds) = &#8721;<sub><i>i</i>=1</sub><sup><i>N</i></sup> <i>T</i><sub><i>i</sub></i> / <i>N</i></table>
+<p>
+where <i>T</i><sub><i>i</sub></i> is the duration of the <i>i</i>th interval and <i>N</i> is the number of intervals. If an interval <i>T</i><sub><i>i</sub></i> is not between <b>Period floor</b> and <b>Period ceiling</b>, or if <i>T</i><sub><i>i</i>-1</sub>/<i>T</i><sub><i>i</sub></i> or <i>T</i><sub><i>i</sub></i>/<i>T</i><sub><i>i</i>-1</sub> is greater than <b>Maximum period factor</b> <i>and</i> <i>T</i><sub><i>i</i>+1</sub>/<i>T</i><sub><i>i</sub></i> or <i>T</i><sub><i>i</sub></i>/<i>T</i><sub><i>i</i>+1</sub> is greater than <b>Maximum period factor</b>, the term <i>T</i><sub><i>i</sub></i> is not counted in the sum, and <i>N</i> is lowered by 1; this procedure ensures that in the computation of the mean period we use at least all the intervals that had taken part in the computation of the absolute PPQ5.</p>
+<p>
+Finally, we compute the five-point Period Perturbation Quotient as</p>
+<table width="100%"><tr><td align=middle>
+<i>PPQ5</i> = <i>PPQ5</i>(seconds) / <i>meanPeriod</i>(seconds)</table>
+<p>
+The result is a value between 0 and 4, or between 0 and 400 percent.</p>
+<hr>
+<address>
+	<p>&copy; ppgb, March 2, 2011</p>
+</address>
+</body>
+</html>

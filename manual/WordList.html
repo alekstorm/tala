@@ -1,0 +1,192 @@
+<html><head><meta name="robots" content="index,follow">
+<title>WordList</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+WordList
+</b></font></table></table>
+<p>
+One of the <a href="Types_of_objects.html">types of objects</a> in Praat. An object of class WordList contains a sorted list of strings in a system-independent format. WordList objects can be used for spelling checking after conversion to a <a href="SpellingChecker.html">SpellingChecker</a> object.</p>
+<h3>
+1. How to create a WordList object</h3>
+<p>
+You will normally create a WordList object by reading a binary WordList file. You'll use the generic <a href="Read_from_file___.html">Read from file...</a> command from the <b>Open</b> menu.</p>
+<p>
+See below under 3 for how to create such a file.</p>
+<h3>
+2. What you can do with a Wordlist object</h3>
+<p>
+The main functionality of a WordList is its ability to tell you whether it contains a certain string. If you select a WordList, you can query the existence of a specific word by using the <b>Has word</b> command. You supply the word and press OK. If the WordList does contain the word, the value "1" will be written to the Info window; otherwise, the value "0" will be written.</p>
+<h3>
+3. How to create a binary WordList file</h3>
+<p>
+You can create a binary (compressed) WordList file from a simple text file that contains a long list of words. Perhaps such a text file has been supplied by a lexicographic institution in your country; because of copyright issues, such word lists cannot be distributed with the Praat program. To convert the simple text file into a compressed WordList file, you basically take the following steps:</p>
+<code>
+Read Strings from raw text file... lexicon.iso<br></code>
+<code>
+Genericize<br></code>
+<code>
+Sort<br></code>
+<code>
+To WordList<br></code>
+<code>
+Save as binary file... lexicon.WordList<br></code>
+<p>
+I'll explain these steps in detail. For instance, a simple text file may contain the following list of words:</p>
+<code>
+cook<br></code>
+<code>
+cooked<br></code>
+<code>
+cookie<br></code>
+<code>
+cookies<br></code>
+<code>
+cooking<br></code>
+<code>
+cooks<br></code>
+<code>
+Copenhagen<br></code>
+<code>
+K&#248;bnhavn<br></code>
+<code>
+M&#252;nchen<br></code>
+<code>
+Munich<br></code>
+<code>
+&#229;ngstr&#246;m<br></code>
+<p>
+These are just 11 words, but the procedure will work fine if you have a million of them, and enough memory in your computer.</p>
+<p>
+You can read the file into a <a href="Strings.html">Strings</a> object with <a href="Read_Strings_from_raw_text_file___.html">Read Strings from raw text file...</a> from the <b>Open</b> menu in the Objects window. The resulting <a href="Strings.html">Strings</a> object contains 11 strings in the above order, as you can verify by viewing them with <a href="Inspect.html">Inspect</a>.</p>
+<p>
+In general, the Strings object will occupy a lot of memory, and be slow to read in. For instance, a certain list of more than 300,000 Dutch word forms occupies 3.6 MB on disk, and will occupy at least 7 MB of memory after it is read in. The extra 3.4 MB arise because the Strings object contains a pointer to each of the strings, and each of the strings is in a separately allocated part of the memory heap. Moreover, it takes 8 seconds on an average 1999 computer to read this object into memory. For these reasons, we will use the WordList object if we need a sorted list for spelling checking.</p>
+<p>
+If you select the Strings, you can click the <b>To WordList</b> button. However, you will get the following complaint:</p>
+<code>
+String "K&#248;bnhavn" not generic. Please genericize first.<br></code>
+<p>
+This complaint means that the strings are still in your computer's native text format, which is ISO-Latin1 for Unix and Windows computers, or Mac encoding for Macintosh computers.</p>
+<p>
+So you press the <b>Genericize</b> button. You can see that the Strings object changes to</p>
+<code>
+cook<br></code>
+<code>
+cooked<br></code>
+<code>
+cookie<br></code>
+<code>
+cookies<br></code>
+<code>
+cooking<br></code>
+<code>
+cooks<br></code>
+<code>
+Copenhagen<br></code>
+<code>
+K\o/bnhavn<br></code>
+<code>
+M\u"nchen<br></code>
+<code>
+Munich<br></code>
+<code>
+\aongstr\o"m<br></code>
+<p>
+The strings are now in the generic system-independent format that is used everywhere in Praat to draw strings (see <a href="Special_symbols.html">Special symbols</a>).</p>
+<p>
+You can again try to click the <b>To WordList</b> button. However, you will get a complaint again:</p>
+<code>&nbsp;&nbsp;&nbsp;
+String "Copenhagen" not sorted. Please sort first.<br></code>
+<p>
+This complaint means that the strings have not been sorted in ASCII sorting order. So you click <b>Sort</b>, and the Strings object becomes:</p>
+<code>
+Copenhagen<br></code>
+<code>
+K\o/bnhavn<br></code>
+<code>
+M\u"nchen<br></code>
+<code>
+Munich<br></code>
+<code>
+\aongstr\o"m<br></code>
+<code>
+cook<br></code>
+<code>
+cooked<br></code>
+<code>
+cookie<br></code>
+<code>
+cookies<br></code>
+<code>
+cooking<br></code>
+<code>
+cooks<br></code>
+<p>
+The strings are now in the ASCII order, in which capitals come before lower-case letters, and backslashes come in between these two series.</p>
+<p>
+Clicking <b>To WordList</b> now succeeds, and a WordList object appears in the list. If you save it to a text file (with the Save menu), you will get the following file:</p>
+<code>
+File type = "ooTextFile"<br></code>
+<code>
+Object class = "WordList"<br></code>
+<code>
+<br></code>
+<code>
+string = "Copenhagen<br></code>
+<code>
+K\o/bnhavn<br></code>
+<code>
+M\u""nchen<br></code>
+<code>
+Munich<br></code>
+<code>
+\aongstr\o""m<br></code>
+<code>
+cook<br></code>
+<code>
+cooked<br></code>
+<code>
+cookie<br></code>
+<code>
+cookies<br></code>
+<code>
+cooking<br></code>
+<code>
+cooks&#8221;<br></code>
+<p>
+Note that the double quotes (") that appear inside the strings, have been doubled, as is done everywhere inside strings in Praat text files.</p>
+<p>
+After you have created a WordList text file, you can create a WordList object just by reading this file with <a href="Read_from_file___.html">Read from file...</a> from the <b>Open</b> menu.</p>
+<p>
+The WordList object has two advantages over the Strings object. First, it won't take up more memory than the original word list. This is because the WordList is stored as a single string: a contiguous list of strings, separated by new-line symbols. Thus, our 300,000-word list will take up only 3.6 MB, and be read in 4 seconds.</p>
+<p>
+However, disk storage and reading can again be improved by compressing the word list. We can take advantage of the sorting, by noting for each entry how many leading characters are equal to those of the previous entry. The list then becomes something equivalent to</p>
+<code>
+Copenhagen<br></code>
+<code>
+0 K\o/bnhavn<br></code>
+<code>
+0 M\u"nchen<br></code>
+<code>
+1 unich<br></code>
+<code>
+0 \aongstr\o"m<br></code>
+<code>
+0 cook<br></code>
+<code>
+4 ed<br></code>
+<code>
+4 ie<br></code>
+<code>
+6 s<br></code>
+<code>
+5 ng<br></code>
+<code>
+4 s<br></code>
+<p>
+You can save the WordList compressed in this way as a binary file with <a href="Save_as_binary_file___.html">Save as binary file...</a>. For our 300,000-word list, this file takes up only 1.1 MB and can be read into memory (with <a href="Read_from_file___.html">Read from file...</a>) in a single second. When read into memory, the WordList object is again expanded to 3.6 MB to allow rapid searching.</p>
+<hr>
+<address>
+	<p>&copy; ppgb, January 31, 2011</p>
+</address>
+</body>
+</html>

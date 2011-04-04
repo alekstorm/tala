@@ -7,7 +7,7 @@ CFLAGS = $(DEFS) -I ../num -I ../audio -I ../kar -I ../sys -I ../dwsys -I ../dwt
 
 CPPFLAGS = $(CFLAGS)
 
-OBJECTS = Table.o TableEditor.o Regression.o manual_statistics.o praat_Stat.o \
+OBJECTS = Table.o TableEditor.o Regression.o praat_Stat.o \
    TableOfReal.o Distributions.o Distributions_and_Strings.o PairDistribution.o \
    LogisticRegression.o
 

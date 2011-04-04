@@ -1,0 +1,34 @@
+<html><head><meta name="robots" content="index,follow">
+<title>DTW: Find path (band)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+DTW: Find path (band)...
+</b></font></table></table>
+<p>
+Finds the optimal path for the selected <a href="DTW.html">DTW</a> satisfying constraints within a Sakoe-Chiba band.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Adjustment window duration (s)</b>
+<dd>
+The maximum distance from the start of the sound that a path may start. This is the parameter that determines the <a href="Sakoe___Chiba__1978_.html">Sakoe & Chiba (1978)</a> band.
+<dt>
+<b>Adjustment window includes end</b>
+<dd>
+determines whether the adjustment window includes the endpoint. When off and when the durations of the two objects in the DTW differ by more than the adjustment window duration, the last part of the longest object cannot be matched at all.
+<dt>
+<b>X weight</b>, <b>Y weight</b>, <b>Diagonal weight</b>
+<dd>
+determine the weights in the cumulative distance calculation.
+</dl>
+<p>
+To visualize the Sakoe-Chiba band, select a DTW and chose <a href="DTW__To_Polygon__band____.html">To Polygon (band)...</a>. Next select <b>Draw...</b> (don't forget to make the drawing domains equal to the domains of the two objects in the DTW).</p>
+<p>
+For more information see the article of <a href="Sakoe___Chiba__1978_.html">Sakoe & Chiba (1978)</a>.</p>
+<hr>
+<address>
+	<p>&copy; djmw, March 6, 2005</p>
+</address>
+</body>
+</html>

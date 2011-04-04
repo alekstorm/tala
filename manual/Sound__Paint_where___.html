@@ -1,0 +1,184 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: Paint where...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: Paint where...
+</b></font></table></table>
+<p>
+A command to paint only those parts of a <a href="Sound.html">Sound</a> where a condition holds. The painted area is the area between the Sound and a horizontal line at a certain level.</p>
+<h3>
+Settings</h3>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+6*0.4
+height = 100*(1+6*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half Sound: Paint where...
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Colour (0-1, name, {r,g,b}):
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.5
+Helvetica
+y += 40
+Text... 255 right y half Time range (s):
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.0
+Text... 380 left y half 0.0 (=all)
+Helvetica
+y += 40
+Text... 255 right y half Vertical range:
+Paint rectangle... white 265 370 y-12 y+12
+Draw rectangle... 265 370 y-12 y+12
+Paint rectangle... white 380 505 y-12 y+12
+Draw rectangle... 380 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.0
+Text... 380 left y half 0.0 (=all)
+Helvetica
+y += 40
+Text... 255 right y half Fill from level:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0
+Helvetica
+y += 40
+if 1
+    Paint rectangle... yellow 265 279 y-7 y+7
+    Text special... 272 centre y half Times fontSize*1.2 0 <b>&#8730;
+else
+    Paint rectangle... white 265 279 y-7 y+7
+endif
+Draw rectangle... 265 279 y-7 y+7
+Text... 281 left y half Garnish
+y += 40
+Text... 12 left y half Paint only those parts where the following condition holds:
+y += 24
+Paint rectangle... white 15 505 y-12 y+12
+Draw rectangle... 15 505 y-12 y+12
+;Courier
+Text... 15 left y half 1; always
+Helvetica
+y += 40
+</b></p>
+<dl>
+<dt>
+<b>Colour</b>
+<dd>
+defines the <a href="Colour.html">colour</a> of the paint.
+<dt>
+<b>Time range (s)</b>
+<dd>
+selects the time domain for the drawing.
+<dt>
+<b>Vertical range</b>
+<dd>
+defines the vertical limits; larger amplitudes will be clipped.
+<dt>
+<b>Fill from level</b>
+<dd>
+defines the level of the horizontal line. 
+<dt>
+<b>Formula</b>
+<dd>
+determines the part of the sound that will be painted. All parts where the formula evaluates to true will be painted. This formula may <b>not</b> contain references to the sampling of the sound, i.e. don't use 'col', 'x1', 'dx' and 'ncol' in it.
+</dl>
+<h3>
+Example 1</h3>
+<p>
+The following script paints the area under a sine curve in red and the area above in green.For the first paint the horizontal line is at y=-1, for the second paint the line is at y=+1. The formula always evaluates to true.</p>
+<code>
+s = Create Sound from formula... s Mono 0 1 10000 0.5*sin(2*pi*5*x)<br></code>
+<code>
+Paint where... Red 0 0 -1 1 -1 y 1<br></code>
+<code>
+Paint where... Green 0 0 -1 1 1 n 1<br></code>
+<p>
+s = Create Sound from formula... s Mono 0 1 10000 0.5*sin(2*pi*5*x)
+Paint where... Red 0 0 -1 1 -1 n 1
+Paint where... Green 0 0 -1 1 1 y 1
+Remove
+</p>
+<h3>
+Example 2</h3>
+<p>
+The following script paints the area below zero in red and the area above in green.The horizontal line is now always at y=0 and we use the formula to differentiate the areas.</p>
+<code>
+s = Create Sound from formula... s Mono 0 1 10000 0.5*sin(2*pi*5*x)<br></code>
+<code>
+Paint where... Red 0 0 -1 1 0 n self&gt;0<br></code>
+<code>
+Paint where... Green 0 0 -1 1 0 y self&lt;0<br></code>
+<p>
+s = Create Sound from formula... s Mono 0 1 10000 0.5*sin(2*pi*5*x)
+Paint where... Red 0 0 -1 1 0 n self&lt;0
+Paint where... Green 0 0 -1 1 0 y self&gt;0
+Remove
+</p>
+<h3>
+Example 3</h3>
+<p>
+To give an indication that the area under a 1/x curve between the points <i>a</i> and <i>b</i> and the area between <i>c</i> and <i>d</i> are equal if <i>b</i>/<i>a</i> = <i>d</i>/<i>c</i>. For example, for <i>a</i>=1, <i>b</i>=2, <i>c</i>=4 and <i>d</i>=8: </p>
+<code>
+Create Sound from formula... 1dx Mono 0 20 100 1/x<br></code>
+<code>
+Draw... 0 20 0 1.5 yes Curve<br></code>
+<code>
+Paint where... Grey 0 20 0 1.5 0 yes (x &gt;= 1 and x &lt;2) or (x&gt;=4 and x&lt;8)<br></code>
+<code>
+One mark bottom... 1 y y n<br></code>
+<code>
+One mark bottom... 2 y y n<br></code>
+<code>
+One mark bottom... 4 y y n<br></code>
+<code>
+One mark bottom... 8 y y n<br></code>
+<p>
+Create Sound from formula... 1dx Mono 0 20 100 1/x
+Draw... 0 20 0 1.5 yes Curve
+Paint where... Grey 0 20 0 1.5 0 yes (x &gt;= 1 and x &lt;2) or (x&gt;=4 and x&lt;8)
+One mark bottom... 1 y y n
+One mark bottom... 2 y y n
+One mark bottom... 4 y y n
+One mark bottom... 8 y y n
+Remove
+</p>
+<hr>
+<address>
+	<p>&copy; djmw, February 13, 2011</p>
+</address>
+</body>
+</html>

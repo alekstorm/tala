@@ -1,0 +1,38 @@
+<html><head><meta name="robots" content="index,follow">
+<title>LPC: To VocalTract (slice)...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+LPC: To VocalTract (slice)...
+</b></font></table></table>
+<p>
+You can choose this command after selecting 1 or more <a href="LPC.html">LPC</a> objects.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Time (s)</b>
+<dd>
+the time of the nearest frame, in seconds.
+<dt>
+<b>Length (m)</b>
+<dd>
+the length of the vocal tract, in metres.
+<dt>
+<b>Compute length according to Wakita</b>
+<dd>
+the length of the vocal tract is calculated according to the algorithm as described in <a href="Wakita__1977_.html">Wakita (1977)</a>.
+</dl>
+<h3>
+Behaviour</h3>
+<p>
+A new <a href="VocalTract.html">VocalTract</a> area function is calculated from the prediction coefficients in the frame. </p>
+<h3>
+Warning</h3>
+<p>
+If <b>Compute length according to Wakita</b> is on, the optimal length is searched for in the range from 0.1 m to 0.25 m. This length calculation is extremely sensitive to the number of and the positions of the formants with respect to the <a href="Nyquist_frequency.html">Nyquist frequency</a>. For example, there is a large difference between the vocal tract length estimates if the highest formant is just below or just above the Nyquist frequency. The algorithm is not very reliable in vocal tract length estimation and we do not recommend using it. </p>
+<hr>
+<address>
+	<p>&copy; djmw, June 15, 2005</p>
+</address>
+</body>
+</html>

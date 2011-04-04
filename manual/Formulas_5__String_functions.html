@@ -1,0 +1,193 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Formulas 5. String functions</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Formulas 5. String functions
+</b></font></table></table>
+<p>
+String functions are functions that either return a text string or have at least one text string as an argument. Since string computations are not very useful in the <a href="Calculator.html">calculator</a>, in settings windows, or in creation and modification formulas, this page only gives examples of strings in scripts, so that the example may contain string variables.</p>
+<dl>
+<dt>
+<b>length (a$)</b>
+<dd>
+gives the length of the string. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+string$ = "hallo"<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+length = length (string$ + "dag")<br></code>
+<dl>
+<dd>
+the variable <i>length</i> contains the number 8 (by the way, from this example you see that variables can have the same names as functions, without any danger of confusing the interpreter).
+<dt>
+<b>left$ (a$, n)</b>
+<dd>
+gives a string consisting of the first <i>n</i> characters of <i>a$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+head$ = left$ ("hallo", 3)<br></code>
+<dl>
+<dd>
+the variable <i>head$</i> contains the string "hal".
+<dt>
+<b>right$ (a$, n)</b>
+<dd>
+gives a string consisting of the last <i>n</i> characters of <i>a$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+english$ = "he" + right$ ("hallo", 3)<br></code>
+<dl>
+<dd>
+the variable <i>english$</i> contains the string "hello".
+<dt>
+<b>mid$ ("hello" , 3, 2)</b>
+<dd>
+gives a string consisting of 2 characters from "hello", starting at the third character. Outcome: ll.
+<dt>
+<b>index (a$, b$)</b>
+<dd>
+gives the index of the first occurrence of the string <i>b$</i> in the string <i>a$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where = index ("hallo allemaal", "al")<br></code>
+<dl>
+<dd>
+the variable <i>where</i> contains the number 2, because the first "al" starts at the second character of the longer string. If the first string does not contain the second string, <i>index</i> returns 0.
+<dt>
+<b>rindex (a$, b$)</b>
+<dd>
+gives the index of the last occurrence of the string <i>b$</i> in the string <i>a$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where = rindex ("hallo allemaal", "al")<br></code>
+<dl>
+<dd>
+the variable <i>where</i> contains the number 13, because the last "al" starts at the 13th character. If the first string does not contain the second string, <i>rindex</i> returns 0.
+<dt>
+<b>startsWith (a$, b$)</b>
+<dd>
+determines whether the string <i>a$</i> starts with the string <i>b$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where = startsWith ("internationalization", "int")<br></code>
+<dl>
+<dd>
+the variable <i>where</i> contains the number 1 (true).
+<dt>
+<b>endsWith (a$, b$)</b>
+<dd>
+determines whether the string <i>a$</i> ends with the string <i>b$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where = endsWith ("internationalization", "nation")<br></code>
+<dl>
+<dd>
+the variable <i>where</i> contains the number 0 (false).
+<dt>
+<b>replace$ (a$, b$, c$, n)</b>
+<dd>
+gives a string that is like <i>a$</i>, but where (at most <i>n</i>) occurrences of <i>b$</i> are replaced with the string <i>c$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+s$ = replace$ ("hello", "l", "m", 0)<br></code>
+<dl>
+<dd>
+the variable <i>s$</i> contains the string "hemmo". After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+s$ = replace$ ("hello", "l", "m", 1)<br></code>
+<dl>
+<dd>
+the variable <i>s$</i> contains the string "hemlo". The number <i>n</i> determines the maximum number of occurrences of <i>b$</i> that can be replaced. If <i>n</i> is 0, all occurrences are replaced.
+<dt>
+<b>index_regex (a$, b$)</b>
+<dd>
+determines where the string <i>a$</i> first matches the <a href="Regular_expressions.html">regular expression</a> <i>b$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where = index_regex ("internationalization", "a.*n")<br></code>
+<dl>
+<dd>
+the variable <i>where</i> contains the number 7. If there is no match, the outcome is 0.
+<dt>
+<b>rindex_regex (a$, b$)</b>
+<dd>
+determines where the string <i>a$</i> last matches the <a href="Regular_expressions.html">regular expression</a> <i>b$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+where = rindex_regex ("internationalization", "a.*n")<br></code>
+<dl>
+<dd>
+the variable <i>where</i> contains the number 16. If there is no match, the outcome is 0.
+<dt>
+<b>replace_regex$ (a$, b$, c$, n)</b>
+<dd>
+gives a string that is like <i>a$</i>, but where (at most <i>n</i>) substrings that match the <a href="Regular_expressions.html">regular expression</a> <i>b$</i> are replaced with the expression <i>c$</i>. After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+s$ = replace_regex$ ("hello", ".", "&amp;&amp;", 0)<br></code>
+<dl>
+<dd>
+the variable <i>s$</i> contains the string "hheelllloo". If there is no match, the outcome is the empty string "". After
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+s$ = replace_regex$ ("hello", ".", "&amp;&amp;", 1)<br></code>
+<dl>
+<dd>
+the variable <i>s$</i> contains the string "hhello". The number <i>n</i> determines the maximum number of text pieces that can be replaced. If <i>n</i> is 0, all matching text pieces are replaced.
+<dt>
+<b>fixed$ (number, precision)</b>
+<dd>
+formats a number as a string with <i>precision</i> digits after the decimal point. Thus, <code>fixed$ (72.65687, 3)</code> becomes the string <code>72.657</code>, and <code>fixed$ (72.65001, 3)</code> becomes the string <code>72.650</code>. In these examples, we see that the result can be rounded up and that trailing zeroes are kept. At least one digit of precision is always given, e.g. <code>fixed$ (0.0000157, 3)</code> becomes the string <code>0.00002</code>. The number 0 always becomes the string <code>0</code>.
+<dt>
+<b>percent$ (number, precision)</b>
+<dd>
+the same as <b>fixed$</b>, but with a percent sign. For instance, <code>percent$(0.157, 3)</code> becomes <code>15.700%</code>, <code>percent$(0.000157, 3)</code> becomes <code>0.016%</code>, and <code>percent$(0.000000157, 3)</code> becomes <code>0.00002%</code>. The number 0 always becomes the string <code>0</code>.
+<dt>
+<b>date$ ()</b>
+<dd>
+gives the date and time in the following format:
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+Mon Jun 24 17:11:21 2002<br></code>
+<dl>
+<dd>
+To write the day of the month into the Info window, you type:
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+date$ = date$ ()<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+day$ = mid$ (date$, 9, 2)<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+echo The month day is 'day$'.<br></code>
+<dl>
+<dt>
+<b>extractNumber ("Type: Sound'newline$'Name: hello there'newline$'Size: 44007", "Size:")</b>
+<dd>
+looks for a number after the first occurrence of "Size:" in the long string. Outcome: 44007. This is useful in scripts that try to get information from long reports, as the following script that runs in the Sound editor window:
+</dl>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+report$ = Settings report<br></code>
+<code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+maximumFrequency = extractNumber (report$, "Spectrogram maximum frequency:")<br></code>
+<dl>
+<dt>
+<b>extractWord$ ("Type: Sound'newline$'Name: hello there'newline$'Size: 44007", "Type:")</b>
+<dd>
+looks for a word without spaces after the first occurrence of "Type:" in the long string. Outcome: Sound.
+<dt>
+<b>extractLine$ ("Type: Sound'newline$'Name: hello there'newline$'Size: 44007", "Name: ")</b>
+<dd>
+looks for the rest of the line (including spaces) after the first occurrence of "Name: " in the long string. Outcome: hello there. Note how "Name: " includes a space, so that the `rest of the line' starts with the <i>h</i>.
+</dl>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Formulas.html">Formulas</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, June 10, 2006</p>
+</address>
+</body>
+</html>

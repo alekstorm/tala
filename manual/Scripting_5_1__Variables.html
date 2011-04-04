@@ -1,0 +1,111 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 5.1. Variables</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 5.1. Variables
+</b></font></table></table>
+<p>
+In a Praat script, you can use numeric variables as well as string variables.</p>
+<h3>
+Numeric variables</h3>
+<p>
+Numeric variables contain integer numbers between -1,000,000,000,000,000 and +1,000,000,000,000,000 or real numbers between -10<sup>308</sup> and +10<sup>308</sup>. The smallest numbers lie near -10<sup>-308</sup> and +10<sup>-308</sup>.</p>
+<p>
+You can use <i>numeric variables</i> in your script:</p>
+<dl>
+<dt>
+<i>variable</i> = <i>formula</i>
+<dd>
+evaluates a numeric formula and assign the result to a variable.
+</dl>
+<p>
+Example:</p>
+<code>
+length = 10<br></code>
+<code>
+Draw line... 0 length 1 1<br></code>
+<p>
+Names of numeric variables must start with a lower-case letter, optionally followed by a sequence of letters, digits, and underscores.</p>
+<h3>
+String variables</h3>
+<p>
+You can also use <i>string variables</i>, which contain text:</p>
+<code>
+title$ = "Dutch nasal place assimilation"<br></code>
+<p>
+As in the programming language Basic, the names of string variables end in a dollar sign.</p>
+<h3>
+Variable substitution</h3>
+<p>
+Existing variables are substituted when put between quotes:</p>
+<code>
+x = 99<br></code>
+<code>
+x2 = x * x<br></code>
+<code>
+<b>echo</b> The square of 'x' is 'x2'.<br></code>
+<p>
+This will write the following text to the Info window:</p>
+<code>
+The square of 99 is 9801.<br></code>
+<p>
+You can reduce the number of digits after the decimal point by use of the colon:</p>
+<code>
+root = sqrt (2)<br></code>
+<code>
+<b>echo</b> The square root of 2 is approximately 'root:3'.<br></code>
+<p>
+This will write the following text to the Info window:</p>
+<code>
+The square root of 2 is approximately 1.414.<br></code>
+<p>
+By using ":0", you round to whole values:</p>
+<code>
+root = sqrt (2)<br></code>
+<code>
+<b>echo</b> The square root of 2 is very approximately 'root:0'.<br></code>
+<p>
+This will write the following text to the Info window:</p>
+<code>
+The square root of 2 is very approximately 1.<br></code>
+<p>
+By using ":3%", you give the result in a percent format:</p>
+<code>
+jitter = 0.0156789<br></code>
+<code>
+<b>echo</b> The jitter is 'jitter:3%'.<br></code>
+<p>
+This will write the following text to the Info window:</p>
+<code>
+The jitter is 1.568%.<br></code>
+<p>
+The number 0, however, will always be written as 0, and for small numbers the number of significant digits will never be less than 1:</p>
+<code>
+jitter = 0.000000156789<br></code>
+<code>
+<b>echo</b> The jitter is 'jitter:3%'.<br></code>
+<p>
+This will write the following text to the Info window:</p>
+<code>
+The jitter is 0.00002%.<br></code>
+<p>
+Some <b>predefined numeric variables</b> are <code>macintosh</code>, <code>windows</code>, and <code>unix</code>, which are 1 if the script is running on a Macintosh, Windows, or Unix platform (respectively), and which are otherwise zero. Another one is <code>praatVersion</code>, which is e.g. 5221 for the current version of Praat.</p>
+<p>
+Some <b>predefined string variables</b> are <code>newline$</code>,  <code>tab$</code>, and <code>shellDirectory$</code>. The last one specifies the directory that was the default directory when Praat started up; you can use it in scripts that run from the Unix or DOS command line. Likewise, there exist the predefined string variables <code>homeDirectory$</code>, <code>preferencesDirectory$</code>, and <code>temporaryDirectory$</code>. These three refer to your home directory (which is where you log in), the Praat <a href="preferences_directory.html">preferences directory</a>, and a directory for saving temporary files; if you want to know what they are on your computer, try to <b>echo</b> them in a script window. The variable <code>defaultDirectory$</code> is available for formulas in scripts; it is the directory that contains the script file. Finally, we have <code>praatVersion$</code>, which is "5.2.21" for the current version of Praat.</p>
+<p>
+To check whether a variable exists, you can use the function</p>
+<code>
+<i>variableExists</i> (<i>variableName</i>$)<br></code>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Formulas_1_9__Formulas_in_scripts.html">Formulas 1.9. Formulas in scripts</a>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_3_3__Numeric_queries.html">Scripting 3.3. Numeric queries</a>
+<li><a href="Scripting_5__Language_elements_reference.html">Scripting 5. Language elements reference</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, August 9, 2009</p>
+</address>
+</body>
+</html>

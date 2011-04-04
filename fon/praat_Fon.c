@@ -5245,21 +5245,6 @@ praat_addAction2 (classPointProcess, 1, classSound, 1, L"Synthesize", 0, 0, 0);
 
 	praat_addAction4 (classDurationTier, 1, classPitchTier, 1, classPointProcess, 1, classSound, 1, L"To Sound...", 0, 0, DO_Sound_Point_Pitch_Duration_to_Sound);
 
-	INCLUDE_MANPAGES (manual_Manual_init)
-	INCLUDE_MANPAGES (manual_Script_init)
-	INCLUDE_MANPAGES (manual_Picture_init)
-
-	INCLUDE_MANPAGES (manual_Fon_init)
-	INCLUDE_MANPAGES (manual_tutorials_init)
-	INCLUDE_MANPAGES (manual_glossary_init)
-	INCLUDE_MANPAGES (manual_references_init)
-	INCLUDE_MANPAGES (manual_soundFiles_init)
-	INCLUDE_MANPAGES (manual_statistics_init)
-	INCLUDE_MANPAGES (manual_voice_init)
-	INCLUDE_MANPAGES (manual_programming_init)
-	INCLUDE_MANPAGES (manual_gram_init)
-	INCLUDE_MANPAGES (manual_Exp_init)
-
 	praat_addMenuCommand (L"Objects", L"New", L"-- new synthesis --", 0, 0, 0);
 	INCLUDE_LIBRARY (praat_uvafon_Artsynth_init)
 	INCLUDE_LIBRARY (praat_uvafon_David_init)

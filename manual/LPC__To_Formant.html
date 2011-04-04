@@ -1,0 +1,34 @@
+<html><head><meta name="robots" content="index,follow">
+<title>LPC: To Formant</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+LPC: To Formant
+</b></font></table></table>
+<p>
+You can choose this command after selecting 1 or more <a href="LPC.html">LPC</a> objects.</p>
+<h3>
+Behaviour</h3>
+<p>
+For each LPC_Frame, the zeros of the linear prediction polynomial are extracted. Zeros that are outside the unit circle are reflected into it. Next, formant frequencies and bandwidths are calculated from all the roots that have the imaginary part positive, i.e., that lie in the upper half of the unit circle. Formant frequencies smaller than 50 Hz or larger than (<i>Nyquist_frequency</i> - 50) are discarded. The remaining frequencies and bandwidths are sorted and copied to the Formant_Frame. Finally, the <i>gain</i> field of the LPC is copied to the <i>intensity</i> field of the Formant_Frame.</p>
+<h3>
+Algorithm</h3>
+<p>
+The root finder is Laguerre's method followed by root polishing, see <a href="Press_et_al___1992_.html">Press et al. (1992)</a>.</p>
+<h3>
+Warning</h3>
+<ul>
+<li>
+&nbsp;The formant values can be very inaccurate if you did not resample the Sound before the LPC-analysis (consult the <a href="Source-filter_synthesis.html">Source-filter synthesis</a> tutorial).
+<li>
+&nbsp;The results of the root finder may not always be accurate when more than 30 roots have to be found.
+</ul>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Source-filter_synthesis_4__Using_existing_sounds.html">Source-filter synthesis 4. Using existing sounds</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, January 23, 1997</p>
+</address>
+</body>
+</html>

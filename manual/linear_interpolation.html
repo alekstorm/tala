@@ -1,0 +1,41 @@
+<html><head><meta name="robots" content="index,follow">
+<title>linear interpolation</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+linear interpolation
+</b></font></table></table>
+<p>
+- the interpretation of values in tiers between the first point and the last point.</p>
+<h3>
+Example</h3>
+<p>
+The following is a <a href="PitchTier.html">PitchTier</a> with three points:</p>
+<p>
+Create PitchTier... tier 0 0.5
+Add point... 0.10 170
+Add point... 0.20 180
+Add point... 0.45 110
+Draw... 0 0 50 250 yes
+Remove
+One mark left... 100 yes yes yes
+One mark left... 150 yes yes yes
+One mark left... 200 yes yes yes
+One mark bottom... 0.1 yes yes yes
+One mark bottom... 0.2 yes yes yes
+One mark bottom... 0.3 yes yes yes
+One mark bottom... 0.4 yes yes yes
+</p>
+<p>
+Between 0.10 and 0.20 seconds, the pitch rises linearly from 170 to 180 Hz, and between 0.20 and 0.45 seconds it falls linearly from 180 to 110 Hz. This is <i>linear interpolation</i>: at all times between two adjacent points, the pitch values follow the straight line that connects the two points.</p>
+<p>
+(Before 0.10 seconds and after 0.45 seconds there is <a href="constant_extrapolation.html">constant extrapolation</a>.</p>
+<h3>
+Linear interpolation in Praat</h3>
+<p>
+Praat uses linear interpolation in all tiers and grids with values at time points (<a href="PitchTier.html">PitchTier</a>, <a href="IntensityTier.html">IntensityTier</a>, <a href="DurationTier.html">DurationTier</a>, <a href="AmplitudeTier.html">AmplitudeTier</a>, <a href="FormantGrid.html">FormantGrid</a>).</p>
+<hr>
+<address>
+	<p>&copy; ppgb, April 26, 2008</p>
+</address>
+</body>
+</html>

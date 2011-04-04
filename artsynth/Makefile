@@ -11,7 +11,7 @@ OBJECTS = Speaker.o Articulation.o Artword.o \
      Art_Speaker.o Art_Speaker_to_VocalTract.o Artword_Speaker.o Artword_Speaker_Sound.o \
      Artword_Speaker_to_Sound.o Artword_to_Art.o \
      Delta.o Speaker_to_Delta.o Art_Speaker_Delta.o \
-     ArtwordEditor.o praat_Artsynth.o manual_Artsynth.o
+     ArtwordEditor.o praat_Artsynth.o
 
 .PHONY: all clean
 

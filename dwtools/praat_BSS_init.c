@@ -335,8 +335,6 @@ void praat_BSS_init (void)
 	praat_addAction2 (classCrossCorrelationTables, 1, classDiagonalizer, 1, L"Improve diagonality...", 0 , 0, DO_Diagonalizer_and_CrossCorrelationTables_improveDiagonality);
 
 	praat_addAction2 (classCrossCorrelationTables, 1, classMixingMatrix, 1, L"Improve unmixing...", 0 , 0, DO_CrossCorrelationTables_and_MixingMatrix_improveUnmixing);
-
-	INCLUDE_MANPAGES (manual_BSS)
 }
 
 /* End of file praat_BSS_init.c */

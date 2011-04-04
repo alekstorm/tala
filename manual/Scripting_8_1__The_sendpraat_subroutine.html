@@ -1,0 +1,91 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 8.1. The sendpraat subroutine</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 8.1. The sendpraat subroutine
+</b></font></table></table>
+<p>
+A subroutine for sending messages to a <i>running</i> Praat. Also a Unix, MacOS, or DOS console program with the same purpose.</p>
+<h3>
+Syntax</h3>
+<dl>
+<dd>
+<b>sendpraat (void *</b><i>display</i><b>, const char *</b><i>program</i><b>, long </b><i>timeOut</i><b>, char *</b><i>text</i><b>);</b>
+</dl>
+<h3>
+Arguments</h3>
+<dl>
+<dt>
+<i>display</i>
+<dd>
+the display pointer if the subroutine is called from a running X program; if NULL, sendpraat will open the display by itself. On Windows and Macintosh, this argument is ignored.
+<dt>
+<i>program</i>
+<dd>
+the name of a running program that uses the Praat shell, e.g. "Praat" or "ALS". The first letter may be specified as lower or upper case; it will be converted to lower case for Unix and to upper case for Macintosh and Windows.
+<dt>
+<i>timeOut</i> (Unix and Macintosh only)
+<dd>
+the number of seconds that sendpraat will wait for an answer before writing an error message. A <i>timeOut</i> of 0 means that the message will be sent asynchronously, i.e., that sendpraat will return immediately without issuing any error message.
+<dt>
+<i>text</i>
+<dd>
+the script text to be sent. Sendpraat may alter this text!
+</dl>
+<h3>
+Example 1: killing a program</h3>
+<code>
+char message [100], *errorMessage;<br></code>
+<code>
+strcpy (message, "Quit");<br></code>
+<code>
+errorMessage = <b>sendpraat</b> (NULL, "praat", 0, message);<br></code>
+<code>
+if (errorMessage != NULL) fprintf (stderr, "%s", errorMessage);<br></code>
+<p>
+This causes the program <b>Praat</b> to quit (gracefully), because <b>Quit</b> is a fixed command in one of the menus of that program. On Unix and Macintosh, sendpraat returns immediately; on Windows, the <i>timeOut</i> argument is ignored. The return value <i>errorMessage</i> is a statically allocated string internal to sendpraat, and is overwritten by the next call to sendpraat.</p>
+<h3>
+Example 2: playing a sound file in reverse</h3>
+<p>
+Suppose you have a sound file whose name is in the variable <code>fileName</code>, and you want the program <b>Praat</b>, which can play sounds, to play this sound backwards.</p>
+<code>
+char message [1000], *errorMessage;<br></code>
+<code>
+sprintf (message, "Read from file... %s\nPlay reverse\nRemove", fileName);<br></code>
+<code>
+errorMessage = <b>sendpraat</b> (NULL, "praat", 1000, message);<br></code>
+<p>
+This will work because <b>Play reverse</b> is an action command that becomes available in the dynamic menu when a Sound is selected. On Unix, sendpraat will allow <b>Praat</b> at most 1000 seconds to perform this.</p>
+<h3>
+Example 3: executing a large script file</h3>
+<p>
+Sometimes, it may be unpractical to send a large script directly to <b>sendpraat</b>. Fortunately, the receiving program knows the <b>execute</b> directive:</p>
+<code>
+char message [100], *errorMessage;<br></code>
+<code>
+strcpy (message, "execute doAll.praat 20");<br></code>
+<code>
+errorMessage = <b>sendpraat</b> (NULL, "praat", 0, message);<br></code>
+<p>
+This causes the program <b>Praat</b> to execute the script <b>doAll.praat</b> with an argument of "20".</p>
+<h3>
+How to download</h3>
+<p>
+You can download the source code of the sendpraat subroutine and program via <b>www.praat.org</b> or from <b>http://www.fon.hum.uva.nl/praat/sendpraat.html</b>.</p>
+<h3>
+See also</h3>
+<p>
+To start a program from the command line instead and sending it a message, you would not use <b>sendpraat</b>, but instead run the program with a script file as an argument. See <a href="Scripting_6_9__Calling_from_the_command_line.html">Scripting 6.9. Calling from the command line</a>.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_8__Controlling_Praat_from_another_program.html">Scripting 8. Controlling Praat from another program</a>
+<li><a href="Scripting_8_2__The_sendpraat_program.html">Scripting 8.2. The sendpraat program</a>
+<li><a href="Scripting_8_3__The_sendpraat_directive.html">Scripting 8.3. The sendpraat directive</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, October 20, 2009</p>
+</address>
+</body>
+</html>

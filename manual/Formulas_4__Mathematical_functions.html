@@ -1,0 +1,281 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Formulas 4. Mathematical functions</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Formulas 4. Mathematical functions
+</b></font></table></table>
+<dl>
+<dt>
+<b>abs (<i>x</i>)</b>
+<dd>
+absolute value
+<dt>
+<b>round (<i>x</i>)</b>
+<dd>
+nearest integer; round (1.5) = 2
+<dt>
+<b>floor (<i>x</i>)</b>
+<dd>
+round down: highest integer value not greater than <i>x</i>
+<dt>
+<b>ceiling (<i>x</i>)</b>
+<dd>
+round up: lowest integer value not less than <i>x</i>
+<dt>
+<b>sqrt (<i>x</i>)</b>
+<dd>
+square root: &#8730;<i>x</i>, <i>x</i> &#8805; 0
+<dt>
+<b>min (<i>x</i>, ...)</b>
+<dd>
+the minimum of a series of numbers, e.g. min (7.2, -5, 3) = -5
+<dt>
+<b>max (<i>x</i>, ...)</b>
+<dd>
+the maximum of a series of numbers, e.g. max (7.2, -5, 3) = 7.2
+<dt>
+<b>imin (<i>x</i>, ...)</b>
+<dd>
+the location of the minimum, e.g. imin (7.2, -5, 3) = 2
+<dt>
+<b>imax (<i>x</i>, ...)</b>
+<dd>
+the location of the maximum, e.g. imax (7.2, -5, 3) = 1
+<dt>
+<b>sin (<i>x</i>)</b>
+<dd>
+sine
+<dt>
+<b>cos (<i>x</i>)</b>
+<dd>
+cosine
+<dt>
+<b>tan (<i>x</i>)</b>
+<dd>
+tangent
+<dt>
+<b>arcsin (<i>x</i>)</b>
+<dd>
+arcsine, -1 &#8804; <i>x</i> &#8804; 1
+<dt>
+<b>arccos (<i>x</i>)</b>
+<dd>
+arccosine, -1 &#8804; <i>x</i> &#8804; 1
+<dt>
+<b>arctan (<i>x</i>)</b>
+<dd>
+arctangent
+<dt>
+<b>arctan2 (<i>y</i>, <i>x</i>)</b>
+<dd>
+argument angle
+<dt>
+<b>sinc (<i>x</i>)</b>
+<dd>
+sinus cardinalis: sin (<i>x</i>) / <i>x</i>
+<dt>
+<b>sincpi (<i>x</i>)</b>
+<dd>
+sinc<sub><i></i>&#960;</sub>: sin (<i></i>&#960;<i>x</i>) / (<i></i>&#960;<i>x</i>)
+<dt>
+<b>exp (<i>x</i>)</b>
+<dd>
+exponentiation: <i>e</i><sup><i>x</i></sup>; same as <b>e^<i>x</i></b>
+<dt>
+<b>ln (<i>x</i>)</b>
+<dd>
+natural logarithm, base <i>e</i>
+<dt>
+<b>log10 (<i>x</i>)</b>
+<dd>
+logarithm, base 10
+<dt>
+<b>log2 (<i>x</i>)</b>
+<dd>
+logarithm, base 2
+<dt>
+<b>sinh (<i>x</i>)</b>
+<dd>
+hyperbolic sine: (<i>e</i><sup><i>x</i></sup> - <i>e</i><sup>-<i>x</i></sup>) / 2
+<dt>
+<b>cosh (<i>x</i>)</b>
+<dd>
+hyperbolic cosine: (<i>e</i><sup><i>x</i></sup> + <i>e</i><sup>-<i>x</i></sup>) / 2
+<dt>
+<b>tanh (<i>x</i>)</b>
+<dd>
+hyperbolic tangent: sinh (<i>x</i>) / cosh (<i>x</i>)
+<dt>
+<b>arcsinh (<i>x</i>)</b>
+<dd>
+inverse hyperbolic sine: ln (<i>x</i> + &#8730;(1+<i>x</i><sup>2</sup>))
+<dt>
+<b>arccosh (<i>x</i>)</b>
+<dd>
+inverse hyperbolic cosine: ln (<i>x</i> + &#8730;(<i>x</i><sup>2</sup>&#8211;1))
+<dt>
+<b>arctanh (<i>x</i>)</b>
+<dd>
+inverse hyperbolic tangent
+<dt>
+<b>sigmoid (<i>x</i>)</b>
+<dd>
+<b>R</b> &#8594; (0,1): 1 / (1 + <i>e</i><sup>&#8211;<i>x</i></sup>) or 1 &#8211; 1 / (1 + <i>e</i><sup><i>x</i></sup>)
+<dt>
+<b>invSigmoid (<i>x</i>)</b>
+<dd>
+(0,1) &#8594; <b>R</b>: ln (<i>x</i> / (1 &#8211; <i>x</i>))
+<dt>
+<b>erf (<i>x</i>)</b>
+<dd>
+the error function: 2/&#8730;<i></i>&#960; <sub>0</sub>&#8747;<sup><i>x</i></sup> exp(-<i>t</i><sup>2</sup>) <i>dt</i>
+<dt>
+<b>erfc (<i>x</i>)</b>
+<dd>
+the complement of the error function: 1 - erf (<i>x</i>)
+<dt>
+<b>randomUniform (<i>min</i>, <i>max</i>)</b>
+<dd>
+uniform random deviate between <i>min</i> (inclusive) and <i>max</i> (exclusive)
+<dt>
+<b>randomInteger (<i>min</i>, <i>max</i>)</b>
+<dd>
+uniform random deviate between <i>min</i> and <i>max</i> (inclusive)
+<dt>
+<b>randomGauss (<i></i>&#956;, <i></i>&#963;)</b>
+<dd>
+Gaussian random deviate with mean <i></i>&#956; and standard deviation <i></i>&#963;
+<dt>
+<b>randomPoisson (<i>mean</i>)</b>
+<dd>
+Poisson random deviate
+<dt>
+<b>lnGamma (<i>x</i>)</b>
+<dd>
+logarithm of the &#915; function
+<dt>
+<b>gaussP (<i>z</i>)</b>
+<dd>
+the area under the Gaussian distribution between &#8211;&#8734; and <i>z</i>
+<dt>
+<b>gaussQ (<i>z</i>)</b>
+<dd>
+the area under the Gaussian distribution between <i>z</i> and +&#8734;: the one-tailed "statistical significance <i>p</i>" of a value that is <i>z</i> standard deviations away from the mean of a Gaussian distribution
+<dt>
+<b>invGaussQ (<i>q</i>)</b>
+<dd>
+the value of <i>z</i> for which <code>gaussQ</code> (<i>z</i>) = <i>q</i>
+<dt>
+<b>chiSquareP (<i>chiSquare</i>, <i>df</i>)</b>
+<dd>
+the area under the <i></i>&#967;<sup>2</sup> distribution between 0 and <i>chiSquare</i>, for <i>df</i> degrees of freedom
+<dt>
+<b>chiSquareQ (<i>chiSquare</i>, <i>df</i>)</b>
+<dd>
+the area under the <i></i>&#967;<sup>2</sup> distribution between <i>chiSquare</i> and +&#8734;, for <i>df</i> degrees of freedom: the "statistical significance <i>p</i>" of the <i></i>&#967;<sup>2</sup> difference between two distributions in <i>df</i>+1 dimensions
+<dt>
+<b>invChiSquareQ (<i>q</i>, <i>df</i>)</b>
+<dd>
+the value of <i></i>&#967;<sup>2</sup> for which <code>chiSquareQ</code> (<i></i>&#967;<sup>2</sup>, <i>df</i>) = <i>q</i>
+<dt>
+<b>studentP (<i>t</i>, <i>df</i>)</b>
+<dd>
+the area under the student T-distribution from -&#8734; to <i>t</i>
+<dt>
+<b>studentQ (<i>t</i>, <i>df</i>)</b>
+<dd>
+the area under the student T-distribution from <i>t</i> to +&#8734;
+<dt>
+<b>invStudentQ (<i>q</i>, <i>df</i>)</b>
+<dd>
+the value of <i>t</i> for which <code>studentQ</code> (<i>t</i>, <i>df</i>) = <i>q</i>
+<dt>
+<b>fisherP (<i>f</i>, <i>df1</i>, <i>df2</i>)</b>
+<dd>
+the area under Fisher's F-distribution from 0 to <i>f</i>
+<dt>
+<b>fisherQ (<i>f</i>, <i>df1</i>, <i>df2</i>)</b>
+<dd>
+the area under Fisher's F-distribution from <i>f</i> to +&#8734;
+<dt>
+<b>invFisherQ (<i>q</i>, <i>df1</i>, <i>df2</i>)</b>
+<dd>
+the value of <i>f</i> for which <code>fisherQ</code> (<i>f</i>, <i>df1</i>, <i>df2</i>) = <i>q</i>
+<dt>
+<b>binomialP (<i>p</i>, <i>k</i>, <i>n</i>)</b>
+<dd>
+the probability that in <i>n</i> experiments, an event with probability <i>p</i> will occur at most <i>k</i> times
+<dt>
+<a href="binomialQ.html">binomialQ</a> (<i>p</i>, <i>k</i>, <i>n</i>)
+<dd>
+the probability that in <i>n</i> experiments, an event with probability <i>p</i> will occur at least <i>k</i> times; equals 1 - <code>binomialP</code> (<i>p</i>, <i>k</i> - 1, <i>n</i>)
+<dt>
+<b>invBinomialP (<i>P</i>, <i>k</i>, <i>n</i>)</b>
+<dd>
+the value of <i>p</i> for which <code>binomialP</code> (<i>p</i>, <i>k</i>, <i>n</i>) = <i>P</i>
+<dt>
+<b>invBinomialQ (<i>Q</i>, <i>k</i>, <i>n</i>)</b>
+<dd>
+the value of <i>p</i> for which <code>binomialQ</code> (<i>p</i>, <i>k</i>, <i>n</i>) = <i>Q</i>
+<dt>
+<b>hertzToBark (<i>x</i>)</b>
+<dd>
+from acoustic frequency to Bark-rate (perceptual spectral frequency; place on basilar membrane): 7 ln (<i>x</i>/650 + &#8730;(1 + (<i>x</i>/650)<sup>2</sup>))
+<dt>
+<b>barkToHertz (<i>x</i>)</b>
+<dd>
+650 sinh (<i>x</i> / 7)
+<dt>
+<b>hertzToMel (<i>x</i>)</b>
+<dd>
+from acoustic frequency to perceptual pitch: 550 ln (1 + <i>x</i> / 550)
+<dt>
+<b>melToHertz (<i>x</i>)</b>
+<dd>
+550 (exp (<i>x</i> / 550) - 1)
+<dt>
+<b>hertzToSemitones (<i>x</i>)</b>
+<dd>
+from acoustic frequency to a logarithmic musical scale, relative to 100 Hz: 12 ln (<i>x</i> / 100) / ln 2
+<dt>
+<b>semitonesToHertz (<i>x</i>)</b>
+<dd>
+100 exp (<i>x</i> ln 2 / 12)
+<dt>
+<b>erb (<i>f</i>)</b>
+<dd>
+the perceptual <i>equivalent rectangular bandwidth</i> (ERB) in Hertz, for a specified acoustic frequency (also in Hertz): 6.23&#183;10<sup>-6</sup> <i>f</i><sup>2</sup> + 0.09339 <i>f</i> + 28.52
+<dt>
+<b>hertzToErb (<i>x</i>)</b>
+<dd>
+from acoustic frequency to ERB-rate: 11.17 ln ((<i>x</i> + 312) / (<i>x</i> + 14680)) + 43
+<dt>
+<b>erbToHertz (<i>x</i>)</b>
+<dd>
+(14680 <i>d</i> - 312) / (1 - <i>d</i>) where <i>d</i> = exp ((<i>x</i> - 43) / 11.17)
+<dt>
+<a href="phonToDifferenceLimens.html">phonToDifferenceLimens</a> (<i>x</i>)
+<dd>
+from perceptual loudness (intensity sensation) level in phon, to the number of intensity difference limens above threshold: 30 &#183; ((61/60)<sup> <i>x</i></sup> &#8211; 1).
+<dt>
+<a href="differenceLimensToPhon.html">differenceLimensToPhon</a> (<i>x</i>)
+<dd>
+the inverse of the previous: ln (1 + <i>x</i> / 30) / ln (61 / 60).
+<dt>
+<b>beta (<i>x</i>, <i>y</i>)</b>
+<dt>
+<b>besselI (<i>n</i>, <i>x</i>)</b>
+<dt>
+<b>besselK (<i>n</i>, <i>x</i>)</b>
+</dl>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Formulas.html">Formulas</a>
+<li><a href="What_s_new_.html">What's new?</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, March 18, 2008</p>
+</address>
+</body>
+</html>

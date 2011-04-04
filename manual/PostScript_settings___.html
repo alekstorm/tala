@@ -1,0 +1,53 @@
+<html><head><meta name="robots" content="index,follow">
+<title>PostScript settings...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+PostScript settings...
+</b></font></table></table>
+<p>
+One of the commands in the File menus of many windows. The PostScript settings influence <a href="Printing.html">Printing</a> and saving to <a href="Encapsulated_PostScript.html">Encapsulated PostScript</a> files.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Allow direct PostScript printing</b> (Windows and Macintosh only)
+<dd>
+this determines whether Praat prints explicit PostScript commands to your printer if it is a PostScript printer. This is what you will usually want. However, if you find that some of the options that you choose in the printing dialog seem not to be supported (e.g. scaling, printing two-up...), you may switch this off; Praat will then send native Windows or Macintosh drawing commands, which the printer driver will try to translate to PostScript. If your printer does not support PostScript, this switch is ignored. On Unix, this switch is superfluous, since all printing is done directly in PostScript.
+<dt>
+<b>Grey resolution</b>
+<dd>
+you can choose from two image qualities:
+<dd>&nbsp;&nbsp;&nbsp;
+&#8226; the <i>finest</i> quality for grey plots (106 spots per inch), which gives the best results directly from the printer;
+<dd>&nbsp;&nbsp;&nbsp;
+&#8226; a <i>photocopyable</i> quality, which has fewer spots per inch (85) and gives the best results after photocopying.
+<dd>
+Your choice of the grey resolution influences direct PostScript printing and saving to <a href="Encapsulated_PostScript.html">Encapsulated PostScript</a> files.
+<dt>
+<b>Paper size</b> (Unix only)
+<dd>
+you can choose from A4 (210 &#215; 297 mm), A3 (297 &#215; 420 mm) or US Letter (8.5 &#215; 11&#8243;). This choice applies to Unix only; on Windows, you choose the paper size in the <b>Print...</b> dialog; on Macintosh, you choose the paper size in the <b>Page setup...</b> dialog.
+<dt>
+<b>Orientation</b> (Unix only)
+<dd>
+you can choose between <i>portrait</i> (e.g., 297 mm high and 210 mm wide) and <i>landscape</i> (e.g., 210 mm high and 297 mm wide). This choice applies to Unix only; on Windows, you choose the orientation in the <b>Print...</b> dialog; on Macintosh, you choose the orientation in the <b>Page setup...</b> dialog.
+<dt>
+<b>Magnification</b> (Unix only)
+<dd>
+the relative size with which your picture will be printed; normally 1.0. This choice applies to Unix only; on Windows, you choose the scaling in the <b>Print...</b> dialog; on Macintosh, you choose the scaling in the <b>Page setup...</b> dialog.
+<dt>
+<b>Print command</b> (Unix only)
+<dd>
+When printing on Unix, a temporary PostScript<sup>&#174;</sup> file is created in the "/tmp" directory; it will have a name like "picXXXXXX", and is automatically removed after printing. This file is sent to the printer with the print command, which will often look like <code>lp -c %s</code>, where <code>%s</code> stands for the file name.
+</dl>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Picture_window.html">Picture window</a>
+<li><a href="Save_as_EPS_file___.html">Save as EPS file...</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 31, 2011</p>
+</address>
+</body>
+</html>

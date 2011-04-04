@@ -1,0 +1,40 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Formant: Get minimum...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Formant: Get minimum...
+</b></font></table></table>
+<p>
+A <a href="Query.html">query</a> to ask the selected <a href="Formant.html">Formant</a> object for the minimum value of the specified formant.</p>
+<h3>
+Return value</h3>
+<p>
+the minimum, in Hertz or Bark.</p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Formant number</b>
+<dd>
+the ordinal number of the formant, counting up from 0 Hz. Specify "2" for <i>F</i><sub>2</sub> etc.
+<dt>
+<b>From time (s)</b>
+<dt>
+<b>To time (s)</b>
+<dd>
+the selected time domain. Values outside this domain are ignored. If <b>To time</b> is not greater than <b>From time</b>, the entire time domain of the formant contour is considered.
+<dt>
+<b>Units</b>
+<dd>
+the units of the result (<b>Hertz</b> or <b>Bark</b>).
+<dt>
+<b>Interpolation</b>
+<dd>
+the interpolation method (<b>None</b> or <b>Parabolic</b>). See <a href="vector_peak_interpolation.html">vector peak interpolation</a>.
+</dl>
+<hr>
+<address>
+	<p>&copy; ppgb, October 16, 1999</p>
+</address>
+</body>
+</html>

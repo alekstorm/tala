@@ -483,9 +483,6 @@ void praat_uvafon_LPC_init (void)
 	praat_addAction1 (classSound, 0, L"To MFCC...",L"To LPC (marple)...", 1, DO_Sound_to_MFCC);
 
 	praat_addAction1 (classVocalTract, 1, L"Get length", L"Draw", 0, DO_VocalTract_getLength);
-
-	INCLUDE_MANPAGES (manual_LPC_init)
-
 }
 
 /* End of file praat_LPC_init.c */

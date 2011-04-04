@@ -1,0 +1,105 @@
+<html><head><meta name="robots" content="index,follow">
+<title>CrossCorrelationTables: Create test set...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+CrossCorrelationTables: Create test set...
+</b></font></table></table>
+<p>
+Create a collection of <a href="CrossCorrelationTable.html">CrossCorrelationTable</a>s that are all derived from different diagonal matrices by the same transformation matrix.</p>
+<h3>
+Settings</h3>
+<p>
+Select inner viewport... 0.1 5.3 0.2 1.2+4*0.4
+height = 100*(1+4*0.4)
+Axes... 0 100*5.2 height 0
+Paint rectangle... 0.8 0 520 0 30
+Paint circle... {1,0.5,0.5} 15 15 8
+Draw line... 15-5 10 15+5 20
+Draw line... 15+5 10 15-5 20
+Helvetica
+Text... 260 centre 15 half CrossCorrelationTables: Create test set
+Paint rectangle... 0.9 0 520 30 height
+Draw line... 0 30 520 30
+buttonColour<code></code> = "0.95"
+Paint rounded rectangle... 'buttonColour<code></code>' 15 85 height-10 height-34 2.0
+Draw rounded rectangle... 15 85 height-10 height-34 2.0
+Text... 50 centre height-21 half Help
+Paint rounded rectangle... 'buttonColour<code></code>' 95 195 height-10 height-34 2.0
+Draw rounded rectangle... 95 195 height-10 height-34 2.0
+Text... 145 centre height-21 half Standards
+Paint rounded rectangle... 'buttonColour<code></code>' 275 345 height-10 height-34 2.0
+Draw rounded rectangle... 275 345 height-10 height-34 2.0
+Text... 310 centre height-21 half Cancel
+Paint rounded rectangle... 'buttonColour<code></code>' 355 425 height-10 height-34 2.0
+Draw rounded rectangle... 355 425 height-10 height-34 2.0
+Text... 390 centre height-21 half Apply
+Line width... 2
+Paint rounded rectangle... {0.8,0.8,1} 435 505 height-10 height-34 2.0
+Draw rounded rectangle... 435 505 height-10 height-34 2.0
+Line width... 1
+Text... 470 centre height-21 half OK
+Draw rectangle... 0 520 0 height
+info<code></code> = Picture info
+fontSize = extractNumber (info<code></code>, "Font size: ")
+y = 55
+Text... 255 right y half Matrix dimension:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 5
+Helvetica
+y += 40
+Text... 255 right y half Number of matrices:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 20
+Helvetica
+y += 40
+if 1
+    Paint rectangle... yellow 265 279 y-7 y+7
+    Text special... 272 centre y half Times fontSize*1.2 0 <b>&#8730;
+else
+    Paint rectangle... white 265 279 y-7 y+7
+endif
+Draw rectangle... 265 279 y-7 y+7
+Text... 281 left y half First is positive-definite
+y += 40
+Text... 255 right y half Sigma:
+Paint rectangle... white 265 505 y-12 y+12
+Draw rectangle... 265 505 y-12 y+12
+;Courier
+Text... 265 left y half 0.02
+Helvetica
+y += 40
+</b></p>
+<dl>
+<dt>
+<b>Matrix dimension</b>
+<dd>
+determines the size of the square matrix with cross-correlations.
+<dt>
+<b>Number of matrices</b>
+<dd>
+determines the number of matrices that have to be generated.
+<dt>
+<b>First is positive-definite</b>
+<dd>
+guarantees that the first matrix of the series is positive definite.
+<dt>
+<b>Sigma</b>
+<dd>
+the standard deviation of the noise that is added to each transformation matrix element. A value of zero makes all the cross-correlation matrices jointly diagonalizable. A value greater than zero makes each transformation matrix a little different and the collection not jointly diagonalizable anymore.
+</dl>
+<h3>
+Algorithm</h3>
+<p>
+All the CrossCorrelationTable matrices are generated as <b>V</b>&#8242;&#183;<b>D</b><sub><i>k</sub></i>&#183; <b>V</b>, where <b>D</b><sub><i>k</sub></i> is a diagonal matrix with entries randomly choosen from the [-1,1] interval. The matrix <b>V</b> is a "random" orthogonal matrix obtained from the singular value decomposition of a matrix <b>M</b> = <b>U</b>&#183;<b>D</b>&#183;<b>V</b>&#8242;, where the cells of the matrix <b>M</b> are random Gaussian numbers with mean 0 and standard deviation 1.</p>
+<p>
+If the first matrix has to be positive definite, the numbers on the diagonal of <b>D</b><sub>1</sub> are randomly chosen from the [0.1,1] interval.</p>
+<hr>
+<address>
+	<p>&copy; djmw, February 12, 2011</p>
+</address>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Sound: To Polygon...</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Sound: To Polygon...
+</b></font></table></table>
+<p>
+A command that creates a <a href="Polygon.html">Polygon</a> from each selected <a href="Sound.html">Sound</a>, where the Polygon's (<i>x</i>,<i>y</i>) points are defined by the (<i>time</i>, <i>amplitude</i>) pairs of the sound. </p>
+<h3>
+Settings</h3>
+<dl>
+<dt>
+<b>Channel</b>
+<dd>
+defines which channel of the sound is used.
+<dt>
+<b>Time range (s)</b>
+<dd>
+defines the part of the sound whose (<i>time</i>, <i>amplitude</i>) pairs have to be included.
+<dt>
+<b>Vertical range</b>
+<dd>
+defines the vertical limits, larger amplitudes will be clipped.
+<dt>
+<b>Connect at</b>
+<dd>
+defines the amplitude where the start and the end point have to be connected. 
+</dl>
+<h3>
+Details</h3>
+<p>
+The (<i>x</i>,<i>y</i>) points in the Polygon are calculated as follows: </p>
+<p>
+The first point is at (<i>tmin</i>,<i>connectAt</i>), the second point at (<i>tmin</i>,<i>sound</i>(<i>tmin</i>)), then the selected sample points of the sound are added as (<i>time</i>,<i>value</i>) pairs. Next the point (<i>tmax</i>,<i>sound</i>(<i>tmax</i>)) and (<i>tmax</i>,<i>connectAt</i>) are added. Finally the Polygon is closed by adding the point (<i>tmin</i>, <i>closeAt</i>). Here <i>tmin</i> and <i>tmax</i> are minimum and maximum value of the selected part of the sound, <i>sound</i>(<i>tmin</i>) and <i>sound</i>(<i>tmax</i>) are the interpolated amplitudes of the sound at <i>tmin</i> and <i>tmax</i>, respectively, and, <i>closeAt</i> is the user defined amplitude value of the connection point. </p>
+<h3>
+Example</h3>
+<p>
+The following script paints the area under a sound curve in red and the area above in green.</p>
+<code>
+s = Create Sound from formula... s Mono 0 1 10000 0.5*sin(2*pi*5*x)<br></code>
+<code>
+#Connection point is at amplitude -1: area under the curve.<br></code>
+<code>
+p1 = To Polygon... Average 0 0 -1<br></code>
+<code>
+Paint... {1,0,0} 0 0 -1 1<br></code>
+<code>
+select s<br></code>
+<code>
+#Connection point is at amplitude 1: area above the curve.<br></code>
+<code>
+p2 = To Polygon... Average 0 0 1<br></code>
+<code>
+Paint... {0,1,0} 0 0 -1 1<br></code>
+<p>
+s = Create Sound from formula... s Mono 0 1 10000 0.5*sin(2*pi*5*x)
+p1 = To Polygon... Average 0 0 -1
+Paint... {1,0,0} 0 0 -1 1
+Remove
+select s
+p2 = To Polygon... Average 0 0 1
+Paint... {0,1,0} 0 0 -1 1
+plus s
+Remove
+</p>
+<hr>
+<address>
+	<p>&copy; djmw, April 8, 2010</p>
+</address>
+</body>
+</html>

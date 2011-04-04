@@ -1,0 +1,24 @@
+<html><head><meta name="robots" content="index,follow">
+<title>LPC & Sound: Filter (inverse)</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+LPC & Sound: Filter (inverse)
+</b></font></table></table>
+<p>
+A command that creates a new Sound object from one <a href="Sound.html">Sound</a> and one <a href="LPC.html">LPC</a> object which have been selected together.</p>
+<h3>
+Behaviour</h3>
+<p>
+Given a filter (the selected LPC) and its output (the selected Sound), its input is reconstructed (the new Sound that will appear in the List of objects).</p>
+<p>
+In Z-domain notation: <b>E</b>(<i>z</i>) = <b>O</b>(<i>z</i>) / <b>H</b>(<i>z</i>), where <b>O</b>(<i>z</i>) is the filter output Sound, <b>H</b>(<i>z</i>) the LPC filter, and, <b>E</b>(<i>z</i>) the filter input Sound. (Selecting this newly generated Sound and the LPC, choosing the option `Filter...' generates a Sound that is identical to the Sound that originated the LPC.)</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Filtering.html">Filtering</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; djmw, January 26, 1997</p>
+</address>
+</body>
+</html>

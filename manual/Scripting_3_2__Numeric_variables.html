@@ -1,0 +1,86 @@
+<html><head><meta name="robots" content="index,follow">
+<title>Scripting 3.2. Numeric variables</title></head><body bgcolor="#FFFFFF">
+
+<table border=0 cellpadding=0 cellspacing=0><tr><td bgcolor="#CCCC00"><table border=4 cellpadding=9><tr><td align=middle bgcolor="#000000"><font face="Palatino,Times" size=6 color="#999900"><b>
+Scripting 3.2. Numeric variables
+</b></font></table></table>
+<p>
+In any general procedural programming language you can work with <i>variables</i>, which are places in your computer's memory where you can store a number or anything else.</p>
+<p>
+For instance, you could put the number 3.1 into the variable <code>b</code> in the following way:</p>
+<code>
+b = 3.1<br></code>
+<p>
+This statement is called as <i>assignment</i>, i.e., you <i>assign</i> the <i>value</i> 3.1 to the <i>variable</i> <code>b</code>. We read this statement aloud as "b becomes 3.1". What this means is that after this statement, the memory location <code>b</code> <i>contains</i> the numeric value (number) 3.1.</p>
+<p>
+You can regard a variable as a box: you put the value 3.1 into the box named <code>b</code>. Or you can regard a variable as a house: the house is called <code>b</code> and now the family "3.1" is living there. Or you can regard it as any other storage location.</p>
+<p>
+To see what value a variable contains (what's in the box, or who lives in the house), you can use the <b>echo</b> command:</p>
+<code>
+b = 3.1<br></code>
+<code>
+echo The value is 'b'.<br></code>
+<p>
+This will put the text <code>The value is 3.1.</code> into the Info window, as you are invited to verify.</p>
+<p>
+A variable is called a variable because it is <i>variable</i>, i.e. its value can change. Try the script</p>
+<code>
+b = 3.1<br></code>
+<code>
+b = 5.8<br></code>
+<code>
+echo The value is 'b'.<br></code>
+<p>
+You will see that <code>b</code> ends up having the value 5.8. The first line puts the value 3.1 there, but the second line replaces it with 5.8. It's like taking the 3.1 out of the box and putting the 5.8 in its stead. Or the family 3.1 moves from the house, and the family called 5.8 moves in.</p>
+<p>
+In an assignment, the part to the right of the "becomes" sign (the "=" sign) doesn't have to be a number; it can be any <i>formula</i> that <i>evaluates</i> to a number. For instance, the script</p>
+<code>
+b = 3.1 * 2<br></code>
+<code>
+echo The value is 'b'.<br></code>
+<p>
+puts the text <code>The value is 6.2.</code> into the Info window. This works because Praat handles the first line in the following way:</p>
+<dl>
+<dd>
+1. the formula <code>3.1 * 2</code> is <i>evaluated</i> (i.e. its value is computed), and the result is 6.2.
+<dd>
+2. the value 6.2 is subsequently stored in the variable <code>b</code>.
+</dl>
+<p>
+After line 1 has been executed, the variable <code>b</code> just contains the value 6.2, nothing more; the variable <code>b</code> doesn't remember that that value has been computed by multiplying 3.1 with 2.</p>
+<p>
+Formulas can contain more things than numbers: they can also contain other variables:</p>
+<code>
+b = 3.1<br></code>
+<code>
+c = b * 2<br></code>
+<code>
+echo The value of b is 'b', and the value of c is 'c'.<br></code>
+<p>
+In the first line, <code>b</code> gets the value 3.1. In the second line, the formula <code>b * 2</code> first has to be evaluated. Praat looks up the value of <code>b</code> (which is 3.1), so that it knows that the formula actually means <code>3.1 * 2</code>. Praat evaluates this formula and stores the result (namely the value 6.2) into the variable <code>c</code>, which will then contain nothing else than the value 6.2. The Info window thus reports <code>The value of b is 3.1, and the value of c is 6.2.</code>.</p>
+<p>
+After these explanations, consider the following script:</p>
+<code>
+b = 3.1<br></code>
+<code>
+c = b * 2<br></code>
+<code>
+b = 5.8<br></code>
+<code>
+echo The value of c is 'c'.<br></code>
+<p>
+Can you figure out what the Info will report? If you think it will report <code>The value of c is 6.2.</code>, then you are correct: after the first line, <code>b</code> contains the value 3.1; after the second line, the value of <code>c</code> is therefore 6.2, and nothing more; after line 3, the value of <code>b</code> has changed to 5.8, but the value of <code>c</code> hasn't changed and is still 6.2.</p>
+<p>
+If you thought that <code>c</code> would end up having the value 11.6, then you're thinking in terms of a non-procedural language such as Prolog; you may have thought that the thing assigned to <code>c</code> in the second line is the whole <i>formula</i> <code>b * 2</code>, so that <code>c</code> changes when <code>b</code> changes. But this is not the case: the thing stored in <code>c</code> is just the <i>value</i> of the formula <code>b * 2</code> at that moment, which is 6.2, and <code>c</code> doesn't remember how it got that value. If you have trouble understanding this, consult anybody who writes programs.</p>
+<h3>Links to this page</h3>
+<ul>
+<li><a href="Scripting.html">Scripting</a>
+<li><a href="Scripting_3__Simple_language_elements.html">Scripting 3. Simple language elements</a>
+<li><a href="Scripting_3_4__String_variables.html">Scripting 3.4. String variables</a>
+</ul>
+<hr>
+<address>
+	<p>&copy; ppgb, January 14, 2011</p>
+</address>
+</body>
+</html>
