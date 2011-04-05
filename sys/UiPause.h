@@ -24,9 +24,7 @@
  */
 
 #include "Gui.h"
-#ifndef _Interpreter_decl_h_
-	#include "Interpreter_decl.h"
-#endif
+#include "Interpreter.h"
 
 #ifdef __cplusplus
 	extern "C" {

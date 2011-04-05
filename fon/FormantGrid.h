@@ -32,9 +32,6 @@
 #ifndef _Formant_h_
 	#include "Formant.h"
 #endif
-#ifndef _Interpreter_decl_h_
-	#include "Interpreter_decl.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {

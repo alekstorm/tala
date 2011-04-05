@@ -27,7 +27,6 @@
 #include "Collection.h"
 #include "Strings.h"
 #include "Table.h"
-#include "Interpreter_decl.h"
 
 #ifdef __cplusplus
 	extern "C" {

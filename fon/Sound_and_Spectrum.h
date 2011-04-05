@@ -23,7 +23,6 @@
 
 #include "Sound.h"
 #include "Spectrum.h"
-#include "Interpreter_decl.h"
 
 #ifdef __cplusplus
 	extern "C" {

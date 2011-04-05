@@ -25,7 +25,7 @@
 
 #include "Collection.h"
 #include "Graphics.h"
-#include "Interpreter_decl.h"
+#include "Interpreter.h"
 
 #ifdef __cplusplus
 	extern "C" {

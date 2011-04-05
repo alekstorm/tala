@@ -28,7 +28,6 @@
 #include "Graphics.h"
 #include "Table.h"
 #include "TableOfReal.h"
-#include "Interpreter_decl.h"
 
 #ifdef __cplusplus
 	extern "C" {

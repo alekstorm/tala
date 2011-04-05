@@ -30,14 +30,14 @@
 	#include "Gui.h"
 #endif
 #include "Ui_decl.h"
-#include "Interpreter_decl.h"
 #ifndef _Formula_h_
 	#include "Formula.h"
 #endif
 
+typedef struct structInterpreter *Interpreter;
+
 #ifdef __cplusplus
 	extern "C" {
-#endif
 
 #define InterpreterVariable_members Thing_members \
 	wchar_t *key, *stringValue; \
@@ -86,7 +86,6 @@ int Interpreter_anyExpression (Interpreter me, const wchar_t *expression, struct
 InterpreterVariable Interpreter_hasVariable (Interpreter me, const wchar_t *key);
 InterpreterVariable Interpreter_lookUpVariable (Interpreter me, const wchar_t *key);
 
-#ifdef __cplusplus
 	}
 #endif
 

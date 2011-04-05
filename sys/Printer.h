@@ -29,6 +29,7 @@
 #ifndef _Graphics_h_
 	#include "Graphics.h"
 #endif
+#include "Interpreter.h"
 
 #ifdef __cplusplus
 	extern "C" {
