@@ -360,15 +360,6 @@ END
 static int readFromFile (MelderFile file) {
 	Data object = (Data) Data_readFromFile (file);
 	int result;
-	if (object && Thing_member (object, classManPages)) {
-		ManPages pages = (ManPages) object;
-		ManPage firstPage = static_cast<ManPage> (pages -> pages -> item [1]);
-		if (! Manual_create (theCurrentPraatApplication -> topShell, firstPage -> title, object)) return 0;
-		if (pages -> executable)
-			Melder_warning1 (L"These manual pages contain links to executable scripts.\n"
-				"Only navigate these pages if you trust their author!");
-		return 1;
-	}
 	if (object && Thing_member (object, classScript)) {
 		ScriptEditor_createFromScript (theCurrentPraatApplication -> topShell, NULL, (Script) object);
 		forget (object);
@@ -434,43 +425,6 @@ END
 
 /********** Callbacks of the Help menu. **********/
 
-FORM (SearchManual, L"Search manual", L"Manual")
-	LABEL (L"", L"Search for strings (separate with spaces):")
-	TEXTFIELD (L"query", L"")
-	OK
-DO
-	Manual manPage;
-	if (theCurrentPraatApplication -> batch)
-		return Melder_error1 (L"Cannot view manual from batch.");
-	manPage = Manual_create (theCurrentPraatApplication -> topShell, L"Intro", theCurrentPraatApplication -> manPages);
-	Manual_search (manPage, GET_STRING (L"query"));
-END
-
-FORM (GoToManualPage, L"Go to manual page", 0)
-	{long numberOfPages;
-	const wchar_t **pages = ManPages_getTitles (theCurrentPraatApplication -> manPages, & numberOfPages);
-	LIST (L"Page", numberOfPages, pages, 1)}
-	OK
-DO
-	Manual manPage;
-	if (theCurrentPraatApplication -> batch)
-		return Melder_error1 (L"Cannot view manual from batch.");
-	manPage = Manual_create (theCurrentPraatApplication -> topShell, L"Intro", theCurrentPraatApplication -> manPages);
-	if (! HyperPage_goToPage_i (manPage, GET_INTEGER (L"Page"))) return 0;
-END
-
-FORM (WriteManualToHtmlDirectory, L"Save all pages as HTML files", 0)
-	LABEL (L"", L"Type a directory name:")
-	TEXTFIELD (L"directory", L"")
-	OK
-structMelderDir currentDirectory = { { 0 } };
-Melder_getDefaultDir (& currentDirectory);
-SET_STRING (L"directory", Melder_dirToPath (& currentDirectory))
-DO
-	wchar_t *directory = GET_STRING (L"directory");
-	if (! ManPages_writeAllToHtmlDir (theCurrentPraatApplication -> manPages, directory)) return 0;
-END
-
 /********** Menu descriptions. **********/
 
 void praat_show (void) {
@@ -520,10 +474,6 @@ void praat_addFixedButtons (GuiObject form) {
 #endif
 }
 
-static void searchProc (void) {
-	DO_SearchManual (NULL, NULL, NULL, NULL, false, NULL);
-}
-
 static MelderString itemTitle_about = { 0 };
 
 static Any scriptRecognizer (int nread, const char *header, MelderFile file) {
@@ -545,8 +495,6 @@ static int cb_openDocument (MelderFile file) {
 
 void praat_addMenus (GuiObject bar) {
 	GuiObject button;
-
-	Melder_setSearchProc (searchProc);
 
 	Data_recognizeFileType (scriptRecognizer);
 
@@ -618,24 +566,6 @@ void praat_addMenus (GuiObject bar) {
 	praat_addAction1 (classData, 0, L"Write to short text file...", 0, praat_HIDDEN, DO_Data_writeToShortTextFile);
 	praat_addAction1 (classData, 0, L"Save as binary file...", 0, 0, DO_Data_writeToBinaryFile);
 	praat_addAction1 (classData, 0, L"Write to binary file...", 0, praat_HIDDEN, DO_Data_writeToBinaryFile);
-}
-
-void praat_addMenus2 (void) {
-	static MelderString itemTitle_search = { 0 };
-	praat_addMenuCommand (L"Objects", L"ApplicationHelp", L"-- manual --", 0, 0, 0);
-	praat_addMenuCommand (L"Objects", L"ApplicationHelp", L"Go to manual page...", 0, 0, DO_GoToManualPage);
-	praat_addMenuCommand (L"Objects", L"ApplicationHelp", L"Write manual to HTML directory...", 0, praat_HIDDEN, DO_WriteManualToHtmlDirectory);
-	MelderString_empty (& itemTitle_search);
-	MelderString_append3 (& itemTitle_search, L"Search ", Melder_peekUtf8ToWcs (praatP.title), L" manual...");
-	praat_addMenuCommand (L"Objects", L"ApplicationHelp", itemTitle_search.string, 0, 'M', DO_SearchManual);
-	#ifdef _WIN32
-		praat_addMenuCommand (L"Objects", L"Help", L"-- about --", 0, 0, 0);
-		praat_addMenuCommand (L"Objects", L"Help", itemTitle_about.string, 0, praat_UNHIDABLE, DO_About);
-	#endif
-
-	#if defined (macintosh) || defined (_WIN32)
-		Gui_setOpenDocumentCallback (cb_openDocument);
-	#endif
 }
 
 /* End of file praat_objectMenus.c */

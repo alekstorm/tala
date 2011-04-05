@@ -32,6 +32,7 @@
 	extern "C" {
 #endif
 
+#include "enums.h"
 #include "Sound_enums.h"
 
 #define Sound_members  Vector_members

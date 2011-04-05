@@ -159,7 +159,6 @@ void praat_memoryInfo (void);
 GuiObject praat_objects_resolveMenu (const wchar_t *menu);
 void praat_addFixedButtons (GuiObject form);
 void praat_addMenus (GuiObject bar);
-void praat_addMenus2 (void);
 
 void praat_cleanUpName (wchar_t *name);
 void praat_list_renameAndSelect (int position, const wchar_t *name);

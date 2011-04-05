@@ -31,6 +31,7 @@
 	extern "C" {
 #endif
 
+#include "enums.h"
 #include "Pitch_enums.h"
 
 #include "Pitch_def.h"

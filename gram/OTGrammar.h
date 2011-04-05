@@ -33,6 +33,7 @@
 	extern "C" {
 #endif
 
+#include "enums.h"
 #include "OTGrammar_enums.h"
 
 #include "OTGrammar_def.h"

@@ -325,12 +325,6 @@ static int menu_cb_undo (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_searchManual (EDITOR_ARGS) {
-	EDITOR_IAM (Editor);
-	Melder_search ();
-	return 1;
-}
-
 static int menu_cb_newScript (EDITOR_ARGS) {
 	EDITOR_IAM (Editor);
 	(void) ScriptEditor_createFromText (my parent, me, NULL); cherror
@@ -536,8 +530,6 @@ int Editor_init (Editor me, GuiObject parent, int x, int y, int width, int heigh
 		Melder_clearError ();   /* FIXME: to protect against CategoriesEditor */
 		EditorMenu helpMenu = Editor_addMenu (me, L"Help", 0);
 		our createHelpMenuItems (me, helpMenu);
-		EditorMenu_addCommand (helpMenu, L"-- search --", 0, NULL);
-		my searchButton = EditorMenu_addCommand (helpMenu, L"Search manual...", 'M', menu_cb_searchManual);
 		if (our scriptable) {
 			Editor_addCommand (me, L"File", L"New editor script", 0, menu_cb_newScript);
 			Editor_addCommand (me, L"File", L"Open editor script...", 0, menu_cb_openScript);

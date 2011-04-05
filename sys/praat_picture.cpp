@@ -199,7 +199,6 @@ SET_REAL (L"right Horizontal range", theCurrentPraatPicture -> x2NDC - xmargin);
 SET_REAL (L"left Vertical range", 12 - theCurrentPraatPicture -> y2NDC + ymargin);
 SET_REAL (L"right Vertical range", 12 - theCurrentPraatPicture -> y1NDC - ymargin);
 DO
-	//if (theCurrentPraatObjects != & theForegroundPraatObjects) return Melder_error1 (L"Viewport commands are not available inside manuals.");
 	double left = GET_REAL (L"left Horizontal range"), right = GET_REAL (L"right Horizontal range");
 	double top = GET_REAL (L"left Vertical range"), bottom = GET_REAL (L"right Vertical range");
 	double xmargin = theCurrentPraatPicture -> fontSize * 4.2 / 72.0, ymargin = theCurrentPraatPicture -> fontSize * 2.8 / 72.0;
@@ -231,7 +230,7 @@ DO
 		theCurrentPraatPicture -> y1NDC = 12-bottom - ymargin;
 		theCurrentPraatPicture -> y2NDC = 12-top + ymargin;
 		Picture_setSelection (praat_picture, theCurrentPraatPicture -> x1NDC, theCurrentPraatPicture -> x2NDC, theCurrentPraatPicture -> y1NDC, theCurrentPraatPicture -> y2NDC, False);
-	} else if (theCurrentPraatObjects != & theForegroundPraatObjects) {   // in manual?
+	} else if (theCurrentPraatObjects != & theForegroundPraatObjects) {
 		if (top > bottom) { double temp; temp = top; top = bottom; bottom = temp; }
 		double x1wNDC, x2wNDC, y1wNDC, y2wNDC;
 		Graphics_inqWsWindow (GRAPHICS, & x1wNDC, & x2wNDC, & y1wNDC, & y2wNDC);
@@ -260,7 +259,6 @@ SET_REAL (L"right Horizontal range", theCurrentPraatPicture -> x2NDC);
 SET_REAL (L"left Vertical range", 12 - theCurrentPraatPicture -> y2NDC);
 SET_REAL (L"right Vertical range", 12 - theCurrentPraatPicture -> y1NDC);
 DO
-	//if (theCurrentPraatObjects != & theForegroundPraatObjects) return Melder_error1 (L"Viewport commands are not available inside manuals.");
 	double left = GET_REAL (L"left Horizontal range"), right = GET_REAL (L"right Horizontal range");
 	double top = GET_REAL (L"left Vertical range"), bottom = GET_REAL (L"right Vertical range");
 	if (left == right) {
@@ -279,7 +277,7 @@ DO
 		theCurrentPraatPicture -> y1NDC = 12-bottom;
 		theCurrentPraatPicture -> y2NDC = 12-top;
 		Picture_setSelection (praat_picture, theCurrentPraatPicture -> x1NDC, theCurrentPraatPicture -> x2NDC, theCurrentPraatPicture -> y1NDC, theCurrentPraatPicture -> y2NDC, False);
-	} else if (theCurrentPraatObjects != & theForegroundPraatObjects) {   // in manual?
+	} else if (theCurrentPraatObjects != & theForegroundPraatObjects) {
 		if (top > bottom) { double temp; temp = top; top = bottom; bottom = temp; }
 		double x1wNDC, x2wNDC, y1wNDC, y2wNDC;
 		Graphics_inqWsWindow (GRAPHICS, & x1wNDC, & x2wNDC, & y1wNDC, & y2wNDC);
@@ -1398,7 +1396,6 @@ DO
 	Melder_informationReal (mm, L"mm");
 END
 
-DIRECT (SearchManual) Melder_search (); END
 DIRECT (PictureWindowHelp) Melder_help (L"Picture window"); END
 DIRECT (AboutSpecialSymbols) Melder_help (L"Special symbols"); END
 DIRECT (AboutTextStyles) Melder_help (L"Text styles"); END
@@ -1794,10 +1791,6 @@ void praat_picture_init (void) {
 	praat_addMenuCommand (L"Picture", L"Help", L"About special symbols", 0, 0, DO_AboutSpecialSymbols);
 	praat_addMenuCommand (L"Picture", L"Help", L"About text styles", 0, 0, DO_AboutTextStyles);
 	praat_addMenuCommand (L"Picture", L"Help", L"Phonetic symbols", 0, 0, DO_PhoneticSymbols);
-	praat_addMenuCommand (L"Picture", L"Help", L"-- manual --", 0, 0, 0);
-	MelderString_empty (& itemTitle_search);
-	MelderString_append3 (& itemTitle_search, L"Search ", Melder_peekUtf8ToWcs (praatP.title), L" manual...");
-	praat_addMenuCommand (L"Picture", L"Help", itemTitle_search.string, 0, 'M', DO_SearchManual);
 
 	if (! theCurrentPraatApplication -> batch) {
 		width = height = resolution * 12;

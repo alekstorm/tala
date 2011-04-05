@@ -19,10 +19,10 @@ OBJECTS = abcio.o lispio.o complex.o \
    Graphics_image.o Graphics_mouse.o Graphics_record.o \
    Graphics_utils.o Graphics_grey.o Graphics_altitude.o \
    GraphicsPostscript.o Graphics_surface.o \
-   ManPage.o ManPages.o Script.o machine.o \
+   Script.o machine.o \
    GraphicsScreen.o Printer.o \
    Preferences.o site.o \
-   Picture.o Ui.o UiFile.o UiPause.o Editor.o DataEditor.o HyperPage.o Manual.o TextEditor.o \
+   Picture.o Ui.o UiFile.o UiPause.o Editor.o DataEditor.o HyperPage.o TextEditor.o \
    praat.o praat_actions.o praat_menuCommands.o praat_picture.o sendpraat.o sendsocket.o \
    praat_script.o praat_statistics.o praat_logo.o \
    praat_objectMenus.o InfoEditor.o ScriptEditor.o ButtonEditor.o Interpreter.o Formula.o \

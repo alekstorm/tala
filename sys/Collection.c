@@ -248,8 +248,8 @@ static int classCollection_readBinary (I, FILE *f) {
 }
 
 static struct structData_Description classCollection_description [] = {
-	{ L"size", longwa, (int) & ((Collection) 0) -> size, sizeof (long) },
-	{ L"item", objectwa, (int) & ((Collection) 0) -> item, sizeof (Data), L"Data", & theStructData, 1, 0, L"my size" },
+	{ L"size", longwa, (intptr_t) & ((Collection) 0) -> size, sizeof (long) },
+	{ L"item", objectwa, (intptr_t) & ((Collection) 0) -> item, sizeof (Data), L"Data", & theStructData, 1, 0, L"my size" },
 	{ 0 } };
 
 static long classCollection_position (I, Any data) {

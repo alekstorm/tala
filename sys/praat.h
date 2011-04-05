@@ -22,7 +22,6 @@
  */
 
 #include "Editor.h"
-#include "Manual.h"
 #include "Preferences.h"
 
 #ifdef __cplusplus
@@ -45,7 +44,6 @@ int main (unsigned int argc, char **argv)
 	praat_init ("Praat_Sybil", argc, argv);   // Obligatory.
 	INCLUDE_LIBRARY (praat_Fon_init)   // Optional: inherit phonetic stuff.
 	INCLUDE_LIBRARY (praat_Sybil_init)   // Optional: add Sybil's things.
-	INCLUDE_MANPAGES (manual_Sybil)
 	praat_run ();   // Obligatory.
 }
 // File praat_Sybil.c: //
@@ -156,7 +154,6 @@ typedef struct {   /* Readonly */
 		XtAppContext context;   /* If you want to install an Xt WorkProc (rare). */
 	#endif
 	GuiObject topShell;   /* The application shell: parent of editors and standard dialogs. */
-	ManPages manPages;
 } structPraatApplication, *PraatApplication;
 typedef struct {   /* Readonly */
 	int n;	 /* The current number of objects in the list. */
@@ -440,8 +437,6 @@ void praat_picture_close (void);
 
 #define INCLUDE_LIBRARY(praat_xxx_init) \
    { extern void praat_xxx_init (void); praat_xxx_init (); }
-#define INCLUDE_MANPAGES(manual_xxx_init) \
-   { extern void manual_xxx_init (ManPages me); manual_xxx_init (theCurrentPraatApplication -> manPages); }
 
 /* For text-only applications that do not want to see that irritating Picture window. */
 /* Works only if called before praat_init. */

@@ -71,6 +71,7 @@
 #include "Printer.h"
 #include "ScriptEditor.h"
 #include "Strings.h"
+#include "HyperPage.h"
 
 #if gtk
 	#include <gdk/gdkx.h>
@@ -812,8 +813,7 @@ void praat_clipboardChanged (void *closure, Any clipboard) {
 
 static void helpProc (const wchar_t *query) {
 	if (theCurrentPraatApplication -> batch) { Melder_flushError ("Cannot view manual from batch."); return; }
-	if (! Manual_create (theCurrentPraatApplication -> topShell, query, theCurrentPraatApplication -> manPages))
-		Melder_flushError ("help: no help on \"%ls\".", query);   /* Failure. */
+	Melder_flushError ("help: no help on \"%ls\".", query);   /* Failure. */
 }
 
 static int publishProc (void *anything) {
@@ -1210,7 +1210,7 @@ void praat_init (const char *title, unsigned int argc, char **argv) {
 			XmAddWMProtocolCallback (theCurrentPraatApplication -> topShell, 'delw', gui_cb_quit, 0);
 		#endif
 	}
-	Thing_recognizeClassesByName (classCollection, classStrings, classManPages, classSortedSetOfString, NULL);
+	Thing_recognizeClassesByName (classCollection, classStrings, classSortedSetOfString, NULL);
 	if (Melder_batch) {
 		Melder_backgrounding = TRUE;
 		praat_addMenus (NULL);
@@ -1290,7 +1290,6 @@ void praat_init (const char *title, unsigned int argc, char **argv) {
 		Melder_setHelpProc (helpProc);
 	}
 	Melder_setPublishProc (publishProc);
-	theCurrentPraatApplication -> manPages = ManPages_create ();
 
 	if (! praatP.dontUsePictureWindow) praat_picture_init ();
 	#if defined (macintosh)
@@ -1322,7 +1321,6 @@ static void executeStartUpFile (MelderDir startUpDirectory, const wchar_t *fileN
 void praat_run (void) {
 	FILE *f;
 
-	praat_addMenus2 ();
 	#ifdef macintosh
 		praat_addMenuCommand (L"Objects", L"Praat", L"Quit", 0, praat_HIDDEN, DO_Quit);   // the Quit command is needed for scripts, not for the GUI
 	#else
