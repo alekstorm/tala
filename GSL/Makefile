@@ -3,7 +3,7 @@
 
 include ../makefile.defs
 
-CFLAGS = $(DEFS) -I ../sys -I ../dwsys
+CFLAGS = $(DEFS) -I ../dwsys
 
 CPPFLAGS = $(CFLAGS)
 
@@ -220,4 +220,4 @@ libgsl.a: $(OBJECTS)
 	ar cq libgsl.a $(OBJECTS)
 	$(RANLIB) libgsl.a
 
-$(OBJECTS): *.h ../sys/*.h  ../dwsys/*.h
+$(OBJECTS): *.h ../dwsys/*.h
