@@ -1396,7 +1396,7 @@ void Table_appendQuotientColumn (Table me, long column1, long column2, const wch
 	}
 }
 
-int Table_formula_columnRange (Table me, long fromColumn, long toColumn, const wchar *expression, Interpreter interpreter) {
+int Table_formula_columnRange (Table me, long fromColumn, long toColumn, const wchar *expression, Interpreter *interpreter) {
 	try {
 		Table_checkSpecifiedColumnNumberWithinRange (me, fromColumn);
 		Table_checkSpecifiedColumnNumberWithinRange (me, toColumn);
@@ -1423,7 +1423,7 @@ int Table_formula_columnRange (Table me, long fromColumn, long toColumn, const w
 	}
 }
 
-int Table_formula (Table me, long icol, const wchar *expression, Interpreter interpreter) {
+int Table_formula (Table me, long icol, const wchar *expression, Interpreter *interpreter) {
 	return Table_formula_columnRange (me, icol, icol, expression, interpreter);
 }
 

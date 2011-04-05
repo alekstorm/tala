@@ -2534,19 +2534,19 @@ void KlattGrid_remove##Name##Points (KlattGrid me, int formantType, long iforman
 KlattGrid_QUERY_ADD_REMOVE(Formant)
 KlattGrid_QUERY_ADD_REMOVE(Bandwidth)
 
-int KlattGrid_formula_frequencies (KlattGrid me, int formantType, const wchar_t *expression, Interpreter interpreter)
+int KlattGrid_formula_frequencies (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter)
 {
 	FormantGrid *fg = KlattGrid_getAddressOfFormantGrid (me, formantType);
 	return FormantGrid_formula_frequencies (*fg, expression, interpreter, NULL);
 }
 
-int KlattGrid_formula_bandwidths (KlattGrid me, int formantType, const wchar_t *expression, Interpreter interpreter)
+int KlattGrid_formula_bandwidths (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter)
 {
 	FormantGrid *fg = KlattGrid_getAddressOfFormantGrid (me, formantType);
 	return FormantGrid_formula_bandwidths (*fg, expression, interpreter, NULL);
 }
 
-int KlattGrid_formula_amplitudes (KlattGrid me, int formantType, const wchar_t *expression, Interpreter interpreter)
+int KlattGrid_formula_amplitudes (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter)
 {
 	Ordered *ordered = KlattGrid_getAddressOfAmplitudes (me, formantType);
 	Formula_compile (interpreter, *ordered, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror

@@ -95,7 +95,7 @@ static double *NUMwstring_to_probs (wchar_t *prob_string, long nwanted)
 	for (wchar_t *token = Melder_firstToken (prob_string); token != NULL && ip <= nwanted; token = Melder_nextToken (), ip++)
 	{
 		double prob;
-		if (! Interpreter_numericExpression (NULL, token, &prob))
+		if (! Interpreter_numericExpression_FIXME (token, &prob))
 		{
 			Melder_error5 (L"Item ", Melder_integer (ip), L" \"", token, L"\"is not a number.");
 			goto end;

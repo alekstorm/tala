@@ -215,9 +215,9 @@ void KlattGrid_removeDelta##Name##Points (KlattGrid me, long iformant, double t1
 KlattGrid_QUERY_ADD_REMOVE_PROTO(Formant)
 KlattGrid_QUERY_ADD_REMOVE_PROTO(Bandwidth)
 
-int KlattGrid_formula_frequencies (KlattGrid me, int formantType, const wchar_t *expression, Interpreter interpreter);
-int KlattGrid_formula_bandwidths (KlattGrid me, int formantType, const wchar_t *expression, Interpreter interpreter);
-int KlattGrid_formula_amplitudes (KlattGrid me, int formantType, const wchar_t *expression, Interpreter interpreter);
+int KlattGrid_formula_frequencies (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter);
+int KlattGrid_formula_bandwidths (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter);
+int KlattGrid_formula_amplitudes (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter);
 
 FormantGrid KlattGrid_extractFormantGrid (KlattGrid me, int formantType);
 int KlattGrid_replaceFormantGrid (KlattGrid me, int formantType, FormantGrid thee);

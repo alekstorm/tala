@@ -37,7 +37,7 @@ Spectrum Spectrum_lpcSmoothing (Spectrum me, int numberOfPeaks, double preemphas
 
 Sound Sound_filter_passHannBand (Sound me, double fmin, double fmax, double smooth);
 Sound Sound_filter_stopHannBand (Sound me, double fmin, double fmax, double smooth);
-Sound Sound_filter_formula (Sound me, const wchar_t *formula, Interpreter interpreter);
+Sound Sound_filter_formula (Sound me, const wchar_t *formula, Interpreter *interpreter);
 
 #ifdef __cplusplus
 	}

@@ -293,12 +293,12 @@ FORM (praat_calculator, L"Calculator", L"Calculator")
 	OK
 DO
 	if (interpreter == NULL) {
-		interpreter = Interpreter_create (NULL, NULL);
-		int status = Interpreter_anyExpression (interpreter, GET_STRING (L"expression"), NULL);
+		interpreter = new Interpreter (NULL, NULL);
+		int status = interpreter->anyExpression (GET_STRING (L"expression"), NULL);
 		forget (interpreter);
 		return status;
 	} else {
-		return Interpreter_anyExpression (interpreter, GET_STRING (L"expression"), NULL);
+		return interpreter->anyExpression (GET_STRING (L"expression"), NULL);
 	}
 END
 

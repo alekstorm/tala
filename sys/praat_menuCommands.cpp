@@ -78,7 +78,7 @@ static long lookUpMatchingMenuCommand (const wchar_t *window, const wchar_t *men
 }
 
 static void do_menu (I, unsigned long modified) {
-	int (*callback) (UiForm, const wchar_t *, Interpreter, const wchar_t *, bool, void *) = (int (*) (UiForm, const wchar_t *, Interpreter, const wchar_t *, bool, void *)) void_me;
+	int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *) = (int (*) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *)) void_me;
 	Melder_assert (callback != NULL);
 	for (long i = 1; i <= theNumberOfCommands; i ++) {
 		praat_Command me = & theCommands [i];
@@ -153,7 +153,7 @@ static GuiObject windowMenuToWidget (const wchar_t *window, const wchar_t *menu)
 }
 
 GuiObject praat_addMenuCommand (const wchar_t *window, const wchar_t *menu, const wchar_t *title,
-	const wchar_t *after, unsigned long flags, int (*callback) (UiForm, const wchar_t *, Interpreter, const wchar_t *, bool, void *))
+	const wchar_t *after, unsigned long flags, int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
 {
 	long position;
 	int depth = flags, unhidable = FALSE, hidden = FALSE, key = 0;
@@ -400,7 +400,7 @@ void praat_saveMenuCommands (FILE *f) {
 
 /***** FIXED BUTTONS *****/
 
-void praat_addFixedButtonCommand (GuiObject parent, const wchar_t *title, int (*callback) (UiForm, const wchar_t *, Interpreter, const wchar_t *, bool, void *), int x, int y) {
+void praat_addFixedButtonCommand (GuiObject parent, const wchar_t *title, int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *), int x, int y) {
 	praat_Command me = & theCommands [++ theNumberOfCommands];
 	my window = Melder_wcsdup_f (L"Objects");
 	my title = title;
@@ -425,7 +425,7 @@ void praat_sensitivizeFixedButtonCommand (const wchar_t *title, int sensitive) {
 	if (! theCurrentPraatApplication -> batch && ! Melder_backgrounding) GuiObject_setSensitive (theCommands [i]. button, sensitive);
 }
 
-int praat_doMenuCommand (const wchar_t *command, const wchar_t *arguments, Interpreter interpreter) {
+int praat_doMenuCommand (const wchar_t *command, const wchar_t *arguments, Interpreter *interpreter) {
 	long i = 1;
 	while (i <= theNumberOfCommands && (! theCommands [i]. executable || ! wcsequ (theCommands [i]. title, command) ||
 		(! wcsequ (theCommands [i]. window, L"Objects") && ! wcsequ (theCommands [i]. window, L"Picture")))) i ++;

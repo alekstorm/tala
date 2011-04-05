@@ -78,7 +78,7 @@
 #include "UiPause.h"
 #include "DemoEditor.h"
 
-static Interpreter theInterpreter, theLocalInterpreter;
+static Interpreter *theInterpreter;
 static Data theSource;
 static const wchar_t *theExpression;
 static int theExpressionType, theOptimize;
@@ -94,7 +94,7 @@ struct FormulaInstruction {
 		wchar_t *string;
 		//struct Formula_NumericArray numericArray;
 		Any object;
-		InterpreterVariable variable;
+		InterpreterVariable *variable;
 	} content;
 };
 
@@ -451,7 +451,7 @@ static int Formula_lexan (void) {
 						/*
 						 * This could be a variable with the same name as a function.
 						 */
-						InterpreterVariable var = Interpreter_hasVariable (theInterpreter, token.string);
+						InterpreterVariable *var = theInterpreter->hasVariable (token.string);
 						if (var == NULL) {
 							nieuwtok (VARIABLE_NAME_)
 							lexan [itok]. content.string = Melder_wcsdup_f (token.string);
@@ -491,7 +491,7 @@ static int Formula_lexan (void) {
 						/*
 						 * Look for ambiguity.
 						 */
-						if (Interpreter_hasVariable (theInterpreter, token.string))
+						if (theInterpreter->hasVariable (token.string))
 							return Melder_error3 (
 								L_LEFT_GUILLEMET, token.string,
 								L_RIGHT_GUILLEMET L" is ambiguous: a variable or an attribute of the current object. "
@@ -508,7 +508,7 @@ static int Formula_lexan (void) {
 						/*
 						 * This must be a variable, since there is no "current object" here.
 						 */
-						InterpreterVariable var = Interpreter_hasVariable (theInterpreter, token.string);
+						InterpreterVariable *var = theInterpreter->hasVariable (token.string);
 						if (var == NULL) {
 							nieuwtok (VARIABLE_NAME_)
 							lexan [itok]. content.string = Melder_wcsdup_f (token.string);
@@ -551,7 +551,7 @@ static int Formula_lexan (void) {
 					lexan [itok]. content.string = Melder_wcsdup_f (token.string);
 					numberOfStringConstants ++;
 				} else {
-					InterpreterVariable var = Interpreter_hasVariable (theInterpreter, token.string);
+					InterpreterVariable *var = theInterpreter->hasVariable (token.string);
 					if (var == NULL) {
 						nieuwtok (VARIABLE_NAME_)
 						lexan [itok]. content.string = Melder_wcsdup_f (token.string);
@@ -825,7 +825,7 @@ static int parsePowerFactor (void) {
 	}
 
 	if (symbol == NUMERIC_ARRAY_VARIABLE_) {
-		InterpreterVariable var = lexan [ilexan]. content.variable;   // Save before incrementing ilexan.
+		InterpreterVariable *var = lexan [ilexan]. content.variable;   // Save before incrementing ilexan.
 		if (nieuwlees == RECHTEHAAKOPENEN_) {
 			int n = 0;
 			if (nieuwlees != RECHTEHAAKSLUITEN_) {
@@ -850,7 +850,7 @@ static int parsePowerFactor (void) {
 	}
 
 	if (symbol == VARIABLE_NAME_) {
-		InterpreterVariable var = Interpreter_hasVariable (theInterpreter, lexan [ilexan]. content.string);
+		InterpreterVariable *var = theInterpreter->hasVariable (lexan [ilexan]. content.string);
 		if (var == NULL) {
 			formulefout (L"Unknown variable", lexan [ilexan]. position);
 			return 0;
@@ -1356,10 +1356,10 @@ static int parsePowerFactor (void) {
 			int symbol = nieuwlees;
 			if (symbol == NUMERIC_VARIABLE_) {   // an existing variable
 				nieuwontleed (VARIABLE_REFERENCE_);
-				InterpreterVariable loopVariable = lexan [ilexan]. content.variable;
+				InterpreterVariable *loopVariable = lexan [ilexan]. content.variable;
 				parse [iparse]. content.variable = loopVariable;
 			} else if (symbol == VARIABLE_NAME_) {   // a new variable
-				InterpreterVariable loopVariable = Interpreter_lookUpVariable (theInterpreter, lexan [ilexan]. content.string);
+				InterpreterVariable *loopVariable = theInterpreter->lookUpVariable (lexan [ilexan]. content.string);
 				nieuwontleed (VARIABLE_REFERENCE_);
 				parse [iparse]. content.variable = loopVariable;
 			} else {
@@ -1843,9 +1843,9 @@ static void Formula_print (FormulaInstruction* f) {
 		else if (symbol == GOTO_ || symbol == IFFALSE_ || symbol == IFTRUE_ || symbol == LABEL_ || symbol == INCREMENT_GREATER_GOTO_)
 			Melder_casual ("%d %ls %d", i, instructionName, f [i]. content.label);
 		else if (symbol == NUMERIC_VARIABLE_)
-			Melder_casual ("%d %ls %ls %ls", i, instructionName, f [i]. content.variable -> key, Melder_double (f [i]. content.variable -> numericValue));
+			Melder_casual ("%d %ls %ls %ls", i, instructionName, f [i]. content.variable -> _key, Melder_double (f [i]. content.variable -> _numericValue));
 		else if (symbol == STRING_VARIABLE_)
-			Melder_casual ("%d %ls %ls %ls", i, instructionName, f [i]. content.variable -> key, f [i]. content.variable -> stringValue);
+			Melder_casual ("%d %ls %ls %ls", i, instructionName, f [i]. content.variable -> _key, f [i]. content.variable -> _stringValue);
 		else if (symbol == STRING_ || symbol == VARIABLE_NAME_ || symbol == INDEXED_NUMERIC_VARIABLE_ || symbol == INDEXED_STRING_VARIABLE_)
 			Melder_casual ("%d %ls \"%ls\"", i, instructionName, f [i]. content.string);
 		else if (symbol == MATRIKS_ || symbol == MATRIKSSTR_ || symbol == MATRIKS1_ || symbol == MATRIKSSTR1_ ||
@@ -1867,14 +1867,11 @@ static void Formula_print (FormulaInstruction* f) {
 	} while (symbol != END_);
 }
 
-int Formula_compile (Any interpreter, Any data, const wchar_t *expression, int expressionType, int optimize) {
-	theInterpreter = (structInterpreter*)interpreter;
+int Formula_compile (Interpreter *interpreter, Any data, const wchar_t *expression, int expressionType, int optimize) {
+	theInterpreter = interpreter;
 	if (theInterpreter == NULL) {
-		if (theLocalInterpreter == NULL) {
-			theLocalInterpreter = Interpreter_create (NULL, NULL);
-		}
-		theInterpreter = theLocalInterpreter;
-		Collection_removeAllItems (theInterpreter -> variables);
+		theInterpreter = new Interpreter (NULL, NULL);
+		Collection_removeAllItems (theInterpreter -> _variables);
 	}
 	theSource = (structData*)data;
 	theExpression = expression;
@@ -1933,7 +1930,7 @@ struct Stackel {
 		double number;
 		wchar_t *string;
 		struct Formula_NumericArray numericArray;
-		InterpreterVariable variable;
+		InterpreterVariable *variable;
 	} content;
 };
 
@@ -1979,7 +1976,7 @@ static void pushNumericArray (long numberOfRows, long numberOfColumns, double **
 	stackel -> content.numericArray.numberOfColumns = numberOfColumns;
 	stackel -> content.numericArray.data = x;
 }
-static void pushVariable (InterpreterVariable var) {
+static void pushVariable (InterpreterVariable *var) {
 	Stackel* stackel = & theStack [++ w];
 	if (stackel -> which > Stackel_NUMBER) Stackel_cleanUp (stackel);
 	if (w > wmax) wmax ++;
@@ -2704,7 +2701,7 @@ static void do_numericArrayElement (void) {
 	int narg = n -> content.number;
 	if (narg < 1 || narg > 2) error1 (L"Array indexing requires one or two arguments.")
 	{
-		InterpreterVariable array = parse [programPointer]. content.variable;
+		InterpreterVariable *array = parse [programPointer]. content.variable;
 		long row = 1, column = 1;   // default
 		if (narg > 1) {
 			Stackel* c = pop;
@@ -2715,7 +2712,7 @@ static void do_numericArrayElement (void) {
 			column = floor (c -> content.number + 0.5);
 			if (column <= 0)
 				error1 (L"In array indexing, the column index has to be positive.")
-			if (column > array -> numericArrayValue. numberOfColumns)
+			if (column > array -> _numericArrayValue. numberOfColumns)
 				error1 (L"Column index out of bounds.")
 		}
 		Stackel* r = pop;
@@ -2726,9 +2723,9 @@ static void do_numericArrayElement (void) {
 		row = floor (r -> content.number + 0.5);
 		if (row <= 0)
 			error1 (L"In array indexing, the row index has to be positive.")
-		if (row > array -> numericArrayValue. numberOfRows)
+		if (row > array -> _numericArrayValue. numberOfRows)
 			error1 (L"Row index out of bounds.")
-		pushNumber (array -> numericArrayValue. data [row] [column]);
+		pushNumber (array -> _numericArrayValue. data [row] [column]);
 	}
 end: return;
 }
@@ -2749,10 +2746,10 @@ static void do_indexedNumericVariable (void) {
 				error3 (L"In indexed variables, the index has to be a number, not ", Stackel_whichText (index), L".")
 			MelderString_append2 (& totalVariableName, Melder_double (index -> content.number), iindex == nindex ? L"]" : L",");
 		}
-		InterpreterVariable var = Interpreter_hasVariable (theInterpreter, totalVariableName.string);
+		InterpreterVariable *var = theInterpreter->hasVariable (totalVariableName.string);
 		if (var == NULL)
 			error3 (L"Undefined indexed variable " L_LEFT_GUILLEMET, totalVariableName.string, L_RIGHT_GUILLEMET L".")
-		pushNumber (var -> numericValue);
+		pushNumber (var -> _numericValue);
 	}
 end: return;
 }
@@ -2773,10 +2770,10 @@ static void do_indexedStringVariable (void) {
 				error3 (L"In indexed variables, the index has to be a number, not ", Stackel_whichText (index), L".")
 			MelderString_append2 (& totalVariableName, Melder_double (index -> content.number), iindex == nindex ? L"]" : L",");
 		}
-		InterpreterVariable var = Interpreter_hasVariable (theInterpreter, totalVariableName.string);
+		InterpreterVariable *var = theInterpreter->hasVariable (totalVariableName.string);
 		if (var == NULL)
 			error3 (L"Undefined indexed variable " L_LEFT_GUILLEMET, totalVariableName.string, L_RIGHT_GUILLEMET L".")
-		wchar_t *result = Melder_wcsdup_e (var -> stringValue); cherror
+		wchar_t *result = Melder_wcsdup_e (var -> _stringValue); cherror
 		pushString (result);
 	}
 end: return;
@@ -3203,7 +3200,7 @@ end: return;
 static void do_variableExists (void) {
 	Stackel* f = pop;
 	if (f->which == Stackel_STRING) {
-		bool result = Interpreter_hasVariable (theInterpreter, f->content.string) != NULL;
+		bool result = theInterpreter->hasVariable (f->content.string) != NULL;
 		pushNumber (result);
 	} else {
 		error3 (L"The function \"variableExists\" requires a string, not ", Stackel_whichText (f), L".")
@@ -4586,21 +4583,21 @@ case NUMBER_: { pushNumber (f [programPointer]. content.number);
 	;
 } break; case DECREMENT_AND_ASSIGN_: {
 	Stackel* x = pop, *v = pop;
-	InterpreterVariable var = v->content.variable;
-	var -> numericValue = x->content.number - 1.0;
-	//Melder_casual ("starting value %f", var -> numericValue);
+	InterpreterVariable *var = v->content.variable;
+	var -> _numericValue = x->content.number - 1.0;
+	//Melder_casual ("starting value %f", var -> _numericValue);
 	pushVariable (var);
 } break; case INCREMENT_GREATER_GOTO_: {
 	//Melder_casual ("top of loop, stack depth %d", w);
 	Stackel* e = & theStack [w], *v = & theStack [w - 1];
 	Melder_assert (e->which == Stackel_NUMBER);
 	Melder_assert (v->which == Stackel_VARIABLE);
-	InterpreterVariable var = v->content.variable;
-	//Melder_casual ("loop variable %f", var -> numericValue);
-	var -> numericValue += 1.0;
-	//Melder_casual ("loop variable %f", var -> numericValue);
+	InterpreterVariable *var = v->content.variable;
+	//Melder_casual ("loop variable %f", var -> _numericValue);
+	var -> _numericValue += 1.0;
+	//Melder_casual ("loop variable %f", var -> _numericValue);
 	//Melder_casual ("end value %f", e->content.number);
-	if (var -> numericValue > e->content.number) {
+	if (var -> _numericValue > e->content.number) {
 		programPointer = f [programPointer]. content.label - theOptimize;
 	}
 } break; case ADD_3DOWN_: {
@@ -4617,7 +4614,7 @@ case NUMBER_: { pushNumber (f [programPointer]. content.number);
 } break; case INDEXED_NUMERIC_VARIABLE_: { do_indexedNumericVariable ();
 } break; case INDEXED_STRING_VARIABLE_: { do_indexedStringVariable ();
 } break; case VARIABLE_REFERENCE_: {
-	InterpreterVariable var = f [programPointer]. content.variable;
+	InterpreterVariable *var = f [programPointer]. content.variable;
 	pushVariable (var);
 } break; case SELF0_: { do_self0 (row, col);
 } break; case SELFSTR0_: { do_selfStr0 (row, col);
@@ -4650,17 +4647,17 @@ case NUMBER_: { pushNumber (f [programPointer]. content.number);
 	wchar_t *result = Melder_wcsdup_e (f [programPointer]. content.string); cherror
 	pushString (result);
 } break; case NUMERIC_VARIABLE_: {
-	InterpreterVariable var = f [programPointer]. content.variable;
-	pushNumber (var -> numericValue);
+	InterpreterVariable *var = f [programPointer]. content.variable;
+	pushNumber (var -> _numericValue);
 } break; case STRING_VARIABLE_: {
-	InterpreterVariable var = f [programPointer]. content.variable;
-	wchar_t *result = Melder_wcsdup_e (var -> stringValue); cherror
+	InterpreterVariable *var = f [programPointer]. content.variable;
+	wchar_t *result = Melder_wcsdup_e (var -> _stringValue); cherror
 	pushString (result);
 } break; case NUMERIC_ARRAY_VARIABLE_: {
-	InterpreterVariable var = f [programPointer]. content.variable;
-	double **data = NUMdmatrix_copy (var -> numericArrayValue. data,
-		1, var -> numericArrayValue. numberOfRows, 1, var -> numericArrayValue. numberOfColumns); cherror
-	pushNumericArray (var -> numericArrayValue. numberOfRows, var -> numericArrayValue. numberOfColumns, data);
+	InterpreterVariable *var = f [programPointer]. content.variable;
+	double **data = NUMdmatrix_copy (var -> _numericArrayValue. data,
+		1, var -> _numericArrayValue. numberOfRows, 1, var -> _numericArrayValue. numberOfColumns); cherror
+	pushNumericArray (var -> _numericArrayValue. numberOfRows, var -> _numericArrayValue. numberOfColumns, data);
 } break; default: return Melder_error3
 			(L"Symbol \"", Formula_instructionNames [parse [programPointer]. symbol], L"\" without action.");
 		} /* switch */

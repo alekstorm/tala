@@ -43,7 +43,7 @@ Thing_declare1 (ScriptEditor);
 #define ScriptEditor__members(Klas) TextEditor__members(Klas) \
 	wchar_t *environmentName; \
 	Editor_Table editorClass; \
-	Interpreter interpreter; \
+	Interpreter *interpreter; \
 	Any argsDialog;
 #define ScriptEditor__methods(Klas) TextEditor__methods(Klas)
 Thing_declare2 (ScriptEditor, TextEditor);

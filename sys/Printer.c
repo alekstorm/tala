@@ -237,7 +237,7 @@ int Printer_pageSetup (void) {
 	return 1;
 }
 
-static int DO_Printer_postScriptSettings (UiForm dia, const wchar_t *sendingString_dummy, Interpreter interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int DO_Printer_postScriptSettings (UiForm dia, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	(void) sendingString_dummy;
 	(void) interpreter_dummy;
 	(void) invokingButtonTitle;

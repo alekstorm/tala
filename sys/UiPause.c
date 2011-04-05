@@ -33,7 +33,7 @@ static int thePauseForm_clicked = 0;
 static int theCancelContinueButton = 0;
 static int theEventLoopDepth = 0;
 
-static int thePauseFormOkCallback (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure) {
+static int thePauseFormOkCallback (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure) {
 	(void) sendingForm;
 	(void) sendingString;
 	(void) interpreter;
@@ -45,7 +45,7 @@ static int thePauseFormOkCallback (UiForm sendingForm, const wchar_t *sendingStr
 	 */
 	thePauseForm_clicked = UiForm_getClickedContinueButton (thePauseForm);
 	if (thePauseForm_clicked != theCancelContinueButton)
-		UiForm_Interpreter_addVariables (thePauseForm, (structInterpreter*)closure);   // 'closure', not 'interpreter' or 'theInterpreter'!
+		UiForm_Interpreter_addVariables (thePauseForm, (Interpreter*)closure);   // 'closure', not 'interpreter' or 'theInterpreter'!
 	return 1;
 }
 static int thePauseFormCancelCallback (Any dia, void *closure) {
@@ -58,7 +58,7 @@ static int thePauseFormCancelCallback (Any dia, void *closure) {
 	}
 	return 1;
 }
-int UiPause_begin (GuiObject topShell, const wchar_t *title, Interpreter interpreter) {
+int UiPause_begin (GuiObject topShell, const wchar_t *title, Interpreter *interpreter) {
 	if (theEventLoopDepth > 0)
 		error1 (L"Praat cannot have more than one pause form at a time.")
 	forget (thePauseForm);   // in case an earlier build-up of another pause window was interrupted
@@ -173,7 +173,7 @@ int UiPause_end (int numberOfContinueButtons, int defaultContinueButton, int can
 	const wchar_t *continueText1, const wchar_t *continueText2, const wchar_t *continueText3,
 	const wchar_t *continueText4, const wchar_t *continueText5, const wchar_t *continueText6,
 	const wchar_t *continueText7, const wchar_t *continueText8, const wchar_t *continueText9,
-	const wchar_t *continueText10, Interpreter interpreter)
+	const wchar_t *continueText10, Interpreter *interpreter)
 {
 	if (thePauseForm == NULL)
 		error1 (L"Found the function \"endPause\" without a preceding \"beginPause\".")
@@ -219,7 +219,7 @@ int UiPause_end (int numberOfContinueButtons, int defaultContinueButton, int can
 			thePauseForm = NULL;   // undangle
 			thePauseFormRadio = NULL;   // undangle
 			if (thePauseForm_clicked == -1) {
-				Interpreter_stop (interpreter);
+				interpreter->stop ();
 				error1 (L"You interrupted the script.");
 				//Melder_flushError (NULL);
 				//Melder_clearError ();

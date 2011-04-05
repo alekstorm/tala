@@ -29,7 +29,7 @@
  * pb 2007/10/01 can write as encoding
  * pb 2008/01/19 double
  * pb 2008/04/30 new Formula API
- * pb 2009/01/18 Interpreter argument to formula
+ * pb 2009/01/18 Interpreter *argument to formula
  * pb 2009/11/23 support for drawing with reversed axes
  * pb 2011/01/10 Matrix_formula_part
  */
@@ -696,7 +696,7 @@ int Matrix_writeToHeaderlessSpreadsheetFile (Matrix me, MelderFile fs) {
 	return 1;
 }
 
-int Matrix_formula (Matrix me, const wchar_t *expression, Interpreter interpreter, Matrix target) {
+int Matrix_formula (Matrix me, const wchar_t *expression, Interpreter *interpreter, Matrix target) {
 	struct Formula_Result result;
 	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
 	if (target == NULL) target = me;
@@ -712,7 +712,7 @@ end:
 }
 
 int Matrix_formula_part (Matrix me, double xmin, double xmax, double ymin, double ymax,
-	const wchar_t *expression, Interpreter interpreter, Matrix target)
+	const wchar_t *expression, Interpreter *interpreter, Matrix target)
 {
 	long ixmin, ixmax, iymin, iymax;
 	if (xmax <= xmin) { xmin = my xmin; xmax = my xmax; }

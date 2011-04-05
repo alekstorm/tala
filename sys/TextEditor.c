@@ -145,7 +145,7 @@ static void closeDocument (TextEditor me) {
 	forget (me);
 }
 
-static int cb_open_ok (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
+static int cb_open_ok (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
 	iam (TextEditor);
 	(void) sendingString;
 	(void) interpreter;
@@ -156,7 +156,7 @@ static int cb_open_ok (UiForm sendingForm, const wchar_t *sendingString, Interpr
 	return 1;
 }
 
-static void cb_showOpen (EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter) {
+static void cb_showOpen (EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
 	TextEditor me = (TextEditor) cmd -> editor;
 	(void) sendingForm;
 	(void) sendingString;
@@ -166,7 +166,7 @@ static void cb_showOpen (EditorCommand cmd, UiForm sendingForm, const wchar_t *s
 	UiInfile_do (my openDialog);
 }
 
-static int cb_saveAs_ok (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
+static int cb_saveAs_ok (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
 	iam (TextEditor);
 	(void) sendingString;
 	(void) interpreter;

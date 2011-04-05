@@ -40,7 +40,7 @@
 	GuiObject parent; \
 	structMelderFile file; \
 	const wchar_t *invokingButtonTitle, *helpTitle; \
-	int (*okCallback) (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure); \
+	int (*okCallback) (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure); \
 	void *okClosure; \
 	int shiftKeyPressed;
 #define UiFile_methods Thing_methods
@@ -77,7 +77,7 @@ class_methods (UiInfile, UiFile)
 class_methods_end
 
 UiForm UiInfile_create (GuiObject parent, const wchar_t *title,
-	int (*okCallback) (UiForm, const wchar_t *, Interpreter, const wchar_t *, bool, void *), void *okClosure,
+	int (*okCallback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *), void *okClosure,
 	const wchar_t *invokingButtonTitle, const wchar_t *helpTitle, bool allowMultipleFiles)
 {
 	UiInfile me = Thing_new (UiInfile);
@@ -126,7 +126,7 @@ class_methods (UiOutfile, UiFile)
 class_methods_end
 
 UiForm UiOutfile_create (GuiObject parent, const wchar_t *title,
-	int (*okCallback) (UiForm, const wchar_t *, Interpreter, const wchar_t *, bool, void *), void *okClosure, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle)
+	int (*okCallback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *), void *okClosure, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle)
 {
 	UiOutfile me = Thing_new (UiOutfile);
 	my okCallback = okCallback;
@@ -139,7 +139,7 @@ UiForm UiOutfile_create (GuiObject parent, const wchar_t *title,
 	return (UiForm) me;
 }
 
-static int commonOutfileCallback (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure) {
+static int commonOutfileCallback (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure) {
 	EditorCommand command = (EditorCommand) closure;
 	(void) invokingButtonTitle;
 	(void) modified;

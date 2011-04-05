@@ -207,7 +207,7 @@ void Pitch_step (Pitch me, double step, double precision, double tmin, double tm
 	as long as that candidate is in between 0 and my ceiling.
 */
 
-int Pitch_formula (Pitch me, const wchar_t *formula, Interpreter interpreter);
+int Pitch_formula (Pitch me, const wchar_t *formula, Interpreter *interpreter);
 
 #ifdef __cplusplus
 	}

@@ -107,8 +107,8 @@ double Table_getVarianceRatio (Table me, long column1, long column2, double sign
 	double *out_significance, double *out_lowerLimit, double *out_upperLimit);
 bool Table_getExtrema (Table me, long icol, double *minimum, double *maximum);
 
-int Table_formula (Table me, long column, const wchar_t *formula, Interpreter interpreter);
-int Table_formula_columnRange (Table me, long column1, long column2, const wchar_t *expression, Interpreter interpreter);
+int Table_formula (Table me, long column, const wchar_t *formula, Interpreter *interpreter);
+int Table_formula_columnRange (Table me, long column1, long column2, const wchar_t *expression, Interpreter *interpreter);
 
 void Table_sortRows_Assert (Table me, long *columns, long numberOfColumns);
 void Table_sortRows_string (Table me, const wchar_t *columns_string);

@@ -281,7 +281,7 @@ static double getRealFromTextWidget (GuiObject me)
 {
 	double value = NUMundefined;
 	wchar_t *dirty = GuiText_getString (me);
-	if (! Interpreter_numericExpression (NULL, dirty, & value))
+	if (! Interpreter_numericExpression_FIXME (dirty, & value))
 	{
 		Melder_clearError (); value = NUMundefined;
 	}

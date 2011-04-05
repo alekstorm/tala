@@ -1273,7 +1273,7 @@ Covariance Covariance_createSimple (wchar_t *covars, wchar_t *centroid, long num
 		inumc = inum + nmissing;
 		irow = (inumc - 1) / dimension + 1;
 		icol = ((inumc - 1) % dimension) + 1;
-		if (! Interpreter_numericExpression (NULL, token, &number))
+		if (! Interpreter_numericExpression_FIXME (token, &number))
 		{
 			Melder_error5 (L"Covariance: item ", Melder_integer (inum), L" \"", token, L"\"is not a number.");
 			goto end;
@@ -1310,7 +1310,7 @@ Covariance Covariance_createSimple (wchar_t *covars, wchar_t *centroid, long num
 	for (wchar_t *token = Melder_firstToken (centroid); token != NULL && inum <= dimension; token = Melder_nextToken (), inum++)
 	{
 		double number;
-		if (! Interpreter_numericExpression (NULL, token, &number))
+		if (! Interpreter_numericExpression_FIXME (token, &number))
 		{
 			Melder_error5 (L"Centroid: item ", Melder_integer (inum), L" \"", token, L"\"is not a number.");
 			goto end;

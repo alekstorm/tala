@@ -158,10 +158,10 @@ void Sound_draw_btlr (Sound me, Graphics g, double tmin, double tmax, double ami
 /* direction is one of the macros's FROM_LEFT_TO_RIGHT... */
 
 void Sound_drawWhere (Sound me, Graphics g, double tmin, double tmax, double minimum, double maximum,
-	bool garnish, const wchar_t *method, long numberOfBisections, const wchar_t *formula, Interpreter interpreter);
+	bool garnish, const wchar_t *method, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter);
 
 void Sound_paintWhere (Sound me, Graphics g, Graphics_Colour colour, double tmin, double tmax,
-	double minimum, double maximum, double level, bool garnish, long numberOfBisections, const wchar_t *formula, Interpreter interpreter);
+	double minimum, double maximum, double level, bool garnish, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter);
 void Sounds_paintEnclosed (Sound me, Sound thee, Graphics g, Graphics_Colour colour, double tmin, double tmax,
 	double minimum, double maximum, bool garnish);
 
@@ -182,7 +182,7 @@ PointProcess Sound_to_PointProcess_getJumps (Sound me, double minimumJump, doubl
 	within time dt
 */
 
-int Sound_filter_part_formula (Sound me, double t1, double t2, const wchar_t *formula, Interpreter interpreter);
+int Sound_filter_part_formula (Sound me, double t1, double t2, const wchar_t *formula, Interpreter *interpreter);
 
 Sound Sound_changeSpeaker (Sound me, double pitchMin, double pitchMax,
 	double formantMultiplier, // > 0

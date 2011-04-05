@@ -115,7 +115,7 @@ static void commonCallback (GUI_ARGS) {
 }
 
 GuiObject EditorMenu_addCommand (EditorMenu menu, const wchar_t *itemTitle, long flags,
-	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter))
+	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter))
 {
 	EditorCommand me = Thing_new (EditorCommand);
 	my editor = menu -> editor;
@@ -145,7 +145,7 @@ EditorMenu Editor_addMenu (Any editor, const wchar_t *menuTitle, long flags) {
 /*GuiObject EditorMenu_getMenuWidget (EditorMenu me) { return my menuWidget; }*/
 
 GuiObject Editor_addCommand (Any editor, const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
-	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter))
+	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter))
 {
 	Editor me = (Editor) editor;
 	int numberOfMenus = my menus -> size, imenu;
@@ -158,7 +158,7 @@ GuiObject Editor_addCommand (Any editor, const wchar_t *menuTitle, const wchar_t
 	return NULL;
 }
 
-static int Editor_scriptCallback (I, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter) {
+static int Editor_scriptCallback (I, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
 	iam (Editor);
 	(void) sendingForm;
 	(void) sendingString;
@@ -225,7 +225,7 @@ EditorCommand Editor_getMenuCommand (Editor me, const wchar_t *menuTitle, const 
 	return NULL;
 }
 
-int Editor_doMenuCommand (Editor me, const wchar_t *commandTitle, const wchar_t *arguments, Interpreter interpreter) {
+int Editor_doMenuCommand (Editor me, const wchar_t *commandTitle, const wchar_t *arguments, Interpreter *interpreter) {
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
 		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];

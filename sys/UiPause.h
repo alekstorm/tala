@@ -30,7 +30,7 @@
 	extern "C" {
 #endif
 
-int UiPause_begin (GuiObject topShell, const wchar_t *title, Interpreter interpreter);
+int UiPause_begin (GuiObject topShell, const wchar_t *title, Interpreter *interpreter);
 
 int UiPause_real (const wchar_t *label, const wchar_t *defaultValue);
 int UiPause_positive (const wchar_t *label, const wchar_t *defaultValue);
@@ -49,7 +49,7 @@ int UiPause_end (int numberOfContinueButtons, int defaultContinueButton, int can
 	const wchar_t *continueText1, const wchar_t *continueText2, const wchar_t *continueText3,
 	const wchar_t *continueText4, const wchar_t *continueText5, const wchar_t *continueText6,
 	const wchar_t *continueText7, const wchar_t *continueText8, const wchar_t *continueText9,
-	const wchar_t *continueText10, Interpreter interpreter);
+	const wchar_t *continueText10, Interpreter *interpreter);
 
 #ifdef __cplusplus
 	}

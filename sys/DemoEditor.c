@@ -233,7 +233,7 @@ int Demo_show (void) {
 	return 1;
 }
 
-bool Demo_waitForInput (Interpreter interpreter) {
+bool Demo_waitForInput (Interpreter *interpreter) {
 	if (theDemoEditor == NULL) return false;
 	if (theDemoEditor -> waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
@@ -265,7 +265,7 @@ bool Demo_waitForInput (Interpreter interpreter) {
 	#endif
 	theDemoEditor -> waitingForInput = false;
 	if (theDemoEditor -> userWantsToClose) {
-		Interpreter_stop (interpreter);
+		interpreter->stop ();
 		Melder_error1 (L"You interrupted the script.");
 		forget (theDemoEditor);
 		return false;

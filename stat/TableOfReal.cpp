@@ -374,7 +374,7 @@ void TableOfReal_setColumnLabel (I, long columnNumber, const wchar_t *label) {
 	}
 }
 
-int TableOfReal_formula (I, const wchar_t *expression, Interpreter interpreter, thou) {
+int TableOfReal_formula (I, const wchar_t *expression, Interpreter *interpreter, thou) {
 	iam (TableOfReal);
 	thouart (TableOfReal);
 	try {
@@ -668,7 +668,7 @@ TableOfReal TableOfReal_extractColumnRanges (I, const wchar_t *ranges) {
 	}
 }
 
-TableOfReal TableOfReal_extractRowsWhere (I, const wchar_t *condition, Interpreter interpreter) {
+TableOfReal TableOfReal_extractRowsWhere (I, const wchar_t *condition, Interpreter *interpreter) {
 	iam (TableOfReal);
 	try {
 		Formula_compile (interpreter, me, condition, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); therror
@@ -713,7 +713,7 @@ TableOfReal TableOfReal_extractRowsWhere (I, const wchar_t *condition, Interpret
 	}
 }
 
-TableOfReal TableOfReal_extractColumnsWhere (I, const wchar_t *condition, Interpreter interpreter) {
+TableOfReal TableOfReal_extractColumnsWhere (I, const wchar_t *condition, Interpreter *interpreter) {
 	iam (TableOfReal);
 	try {
 		Formula_compile (interpreter, me, condition, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); therror
@@ -895,7 +895,7 @@ void TableOfReal_drawAsNumbers (I, Graphics graphics, long rowmin, long rowmax, 
 }
 
 void TableOfReal_drawAsNumbers_if (I, Graphics graphics, long rowmin, long rowmax, int iformat, int precision,
-	const wchar_t *conditionFormula, Interpreter interpreter)
+	const wchar_t *conditionFormula, Interpreter *interpreter)
 {
 	iam (TableOfReal);
 	try {

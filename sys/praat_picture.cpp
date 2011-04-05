@@ -450,7 +450,7 @@ FORM_READ (Picture_readFromOldWindowsPraatPictureFile, L"Read picture from praat
 END
 #endif
 
-static int DO_Picture_writeToEpsFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int DO_Picture_writeToEpsFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	static Any dia;
 	(void) interpreter;
 	(void) modified;
@@ -470,7 +470,7 @@ static int DO_Picture_writeToEpsFile (UiForm sendingForm, const wchar_t *sending
 	if (! Picture_writeToEpsFile (praat_picture, fileName, TRUE)) return 0;
 END*/
 
-static int DO_Picture_writeToFontlessEpsFile_xipa (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int DO_Picture_writeToFontlessEpsFile_xipa (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	static Any dia;
 	(void) interpreter;
 	(void) modified;
@@ -487,7 +487,7 @@ static int DO_Picture_writeToFontlessEpsFile_xipa (UiForm sendingForm, const wch
 	return 1;
 }
 
-static int DO_Picture_writeToFontlessEpsFile_silipa (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int DO_Picture_writeToFontlessEpsFile_silipa (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	static Any dia;
 	(void) interpreter;
 	(void) modified;
@@ -504,7 +504,7 @@ static int DO_Picture_writeToFontlessEpsFile_silipa (UiForm sendingForm, const w
 	return 1;
 }
 
-static int DO_Picture_writeToPdfFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int DO_Picture_writeToPdfFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	static Any dia;
 	(void) interpreter;
 	(void) modified;
@@ -521,7 +521,7 @@ static int DO_Picture_writeToPdfFile (UiForm sendingForm, const wchar_t *sending
 	return 1;
 }
 
-static int DO_Picture_writeToPraatPictureFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int DO_Picture_writeToPraatPictureFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	static Any dia;
 	(void) interpreter;
 	(void) modified;
@@ -553,7 +553,7 @@ DIRECT (Print)
 END
 
 #ifdef macintosh
-	static int DO_Picture_writeToMacPictFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+	static int DO_Picture_writeToMacPictFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 		static Any dia;
 		(void) interpreter;
 		(void) modified;
@@ -571,7 +571,7 @@ END
 	}
 #endif
 #ifdef _WIN32
-	static int DO_Picture_writeToWindowsMetafile (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+	static int DO_Picture_writeToWindowsMetafile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 		static Any dia;
 		(void) interpreter;
 		(void) modified;

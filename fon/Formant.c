@@ -203,7 +203,7 @@ void Formant_drawSpeckles (Formant me, Graphics g, double tmin, double tmax, dou
 	}
 }
 
-int Formant_formula_bandwidths (Formant me, const wchar_t *formula, Interpreter interpreter) {
+int Formant_formula_bandwidths (Formant me, const wchar_t *formula, Interpreter *interpreter) {
 	long iframe, iformant, nrow = Formant_getMaxNumFormants (me);
 	Matrix mat = NULL;
 	if (nrow < 1) return Melder_error1 (L"(Formant_formula_bandwidths:) No formants available.");
@@ -225,7 +225,7 @@ end:
 	return 1;
 }
 
-int Formant_formula_frequencies (Formant me, const wchar_t *formula, Interpreter interpreter) {
+int Formant_formula_frequencies (Formant me, const wchar_t *formula, Interpreter *interpreter) {
 	long iframe, iformant, nrow = Formant_getMaxNumFormants (me);
 	Matrix mat = NULL;
 	if (nrow < 1) return Melder_error1 (L"(Formant_formula_frequencies:) No formants available.");

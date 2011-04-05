@@ -92,8 +92,8 @@ void Formant_scatterPlot (Formant me, Graphics g, double tmin, double tmax,
 
 Matrix Formant_to_Matrix (Formant me, int iformant);
 Matrix Formant_to_Matrix_bandwidths (Formant me, int iformant);
-int Formant_formula_frequencies (Formant me, const wchar_t *formula, Interpreter interpreter);
-int Formant_formula_bandwidths (Formant me, const wchar_t *formula, Interpreter interpreter);
+int Formant_formula_frequencies (Formant me, const wchar_t *formula, Interpreter *interpreter);
+int Formant_formula_bandwidths (Formant me, const wchar_t *formula, Interpreter *interpreter);
 
 Formant Formant_tracker (Formant me, int numberOfTracks,
 	double refF1, double refF2, double refF3, double refF4, double refF5,

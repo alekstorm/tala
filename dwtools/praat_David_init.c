@@ -138,7 +138,7 @@ void praat_CC_init (void *klas);
 void DTW_constraints_addCommonFields (void *dia);
 void DTW_constraints_getCommonFields (void *dia, int *begin, int *end, int *slope);
 void praat_Matrixft_query_init (void *klas);
-int praat_Fon_formula (UiForm dia, Interpreter interpreter);
+int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
 
 #undef INCLUDE_DTW_SLOPES
 

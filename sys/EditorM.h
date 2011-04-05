@@ -91,7 +91,7 @@
 
 #define DIALOG  cmd -> dialog
 
-#define EDITOR_ARGS  Any void_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter
+#define EDITOR_ARGS  Any void_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter
 #define EDITOR_IAM(klas)  iam (klas); (void) me; (void) cmd; (void) sendingForm; (void) sendingString; (void) interpreter
 #define EDITOR_FORM(title,helpTitle)  if (cmd -> dialog == NULL) { Any radio = 0; (void) radio; \
 	cmd -> dialog = UiForm_createE (cmd, title, cmd -> itemTitle, helpTitle);

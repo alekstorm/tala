@@ -1171,7 +1171,7 @@ int Sound_overwritePart (Sound me, double t1, double t2, Sound thee, double t3)
 	return 1;
 }
 
-int Sound_filter_part_formula (Sound me, double t1, double t2, const wchar_t *formula, Interpreter interpreter)
+int Sound_filter_part_formula (Sound me, double t1, double t2, const wchar_t *formula, Interpreter *interpreter)
 {
 	Sound part = NULL, filtered = NULL;
 	Spectrum spec = NULL;
@@ -1798,7 +1798,7 @@ static void _Sound_getWindowExtrema (Sound me, double *tmin, double *tmax, doubl
 	 (may be leave out the interpolation and just use Vector_VALUE_INTERPOLATION_LINEAR only?)
 */
 static int Sound_findIntermediatePoint_bs (Sound me, long ichannel, long isample, bool left, bool right, const wchar_t *formula,
-	Interpreter interpreter, int interpolation, long numberOfBisections, double *x, double *y)
+	Interpreter *interpreter, int interpolation, long numberOfBisections, double *x, double *y)
 {
 	struct Formula_Result result;
 
@@ -1885,7 +1885,7 @@ static int Sound_findIntermediatePoint_bs (Sound me, long ichannel, long isample
 }
 
 void Sound_drawWhere (Sound me, Graphics g, double tmin, double tmax, double minimum, double maximum,
-	bool garnish, const wchar_t *method, long numberOfBisections, const wchar_t *formula, Interpreter interpreter)
+	bool garnish, const wchar_t *method, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter)
 {
 	long ixmin, ixmax, ix;
 	struct Formula_Result result;
@@ -2001,7 +2001,7 @@ void Sound_drawWhere (Sound me, Graphics g, double tmin, double tmax, double min
 }
 
 void Sound_paintWhere (Sound me, Graphics g, Graphics_Colour colour, double tmin, double tmax,
-	double minimum, double maximum, double level, bool garnish, long numberOfBisections, const wchar_t *formula, Interpreter interpreter)
+	double minimum, double maximum, double level, bool garnish, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter)
 {
 	long ixmin, ixmax;
 	struct Formula_Result result;

@@ -55,10 +55,10 @@ double TableOfReal_getColumnStdev (I, long icol);
 
 TableOfReal Table_to_TableOfReal (Table me, long labelColumn);
 Table TableOfReal_to_Table (TableOfReal me, const wchar_t *labelOfFirstColumn);
-int TableOfReal_formula (I, const wchar_t *expression, Interpreter interpreter, Any /* TableOfReal */ target);
+int TableOfReal_formula (I, const wchar_t *expression, Interpreter *interpreter, Any /* TableOfReal */ target);
 void TableOfReal_drawAsNumbers (I, Graphics g, long rowmin, long rowmax, int iformat, int precision);
 void TableOfReal_drawAsNumbers_if (I, Graphics g, long rowmin, long rowmax, int iformat, int precision,
-	const wchar_t *conditionFormula, Interpreter interpreter);
+	const wchar_t *conditionFormula, Interpreter *interpreter);
 void TableOfReal_drawAsSquares (I, Graphics g, long rowmin, long rowmax,
 	long colmin, long colmax, int garnish);
 void TableOfReal_drawVerticalLines (I, Graphics g, long rowmin, long rowmax);
@@ -83,8 +83,8 @@ TableOfReal TableOfReal_extractColumnsWhereRow (I, long icol, int which_Melder_N
 TableOfReal TableOfReal_extractRowsWhereLabel (I, int which_Melder_STRING, const wchar_t *criterion);
 TableOfReal TableOfReal_extractColumnsWhereLabel (I, int which_Melder_STRING, const wchar_t *criterion);
 
-TableOfReal TableOfReal_extractRowsWhere (I, const wchar_t *condition, Interpreter interpreter);
-TableOfReal TableOfReal_extractColumnsWhere (I, const wchar_t *condition, Interpreter interpreter);
+TableOfReal TableOfReal_extractRowsWhere (I, const wchar_t *condition, Interpreter *interpreter);
+TableOfReal TableOfReal_extractColumnsWhere (I, const wchar_t *condition, Interpreter *interpreter);
 
 Strings TableOfReal_extractRowLabelsAsStrings (I);
 Strings TableOfReal_extractColumnLabelsAsStrings (I);

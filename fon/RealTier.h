@@ -92,7 +92,7 @@ RealTier Vector_to_RealTier_peaks (I, long channel);
 RealTier Vector_to_RealTier_valleys (I, long channel);
 RealTier PointProcess_upto_RealTier (PointProcess me, double value);
 
-int RealTier_formula (I, const wchar_t *expression, Interpreter interpreter, thou);
+int RealTier_formula (I, const wchar_t *expression, Interpreter *interpreter, thou);
 void RealTier_multiplyPart (I, double tmin, double tmax, double factor);
 void RealTier_removePointsBelow (RealTier me, double level);
 

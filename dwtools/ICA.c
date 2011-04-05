@@ -583,7 +583,7 @@ MixingMatrix MixingMatrix_createSimple (long numberOfChannels, long numberOfComp
 	{
 		irow = (inum - 1) / numberOfComponents + 1;
 		icol = (inum - 1) % numberOfComponents + 1;
-		if (! Interpreter_numericExpression (NULL, token, &number))
+		if (! Interpreter_numericExpression_FIXME (token, &number))
 		{
 			Melder_error5 (L"MixingMatrix: item ", Melder_integer (inum), L" \"", token, L"\"is not a number.");
 			goto end;
@@ -744,7 +744,7 @@ CrossCorrelationTable CrossCorrelationTable_createSimple (wchar_t *covars, wchar
 		inumc = inum + nmissing;
 		irow = (inumc - 1) / dimension + 1;
 		icol = ((inumc - 1) % dimension) + 1;
-		if (! Interpreter_numericExpression (NULL, token, &number))
+		if (! Interpreter_numericExpression_FIXME (token, &number))
 		{
 			Melder_error5 (L"CrossCorrelationTable: item ", Melder_integer (inum), L" \"", token, L"\"is not a number.");
 			goto end;
@@ -758,7 +758,7 @@ CrossCorrelationTable CrossCorrelationTable_createSimple (wchar_t *covars, wchar
 	for (wchar_t *token = Melder_firstToken (centroid); token != NULL && inum <= dimension; token = Melder_nextToken (), inum++)
 	{
 		double number;
-		if (! Interpreter_numericExpression (NULL, token, &number))
+		if (! Interpreter_numericExpression_FIXME (token, &number))
 		{
 			Melder_error5 (L"Centroid: item ", Melder_integer (inum), L" \"", token, L"\"is not a number.");
 			goto end;

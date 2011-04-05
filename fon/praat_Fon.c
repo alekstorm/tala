@@ -133,8 +133,8 @@ static int getTminTmaxFminFmax (Any dia, double *tmin, double *tmax, double *fmi
 
 /***** Two auxiliary routines, exported. *****/
 
-int praat_Fon_formula (UiForm dia, Interpreter interpreter);
-int praat_Fon_formula (UiForm dia, Interpreter interpreter) {
+int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
+int praat_Fon_formula (UiForm dia, Interpreter *interpreter) {
 	int IOBJECT;
 	WHERE_DOWN (SELECTED) {
 		Matrix_formula (OBJECT, GET_STRING (L"formula"), interpreter, NULL);

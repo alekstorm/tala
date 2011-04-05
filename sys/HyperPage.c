@@ -427,7 +427,7 @@ if (! my printing) {
 int HyperPage_script (I, double width_inches, double height_inches, const wchar_t *script) {
 	iam (HyperPage);
 	wchar_t *text = Melder_wcsdup_f (script);
-	Interpreter interpreter = Interpreter_createFromEnvironment (NULL);
+	Interpreter *interpreter = new Interpreter (NULL, NULL);
 	double topSpacing = 0.1, bottomSpacing = 0.1, minFooterDistance = 0.0;
 	int font = my font, size = my fontSize;
 	double true_width_inches = width_inches * ( width_inches < 0.0 ? -1.0 : size / 12.0 );
@@ -486,7 +486,7 @@ if (! my printing) {
 			structMelderDir saveDir = { { 0 } };
 			Melder_getDefaultDir (& saveDir);
 			if (! MelderDir_isNull (& my rootDirectory)) Melder_setDefaultDir (& my rootDirectory);
-			Interpreter_run (interpreter, text);
+			interpreter->run (text);
 			Melder_setDefaultDir (& saveDir);
 			Melder_warningOn ();
 			Melder_progressOn ();
@@ -580,7 +580,7 @@ if (! my printing) {
 		structMelderDir saveDir = { { 0 } };
 		Melder_getDefaultDir (& saveDir);
 		if (! MelderDir_isNull (& my rootDirectory)) Melder_setDefaultDir (& my rootDirectory);
-		Interpreter_run (interpreter, text);
+		interpreter->run (text);
 		Melder_setDefaultDir (& saveDir);
 		Melder_warningOn ();
 		Melder_progressOn ();

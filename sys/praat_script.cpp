@@ -20,7 +20,7 @@
 /*
  * pb 2002/03/07 GPL
  * pb 2002/10/02 system -> Melder_system
- * pb 2003/03/09 set UiInterpreter back to NULL
+ * pb 2003/03/09 set UiInterpreter *back to NULL
  * pb 2004/02/22 allow numeric expressions after select/plus/minus
  * pb 2004/10/27 warning off
  * pb 2004/12/04 support for multiple open script dialogs with Apply buttons, both from "Run script..." and from added buttons
@@ -46,7 +46,7 @@
 #include "UiPause.h"
 #include "DemoEditor.h"
 
-static int praat_findObjectFromString (Interpreter interpreter, const wchar_t *string) {
+static int praat_findObjectFromString (Interpreter *interpreter, const wchar_t *string) {
 	int IOBJECT;
 	while (*string == ' ') string ++;
 	if (*string >= 'A' && *string <= 'Z') {
@@ -63,7 +63,7 @@ static int praat_findObjectFromString (Interpreter interpreter, const wchar_t *s
 		}
 	} else {
 		double value;
-		if (! Interpreter_numericExpression (interpreter, string, & value)) goto end;
+		if (! interpreter->numericExpression (string, & value)) goto end;
 		long id = (long) value;
 		WHERE (ID == id) return IOBJECT;
 		goto end;
@@ -96,7 +96,7 @@ Editor praat_findEditorFromString (const wchar_t *string) {
 	return NULL;
 }
 
-int praat_executeCommand (Interpreter interpreter, wchar_t *command) {
+int praat_executeCommand (Interpreter *interpreter, wchar_t *command) {
 	//Melder_casual ("praat_executeCommand: %ld: %ls", interpreter, command);
 	if (command [0] == '\0' || command [0] == '#' || command [0] == '!' || command [0] == ';')
 		/* Skip empty lines and comments. */;
@@ -200,10 +200,10 @@ int praat_executeCommand (Interpreter interpreter, wchar_t *command) {
 				praatP. editor = praat_findEditorFromString (command + 7);
 				if (praatP. editor == NULL)
 					return Melder_error3 (L"Editor \"", command + 7, L"\" does not exist.");
-			} else if (interpreter && interpreter -> editorClass) {
-				praatP. editor = praat_findEditorFromString (interpreter -> environmentName);
+			} else if (interpreter && interpreter -> _editorClass) {
+				praatP. editor = praat_findEditorFromString (interpreter -> _environmentName);
 				if (praatP. editor == NULL)
-					return Melder_error3 (L"Editor \"", interpreter -> environmentName, L"\" does not exist.");
+					return Melder_error3 (L"Editor \"", interpreter -> _environmentName, L"\" does not exist.");
 			} else {
 				return Melder_error1 (L"No editor specified.");
 			}
@@ -295,7 +295,7 @@ int praat_executeCommand (Interpreter interpreter, wchar_t *command) {
 			 * This must be a formula command:
 			 *    proc (args)
 			 */
-			int status = Interpreter_voidExpression (interpreter, command);
+			int status = interpreter->voidExpression (command);
 			return status;
 		}
 	} else {   /* Simulate menu choice. */
@@ -381,19 +381,22 @@ int praat_executeCommandFromStandardInput (const char *programName) {
 
 int praat_executeScriptFromFile (MelderFile file, const wchar_t *arguments) {
 	wchar_t *text = NULL;
-	Interpreter interpreter = NULL;
+	Interpreter *interpreter = NULL;
 	structMelderDir saveDir = { { 0 } };
 	Melder_getDefaultDir (& saveDir);   /* Before the first cherror! */
 //start:
 	text = MelderFile_readText (file); cherror
 	MelderFile_setDefaultDir (file);   /* So that relative file names can be used inside the script. */
 	Melder_includeIncludeFiles (& text); cherror
-	interpreter = Interpreter_createFromEnvironment (praatP.editor); cherror
-	if (arguments) {
-		Interpreter_readParameters (interpreter, text); cherror
-		Interpreter_getArgumentsFromString (interpreter, arguments); cherror
+	{
+		Editor editor = (Editor)praatP.editor;
+		interpreter = new Interpreter (editor->name, editor->methods); cherror
+		if (arguments) {
+			interpreter->readParameters (text); cherror
+			interpreter->getArgumentsFromString (arguments); cherror
+		}
+		interpreter->run (text);
 	}
-	Interpreter_run (interpreter, text);
 end:
 	Melder_setDefaultDir (& saveDir);
 	Melder_free (text);
@@ -431,15 +434,15 @@ int praat_executeScriptFromFileNameWithArguments (const wchar_t *nameAndArgument
 }
 
 int praat_executeScriptFromText (wchar_t *text) {
-	Interpreter interpreter = Interpreter_create (NULL, NULL);
-	Interpreter_run (interpreter, text);
+	Interpreter *interpreter = new Interpreter (NULL, NULL);
+	interpreter->run (text);
 	forget (interpreter);
 	iferror return Melder_error1 (L"Script not completed.");
 	return 1;
 }
 
 int praat_executeScriptFromDialog (Any dia) {
-	Interpreter interpreter = NULL;
+	Interpreter *interpreter = NULL;
 	wchar_t *text = NULL;
 	structMelderDir saveDir = { { 0 } };
 	Melder_getDefaultDir (& saveDir);
@@ -450,12 +453,15 @@ int praat_executeScriptFromDialog (Any dia) {
 	text = MelderFile_readText (& file); cherror
 	MelderFile_setDefaultDir (& file);
 	Melder_includeIncludeFiles (& text); cherror
-	interpreter = Interpreter_createFromEnvironment (praatP.editor); cherror
-	Interpreter_readParameters (interpreter, text); cherror
-	Interpreter_getArgumentsFromDialog (interpreter, dia); cherror
-	praat_background ();
-	Interpreter_run (interpreter, text);
-	praat_foreground ();
+	{
+		Editor editor = (Editor)praatP.editor;
+		interpreter = new Interpreter (editor->name, editor->methods); cherror
+		interpreter->readParameters (text); cherror
+		interpreter->getArgumentsFromDialog (dia); cherror
+		praat_background ();
+		interpreter->run (text);
+		praat_foreground ();
+	}
 end:
 	Melder_setDefaultDir (& saveDir);
 	Melder_free (text);
@@ -464,7 +470,7 @@ end:
 	return 1;
 }
 
-static int secondPassThroughScript (UiForm sendingForm, const wchar_t *sendingString_dummy, Interpreter interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int secondPassThroughScript (UiForm sendingForm, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	(void) sendingString_dummy;
 	(void) interpreter_dummy;
 	(void) invokingButtonTitle;
@@ -475,25 +481,28 @@ static int secondPassThroughScript (UiForm sendingForm, const wchar_t *sendingSt
 
 static int firstPassThroughScript (MelderFile file) {
 	wchar_t *text = NULL;
-	Interpreter interpreter = NULL;
+	Interpreter *interpreter = NULL;
 	structMelderDir saveDir = { { 0 } };
 	Melder_getDefaultDir (& saveDir);
 //start:
 	text = MelderFile_readText (file); cherror
 	MelderFile_setDefaultDir (file);
 	Melder_includeIncludeFiles (& text); cherror
-	Melder_setDefaultDir (& saveDir);
-	interpreter = Interpreter_createFromEnvironment (praatP.editor);
-	if (Interpreter_readParameters (interpreter, text) > 0) {
-		Any form = Interpreter_createForm (interpreter,
-			praatP.editor ? ((Editor) praatP.editor) -> dialog : theCurrentPraatApplication -> topShell,
-			Melder_fileToPath (file), secondPassThroughScript, NULL);
-		UiForm_destroyWhenUnmanaged (form);
-		UiForm_do (form, false);
-	} else {
-		praat_background ();
-		praat_executeScriptFromFile (file, NULL);
-		praat_foreground ();
+	{
+		Melder_setDefaultDir (& saveDir);
+		Editor editor = (Editor)praatP.editor;
+		interpreter = new Interpreter (editor->name, editor->methods); cherror
+		if (interpreter->readParameters (text) > 0) {
+			Any form = interpreter->createForm (
+				praatP.editor ? ((Editor) praatP.editor) -> dialog : theCurrentPraatApplication -> topShell,
+				Melder_fileToPath (file), secondPassThroughScript, NULL);
+			UiForm_destroyWhenUnmanaged (form);
+			UiForm_do (form, false);
+		} else {
+			praat_background ();
+			praat_executeScriptFromFile (file, NULL);
+			praat_foreground ();
+		}
 	}
 end:
 	Melder_setDefaultDir (& saveDir);
@@ -503,7 +512,7 @@ end:
 	return 1;
 }
 
-static int fileSelectorOkCallback (UiForm dia, const wchar_t *sendingString_dummy, Interpreter interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int fileSelectorOkCallback (UiForm dia, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	(void) sendingString_dummy;
 	(void) interpreter_dummy;
 	(void) invokingButtonTitle;
@@ -516,7 +525,7 @@ static int fileSelectorOkCallback (UiForm dia, const wchar_t *sendingString_dumm
  * DO_praat_runScript () is the command callback for "Run script...", which is a bit obsolete command,
  * hidden in the Praat menu, and otherwise replaced by "execute".
  */
-int DO_praat_runScript (UiForm sendingForm, const wchar_t *sendingString, Interpreter interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+int DO_praat_runScript (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	(void) interpreter_dummy;
 	(void) modified;
 	(void) dummy;
@@ -537,7 +546,7 @@ int DO_praat_runScript (UiForm sendingForm, const wchar_t *sendingString, Interp
 	return 1;
 }
 
-int DO_RunTheScriptFromAnyAddedMenuCommand (UiForm sendingForm_dummy, const wchar_t *scriptPath, Interpreter interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+int DO_RunTheScriptFromAnyAddedMenuCommand (UiForm sendingForm_dummy, const wchar_t *scriptPath, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	structMelderFile file = { 0 };
 	(void) sendingForm_dummy;
 	(void) interpreter;

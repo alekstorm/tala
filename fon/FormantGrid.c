@@ -282,7 +282,7 @@ end:
 	return 1;
 }
 
-int FormantGrid_formula_bandwidths (I, const wchar_t *expression, Interpreter interpreter, thou) {
+int FormantGrid_formula_bandwidths (I, const wchar_t *expression, Interpreter *interpreter, thou) {
 	iam (FormantGrid);
 	thouart (FormantGrid);
 	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
@@ -302,7 +302,7 @@ end:
 	return 1;
 }
 
-int FormantGrid_formula_frequencies (I, const wchar_t *expression, Interpreter interpreter, thou) {
+int FormantGrid_formula_frequencies (I, const wchar_t *expression, Interpreter *interpreter, thou) {
 	iam (FormantGrid);
 	thouart (FormantGrid);
 	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror

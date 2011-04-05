@@ -518,7 +518,7 @@ end:
 	return thee;
 }
 
-int RealTier_formula (I, const wchar_t *expression, Interpreter interpreter, thou) {
+int RealTier_formula (I, const wchar_t *expression, Interpreter *interpreter, thou) {
 	iam (RealTier);
 	thouart (RealTier);
 	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror

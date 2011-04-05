@@ -78,7 +78,7 @@ static void nameChanged (I) {
 }
 
 static void goAway (ScriptEditor me) {
-	if (my interpreter -> running) {
+	if (my interpreter -> _running) {
 		Melder_error1 (L"Cannot close the script window while the script is running or paused. Please close or continue the pause or demo window.");
 		Melder_flushError (NULL);
 		return;
@@ -86,7 +86,7 @@ static void goAway (ScriptEditor me) {
 	inherited (ScriptEditor) goAway (ScriptEditor_as_parent (me));
 }
 
-static int args_ok (UiForm sendingForm, const wchar_t *sendingString_dummy, Interpreter interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified_dummy, I) {
+static int args_ok (UiForm sendingForm, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified_dummy, I) {
 	iam (ScriptEditor);
 	(void) sendingString_dummy;
 	(void) interpreter_dummy;
@@ -100,11 +100,11 @@ static int args_ok (UiForm sendingForm, const wchar_t *sendingString_dummy, Inte
 	}
 	Melder_includeIncludeFiles (& text);
 
-	Interpreter_getArgumentsFromDialog (my interpreter, sendingForm);
+	my interpreter->getArgumentsFromDialog (sendingForm);
 
 	praat_background ();
 	if (my name) MelderFile_setDefaultDir (& file);   /* BUG if two disks have the same name (on Mac). */
-	Interpreter_run (my interpreter, text);
+	my interpreter->run (text);
 	praat_foreground ();
 	Melder_free (text);
 	iferror return 0;
@@ -119,19 +119,19 @@ static void run (ScriptEditor me, wchar_t **text) {
 	}
 	Melder_includeIncludeFiles (text);
 	iferror { Melder_flushError (NULL); return; }
-	int npar = Interpreter_readParameters (my interpreter, *text);
+	int npar = my interpreter->readParameters (*text);
 	iferror { Melder_flushError (NULL); return; }
 	if (npar) {
 		/*
 		 * Pop up a dialog box for querying the arguments.
 		 */
 		forget (my argsDialog);
-		my argsDialog = Interpreter_createForm (my interpreter, my shell, NULL, args_ok, me);
+		my argsDialog = my interpreter->createForm (my shell, NULL, args_ok, me);
 		UiForm_do (my argsDialog, false);
 	} else {
 		praat_background ();
 		if (my name) MelderFile_setDefaultDir (& file);   /* BUG if two disks have the same name (on Mac). */
-		Interpreter_run (my interpreter, *text);
+		my interpreter->run (*text);
 		praat_foreground ();
 		iferror Melder_flushError (NULL);
 	}
@@ -139,7 +139,7 @@ static void run (ScriptEditor me, wchar_t **text) {
 
 static int menu_cb_run (EDITOR_ARGS) {
 	EDITOR_IAM (ScriptEditor);
-	if (my interpreter -> running)
+	if (my interpreter -> _running)
 		return Melder_error1 (L"The script is already running (paused). Please close or continue the pause or demo window.");
 	wchar_t *text = GuiText_getString (my textWidget);
 	run (me, & text);
@@ -149,7 +149,7 @@ static int menu_cb_run (EDITOR_ARGS) {
 
 static int menu_cb_runSelection (EDITOR_ARGS) {
 	EDITOR_IAM (ScriptEditor);
-	if (my interpreter -> running)
+	if (my interpreter -> _running)
 		return Melder_error1 (L"The script is already running (paused). Please close or continue the pause or demo window.");
 	wchar_t *text = GuiText_getSelection (my textWidget);
 	if (text == NULL) {
@@ -349,7 +349,7 @@ ScriptEditor ScriptEditor_createFromText (GuiObject parent, Any voidEditor, cons
 		my editorClass = editor -> methods;
 	}
 	TextEditor_init (ScriptEditor_as_parent (me), parent, initialText); cherror
-	my interpreter = Interpreter_createFromEnvironment (editor); cherror
+	my interpreter = new Interpreter (editor->name, editor->methods); cherror
 	if (theScriptEditors == NULL) {
 		theScriptEditors = Collection_create (NULL, 10); cherror
 	}
