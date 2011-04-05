@@ -3215,7 +3215,7 @@ static void do_beginPauseForm (void) {
 		if (n->content.number == 1) {
 			Stackel* title = pop;
 			if (title->which == Stackel_STRING) {
-				UiPause_begin (theCurrentPraatApplication -> topShell, title->content.string, theInterpreter); cherror
+				UiPause::begin (theCurrentPraatApplication -> topShell, title->content.string, theInterpreter); cherror
 			} else {
 				error3 (L"The function \"beginPauseForm\" requires a string (the title), not ", Stackel_whichText (title), L".")
 			}
@@ -3243,7 +3243,7 @@ static void do_pauseFormAddReal (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_real (label->content.string, defaultString); cherror
+				UiPause::real (label->content.string, defaultString); cherror
 			} else {
 				error3 (L"The first argument of \"real\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3271,7 +3271,7 @@ static void do_pauseFormAddPositive (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_positive (label->content.string, defaultString); cherror
+				UiPause::positive (label->content.string, defaultString); cherror
 			} else {
 				error3 (L"The first argument of \"positive\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3299,7 +3299,7 @@ static void do_pauseFormAddInteger (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_integer (label->content.string, defaultString); cherror
+				UiPause::integer (label->content.string, defaultString); cherror
 			} else {
 				error3 (L"The first argument of \"integer\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3327,7 +3327,7 @@ static void do_pauseFormAddNatural (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_natural (label->content.string, defaultString); cherror
+				UiPause::natural (label->content.string, defaultString); cherror
 			} else {
 				error3 (L"The first argument of \"natural\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3350,7 +3350,7 @@ static void do_pauseFormAddWord (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_word (label->content.string, defaultValue->content.string); cherror
+				UiPause::word (label->content.string, defaultValue->content.string); cherror
 			} else {
 				error3 (L"The first argument of \"word\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3373,7 +3373,7 @@ static void do_pauseFormAddSentence (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_sentence (label->content.string, defaultValue->content.string); cherror
+				UiPause::sentence (label->content.string, defaultValue->content.string); cherror
 			} else {
 				error3 (L"The first argument of \"sentence\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3396,7 +3396,7 @@ static void do_pauseFormAddText (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_text (label->content.string, defaultValue->content.string); cherror
+				UiPause::text (label->content.string, defaultValue->content.string); cherror
 			} else {
 				error3 (L"The first argument of \"text\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3419,7 +3419,7 @@ static void do_pauseFormAddBoolean (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_boolean (label->content.string, defaultValue->content.number); cherror
+				UiPause::boolean (label->content.string, defaultValue->content.number); cherror
 			} else {
 				error3 (L"The first argument of \"boolean\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3442,7 +3442,7 @@ static void do_pauseFormAddChoice (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_choice (label->content.string, defaultValue->content.number); cherror
+				UiPause::choice (label->content.string, defaultValue->content.number); cherror
 			} else {
 				error3 (L"The first argument of \"choice\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3465,7 +3465,7 @@ static void do_pauseFormAddOptionMenu (void) {
 			}
 			Stackel* label = pop;
 			if (label->which == Stackel_STRING) {
-				UiPause_optionMenu (label->content.string, defaultValue->content.number); cherror
+				UiPause::optionMenu (label->content.string, defaultValue->content.number); cherror
 			} else {
 				error3 (L"The first argument of \"optionMenu\" (the label) must be a string, not ", Stackel_whichText (label), L".")
 			}
@@ -3484,7 +3484,7 @@ static void do_pauseFormAddOption (void) {
 		if (n->content.number == 1) {
 			Stackel* text = pop;
 			if (text->which == Stackel_STRING) {
-				UiPause_option (text->content.string); cherror
+				UiPause::option (text->content.string); cherror
 			} else {
 				error3 (L"The argument of \"option\" must be a string (the text), not ", Stackel_whichText (text), L".")
 			}
@@ -3503,7 +3503,7 @@ static void do_pauseFormAddComment (void) {
 		if (n->content.number == 1) {
 			Stackel* text = pop;
 			if (text->which == Stackel_STRING) {
-				UiPause_comment (text->content.string); cherror
+				UiPause::comment (text->content.string); cherror
 			} else {
 				error3 (L"The argument of \"comment\" must be a string (the text), not ", Stackel_whichText (text), L".")
 			}
@@ -3542,7 +3542,7 @@ static void do_endPauseForm (void) {
 				error5 (L"Each of the first ", Melder_integer (numberOfContinueButtons),
 					L" argument(s) of \"endPause\" has to be a string (a button text), not ", Stackel_whichText (co[i]), L".")
 		}
-		int buttonClicked = UiPause_end (numberOfContinueButtons, defaultContinueButton, cancelContinueButton,
+		int buttonClicked = UiPause::end (numberOfContinueButtons, defaultContinueButton, cancelContinueButton,
 			co [1] == NULL ? NULL : co[1]->content.string, co [2] == NULL ? NULL : co[2]->content.string,
 			co [3] == NULL ? NULL : co[3]->content.string, co [4] == NULL ? NULL : co[4]->content.string,
 			co [5] == NULL ? NULL : co[5]->content.string, co [6] == NULL ? NULL : co[6]->content.string,

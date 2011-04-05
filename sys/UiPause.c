@@ -26,6 +26,7 @@
 
 #include "UiPause.h"
 #include "praatP.h"
+#include "Ui.h"
 
 static UiForm thePauseForm = NULL;
 static Any thePauseFormRadio = NULL;
@@ -58,7 +59,7 @@ static int thePauseFormCancelCallback (Any dia, void *closure) {
 	}
 	return 1;
 }
-int UiPause_begin (GuiObject topShell, const wchar_t *title, Interpreter *interpreter) {
+int UiPause::begin (GuiObject topShell, const wchar_t *title, Interpreter *interpreter) {
 	if (theEventLoopDepth > 0)
 		error1 (L"Praat cannot have more than one pause form at a time.")
 	forget (thePauseForm);   // in case an earlier build-up of another pause window was interrupted
@@ -69,7 +70,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_real (const wchar_t *label, const wchar_t *defaultValue) {
+int UiPause::real (const wchar_t *label, const wchar_t *defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"real\" has to be between a \"beginPause\" and an \"endPause\".")
 	UiForm_addReal (thePauseForm, label, defaultValue); cherror
@@ -77,7 +78,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_positive (const wchar_t *label, const wchar_t *defaultValue) {
+int UiPause::positive (const wchar_t *label, const wchar_t *defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"positive\" has to be between a \"beginPause\" and an \"endPause\".")
 	UiForm_addPositive (thePauseForm, label, defaultValue); cherror
@@ -85,7 +86,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_integer (const wchar_t *label, const wchar_t *defaultValue) {
+int UiPause::integer (const wchar_t *label, const wchar_t *defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"integer\" has to be between a \"beginPause\" and an \"endPause\".")
 	UiForm_addInteger (thePauseForm, label, defaultValue); cherror
@@ -93,7 +94,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_natural (const wchar_t *label, const wchar_t *defaultValue) {
+int UiPause::natural (const wchar_t *label, const wchar_t *defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"natural\" has to be between a \"beginPause\" and an \"endPause\".")
 	UiForm_addNatural (thePauseForm, label, defaultValue); cherror
@@ -101,7 +102,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_word (const wchar_t *label, const wchar_t *defaultValue) {
+int UiPause::word (const wchar_t *label, const wchar_t *defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"word\" has to be between a \"beginPause\" and an \"endPause\".")
 	UiForm_addWord (thePauseForm, label, defaultValue); cherror
@@ -109,7 +110,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_sentence (const wchar_t *label, const wchar_t *defaultValue) {
+int UiPause::sentence (const wchar_t *label, const wchar_t *defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"sentence\" has to be between a \"beginPause\" and an \"endPause\".")
 	UiForm_addSentence (thePauseForm, label, defaultValue); cherror
@@ -117,7 +118,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_text (const wchar_t *label, const wchar_t *defaultValue) {
+int UiPause::text (const wchar_t *label, const wchar_t *defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"text\" has to be between a \"beginPause\" and an \"endPause\".")
 	UiForm_addText (thePauseForm, label, defaultValue); cherror
@@ -125,7 +126,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_boolean (const wchar_t *label, int defaultValue) {
+int UiPause::boolean (const wchar_t *label, int defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"boolean\" has to be between a \"beginPause\" and an \"endPause\".")
 	UiForm_addBoolean (thePauseForm, label, defaultValue); cherror
@@ -133,7 +134,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_choice (const wchar_t *label, int defaultValue) {
+int UiPause::choice (const wchar_t *label, int defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"choice\" has to be between a \"beginPause\" and an \"endPause\".")
 	thePauseFormRadio = UiForm_addRadio (thePauseForm, label, defaultValue); cherror
@@ -141,7 +142,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_optionMenu (const wchar_t *label, int defaultValue) {
+int UiPause::optionMenu (const wchar_t *label, int defaultValue) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"optionMenu\" has to be between a \"beginPause\" and an \"endPause\".")
 	thePauseFormRadio = UiForm_addOptionMenu (thePauseForm, label, defaultValue); cherror
@@ -149,7 +150,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_option (const wchar_t *label) {
+int UiPause::option (const wchar_t *label) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"option\" has to be between a \"beginPause\" and an \"endPause\".")
 	if (thePauseFormRadio == NULL) {
@@ -161,7 +162,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_comment (const wchar_t *label) {
+int UiPause::comment (const wchar_t *label) {
 	if (thePauseForm == NULL)
 		error1 (L"The function \"comment\" has to be between a \"beginPause\" and an \"endPause\".")
 	UiForm_addLabel (thePauseForm, L"", label); cherror
@@ -169,7 +170,7 @@ end:
 	iferror return 0;
 	return 1;
 }
-int UiPause_end (int numberOfContinueButtons, int defaultContinueButton, int cancelContinueButton,
+int UiPause::end (int numberOfContinueButtons, int defaultContinueButton, int cancelContinueButton,
 	const wchar_t *continueText1, const wchar_t *continueText2, const wchar_t *continueText3,
 	const wchar_t *continueText4, const wchar_t *continueText5, const wchar_t *continueText6,
 	const wchar_t *continueText7, const wchar_t *continueText8, const wchar_t *continueText9,

@@ -188,9 +188,9 @@ int praat_executeCommand (Interpreter *interpreter, wchar_t *command) {
 			Demo_close ();
 		} else if (wcsnequ (command, L"pause ", 6) || wcsequ (command, L"pause")) {
 			if (theCurrentPraatApplication -> batch) return 1;
-			UiPause_begin (theCurrentPraatApplication -> topShell, L"stop or continue", interpreter); iferror return 0;
-			UiPause_comment (wcsequ (command, L"pause") ? L"..." : command + 6); iferror return 0;
-			UiPause_end (1, 1, 0, L"Continue", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, interpreter); iferror return 0;
+			UiPause::begin (theCurrentPraatApplication -> topShell, L"stop or continue", interpreter); iferror return 0;
+			UiPause::comment (wcsequ (command, L"pause") ? L"..." : command + 6); iferror return 0;
+			UiPause::end (1, 1, 0, L"Continue", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, interpreter); iferror return 0;
 		} else if (wcsnequ (command, L"execute ", 8)) {
 			praat_executeScriptFromFileNameWithArguments (command + 8);
 		} else if (wcsnequ (command, L"editor", 6)) {
