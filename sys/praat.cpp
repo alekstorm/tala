@@ -42,7 +42,7 @@
  * pb 2008/03/13 Windows: better file dropping
  * pb 2008/04/09 removed explicit GSL
  * pb 2008/11/01 praatcon -a
- * pb 2009/01/17 arguments to UiForm callbacks
+ * pb 2009/01/17 arguments to UiForm *callbacks
  * pb 2009/03/17 split up theCurrentPraat into Application, Objects and Picture
  * pb 2009/12/22 invokingButtonTitle
  * pb 2010/05/24 sendpraat for GTK
@@ -72,6 +72,7 @@
 #include "ScriptEditor.h"
 #include "Strings.h"
 #include "HyperPage.h"
+#include "UiFile.h"
 
 #if gtk
 	#include <gdk/gdkx.h>
@@ -242,7 +243,7 @@ praat_Object praat_onlyScreenObject (void) {
 
 wchar_t *praat_name (int IOBJECT) { return wcschr (FULL_NAME, ' ') + 1; }
 
-void praat_write_do (Any dia, const wchar_t *extension) {
+void praat_write_do (UiOutfile *dia, const wchar_t *extension) {
 	int IOBJECT, found = 0;
 	Data data = NULL;
 	static MelderString defaultFileName = { 0 };
@@ -257,7 +258,7 @@ void praat_write_do (Any dia, const wchar_t *extension) {
 	} else {
 		MelderString_append2 (& defaultFileName, L"praat.", extension);
 	}
-	UiOutfile_do (dia, defaultFileName.string);
+	dia->do_ (defaultFileName.string);
 }
 
 static void removeAllReferencesToEditor (Any editor) {
@@ -500,8 +501,8 @@ static void gui_cb_list (void *void_me, GuiListEvent event) {
 			long readableClassId = ((Thing) theCurrentPraatObjects -> list [IOBJECT]. object) -> methods -> sequentialUniqueIdOfReadableClass;
 			theCurrentPraatObjects -> numberOfSelected [readableClassId] ++;
 			Melder_assert (theCurrentPraatObjects -> numberOfSelected [readableClassId] > 0);
-			UiHistory_write (first ? L"\nselect " : L"\nplus ");
-			UiHistory_write (FULL_NAME);
+			UiForm::history.write (first ? L"\nselect " : L"\nplus ");
+			UiForm::history.write (FULL_NAME);
 			first = FALSE;
 			theCurrentPraatObjects -> totalSelection += 1;
 		}

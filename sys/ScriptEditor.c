@@ -26,7 +26,7 @@
  * pb 2007/08/12 wchar_t
  * pb 2008/03/20 split off Help menu
  * pb 2008/03/21 new Editor API
- * pb 2009/01/18 arguments to UiForm callbacks
+ * pb 2009/01/18 arguments to UiForm *callbacks
  * pb 2009/01/20 pause forms
  * pb 2009/05/07 demo window
  * pb 2010/04/30 command "Expand include files"
@@ -86,7 +86,7 @@ static void goAway (ScriptEditor me) {
 	inherited (ScriptEditor) goAway (ScriptEditor_as_parent (me));
 }
 
-static int args_ok (UiForm sendingForm, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified_dummy, I) {
+static int args_ok (UiForm *sendingForm, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified_dummy, I) {
 	iam (ScriptEditor);
 	(void) sendingString_dummy;
 	(void) interpreter_dummy;
@@ -127,7 +127,7 @@ static void run (ScriptEditor me, wchar_t **text) {
 		 */
 		forget (my argsDialog);
 		my argsDialog = my interpreter->createForm (my shell, NULL, args_ok, me);
-		UiForm_do (my argsDialog, false);
+		my argsDialog -> do_ (false);
 	} else {
 		praat_background ();
 		if (my name) MelderFile_setDefaultDir (& file);   /* BUG if two disks have the same name (on Mac). */
@@ -239,19 +239,19 @@ static int menu_cb_addToDynamicMenu (EDITOR_ARGS) {
 
 static int menu_cb_clearHistory (EDITOR_ARGS) {
 	EDITOR_IAM (ScriptEditor);
-	UiHistory_clear ();
+	UiForm::history.clear ();
 	return 1;
 }
 
 static int menu_cb_pasteHistory (EDITOR_ARGS) {
 	EDITOR_IAM (ScriptEditor);
-	wchar_t *history = UiHistory_get ();
+	wchar_t *history = UiForm::history.get ();
 	if (history == NULL || history [0] == '\0')
 		return Melder_error1 (L"No history.");
 	long length = wcslen (history);
 	if (history [length - 1] != '\n') {
-		UiHistory_write (L"\n");
-		history = UiHistory_get ();
+		UiForm::history.write (L"\n");
+		history = UiForm::history.get ();
 		length = wcslen (history);
 	}
 	if (history [0] == '\n') {

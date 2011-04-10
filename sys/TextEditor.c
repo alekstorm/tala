@@ -36,7 +36,7 @@
  * pb 2007/12/23 Gui
  * pb 2008/01/04 guard against multiple opening of same file
  * pb 2008/03/21 new Editor API
- * pb 2009/01/18 arguments to UiForm callbacks
+ * pb 2009/01/18 arguments to UiForm *callbacks
  * pb 2010/01/20 Reopen from disk
  * pb 2010/01/20 guard against Find Again before Find
  * fb 2010/02/26 tell Undo/Redo buttons to GuiText for (de)sensitivization
@@ -145,34 +145,34 @@ static void closeDocument (TextEditor me) {
 	forget (me);
 }
 
-static int cb_open_ok (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
+static int cb_open_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
 	iam (TextEditor);
 	(void) sendingString;
 	(void) interpreter;
 	(void) invokingButtonTitle;
 	(void) modified;
-	MelderFile file = UiFile_getFile (sendingForm);
+	MelderFile file = ((UiFile *)sendingForm)->getFile ();
 	if (! openDocument (me, file)) return 0;
 	return 1;
 }
 
-static void cb_showOpen (EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
+static void cb_showOpen (EditorCommand cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
 	TextEditor me = (TextEditor) cmd -> editor;
 	(void) sendingForm;
 	(void) sendingString;
 	(void) interpreter;
 	if (! my openDialog)
-		my openDialog = UiInfile_create (my dialog, L"Open", cb_open_ok, me, NULL, NULL, false);
-	UiInfile_do (my openDialog);
+		my openDialog = new UiInfile (my dialog, L"Open", cb_open_ok, me, NULL, NULL, false);
+	my openDialog -> do_ ();
 }
 
-static int cb_saveAs_ok (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
+static int cb_saveAs_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
 	iam (TextEditor);
 	(void) sendingString;
 	(void) interpreter;
 	(void) invokingButtonTitle;
 	(void) modified;
-	MelderFile file = UiFile_getFile (sendingForm);
+	MelderFile file = ((UiFile *)sendingForm)->getFile ();
 	if (! saveDocument (me, file)) return 0;
 	return 1;
 }
@@ -181,9 +181,9 @@ static int menu_cb_saveAs (EDITOR_ARGS) {
 	EDITOR_IAM (TextEditor);
 	wchar_t defaultName [300];
 	if (! my saveDialog)
-		my saveDialog = UiOutfile_create (my dialog, L"Save", cb_saveAs_ok, me, NULL, NULL);
+		my saveDialog = new UiOutfile (my dialog, L"Save", cb_saveAs_ok, me, NULL, NULL);
 	swprintf (defaultName, 300, ! our fileBased ? L"info.txt" : my name ? MelderFile_name (& my file) : L"");
-	UiOutfile_do (my saveDialog, defaultName);
+	my saveDialog -> do_ (defaultName);
 	return 1;
 }
 

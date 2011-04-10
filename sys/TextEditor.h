@@ -26,6 +26,7 @@
 #ifndef _Editor_h_
 	#include "Editor.h"
 #endif
+#include "UiFile.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -37,7 +38,9 @@ Thing_declare1 (TextEditor);
 #define TextEditor__members(Klas) Editor__members(Klas) \
 	structMelderFile file; \
 	GuiObject textWidget; \
-	Any openDialog, saveDialog, printDialog, findDialog; \
+	UiInfile *openDialog; \
+	UiOutfile *saveDialog; \
+	UiForm *printDialog, *findDialog; \
 	int dirty, fontSize; \
 	GuiObject dirtyNewDialog, dirtyOpenDialog, dirtyCloseDialog; \
 	GuiObject fontSizeButton_10, fontSizeButton_12, fontSizeButton_14, fontSizeButton_18, fontSizeButton_24;

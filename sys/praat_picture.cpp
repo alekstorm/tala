@@ -52,6 +52,7 @@
 #include "Printer.h"
 #include "machine.h"
 #include "Formula.h"
+#include "UiFile.h"
 
 static bool praat_mouseSelectsInnerViewport;
 
@@ -450,17 +451,17 @@ FORM_READ (Picture_readFromOldWindowsPraatPictureFile, L"Read picture from praat
 END
 #endif
 
-static int DO_Picture_writeToEpsFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
-	static Any dia;
+static int DO_Picture_writeToEpsFile (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+	static UiOutfile *dia;
 	(void) interpreter;
 	(void) modified;
 	(void) dummy;
-	if (! dia) dia = UiOutfile_create (theCurrentPraatApplication -> topShell, L"Save as EPS file",
+	if (! dia) dia = new UiOutfile (theCurrentPraatApplication -> topShell, L"Save as EPS file",
 		DO_Picture_writeToEpsFile, NULL, invokingButtonTitle, NULL);
 	if (sendingForm == NULL && sendingString == NULL) {
-		UiOutfile_do (dia, L"praat.eps");
+		dia->do_ (L"praat.eps");
 	} else { MelderFile file; structMelderFile file2 = { 0 };
-		if (sendingString == NULL) file = UiFile_getFile (dia);
+		if (sendingString == NULL) file = dia->getFile ();
 		else { if (! Melder_relativePathToFile (sendingString, & file2)) return 0; file = & file2; }
 		return Picture_writeToEpsFile (praat_picture, file, TRUE, FALSE);
 	}
@@ -470,68 +471,68 @@ static int DO_Picture_writeToEpsFile (UiForm sendingForm, const wchar_t *sending
 	if (! Picture_writeToEpsFile (praat_picture, fileName, TRUE)) return 0;
 END*/
 
-static int DO_Picture_writeToFontlessEpsFile_xipa (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
-	static Any dia;
+static int DO_Picture_writeToFontlessEpsFile_xipa (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+	static UiOutfile *dia;
 	(void) interpreter;
 	(void) modified;
 	(void) dummy;
-	if (! dia) dia = UiOutfile_create (theCurrentPraatApplication -> topShell, L"Save as fontless EPS file",
+	if (! dia) dia = new UiOutfile (theCurrentPraatApplication -> topShell, L"Save as fontless EPS file",
 		DO_Picture_writeToFontlessEpsFile_xipa, NULL, invokingButtonTitle, NULL);
 	if (sendingForm == NULL && sendingString == NULL) {
-		UiOutfile_do (dia, L"praat.eps");
+		dia->do_ (L"praat.eps");
 	} else { MelderFile file; structMelderFile file2 = { 0 };
-		if (sendingString == NULL) file = UiFile_getFile (dia);
+		if (sendingString == NULL) file = dia->getFile ();
 		else { if (! Melder_relativePathToFile (sendingString, & file2)) return 0; file = & file2; }
 		return Picture_writeToEpsFile (praat_picture, file, FALSE, FALSE);
 	}
 	return 1;
 }
 
-static int DO_Picture_writeToFontlessEpsFile_silipa (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
-	static Any dia;
+static int DO_Picture_writeToFontlessEpsFile_silipa (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+	static UiOutfile *dia;
 	(void) interpreter;
 	(void) modified;
 	(void) dummy;
-	if (! dia) dia = UiOutfile_create (theCurrentPraatApplication -> topShell, L"Save as fontless EPS file",
+	if (! dia) dia = new UiOutfile (theCurrentPraatApplication -> topShell, L"Save as fontless EPS file",
 		DO_Picture_writeToFontlessEpsFile_silipa, NULL, invokingButtonTitle, NULL);
 	if (sendingForm == NULL && sendingString == NULL) {
-		UiOutfile_do (dia, L"praat.eps");
+		dia->do_ (L"praat.eps");
 	} else { MelderFile file; structMelderFile file2 = { 0 };
-		if (sendingString == NULL) file = UiFile_getFile (dia);
+		if (sendingString == NULL) file = dia->getFile ();
 		else { if (! Melder_relativePathToFile (sendingString, & file2)) return 0; file = & file2; }
 		return Picture_writeToEpsFile (praat_picture, file, FALSE, TRUE);
 	}
 	return 1;
 }
 
-static int DO_Picture_writeToPdfFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
-	static Any dia;
+static int DO_Picture_writeToPdfFile (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+	static UiOutfile *dia;
 	(void) interpreter;
 	(void) modified;
 	(void) dummy;
-	if (! dia) dia = UiOutfile_create (theCurrentPraatApplication -> topShell, L"Save as PDF file",
+	if (! dia) dia = new UiOutfile (theCurrentPraatApplication -> topShell, L"Save as PDF file",
 		DO_Picture_writeToPdfFile, NULL, invokingButtonTitle, NULL);
 	if (sendingForm == NULL && sendingString == NULL) {
-		UiOutfile_do (dia, L"praat.pdf");
+		dia->do_ (L"praat.pdf");
 	} else { MelderFile file; structMelderFile file2 = { 0 };
-		if (sendingString == NULL) file = UiFile_getFile (dia);
+		if (sendingString == NULL) file = dia->getFile ();
 		else { if (! Melder_relativePathToFile (sendingString, & file2)) return 0; file = & file2; }
 		return Picture_writeToPdfFile (praat_picture, file);
 	}
 	return 1;
 }
 
-static int DO_Picture_writeToPraatPictureFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
-	static Any dia;
+static int DO_Picture_writeToPraatPictureFile (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+	static UiOutfile *dia;
 	(void) interpreter;
 	(void) modified;
 	(void) dummy;
-	if (! dia) dia = UiOutfile_create (theCurrentPraatApplication -> topShell, L"Save as Praat picture file",
+	if (! dia) dia = new UiOutfile (theCurrentPraatApplication -> topShell, L"Save as Praat picture file",
 		DO_Picture_writeToPraatPictureFile, NULL, invokingButtonTitle, NULL);
 	if (sendingForm == NULL && sendingString == NULL) {
-		UiOutfile_do (dia, L"praat.prapic");
+		dia->do_ (L"praat.prapic");
 	} else { MelderFile file; structMelderFile file2 = { 0 };
-		if (sendingString == NULL) file = UiFile_getFile (dia);
+		if (sendingString == NULL) file = dia->getFile ();
 		else { if (! Melder_relativePathToFile (sendingString, & file2)) return 0; file = & file2; }
 		return Picture_writeToPraatPictureFile (praat_picture, file);
 	}
@@ -553,17 +554,17 @@ DIRECT (Print)
 END
 
 #ifdef macintosh
-	static int DO_Picture_writeToMacPictFile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
-		static Any dia;
+	static int DO_Picture_writeToMacPictFile (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+		static UiOutfile *dia;
 		(void) interpreter;
 		(void) modified;
 		(void) dummy;
-		if (! dia) dia = UiOutfile_create (theCurrentPraatApplication -> topShell, L"Save as Mac PICT file",
+		if (! dia) dia = new UiOutfile (theCurrentPraatApplication -> topShell, L"Save as Mac PICT file",
 			DO_Picture_writeToMacPictFile, NULL, invokingButtonTitle, NULL);
 		if (sendingForm == NULL && sendingString == NULL) {
-			UiOutfile_do (dia, L"praat.pict");
+			dia->do_ (L"praat.pict");
 		} else { MelderFile file; structMelderFile file2 = { 0 };
-			if (sendingString == NULL) file = UiFile_getFile (dia);
+			if (sendingString == NULL) file = dia->getFile ();
 			else { if (! Melder_relativePathToFile (sendingString, & file2)) return 0; file = & file2; }
 			return Picture_writeToMacPictFile (praat_picture, file);
 		}
@@ -571,17 +572,17 @@ END
 	}
 #endif
 #ifdef _WIN32
-	static int DO_Picture_writeToWindowsMetafile (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
-		static Any dia;
+	static int DO_Picture_writeToWindowsMetafile (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+		static UiOutfile *dia;
 		(void) interpreter;
 		(void) modified;
 		(void) dummy;
-		if (! dia) dia = UiOutfile_create (theCurrentPraatApplication -> topShell, L"Save as Windows metafile",
+		if (! dia) dia = new UiOutfile (theCurrentPraatApplication -> topShell, L"Save as Windows metafile",
 			DO_Picture_writeToWindowsMetafile, NULL, invokingButtonTitle, NULL);
 		if (sendingForm == NULL && sendingString == NULL) {
-			UiOutfile_do (dia, L"praat.emf");
+			dia->do_ (L"praat.emf");
 		} else { MelderFile file; structMelderFile file2 = { 0 };
-			if (sendingString == NULL) file = UiFile_getFile (dia);
+			if (sendingString == NULL) file = dia->getFile ();
 			else { if (! Melder_relativePathToFile (sendingString, & file2)) return 0; file = & file2; }
 			return Picture_writeToWindowsMetafile (praat_picture, file);
 		}
@@ -690,7 +691,7 @@ DO
 	praat_picture_close ();
 END
 
-static void dia_line (Any dia) {
+static void dia_line (UiForm *dia) {
 	REAL (L"From x", L"0.0")
 	REAL (L"From y", L"0.0")
 	REAL (L"To x", L"1.0")
@@ -796,7 +797,7 @@ end:
 	iferror return 0;
 END
 
-static void dia_rectangle (Any dia) {
+static void dia_rectangle (UiForm *dia) {
 	REAL (L"From x", L"0.0")
 	REAL (L"To x", L"1.0")
 	REAL (L"From y", L"0.0")
@@ -1035,14 +1036,14 @@ DO
 	praat_picture_close ();
 END
 
-static void dia_marksEvery (Any dia) {
+static void dia_marksEvery (UiForm *dia) {
 	POSITIVE (L"Units", L"1.0")
 	POSITIVE (L"Distance", L"0.1")
 	BOOLEAN (L"Write numbers", 1)
 	BOOLEAN (L"Draw ticks", 1)
 	BOOLEAN (L"Draw dotted lines", 1)
 }
-static void do_marksEvery (Any dia, void (*Graphics_marksEvery) (void *, double, double, bool, bool, bool)) {
+static void do_marksEvery (UiForm *dia, void (*Graphics_marksEvery) (void *, double, double, bool, bool, bool)) {
 	praat_picture_open ();
 	Graphics_marksEvery (GRAPHICS, GET_REAL (L"Units"), GET_REAL (L"Distance"),
 		GET_INTEGER (L"Write numbers"),
@@ -1058,13 +1059,13 @@ FORM (Marks_bottom_every, L"Praat picture: Marks bottom every...", L"Marks left/
 FORM (Marks_top_every, L"Praat picture: Marks top every...", L"Marks left/right/top/bottom every...")
 	dia_marksEvery (dia); OK DO do_marksEvery (dia, Graphics_marksTopEvery); END
 
-static void dia_marks (Any dia) {
+static void dia_marks (UiForm *dia) {
 	NATURAL (L"Number of marks", L"6")
 	BOOLEAN (L"Write numbers", 1)
 	BOOLEAN (L"Draw ticks", 1)
 	BOOLEAN (L"Draw dotted lines", 1)
 }
-static int do_marks (Any dia, void (*Graphics_marks) (void *, int, bool, bool, bool)) {
+static int do_marks (UiForm *dia, void (*Graphics_marks) (void *, int, bool, bool, bool)) {
 	long numberOfMarks = GET_INTEGER (L"Number of marks");
 	REQUIRE (numberOfMarks >= 2, L"`Number of marks' must be at least 2.")
 	praat_picture_open ();
@@ -1082,13 +1083,13 @@ FORM (Marks_bottom, L"Praat picture: Marks bottom", L"Marks left/right/top/botto
 FORM (Marks_top, L"Praat picture: Marks top", L"Marks left/right/top/bottom...")
 	dia_marks (dia); OK DO if (! do_marks (dia, Graphics_marksTop)) return 0; END
 
-static void dia_marksLogarithmic (Any dia) {
+static void dia_marksLogarithmic (UiForm *dia) {
 	NATURAL (L"Marks per decade", L"3")
 	BOOLEAN (L"Write numbers", 1)
 	BOOLEAN (L"Draw ticks", 1)
 	BOOLEAN (L"Draw dotted lines", 1)
 }
-static void do_marksLogarithmic (Any dia, void (*Graphics_marksLogarithmic) (void *, int, bool, bool, bool)) {
+static void do_marksLogarithmic (UiForm *dia, void (*Graphics_marksLogarithmic) (void *, int, bool, bool, bool)) {
 	long numberOfMarksPerDecade = GET_INTEGER (L"Marks per decade");
 	praat_picture_open ();
 	Graphics_marksLogarithmic (GRAPHICS, numberOfMarksPerDecade, GET_INTEGER (L"Write numbers"),
@@ -1110,7 +1111,7 @@ static void sortBoundingBox (double *x1WC, double *x2WC, double *y1WC, double *y
 	if (*y1WC > *y2WC) temp = *y1WC, *y1WC = *y2WC, *y2WC = temp;
 }
 
-static void dia_oneMark (Any dia) {
+static void dia_oneMark (UiForm *dia) {
 	REAL (L"Position", L"0.0")
 	BOOLEAN (L"Write number", 1)
 	BOOLEAN (L"Draw tick", 1)
@@ -1198,7 +1199,7 @@ DO
 	praat_picture_close ();
 END
 
-static void dia_oneLogarithmicMark (Any dia) {
+static void dia_oneLogarithmicMark (UiForm *dia) {
 	REAL (L"Position", L"1.0")
 	BOOLEAN (L"Write number", 1)
 	BOOLEAN (L"Draw tick", 1)
@@ -1454,23 +1455,23 @@ static void cb_selectionChanged (Picture p, XtPointer closure,
 		double xmargin = fontSize * 4.2 / 72.0, ymargin = fontSize * 2.8 / 72.0;
 		if (ymargin > 0.4 * (theCurrentPraatPicture -> y2NDC - theCurrentPraatPicture -> y1NDC)) ymargin = 0.4 * (theCurrentPraatPicture -> y2NDC - theCurrentPraatPicture -> y1NDC);
 		if (xmargin > 0.4 * (theCurrentPraatPicture -> x2NDC - theCurrentPraatPicture -> x1NDC)) xmargin = 0.4 * (theCurrentPraatPicture -> x2NDC - theCurrentPraatPicture -> x1NDC);
-		UiHistory_write (L"\nSelect inner viewport... ");
-		UiHistory_write (Melder_single (theCurrentPraatPicture -> x1NDC + xmargin));
-		UiHistory_write (L" ");
-		UiHistory_write (Melder_single (theCurrentPraatPicture -> x2NDC - xmargin));
-		UiHistory_write (L" ");
-		UiHistory_write (Melder_single (12 - theCurrentPraatPicture -> y2NDC + ymargin));
-		UiHistory_write (L" ");
-		UiHistory_write (Melder_single (12 - theCurrentPraatPicture -> y1NDC - ymargin));
+		UiForm::history.write (L"\nSelect inner viewport... ");
+		UiForm::history.write (Melder_single (theCurrentPraatPicture -> x1NDC + xmargin));
+		UiForm::history.write (L" ");
+		UiForm::history.write (Melder_single (theCurrentPraatPicture -> x2NDC - xmargin));
+		UiForm::history.write (L" ");
+		UiForm::history.write (Melder_single (12 - theCurrentPraatPicture -> y2NDC + ymargin));
+		UiForm::history.write (L" ");
+		UiForm::history.write (Melder_single (12 - theCurrentPraatPicture -> y1NDC - ymargin));
 	} else {
-		UiHistory_write (L"\nSelect outer viewport... ");
-		UiHistory_write (Melder_single (theCurrentPraatPicture -> x1NDC));
-		UiHistory_write (L" ");
-		UiHistory_write (Melder_single (theCurrentPraatPicture -> x2NDC));
-		UiHistory_write (L" ");
-		UiHistory_write (Melder_single (12 - theCurrentPraatPicture -> y2NDC));
-		UiHistory_write (L" ");
-		UiHistory_write (Melder_single (12 - theCurrentPraatPicture -> y1NDC));
+		UiForm::history.write (L"\nSelect outer viewport... ");
+		UiForm::history.write (Melder_single (theCurrentPraatPicture -> x1NDC));
+		UiForm::history.write (L" ");
+		UiForm::history.write (Melder_single (theCurrentPraatPicture -> x2NDC));
+		UiForm::history.write (L" ");
+		UiForm::history.write (Melder_single (12 - theCurrentPraatPicture -> y2NDC));
+		UiForm::history.write (L" ");
+		UiForm::history.write (Melder_single (12 - theCurrentPraatPicture -> y1NDC));
 	}
 }
 

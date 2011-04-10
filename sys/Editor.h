@@ -29,12 +29,15 @@
 #ifndef _Gui_h_
 	#include "Gui.h"
 #endif
-#ifndef _Ui_h_
-	#include "Ui.h"
-#endif
 #ifndef _Graphics_h_
 	#include "Graphics.h"
 #endif
+#include "Interpreter.h"
+#include "UiForm.h"
+
+/* FIXME */
+class Interpreter;
+class UiForm;
 
 #ifdef __cplusplus
 	extern "C" {
@@ -49,16 +52,16 @@ Thing_declare1 (Editor);
 	Any editor, menu; \
 	const wchar_t *itemTitle; \
 	GuiObject itemWidget; \
-	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter); \
+	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter); \
 	const wchar_t *script; \
-	Any dialog;
+	UiForm *dialog;
 #define EditorCommand_methods Thing_methods
 class_create (EditorCommand, Thing);
 
 typedef struct structEditorMenu *EditorMenu;
 
 GuiObject EditorMenu_addCommand (EditorMenu menu, const wchar_t *itemTitle, long flags,
-	int (*commandCallback) (Any editor_me, EditorCommand, UiForm, const wchar_t *, Interpreter *));
+	int (*commandCallback) (Any editor_me, EditorCommand, UiForm *, const wchar_t *, Interpreter *));
 GuiObject EditorCommand_getItemWidget (EditorCommand me);
 
 EditorMenu Editor_addMenu (Any editor, const wchar_t *menuTitle, long flags);
@@ -102,7 +105,7 @@ Thing_declare2 (Editor, Thing);
 
 #define Editor_HIDDEN  (1 << 14)
 GuiObject Editor_addCommand (Any editor, const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
-	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter));
+	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter));
 GuiObject Editor_addCommandScript (Any editor, const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
 	const wchar_t *script);
 void Editor_setMenuSensitive (Any editor, const wchar_t *menu, int sensitive);
@@ -186,10 +189,6 @@ int Editor_init (Editor me, GuiObject parent, int x, int y , int width, int heig
 */
 
 void Editor_save (Editor me, const wchar_t *text);   /* For Undo. */
-
-UiForm UiForm_createE (EditorCommand cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
-int UiForm_parseStringE (EditorCommand cmd, const wchar_t *arguments, Interpreter *interpreter);
-UiForm UiOutfile_createE (EditorCommand cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
 
 EditorCommand Editor_getMenuCommand (Editor me, const wchar_t *menuTitle, const wchar_t *itemTitle);
 int Editor_doMenuCommand (Editor me, const wchar_t *command, const wchar_t *arguments, Interpreter *interpreter);

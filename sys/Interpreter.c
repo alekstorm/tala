@@ -45,7 +45,7 @@
  * pb 2008/05/01 arrays
  * pb 2008/05/15 praatVersion, praatVersion$
  * pb 2009/01/04 Interpreter_voidExpression
- * pb 2009/01/17 arguments to UiForm callbacks
+ * pb 2009/01/17 arguments to UiForm *callbacks
  * pb 2009/01/20 pause forms
  * pb 2009/03/17 split up structPraat
  * pb 2009/12/22 invokingButtonTitle
@@ -288,10 +288,10 @@ int Interpreter::readParameters (wchar_t *text) {
 	return npar;
 }
 
-Any Interpreter::createForm (GuiObject parent, const wchar_t *path, int (*okCallback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *), void *okClosure) {
-	Any form = UiForm_create (parent, _dialogTitle [0] ? _dialogTitle : L"Script arguments", okCallback, okClosure, NULL, NULL);
-	Any radio = NULL;
-	if (path) UiForm_addText (form, L"$file", path);
+UiForm * Interpreter::createForm (GuiObject parent, const wchar_t *path, int (*okCallback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *), void *okClosure) {
+	UiForm *form = new UiForm (parent, _dialogTitle [0] ? _dialogTitle : L"Script arguments", okCallback, okClosure, NULL, NULL);
+	UiForm::UiField *radio = NULL;
+	if (path) form->addText (L"$file", path);
 	for (int ipar = 1; ipar <= _numberOfParameters; ipar ++) {
 		/*
 		 * Convert underscores to spaces.
@@ -301,35 +301,35 @@ Any Interpreter::createForm (GuiObject parent, const wchar_t *path, int (*okCall
 		while (*p) { if (*p == '_') *p = ' '; p ++; }
 		switch (_types [ipar]) {
 			case Interpreter_WORD:
-				UiForm_addWord (form, parameter, _arguments [ipar]); break;
+				form->addWord (parameter, _arguments [ipar]); break;
 			case Interpreter_REAL:
-				UiForm_addReal (form, parameter, _arguments [ipar]); break;
+				form->addReal (parameter, _arguments [ipar]); break;
 			case Interpreter_POSITIVE:
-				UiForm_addPositive (form, parameter, _arguments [ipar]); break;
+				form->addPositive (parameter, _arguments [ipar]); break;
 			case Interpreter_INTEGER:
-				UiForm_addInteger (form, parameter, _arguments [ipar]); break;
+				form->addInteger (parameter, _arguments [ipar]); break;
 			case Interpreter_NATURAL:
-				UiForm_addNatural (form, parameter, _arguments [ipar]); break;
+				form->addNatural (parameter, _arguments [ipar]); break;
 			case Interpreter_BOOLEAN:
-				UiForm_addBoolean (form, parameter, _arguments [ipar] [0] == '1' ||
+				form->addBoolean (parameter, _arguments [ipar] [0] == '1' ||
 					_arguments [ipar] [0] == 'y' || _arguments [ipar] [0] == 'Y' ||
 					(_arguments [ipar] [0] == 'o' && _arguments [ipar] [1] == 'n')); break;
 			case Interpreter_SENTENCE:
-				UiForm_addSentence (form, parameter, _arguments [ipar]); break;
+				form->addSentence (parameter, _arguments [ipar]); break;
 			case Interpreter_TEXT:
-				UiForm_addText (form, parameter, _arguments [ipar]); break;
+				form->addText (parameter, _arguments [ipar]); break;
 			case Interpreter_CHOICE:
-				radio = UiForm_addRadio (form, parameter, wcstol (_arguments [ipar], NULL, 10)); break;
+				radio = form->addRadio (parameter, wcstol (_arguments [ipar], NULL, 10)); break;
 			case Interpreter_OPTIONMENU:
-				radio = UiForm_addOptionMenu (form, parameter, wcstol (_arguments [ipar], NULL, 10)); break;
+				radio = form->addOptionMenu (parameter, wcstol (_arguments [ipar], NULL, 10)); break;
 			case Interpreter_BUTTON:
-				if (radio) UiRadio_addButton (radio, _arguments [ipar]); break;
+				if (radio) radio->addRadio (_arguments [ipar]); break;
 			case Interpreter_OPTION:
-				if (radio) UiOptionMenu_addButton (radio, _arguments [ipar]); break;
+				if (radio) radio->addRadio (_arguments [ipar]); break;
 			case Interpreter_COMMENT:
-				UiForm_addLabel (form, parameter, _arguments [ipar]); break;
+				form->addLabel (parameter, _arguments [ipar]); break;
 			default:
-				UiForm_addWord (form, parameter, _arguments [ipar]); break;
+				form->addWord (parameter, _arguments [ipar]); break;
 		}
 		/*
 		 * Strip parentheses and colon off parameter name.
@@ -341,11 +341,11 @@ Any Interpreter::createForm (GuiObject parent, const wchar_t *path, int (*okCall
 		p = _parameters [ipar];
 		if (*p != '\0' && p [wcslen (p) - 1] == ':') p [wcslen (p) - 1] = '\0';
 	}
-	UiForm_finish (form);
+	form->finish ();
 	return form;
 }
 
-int Interpreter::getArgumentsFromDialog (Any dialog) {
+int Interpreter::getArgumentsFromDialog (UiForm *dialog) {
 	for (int ipar = 1; ipar <= _numberOfParameters; ipar ++) {
 		wchar_t parameter [100], *p;
 		/*
@@ -365,7 +365,7 @@ int Interpreter::getArgumentsFromDialog (Any dialog) {
 		switch (_types [ipar]) {
 			case Interpreter_REAL:
 			case Interpreter_POSITIVE: {
-				double value = UiForm_getReal_check (dialog, parameter); cherror
+				double value = dialog->getReal_check (parameter); cherror
 				Melder_free (_arguments [ipar]);
 				_arguments [ipar] = Melder_calloc_f (wchar_t, 40);
 				wcscpy (_arguments [ipar], Melder_double (value));
@@ -374,7 +374,7 @@ int Interpreter::getArgumentsFromDialog (Any dialog) {
 			case Interpreter_INTEGER:
 			case Interpreter_NATURAL:
 			case Interpreter_BOOLEAN: {
-				long value = UiForm_getInteger (dialog, parameter); cherror
+				long value = dialog->getInteger (parameter); cherror
 				Melder_free (_arguments [ipar]);
 				_arguments [ipar] = Melder_calloc_f (wchar_t, 40);
 				swprintf (_arguments [ipar], 40, L"%ld", value);
@@ -384,8 +384,8 @@ int Interpreter::getArgumentsFromDialog (Any dialog) {
 			case Interpreter_OPTIONMENU: {
 				long integerValue = 0;
 				wchar_t *stringValue = NULL;
-				integerValue = UiForm_getInteger (dialog, parameter); cherror
-				stringValue = UiForm_getString (dialog, parameter); cherror
+				integerValue = dialog->getInteger (parameter); cherror
+				stringValue = dialog->getString (parameter); cherror
 				Melder_free (_arguments [ipar]);
 				_arguments [ipar] = Melder_calloc_f (wchar_t, 40);
 				swprintf (_arguments [ipar], 40, L"%ld", integerValue);
@@ -397,7 +397,7 @@ int Interpreter::getArgumentsFromDialog (Any dialog) {
 			case Interpreter_COMMENT:
 				break;
 			default: {
-				wchar_t *value = UiForm_getString (dialog, parameter); cherror
+				wchar_t *value = dialog->getString (parameter); cherror
 				Melder_free (_arguments [ipar]);
 				_arguments [ipar] = Melder_wcsdup_f (value);
 				break;

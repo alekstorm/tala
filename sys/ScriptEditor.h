@@ -44,7 +44,7 @@ Thing_declare1 (ScriptEditor);
 	wchar_t *environmentName; \
 	Editor_Table editorClass; \
 	Interpreter *interpreter; \
-	Any argsDialog;
+	UiForm *argsDialog;
 #define ScriptEditor__methods(Klas) TextEditor__methods(Klas)
 Thing_declare2 (ScriptEditor, TextEditor);
 

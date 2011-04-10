@@ -1,8 +1,8 @@
-#ifndef _Ui_decl_h_
-#define _Ui_decl_h_
-/* Ui_decl.h
+#ifndef _UiHistory_h_
+#define _UiHistory_h_
+/* UiHistory.h
  *
- * Copyright (C) 1992-2009 Paul Boersma
+ * Copyright (C) 1992-2011 Alek Storm
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/*
- * pb 2009/01/18
- */
+class UiHistory {
+  public:
+	void write (const wchar_t *string) { MelderString_append (& _contents, string); }
+	wchar_t *get (void) { return _contents.string; }
+	void clear (void) { MelderString_empty (& _contents); }
 
-typedef struct structUiForm *UiForm;
-
+  private:
+	MelderString _contents;
+};
 #endif
-/* End of file Ui_decl.h */

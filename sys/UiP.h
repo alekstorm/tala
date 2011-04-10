@@ -25,9 +25,7 @@
  * Private stuff for communication between Ui.c and UiFile.c.
  */
 
-#ifndef _Ui_h_
-	#include "Ui.h"
-#endif
+#include "UiForm.h"
 
 #ifdef __cplusplus
 	extern "C" {

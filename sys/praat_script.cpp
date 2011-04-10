@@ -32,7 +32,7 @@
  * pb 2007/06/11 wchar_t
  * pb 2007/10/04 removed swscanf
  * pb 2009/01/04 allow proc(args) syntax
- * pb 2009/01/17 arguments to UiForm callbacks
+ * pb 2009/01/17 arguments to UiForm *callbacks
  * pb 2009/01/20 pause uses a pause form
  * pb 2011/03/20 C++
  * pb 2011/03/24 command no longer const
@@ -45,6 +45,7 @@
 #include "sendsocket.h"
 #include "UiPause.h"
 #include "DemoEditor.h"
+#include "UiFile.h"
 
 static int praat_findObjectFromString (Interpreter *interpreter, const wchar_t *string) {
 	int IOBJECT;
@@ -441,13 +442,13 @@ int praat_executeScriptFromText (wchar_t *text) {
 	return 1;
 }
 
-int praat_executeScriptFromDialog (Any dia) {
+int praat_executeScriptFromDialog (UiForm *dia) {
 	Interpreter *interpreter = NULL;
 	wchar_t *text = NULL;
 	structMelderDir saveDir = { { 0 } };
 	Melder_getDefaultDir (& saveDir);
 //start:
-	wchar_t *path = UiForm_getString (dia, L"$file");
+	wchar_t *path = dia->getString (L"$file");
 	structMelderFile file = { 0 };
 	Melder_pathToFile (path, & file); cherror
 	text = MelderFile_readText (& file); cherror
@@ -470,7 +471,7 @@ end:
 	return 1;
 }
 
-static int secondPassThroughScript (UiForm sendingForm, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int secondPassThroughScript (UiForm *sendingForm, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	(void) sendingString_dummy;
 	(void) interpreter_dummy;
 	(void) invokingButtonTitle;
@@ -493,11 +494,10 @@ static int firstPassThroughScript (MelderFile file) {
 		Editor editor = (Editor)praatP.editor;
 		interpreter = new Interpreter (editor->name, editor->methods); cherror
 		if (interpreter->readParameters (text) > 0) {
-			Any form = interpreter->createForm (
+			UiForm *form = interpreter->createForm (
 				praatP.editor ? ((Editor) praatP.editor) -> dialog : theCurrentPraatApplication -> topShell,
 				Melder_fileToPath (file), secondPassThroughScript, NULL);
-			UiForm_destroyWhenUnmanaged (form);
-			UiForm_do (form, false);
+			form->do_ (false);
 		} else {
 			praat_background ();
 			praat_executeScriptFromFile (file, NULL);
@@ -512,20 +512,20 @@ end:
 	return 1;
 }
 
-static int fileSelectorOkCallback (UiForm dia, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int fileSelectorOkCallback (UiForm *dia, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	(void) sendingString_dummy;
 	(void) interpreter_dummy;
 	(void) invokingButtonTitle;
 	(void) modified;
 	(void) dummy;
-	return firstPassThroughScript (UiFile_getFile (dia));
+	return firstPassThroughScript (((UiFile*)dia)->getFile ());
 }
 
 /*
  * DO_praat_runScript () is the command callback for "Run script...", which is a bit obsolete command,
  * hidden in the Praat menu, and otherwise replaced by "execute".
  */
-int DO_praat_runScript (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+int DO_praat_runScript (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	(void) interpreter_dummy;
 	(void) modified;
 	(void) dummy;
@@ -533,10 +533,10 @@ int DO_praat_runScript (UiForm sendingForm, const wchar_t *sendingString, Interp
 		/*
 		 * User clicked the "Run script..." button in the Praat menu.
 		 */
-		static Any file_dialog;
+		static UiInfile *file_dialog;
 		if (! file_dialog)
-			file_dialog = UiInfile_create (theCurrentPraatApplication -> topShell, L"Praat: run script", fileSelectorOkCallback, NULL, invokingButtonTitle, NULL, false);
-		UiInfile_do (file_dialog);
+			file_dialog = new UiInfile (theCurrentPraatApplication -> topShell, L"Praat: run script", fileSelectorOkCallback, NULL, invokingButtonTitle, NULL, false);
+		file_dialog->do_ ();
 	} else {
 		/*
 		 * A script called "Run script..."
@@ -546,7 +546,7 @@ int DO_praat_runScript (UiForm sendingForm, const wchar_t *sendingString, Interp
 	return 1;
 }
 
-int DO_RunTheScriptFromAnyAddedMenuCommand (UiForm sendingForm_dummy, const wchar_t *scriptPath, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+int DO_RunTheScriptFromAnyAddedMenuCommand (UiForm *sendingForm_dummy, const wchar_t *scriptPath, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	structMelderFile file = { 0 };
 	(void) sendingForm_dummy;
 	(void) interpreter;

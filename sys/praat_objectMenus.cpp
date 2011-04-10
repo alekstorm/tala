@@ -43,6 +43,7 @@
 #include "ButtonEditor.h"
 #include "DataEditor.h"
 #include "site.h"
+#include "UiFile.h"
 
 #define EDITOR  theCurrentPraatObjects -> list [IOBJECT]. editors
 

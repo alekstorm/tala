@@ -213,8 +213,8 @@ static int goToPage (ButtonEditor me, const wchar_t *title) {
 			praat_Command action = praat_getAction (i);
 			if (! action || ! action -> callback) return 0;
 			if (action -> title) {
-				UiHistory_write (L"\n");
-				UiHistory_write (action -> title);
+				UiForm::history.write (L"\n");
+				UiForm::history.write (action -> title);
 			}
 			if (action -> script) {
 				if (! DO_RunTheScriptFromAnyAddedMenuCommand (NULL, action -> script, NULL, NULL, false, NULL)) Melder_flushError ("Command not executed.");
@@ -228,8 +228,8 @@ static int goToPage (ButtonEditor me, const wchar_t *title) {
 			praat_Command menuCommand = praat_getMenuCommand (i);
 			if (! menuCommand || ! menuCommand -> callback) return 0;
 			if (menuCommand -> title) {
-				UiHistory_write (L"\n");
-				UiHistory_write (menuCommand -> title);
+				UiForm::history.write (L"\n");
+				UiForm::history.write (menuCommand -> title);
 			}
 			if (menuCommand -> script) {
 				if (! DO_RunTheScriptFromAnyAddedMenuCommand (NULL, menuCommand -> script, NULL, NULL, false, NULL)) Melder_flushError ("Command not executed.");

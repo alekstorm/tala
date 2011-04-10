@@ -28,7 +28,7 @@
  * pb 2007/12/05 enums
  * pb 2008/03/20 split off Help menu
  * sdk 2008/03/24 GTK
- * pb 2009/01/18 arguments to UiForm callbacks
+ * pb 2009/01/18 arguments to UiForm *callbacks
  * pb 2009/08/19 allow editor windows without menu bar (requested by DemoEditor)
  * fb 2010/02/23 GTK
  * pb 2010/07/29 removed GuiWindow_show
@@ -108,14 +108,14 @@ static void commonCallback (GUI_ARGS) {
 		}
 	#endif
 	if (my editor && ((Editor) my editor) -> methods -> scriptable && ! wcsstr (my itemTitle, L"...")) {
-		UiHistory_write (L"\n");
-		UiHistory_write (my itemTitle);
+		UiForm::history.write (L"\n");
+		UiForm::history.write (my itemTitle);
 	}
 	if (! my commandCallback (my editor, me, NULL, NULL, NULL)) Melder_flushError (NULL);
 }
 
 GuiObject EditorMenu_addCommand (EditorMenu menu, const wchar_t *itemTitle, long flags,
-	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter))
+	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter))
 {
 	EditorCommand me = Thing_new (EditorCommand);
 	my editor = menu -> editor;
@@ -145,7 +145,7 @@ EditorMenu Editor_addMenu (Any editor, const wchar_t *menuTitle, long flags) {
 /*GuiObject EditorMenu_getMenuWidget (EditorMenu me) { return my menuWidget; }*/
 
 GuiObject Editor_addCommand (Any editor, const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
-	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter))
+	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter))
 {
 	Editor me = (Editor) editor;
 	int numberOfMenus = my menus -> size, imenu;
@@ -158,7 +158,7 @@ GuiObject Editor_addCommand (Any editor, const wchar_t *menuTitle, const wchar_t
 	return NULL;
 }
 
-static int Editor_scriptCallback (I, EditorCommand cmd, UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
+static int Editor_scriptCallback (I, EditorCommand cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
 	iam (Editor);
 	(void) sendingForm;
 	(void) sendingString;
@@ -427,7 +427,7 @@ static void classEditor_do_pictureWindow (Editor me, EditorCommand cmd) {
 
 static void classEditor_form_pictureMargins (Editor me, EditorCommand cmd) {
 	(void) me;
-	Any radio = 0;
+	UiForm::UiField *radio = NULL;
 	LABEL (L"", L"Margins:")
 	OPTIONMENU_ENUM (L"Write name at top", kEditor_writeNameAtTop, DEFAULT);
 }

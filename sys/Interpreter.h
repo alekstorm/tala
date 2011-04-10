@@ -29,7 +29,6 @@
 #ifndef _Gui_h_
 	#include "Gui.h"
 #endif
-#include "Ui_decl.h"
 #ifndef _Formula_h_
 	#include "Formula.h"
 #endif
@@ -49,15 +48,16 @@ class InterpreterVariable {
 #define Interpreter_MAXNUM_LABELS  1000
 #define Interpreter_MAX_CALL_DEPTH  50
 
+class UiForm;
+
 class Interpreter { // : protected Thing
   public:
 	Interpreter (wchar_t *environmentName, Any editorClass);
 	~Interpreter();
 
 	int readParameters (wchar_t *text);
-	Any createForm (GuiObject parent, const wchar_t *fileName,
-		int (*okCallback) (UiForm sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure);
-	int getArgumentsFromDialog (Any dialog);
+	UiForm * createForm (GuiObject parent, const wchar_t *fileName, int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure);
+	int getArgumentsFromDialog (UiForm *dialog);
 	int getArgumentsFromString (const wchar_t *arguments);
 	int run (wchar_t *text);   /* Destroys 'text'. */
 	void stop ();   // Can be called from any procedure called deep-down by the interpreter. Will stop before next line.

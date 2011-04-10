@@ -41,7 +41,7 @@
 
 #include "Printer.h"
 #include "praat.h"   /* topShell */
-#include "Ui.h"
+#include "UiForm.h"
 #include "site.h"
 
 /*
@@ -237,7 +237,7 @@ int Printer_pageSetup (void) {
 	return 1;
 }
 
-static int DO_Printer_postScriptSettings (UiForm dia, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
+static int DO_Printer_postScriptSettings (UiForm *dia, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified, void *dummy) {
 	(void) sendingString_dummy;
 	(void) interpreter_dummy;
 	(void) invokingButtonTitle;
@@ -271,10 +271,10 @@ static int DO_Printer_postScriptSettings (UiForm dia, const wchar_t *sendingStri
 }
 
 int Printer_postScriptSettings (void) {
-	static Any dia;
+	static UiForm *dia;
 	if (dia == NULL) {
-		Any radio;
-		dia = UiForm_create (theCurrentPraatApplication -> topShell, L"PostScript settings", DO_Printer_postScriptSettings, NULL, L"PostScript settings...", L"PostScript settings...");
+		UiForm::UiField *radio;
+		dia = new UiForm (theCurrentPraatApplication -> topShell, L"PostScript settings", DO_Printer_postScriptSettings, NULL, L"PostScript settings...", L"PostScript settings...");
 		#if defined (_WIN32) || defined (macintosh)
 			BOOLEAN (L"Allow direct PostScript", TRUE);
 		#endif
@@ -294,7 +294,7 @@ int Printer_postScriptSettings (void) {
 		#if defined (macintosh)
 			BOOLEAN (L"EPS files include preview", TRUE);
 		#endif
-		UiForm_finish (dia);
+		dia->finish ();
 	}
 	#if defined (_WIN32) || defined (macintosh)
 		SET_INTEGER (L"Allow direct PostScript", thePrinter. allowDirectPostScript);
@@ -310,7 +310,7 @@ int Printer_postScriptSettings (void) {
 	#if defined (macintosh)
 		SET_INTEGER (L"EPS files include preview", thePrinter. epsFilesHavePreview);
 	#endif
-	UiForm_do (dia, false);
+	dia->do_ (false);
 	return 1;
 }
 

@@ -44,6 +44,11 @@ static struct structPraat_Command *theActions;
 static GuiObject praat_writeMenuTitle, praat_writeMenu, praat_writeMenuSeparator;
 static GuiObject praat_dynamicMenu, praat_dynamicMenuWindow;
 
+void Ui_setAllowExecutionHook (int (*allowExecutionHook) (void *closure), void *allowExecutionClosure) {
+	UiForm::theAllowExecutionHookHint = allowExecutionHook;
+	UiForm::theAllowExecutionClosureHint = allowExecutionClosure;
+}
+
 static void fixSelectionSpecification (void **class1, int *n1, void **class2, int *n2, void **class3, int *n3) {
 /*
  * Function:
@@ -96,23 +101,23 @@ static int lookUpMatchingAction (void *class1, void *class2, void *class3, void 
 }
 
 void praat_addAction (void *class1, int n1, void *class2, int n2, void *class3, int n3,
-	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
+	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
 { praat_addAction4 (class1, n1, class2, n2, class3, n3, NULL, 0, title, after, flags, callback); }
 
 void praat_addAction1 (void *class1, int n1,
-	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
+	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
 { praat_addAction4 (class1, n1, NULL, 0, NULL, 0, NULL, 0, title, after, flags, callback); }
 
 void praat_addAction2 (void *class1, int n1, void *class2, int n2,
-	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
+	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
 { praat_addAction4 (class1, n1, class2, n2, NULL, 0, NULL, 0, title, after, flags, callback); }
 
 void praat_addAction3 (void *class1, int n1, void *class2, int n2, void *class3, int n3,
-	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
+	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
 { praat_addAction4 (class1, n1, class2, n2, class3, n3, NULL, 0, title, after, flags, callback); }
 
 void praat_addAction4 (void *class1, int n1, void *class2, int n2, void *class3, int n3, void *class4, int n4,
-	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
+	const wchar_t *title, const wchar_t *after, unsigned long flags, int (*callback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *))
 {
 	int i, position;
 	int depth = flags, unhidable = FALSE, hidden = FALSE, key = 0, attractive = 0;
@@ -426,7 +431,7 @@ static const wchar_t *objectString (int number) {
 	return number == 1 ? L"object" : L"objects";
 }
 static int allowExecutionHook (void *closure) {
-	int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *) = (int (*) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *)) closure;
+	int (*callback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *) = (int (*) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *)) closure;
 	Melder_assert (sizeof (callback) == sizeof (void *));
 	long numberOfMatchingCallbacks = 0, firstMatchingCallback = 0;
 	for (long i = 1; i <= theNumberOfActions; i ++) {
@@ -465,13 +470,13 @@ static void do_menu (I, bool modified) {
  *	Call that callback!
  *	Catch the error queue for menu commands without dots (...).
  */
-	int (*callback) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *) = (int (*) (UiForm, const wchar_t *, Interpreter *, const wchar_t *, bool, void *)) void_me;
+	int (*callback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *) = (int (*) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *)) void_me;
 	for (long i = 1; i <= theNumberOfActions; i ++) {
 		praat_Command me = & theActions [i];
 		if (my callback == callback) {
 			if (my title != NULL && ! wcsstr (my title, L"...")) {
-				UiHistory_write (L"\n");
-				UiHistory_write (my title);
+				UiForm::history.write (L"\n");
+				UiForm::history.write (my title);
 			}
 			Ui_setAllowExecutionHook (allowExecutionHook, (void *) callback);   // BUG: one shouldn't assign a function pointer to a void pointer
 			if (! callback (NULL, NULL, NULL, my title, modified, NULL))
@@ -481,12 +486,12 @@ static void do_menu (I, bool modified) {
 		}
 		if (my callback == DO_RunTheScriptFromAnyAddedMenuCommand && my script == (void *) void_me) {
 			if (my title != NULL && ! wcsstr (my title, L"...")) {
-				UiHistory_write (L"\nexecute ");
-				UiHistory_write (my script);
+				UiForm::history.write (L"\nexecute ");
+				UiForm::history.write (my script);
 			} else {
-				UiHistory_write (L"\nexecute \"");
-				UiHistory_write (my script);
-				UiHistory_write (L"\"");
+				UiForm::history.write (L"\nexecute \"");
+				UiForm::history.write (my script);
+				UiForm::history.write (L"\"");
 			}
 			if (! DO_RunTheScriptFromAnyAddedMenuCommand (NULL, my script, NULL, NULL, false, NULL))
 				Melder_flushError ("Script not executed.");

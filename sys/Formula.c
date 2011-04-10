@@ -72,7 +72,7 @@
 #include "regularExp.h"
 #include "Formula.h"
 #include "Interpreter.h"
-#include "Ui.h"
+#include "UiForm.h"
 #include "praatP.h"
 #include "UnicodeData.h"
 #include "UiPause.h"
