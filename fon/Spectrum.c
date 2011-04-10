@@ -208,21 +208,23 @@ Table Spectrum_downto_Table (Spectrum me, bool includeBinNumbers, bool includeFr
 {
 	Table thee = Table_createWithoutColumnNames (my nx,
 		includeBinNumbers + includeFrequency + includeRealPart + includeImaginaryPart + includeEnergyDensity + includePowerDensity); cherror
-	long icol = 0;
-	if (includeBinNumbers) { Table_setColumnLabel (thee, ++ icol, L"bin"); cherror }
-	if (includeFrequency) { Table_setColumnLabel (thee, ++ icol, L"freq(Hz)"); cherror }
-	if (includeRealPart) { Table_setColumnLabel (thee, ++ icol, L"re(Pa/Hz)"); cherror }
-	if (includeImaginaryPart) { Table_setColumnLabel (thee, ++ icol, L"im(Pa/Hz)"); cherror }
-	if (includeEnergyDensity) { Table_setColumnLabel (thee, ++ icol, L"energy(Pa^2/Hz^2)"); cherror }
-	if (includePowerDensity) { Table_setColumnLabel (thee, ++ icol, L"pow(dB/Hz)"); cherror }
-	for (long ibin = 1; ibin <= my nx; ibin ++) {
-		icol = 0;
-		if (includeBinNumbers) { Table_setNumericValue (thee, ibin, ++ icol, ibin); cherror }
-		if (includeFrequency) { Table_setNumericValue (thee, ibin, ++ icol, my x1 + (ibin - 1) * my dx); cherror }
-		if (includeRealPart) { Table_setNumericValue (thee, ibin, ++ icol, my z [1] [ibin]); cherror }
-		if (includeImaginaryPart) { Table_setNumericValue (thee, ibin, ++ icol, my z [2] [ibin]); cherror }
-		if (includeEnergyDensity) { Table_setNumericValue (thee, ibin, ++ icol, Sampled_getValueAtSample (me, ibin, 0, 1)); cherror }
-		if (includePowerDensity) { Table_setNumericValue (thee, ibin, ++ icol, Sampled_getValueAtSample (me, ibin, 0, 2)); cherror }
+	{
+		long icol = 0;
+		if (includeBinNumbers) { Table_setColumnLabel (thee, ++ icol, L"bin"); cherror }
+		if (includeFrequency) { Table_setColumnLabel (thee, ++ icol, L"freq(Hz)"); cherror }
+		if (includeRealPart) { Table_setColumnLabel (thee, ++ icol, L"re(Pa/Hz)"); cherror }
+		if (includeImaginaryPart) { Table_setColumnLabel (thee, ++ icol, L"im(Pa/Hz)"); cherror }
+		if (includeEnergyDensity) { Table_setColumnLabel (thee, ++ icol, L"energy(Pa^2/Hz^2)"); cherror }
+		if (includePowerDensity) { Table_setColumnLabel (thee, ++ icol, L"pow(dB/Hz)"); cherror }
+		for (long ibin = 1; ibin <= my nx; ibin ++) {
+			icol = 0;
+			if (includeBinNumbers) { Table_setNumericValue (thee, ibin, ++ icol, ibin); cherror }
+			if (includeFrequency) { Table_setNumericValue (thee, ibin, ++ icol, my x1 + (ibin - 1) * my dx); cherror }
+			if (includeRealPart) { Table_setNumericValue (thee, ibin, ++ icol, my z [1] [ibin]); cherror }
+			if (includeImaginaryPart) { Table_setNumericValue (thee, ibin, ++ icol, my z [2] [ibin]); cherror }
+			if (includeEnergyDensity) { Table_setNumericValue (thee, ibin, ++ icol, Sampled_getValueAtSample (me, ibin, 0, 1)); cherror }
+			if (includePowerDensity) { Table_setNumericValue (thee, ibin, ++ icol, Sampled_getValueAtSample (me, ibin, 0, 2)); cherror }
+		}
 	}
 end:
 	iferror forget (thee);
@@ -243,14 +245,14 @@ end:
 Spectrum Matrix_to_Spectrum (Matrix me) {
 	Spectrum thee = NULL;
 	if (my ny != 2)
-		return Melder_errorp ("(Matrix_to_Spectrum:) Matrix must have exactly 2 rows.");
-	if (! (thee = Data_copy (me))) return NULL;
+		return (structSpectrum *)Melder_errorp ("(Matrix_to_Spectrum:) Matrix must have exactly 2 rows.");
+	if (! (thee = (structSpectrum *)Data_copy (me))) return NULL;
 	Thing_overrideClass (thee, classSpectrum);
 	return thee;
 }
 
 Matrix Spectrum_to_Matrix (Spectrum me) {
-	Matrix thee = Data_copy (me);
+	Matrix thee = (structMatrix *)Data_copy (me);
 	if (! thee) return NULL;
 	Thing_overrideClass (thee, classMatrix);
 	return thee;
@@ -266,7 +268,7 @@ Spectrum Spectrum_cepstralSmoothing (Spectrum me, double bandWidth) {
 	/*
 	 * dB-spectrum is log (power).
 	 */
-	if (! (dBspectrum = Data_copy (me))) goto cleanUp;
+	if (! (dBspectrum = (structSpectrum *)Data_copy (me))) goto cleanUp;
 	re = dBspectrum -> z [1], im = dBspectrum -> z [2];
 	for (i = 1; i <= dBspectrum -> nx; i ++)
 		{ re [i] = log (re [i] * re [i] + im [i] * im [i] + 1e-300); im [i] = 0; }

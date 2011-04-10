@@ -413,7 +413,7 @@ Matrix Formant_to_Matrix_bandwidths (Formant me, int iformant) {
 struct fparm { Formant me, thee; double dfCost, bfCost, octaveJumpCost, refF [1 + 5]; };
 
 static double getLocalCost (long iframe, long icand, int itrack, void *closure) {
-	struct fparm *me = closure;
+	struct fparm *me = (fparm *)closure;
 	Formant_Frame frame = & my my frame [iframe];
 	Formant_Formant candidate;
 	if (icand > frame -> nFormants) return 1e30;
@@ -426,7 +426,7 @@ static double getLocalCost (long iframe, long icand, int itrack, void *closure) 
 		my bfCost * candidate -> bandwidth / candidate -> frequency;
 }
 static double getTransitionCost (long iframe, long icand1, long icand2, int itrack, void *closure) {
-	struct fparm *me = closure;
+	struct fparm *me = (fparm *)closure;
 	Formant_Frame prevFrame = & my my frame [iframe - 1], curFrame = & my my frame [iframe];
 	double f1, f2;
 	(void) itrack;
@@ -438,7 +438,7 @@ static double getTransitionCost (long iframe, long icand1, long icand2, int itra
 	return my octaveJumpCost * fabs (NUMlog2 (f1 / f2));
 }
 static void putResult (long iframe, long place, int itrack, void *closure) {
-	struct fparm *me = closure;
+	struct fparm *me = (fparm *)closure;
 	Melder_assert (iframe > 0 && iframe <= my my nx);
 	Melder_assert (itrack > 0 && itrack <= 5);
 	Melder_assert (place > 0);
@@ -454,7 +454,7 @@ Formant Formant_tracker (Formant me, int ntrack,
 	Formant thee;
 	long iframe, nformmin = Formant_getMinNumFormants (me);
 	struct fparm parm;
-	if (ntrack > nformmin) return Melder_errorp ("(Formant_tracker:) "
+	if (ntrack > nformmin) return (structFormant *)Melder_errorp ("(Formant_tracker:) "
 		"Number of tracks (%d) should not exceed minimum number of formants (%ld)", ntrack, nformmin);
 	if (! (thee = Formant_create (my xmin, my xmax, my nx, my dx, my x1, ntrack))) return NULL;
 	for (iframe = 1; iframe <= thy nx; iframe ++) {
@@ -486,36 +486,38 @@ Table Formant_downto_Table (Formant me, bool includeFrameNumbers,
 {
 	Table thee = Table_createWithoutColumnNames (my nx, includeFrameNumbers + includeTimes + includeIntensity +
 		includeNumberOfFormants + my maxnFormants * (1 + includeBandwidths)); cherror
-	long icol = 0;
-	if (includeFrameNumbers) { Table_setColumnLabel (thee, ++ icol, L"frame"); cherror }
-	if (includeTimes) { Table_setColumnLabel (thee, ++ icol, L"time(s)"); cherror }
-	if (includeIntensity) { Table_setColumnLabel (thee, ++ icol, L"intensity"); cherror }
-	if (includeNumberOfFormants) { Table_setColumnLabel (thee, ++ icol, L"nformants"); cherror }
-	for (long iformant = 1; iformant <= my maxnFormants; iformant ++) {
-		Table_setColumnLabel (thee, ++ icol, Melder_wcscat3 (L"F", Melder_integer (iformant), L"(Hz)")); cherror
-		if (includeBandwidths) { Table_setColumnLabel (thee, ++ icol, Melder_wcscat3 (L"B", Melder_integer (iformant), L"(Hz)")); cherror }
-	}
-	for (long iframe = 1; iframe <= my nx; iframe ++) {
-		icol = 0;
-		if (includeFrameNumbers) { Table_setNumericValue (thee, iframe, ++ icol,
-			iframe); cherror }
-		if (includeTimes) { Table_setStringValue (thee, iframe, ++ icol,
-			Melder_fixed (my x1 + (iframe - 1) * my dx, timeDecimals)); cherror }
-		Formant_Frame frame = & my frame [iframe];
-		if (includeIntensity) { Table_setStringValue (thee, iframe, ++ icol,
-			Melder_fixed (frame -> intensity, intensityDecimals)); cherror }
-		if (includeNumberOfFormants) { Table_setNumericValue (thee, iframe, ++ icol,
-			frame -> nFormants); cherror }
-		for (long iformant = 1; iformant <= frame -> nFormants; iformant ++) {
-			Formant_Formant formant = & frame -> formant [iformant];
-			Table_setStringValue (thee, iframe, ++ icol,
-				Melder_fixed (formant -> frequency, frequencyDecimals)); cherror
-			if (includeBandwidths) { Table_setStringValue (thee, iframe, ++ icol,
-				Melder_fixed (formant -> bandwidth, frequencyDecimals)); cherror }
+	{
+		long icol = 0;
+		if (includeFrameNumbers) { Table_setColumnLabel (thee, ++ icol, L"frame"); cherror }
+		if (includeTimes) { Table_setColumnLabel (thee, ++ icol, L"time(s)"); cherror }
+		if (includeIntensity) { Table_setColumnLabel (thee, ++ icol, L"intensity"); cherror }
+		if (includeNumberOfFormants) { Table_setColumnLabel (thee, ++ icol, L"nformants"); cherror }
+		for (long iformant = 1; iformant <= my maxnFormants; iformant ++) {
+			Table_setColumnLabel (thee, ++ icol, Melder_wcscat3 (L"F", Melder_integer (iformant), L"(Hz)")); cherror
+			if (includeBandwidths) { Table_setColumnLabel (thee, ++ icol, Melder_wcscat3 (L"B", Melder_integer (iformant), L"(Hz)")); cherror }
 		}
-		for (long iformant = frame -> nFormants + 1; iformant <= my maxnFormants; iformant ++) {
-			Table_setNumericValue (thee, iframe, ++ icol, NUMundefined); cherror
-			if (includeBandwidths) { Table_setNumericValue (thee, iframe, ++ icol, NUMundefined); cherror }
+		for (long iframe = 1; iframe <= my nx; iframe ++) {
+			icol = 0;
+			if (includeFrameNumbers) { Table_setNumericValue (thee, iframe, ++ icol,
+				iframe); cherror }
+			if (includeTimes) { Table_setStringValue (thee, iframe, ++ icol,
+				Melder_fixed (my x1 + (iframe - 1) * my dx, timeDecimals)); cherror }
+			Formant_Frame frame = & my frame [iframe];
+			if (includeIntensity) { Table_setStringValue (thee, iframe, ++ icol,
+				Melder_fixed (frame -> intensity, intensityDecimals)); cherror }
+			if (includeNumberOfFormants) { Table_setNumericValue (thee, iframe, ++ icol,
+				frame -> nFormants); cherror }
+			for (long iformant = 1; iformant <= frame -> nFormants; iformant ++) {
+				Formant_Formant formant = & frame -> formant [iformant];
+				Table_setStringValue (thee, iframe, ++ icol,
+					Melder_fixed (formant -> frequency, frequencyDecimals)); cherror
+				if (includeBandwidths) { Table_setStringValue (thee, iframe, ++ icol,
+					Melder_fixed (formant -> bandwidth, frequencyDecimals)); cherror }
+			}
+			for (long iformant = frame -> nFormants + 1; iformant <= my maxnFormants; iformant ++) {
+				Table_setNumericValue (thee, iframe, ++ icol, NUMundefined); cherror
+				if (includeBandwidths) { Table_setNumericValue (thee, iframe, ++ icol, NUMundefined); cherror }
+			}
 		}
 	}
 end:

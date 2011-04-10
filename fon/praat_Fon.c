@@ -133,11 +133,11 @@ static int getTminTmaxFminFmax (Any dia, double *tmin, double *tmax, double *fmi
 
 /***** Two auxiliary routines, exported. *****/
 
-int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
+extern "C" int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
 int praat_Fon_formula (UiForm dia, Interpreter *interpreter) {
 	int IOBJECT;
 	WHERE_DOWN (SELECTED) {
-		Matrix_formula (OBJECT, GET_STRING (L"formula"), interpreter, NULL);
+		Matrix_formula ((structMatrix *)OBJECT, GET_STRING (L"formula"), interpreter, NULL);
 		praat_dataChanged (OBJECT);
 		iferror return 0;
 	}
@@ -190,7 +190,7 @@ DIRECT (AmplitudeTier_downto_PointProcess)
 END
 
 DIRECT (AmplitudeTier_downto_TableOfReal)
-	EVERY_TO (AmplitudeTier_downto_TableOfReal (OBJECT))
+	EVERY_TO (AmplitudeTier_downto_TableOfReal ((structAmplitudeTier *)OBJECT))
 END
 
 DIRECT (AmplitudeTier_edit)
@@ -199,10 +199,10 @@ DIRECT (AmplitudeTier_edit)
 	} else {
 		Sound sound = NULL;
 		WHERE (SELECTED)
-			if (CLASS == classSound) sound = OBJECT;
+			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classAmplitudeTier)
 			if (! praat_installEditor (AmplitudeTierEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
-				OBJECT, sound, TRUE), IOBJECT)) return 0;
+				(structAmplitudeTier *)OBJECT, sound, TRUE), IOBJECT)) return 0;
 	}
 END
 
@@ -217,7 +217,7 @@ FORM (AmplitudeTier_formula, L"AmplitudeTier: Formula", L"AmplitudeTier: Formula
 	OK
 DO
 	WHERE_DOWN (SELECTED) {
-		RealTier_formula (OBJECT, GET_STRING (L"formula"), interpreter, NULL);
+		RealTier_formula ((structRealTier *)OBJECT, GET_STRING (L"formula"), interpreter, NULL);
 		praat_dataChanged (OBJECT);
 		iferror return 0;
 	}
@@ -233,7 +233,7 @@ FORM (AmplitudeTier_getShimmer_local, L"AmplitudeTier: Get shimmer (local)", L"A
 	dia_AmplitudeTier_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (AmplitudeTier_getShimmer_local (ONLY (classAmplitudeTier),
+	Melder_informationReal (AmplitudeTier_getShimmer_local ((structAmplitudeTier *)ONLY (classAmplitudeTier),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum amplitude factor")), NULL);
 END
 
@@ -241,7 +241,7 @@ FORM (AmplitudeTier_getShimmer_local_dB, L"AmplitudeTier: Get shimmer (local, dB
 	dia_AmplitudeTier_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (AmplitudeTier_getShimmer_local_dB (ONLY (classAmplitudeTier),
+	Melder_informationReal (AmplitudeTier_getShimmer_local_dB ((structAmplitudeTier *)ONLY (classAmplitudeTier),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum amplitude factor")), NULL);
 END
 
@@ -249,7 +249,7 @@ FORM (AmplitudeTier_getShimmer_apq3, L"AmplitudeTier: Get shimmer (apq3)", L"Amp
 	dia_AmplitudeTier_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (AmplitudeTier_getShimmer_apq3 (ONLY (classAmplitudeTier),
+	Melder_informationReal (AmplitudeTier_getShimmer_apq3 ((structAmplitudeTier *)ONLY (classAmplitudeTier),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum amplitude factor")), NULL);
 END
 
@@ -257,7 +257,7 @@ FORM (AmplitudeTier_getShimmer_apq5, L"AmplitudeTier: Get shimmer (apq5)", L"Amp
 	dia_AmplitudeTier_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (AmplitudeTier_getShimmer_apq5 (ONLY (classAmplitudeTier),
+	Melder_informationReal (AmplitudeTier_getShimmer_apq5 ((structAmplitudeTier *)ONLY (classAmplitudeTier),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum amplitude factor")), NULL);
 END
 
@@ -265,7 +265,7 @@ FORM (AmplitudeTier_getShimmer_apq11, L"AmplitudeTier: Get shimmer (apq11)", L"A
 	dia_AmplitudeTier_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (AmplitudeTier_getShimmer_apq11 (ONLY (classAmplitudeTier),
+	Melder_informationReal (AmplitudeTier_getShimmer_apq11 ((structAmplitudeTier *)ONLY (classAmplitudeTier),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum amplitude factor")), NULL);
 END
 
@@ -273,7 +273,7 @@ FORM (AmplitudeTier_getShimmer_dda, L"AmplitudeTier: Get shimmer (dda)", L"Ampli
 	dia_AmplitudeTier_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (AmplitudeTier_getShimmer_dda (ONLY (classAmplitudeTier),
+	Melder_informationReal (AmplitudeTier_getShimmer_dda ((structAmplitudeTier *)ONLY (classAmplitudeTier),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum amplitude factor")), NULL);
 END
 
@@ -297,7 +297,7 @@ FORM (AmplitudeTier_to_IntensityTier, L"AmplitudeTier: To IntensityTier", L"Ampl
 	REAL (L"Threshold (dB)", L"-10000.0")
 	OK
 DO
-	EVERY_TO (AmplitudeTier_to_IntensityTier (OBJECT, GET_REAL (L"Threshold")))
+	EVERY_TO (AmplitudeTier_to_IntensityTier ((structAmplitudeTier *)OBJECT, GET_REAL (L"Threshold")))
 END
 
 FORM (AmplitudeTier_to_Sound, L"AmplitudeTier: To Sound (pulse train)", L"AmplitudeTier: To Sound (pulse train)...")
@@ -305,7 +305,7 @@ FORM (AmplitudeTier_to_Sound, L"AmplitudeTier: To Sound (pulse train)", L"Amplit
 	NATURAL (L"Interpolation depth (samples)", L"2000")
 	OK
 DO
-	EVERY_TO (AmplitudeTier_to_Sound (OBJECT, GET_REAL (L"Sampling frequency"), GET_INTEGER (L"Interpolation depth")))
+	EVERY_TO (AmplitudeTier_to_Sound ((structAmplitudeTier *)OBJECT, GET_REAL (L"Sampling frequency"), GET_INTEGER (L"Interpolation depth")))
 END
 
 DIRECT (info_AmplitudeTier_Sound_edit)
@@ -316,8 +316,8 @@ END
 /***** AMPLITUDETIER & SOUND *****/
 
 DIRECT (Sound_AmplitudeTier_multiply)
-	Sound sound = ONLY (classSound);
-	if (! praat_new2 (Sound_AmplitudeTier_multiply (sound, ONLY (classAmplitudeTier)), sound -> name, L"_amp")) return 0;
+	Sound sound = (structSound *)ONLY (classSound);
+	if (! praat_new2 (Sound_AmplitudeTier_multiply (sound, (structAmplitudeTier *)ONLY (classAmplitudeTier)), sound -> name, L"_amp")) return 0;
 END
 
 /***** COCHLEAGRAM *****/
@@ -327,7 +327,7 @@ FORM (Cochleagram_difference, L"Cochleagram difference", 0)
 	OK
 DO
 	Data coch1 = NULL, coch2 = NULL;
-	WHERE (SELECTED && CLASS == classCochleagram) { if (coch1) coch2 = OBJECT; else coch1 = OBJECT; }
+	WHERE (SELECTED && CLASS == classCochleagram) { if (coch1) coch2 = (structData *)OBJECT; else coch1 = (structData *)OBJECT; }
 	Melder_informationReal (Cochleagram_difference ((Cochleagram) coch1, (Cochleagram) coch2,
 			GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"Hertz (root-mean-square)");
 END
@@ -346,7 +346,7 @@ DIRECT (Cochleagram_help) Melder_help (L"Cochleagram"); END
 
 DIRECT (Cochleagram_movie)
 	Graphics g = Movie_create (L"Cochleagram movie", 300, 300);
-	WHERE (SELECTED) Matrix_movie (OBJECT, g);
+	WHERE (SELECTED) Matrix_movie ((structMatrix *)OBJECT, g);
 END
 
 FORM (Cochleagram_paint, L"Paint Cochleagram", 0)
@@ -354,7 +354,7 @@ FORM (Cochleagram_paint, L"Paint Cochleagram", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Cochleagram_paint (OBJECT, GRAPHICS,
+	EVERY_DRAW (Cochleagram_paint ((structCochleagram *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Garnish")))
 END
 
@@ -362,11 +362,11 @@ FORM (Cochleagram_to_Excitation, L"From Cochleagram to Excitation", 0)
 	REAL (L"Time (s)", L"0.0")
 	OK
 DO
-	EVERY_TO (Cochleagram_to_Excitation (OBJECT, GET_REAL (L"Time")))
+	EVERY_TO (Cochleagram_to_Excitation ((structCochleagram *)OBJECT, GET_REAL (L"Time")))
 END
 
 DIRECT (Cochleagram_to_Matrix)
-	EVERY_TO (Cochleagram_to_Matrix (OBJECT))
+	EVERY_TO (Cochleagram_to_Matrix ((structCochleagram *)OBJECT))
 END
 
 /***** DISTRIBUTIONS *****/
@@ -376,7 +376,7 @@ FORM (Distributions_to_Transition, L"To Transition", 0)
 	BOOLEAN (L"Greedy", 1)
 	OK
 DO
-	if (! praat_new1 (Distributions_to_Transition (ONLY_OBJECT, NULL, GET_INTEGER (L"Environment"),
+	if (! praat_new1 (Distributions_to_Transition ((structDistributions *)ONLY_OBJECT, NULL, GET_INTEGER (L"Environment"),
 		NULL, GET_INTEGER (L"Greedy")), NULL)) return 0;
 END
 
@@ -385,8 +385,8 @@ FORM (Distributions_to_Transition_adj, L"To Transition", 0)
 	BOOLEAN (L"Greedy", 1)
 	OK
 DO
-	if (! praat_new1 (Distributions_to_Transition (ONLY (classDistributions), NULL,
-		GET_INTEGER (L"Environment"), ONLY (classTransition), GET_INTEGER (L"Greedy")), NULL)) return 0;
+	if (! praat_new1 (Distributions_to_Transition ((structDistributions *)ONLY (classDistributions), NULL,
+		GET_INTEGER (L"Environment"), (structTransition *)ONLY (classTransition), GET_INTEGER (L"Greedy")), NULL)) return 0;
 END
 
 FORM (Distributions_to_Transition_noise, L"To Transition (noise)", 0)
@@ -395,7 +395,7 @@ FORM (Distributions_to_Transition_noise, L"To Transition (noise)", 0)
 	OK
 DO
 	Distributions underlying = NULL, surface = NULL;
-	WHERE (SELECTED) { if (underlying) surface = OBJECT; else underlying = OBJECT; }
+	WHERE (SELECTED) { if (underlying) surface = (structDistributions *)OBJECT; else underlying = (structDistributions *)OBJECT; }
 	if (! praat_new1 (Distributions_to_Transition (underlying, surface, GET_INTEGER (L"Environment"),
 		NULL, GET_INTEGER (L"Greedy")), NULL)) return 0;
 END
@@ -406,15 +406,15 @@ FORM (Distributions_to_Transition_noise_adj, L"To Transition (noise)", 0)
 	OK
 DO
 	Distributions underlying = NULL, surface = NULL;
-	WHERE (SELECTED && CLASS == classDistributions) { if (underlying) surface = OBJECT; else underlying = OBJECT; }
+	WHERE (SELECTED && CLASS == classDistributions) { if (underlying) surface = (structDistributions *)OBJECT; else underlying = (structDistributions *)OBJECT; }
 	if (! praat_new1 (Distributions_to_Transition (underlying, surface, GET_INTEGER (L"Environment"),
-		ONLY (classTransition), GET_INTEGER (L"Greedy")), NULL)) return 0;
+		(structTransition *)ONLY (classTransition), GET_INTEGER (L"Greedy")), NULL)) return 0;
 END
 
 /***** DISTRIBUTIONS & TRANSITION *****/
 
 DIRECT (Distributions_Transition_map)
-	if (! praat_new1 (Distributions_Transition_map (ONLY (classDistributions), ONLY (classTransition)),
+	if (! praat_new1 (Distributions_Transition_map ((structDistributions *)ONLY (classDistributions), (structTransition *)ONLY (classTransition)),
 		L"surface")) return 0;
 END
 
@@ -426,7 +426,7 @@ FORM (DurationTier_addPoint, L"Add one point to DurationTier", L"DurationTier: A
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! RealTier_addPoint (OBJECT, GET_REAL (L"Time"), GET_REAL (L"Relative duration"))) return 0;
+		if (! RealTier_addPoint ((structRealTier *)OBJECT, GET_REAL (L"Time"), GET_REAL (L"Relative duration"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -452,10 +452,10 @@ DIRECT (DurationTier_edit)
 	} else {
 		Sound sound = NULL;
 		WHERE (SELECTED)
-			if (CLASS == classSound) sound = OBJECT;
+			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classDurationTier)
 			if (! praat_installEditor (DurationTierEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
-				OBJECT, sound, TRUE), IOBJECT)) return 0;
+				(structDurationTier *)OBJECT, sound, TRUE), IOBJECT)) return 0;
 	}
 END
 
@@ -470,7 +470,7 @@ FORM (DurationTier_formula, L"DurationTier: Formula", L"DurationTier: Formula...
 	OK
 DO
 	WHERE_DOWN (SELECTED) {
-		RealTier_formula (OBJECT, GET_STRING (L"formula"), interpreter, NULL);
+		RealTier_formula ((structRealTier *)OBJECT, GET_STRING (L"formula"), interpreter, NULL);
 		praat_dataChanged (OBJECT);
 		iferror return 0;
 	}
@@ -481,7 +481,7 @@ FORM (DurationTier_getTargetDuration, L"Get target duration", 0)
 	REAL (L"right Time range (s)", L"1.0")
 	OK
 DO
-	Melder_informationReal (RealTier_getArea (ONLY_OBJECT,
+	Melder_informationReal (RealTier_getArea ((structRealTier *)ONLY_OBJECT,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"seconds");
 END
 
@@ -489,14 +489,14 @@ FORM (DurationTier_getValueAtTime, L"Get DurationTier value", L"DurationTier: Ge
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Melder_informationReal (RealTier_getValueAtTime (ONLY_OBJECT, GET_REAL (L"Time")), NULL);
+	Melder_informationReal (RealTier_getValueAtTime ((structRealTier *)ONLY_OBJECT, GET_REAL (L"Time")), NULL);
 END
 	
 FORM (DurationTier_getValueAtIndex, L"Get DurationTier value", L"Duration: Get value at index...")
 	INTEGER (L"Point number", L"10")
 	OK
 DO
-	Melder_informationReal (RealTier_getValueAtIndex (ONLY_OBJECT, GET_INTEGER (L"Point number")), NULL);
+	Melder_informationReal (RealTier_getValueAtIndex ((structRealTier *)ONLY_OBJECT, GET_INTEGER (L"Point number")), NULL);
 END
 
 DIRECT (DurationTier_help) Melder_help (L"DurationTier"); END
@@ -516,7 +516,7 @@ FORM (Excitation_draw, L"Draw Excitation", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Excitation_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (Excitation_draw ((structExcitation *)OBJECT, GRAPHICS,
 		GET_REAL (L"From frequency"), GET_REAL (L"To frequency"),
 		GET_REAL (L"Minimum"), GET_REAL (L"Maximum"), GET_INTEGER (L"Garnish")))
 END
@@ -531,7 +531,7 @@ DO
 END
 
 DIRECT (Excitation_getLoudness)
-	Melder_informationReal (Excitation_getLoudness (ONLY (classExcitation)), L"sones");
+	Melder_informationReal (Excitation_getLoudness ((structExcitation *)ONLY (classExcitation)), L"sones");
 END
 
 DIRECT (Excitation_help) Melder_help (L"Excitation"); END
@@ -540,21 +540,21 @@ FORM (Excitation_to_Formant, L"From Excitation to Formant", 0)
 	NATURAL (L"Maximum number of formants", L"20")
 	OK
 DO
-	EVERY_TO (Excitation_to_Formant (OBJECT, GET_INTEGER (L"Maximum number of formants")))
+	EVERY_TO (Excitation_to_Formant ((structExcitation *)OBJECT, GET_INTEGER (L"Maximum number of formants")))
 END
 
 DIRECT (Excitation_to_Matrix)
-	EVERY_TO (Excitation_to_Matrix (OBJECT))
+	EVERY_TO (Excitation_to_Matrix ((structExcitation *)OBJECT))
 END
 
 /***** FORMANT *****/
 
 DIRECT (Formant_downto_FormantGrid)
-	EVERY_TO (Formant_downto_FormantGrid (OBJECT))
+	EVERY_TO (Formant_downto_FormantGrid ((structFormant *)OBJECT))
 END
 
 DIRECT (Formant_downto_FormantTier)
-	EVERY_TO (Formant_downto_FormantTier (OBJECT))
+	EVERY_TO (Formant_downto_FormantTier ((structFormant *)OBJECT))
 END
 
 FORM (Formant_drawSpeckles, L"Draw Formant", L"Formant: Draw speckles...")
@@ -564,7 +564,7 @@ FORM (Formant_drawSpeckles, L"Draw Formant", L"Formant: Draw speckles...")
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Formant_drawSpeckles (OBJECT, GRAPHICS,
+	EVERY_DRAW (Formant_drawSpeckles ((structFormant *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Maximum frequency"),
 		GET_REAL (L"Dynamic range"), GET_INTEGER (L"Garnish")))
 END
@@ -575,7 +575,7 @@ FORM (Formant_drawTracks, L"Draw formant tracks", L"Formant: Draw tracks...")
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Formant_drawTracks (OBJECT, GRAPHICS,
+	EVERY_DRAW (Formant_drawTracks ((structFormant *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Maximum frequency"),
 		GET_INTEGER (L"Garnish")))
 END
@@ -586,7 +586,7 @@ FORM (Formant_formula_bandwidths, L"Formant: Formula (bandwidths)", L"Formant: F
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! Formant_formula_bandwidths (OBJECT, GET_STRING (L"formula"), interpreter)) return 0;
+		if (! Formant_formula_bandwidths ((structFormant *)OBJECT, GET_STRING (L"formula"), interpreter)) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -597,7 +597,7 @@ FORM (Formant_formula_frequencies, L"Formant: Formula (frequencies)", L"Formant:
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! Formant_formula_frequencies (OBJECT, GET_STRING (L"formula"), interpreter)) return 0;
+		if (! Formant_formula_frequencies ((structFormant *)OBJECT, GET_STRING (L"formula"), interpreter)) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -612,7 +612,7 @@ FORM (Formant_getBandwidthAtTime, L"Formant: Get bandwidth", L"Formant: Get band
 	RADIOBUTTON (L"Linear")
 	OK
 DO
-	Melder_informationReal (Formant_getBandwidthAtTime (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getBandwidthAtTime ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"Time"), GET_INTEGER (L"Unit") - 1), GET_STRING (L"Unit"));
 END
 	
@@ -627,13 +627,13 @@ FORM (Formant_getMaximum, L"Formant: Get maximum", L"Formant: Get maximum...")
 	RADIOBUTTON (L"Parabolic")
 	OK
 DO
-	Melder_informationReal (Formant_getMaximum (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getMaximum ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Unit") - 1,
 		GET_INTEGER (L"Interpolation") - 1), GET_STRING (L"Unit"));
 END
 
 DIRECT (Formant_getMaximumNumberOfFormants)
-	Melder_information2 (Melder_integer (Formant_getMaxNumFormants (ONLY_OBJECT)),
+	Melder_information2 (Melder_integer (Formant_getMaxNumFormants ((structFormant *)ONLY_OBJECT)),
 		L" (there are at most this many formants in every frame)");
 END
 
@@ -645,7 +645,7 @@ FORM (Formant_getMean, L"Formant: Get mean", L"Formant: Get mean...")
 	RADIOBUTTON (L"Bark")
 	OK
 DO
-	Melder_informationReal (Formant_getMean (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getMean ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Unit") - 1), GET_STRING (L"Unit"));
 END
 
@@ -660,13 +660,13 @@ FORM (Formant_getMinimum, L"Formant: Get minimum", L"Formant: Get minimum...")
 	RADIOBUTTON (L"Parabolic")
 	OK
 DO
-	Melder_informationReal (Formant_getMinimum (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getMinimum ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Unit") - 1,
 		GET_INTEGER (L"Interpolation") - 1), GET_STRING (L"Unit"));
 END
 
 DIRECT (Formant_getMinimumNumberOfFormants)
-	Melder_information2 (Melder_integer (Formant_getMinNumFormants (ONLY_OBJECT)),
+	Melder_information2 (Melder_integer (Formant_getMinNumFormants ((structFormant *)ONLY_OBJECT)),
 		L" (there are at least this many formants in every frame)");
 END
 
@@ -675,7 +675,7 @@ FORM (Formant_getNumberOfFormants, L"Formant: Get number of formants", L"Formant
 	OK
 DO
 	long frame = GET_INTEGER (L"Frame number");
-	Formant me = ONLY_OBJECT;
+	Formant me = (structFormant *)ONLY_OBJECT;
 	if (frame > my nx) return Melder_error5 (L"There is no frame ", Melder_integer (frame),
 		L" in a Formant with only ", Melder_integer (my nx), L" frames.");
 	Melder_information2 (Melder_integer (my frame [frame]. nFormants), L" formants");
@@ -690,7 +690,7 @@ FORM (Formant_getQuantile, L"Formant: Get quantile", 0)
 	REAL (L"Quantile", L"0.50 (= median)")
 	OK
 DO
-	Melder_informationReal (Formant_getQuantile (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getQuantile ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"Quantile"), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Unit") - 1), GET_STRING (L"Unit"));
 END
 
@@ -703,7 +703,7 @@ FORM (Formant_getQuantileOfBandwidth, L"Formant: Get quantile of bandwidth", 0)
 	REAL (L"Quantile", L"0.50 (= median)")
 	OK
 DO
-	Melder_informationReal (Formant_getQuantileOfBandwidth (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getQuantileOfBandwidth ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"Quantile"), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Unit") - 1), GET_STRING (L"Unit"));
 END
 
@@ -715,7 +715,7 @@ FORM (Formant_getStandardDeviation, L"Formant: Get standard deviation", 0)
 	RADIOBUTTON (L"Bark")
 	OK
 DO
-	Melder_informationReal (Formant_getStandardDeviation (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getStandardDeviation ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Unit") - 1), GET_STRING (L"Unit"));
 END
 
@@ -730,7 +730,7 @@ FORM (Formant_getTimeOfMaximum, L"Formant: Get time of maximum", L"Formant: Get 
 	RADIOBUTTON (L"Parabolic")
 	OK
 DO
-	Melder_informationReal (Formant_getTimeOfMaximum (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getTimeOfMaximum ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_INTEGER (L"Unit") - 1, GET_INTEGER (L"Interpolation") - 1), L"seconds");
 END
@@ -746,7 +746,7 @@ FORM (Formant_getTimeOfMinimum, L"Formant: Get time of minimum", L"Formant: Get 
 	RADIOBUTTON (L"Parabolic")
 	OK
 DO
-	Melder_informationReal (Formant_getTimeOfMinimum (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getTimeOfMinimum ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_INTEGER (L"Unit") - 1, GET_INTEGER (L"Interpolation") - 1), L"seconds");
 END
@@ -761,7 +761,7 @@ FORM (Formant_getValueAtTime, L"Formant: Get value", L"Formant: Get value at tim
 	RADIOBUTTON (L"Linear")
 	OK
 DO
-	Melder_informationReal (Formant_getValueAtTime (ONLY (classFormant), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (Formant_getValueAtTime ((structFormant *)ONLY (classFormant), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"Time"), GET_INTEGER (L"Unit") - 1), GET_STRING (L"Unit"));
 END
 	
@@ -778,7 +778,7 @@ FORM (Formant_downto_Table, L"Formant: Down to Table", 0)
 	BOOLEAN (L"Include bandwidths", true)
 	OK
 DO
-	EVERY_TO (Formant_downto_Table (OBJECT, GET_INTEGER (L"Include frame number"),
+	EVERY_TO (Formant_downto_Table ((structFormant *)OBJECT, GET_INTEGER (L"Include frame number"),
 		GET_INTEGER (L"Include time"), GET_INTEGER (L"Time decimals"),
 		GET_INTEGER (L"Include intensity"), GET_INTEGER (L"Intensity decimals"),
 		GET_INTEGER (L"Include number of formants"), GET_INTEGER (L"Frequency decimals"),
@@ -796,7 +796,7 @@ FORM (Formant_list, L"Formant: List", 0)
 	BOOLEAN (L"Include bandwidths", true)
 	OK
 DO
-	EVERY (Formant_list (OBJECT, GET_INTEGER (L"Include frame number"),
+	EVERY (Formant_list ((structFormant *)OBJECT, GET_INTEGER (L"Include frame number"),
 		GET_INTEGER (L"Include time"), GET_INTEGER (L"Time decimals"),
 		GET_INTEGER (L"Include intensity"), GET_INTEGER (L"Intensity decimals"),
 		GET_INTEGER (L"Include number of formants"), GET_INTEGER (L"Frequency decimals"),
@@ -816,7 +816,7 @@ FORM (Formant_scatterPlot, L"Formant: Scatter plot", 0)
 	SENTENCE (L"Mark string (+xo.)", L"+")
 	OK
 DO
-	EVERY_DRAW (Formant_scatterPlot (OBJECT, GRAPHICS,
+	EVERY_DRAW (Formant_scatterPlot ((structFormant *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_INTEGER (L"Horizontal formant number"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
@@ -827,7 +827,7 @@ END
 
 DIRECT (Formant_sort)
 	WHERE (SELECTED) {
-		Formant_sort (OBJECT);
+		Formant_sort ((structFormant *)OBJECT);
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -836,7 +836,7 @@ FORM (Formant_to_Matrix, L"From Formant to Matrix", 0)
 	INTEGER (L"Formant", L"1")
 	OK
 DO
-	EVERY_TO (Formant_to_Matrix (OBJECT, GET_INTEGER (L"Formant")))
+	EVERY_TO (Formant_to_Matrix ((structFormant *)OBJECT, GET_INTEGER (L"Formant")))
 END
 
 FORM (Formant_tracker, L"Formant tracker", L"Formant: Track...")
@@ -853,7 +853,7 @@ FORM (Formant_tracker, L"Formant tracker", L"Formant: Track...")
 DO
 	long numberOfTracks = GET_INTEGER (L"Number of tracks");
 	REQUIRE (numberOfTracks <= 5, L"Number of tracks cannot be more than 5.")
-	EVERY_TO (Formant_tracker (OBJECT, GET_INTEGER (L"Number of tracks"),
+	EVERY_TO (Formant_tracker ((structFormant *)OBJECT, GET_INTEGER (L"Number of tracks"),
 		GET_REAL (L"Reference F1"), GET_REAL (L"Reference F2"),
 		GET_REAL (L"Reference F3"), GET_REAL (L"Reference F4"),
 		GET_REAL (L"Reference F5"), GET_REAL (L"Frequency cost"),
@@ -863,8 +863,8 @@ END
 /***** FORMANT & POINTPROCESS *****/
 
 DIRECT (Formant_PointProcess_to_FormantTier)
-	Formant formant = ONLY (classFormant);
-	PointProcess point = ONLY (classPointProcess);
+	Formant formant = (structFormant *)ONLY (classFormant);
+	PointProcess point = (structPointProcess *)ONLY (classPointProcess);
 	if (! praat_new3 (Formant_PointProcess_to_FormantTier (formant, point),
 		formant -> name, L"_", point -> name)) return 0;
 END
@@ -872,13 +872,13 @@ END
 /***** FORMANT & SOUND *****/
 
 DIRECT (Sound_Formant_filter)
-	Sound me = ONLY (classSound);
-	if (! praat_new2 (Sound_Formant_filter (me, ONLY (classFormant)), my name, L"_filt")) return 0;
+	Sound me = (structSound *)ONLY (classSound);
+	if (! praat_new2 (Sound_Formant_filter (me, (structFormant *)ONLY (classFormant)), my name, L"_filt")) return 0;
 END
 
 DIRECT (Sound_Formant_filter_noscale)
-	Sound me = ONLY (classSound);
-	if (! praat_new2 (Sound_Formant_filter_noscale (me, ONLY (classFormant)), my name, L"_filt")) return 0;
+	Sound me = (structSound *)ONLY (classSound);
+	if (! praat_new2 (Sound_Formant_filter_noscale (me, (structFormant *)ONLY (classFormant)), my name, L"_filt")) return 0;
 END
 
 /***** FORMANTGRID *****/
@@ -890,7 +890,7 @@ FORM (FormantGrid_addBandwidthPoint, L"FormantGrid: Add bandwidth point", L"Form
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! FormantGrid_addBandwidthPoint (OBJECT, GET_INTEGER (L"Formant number"),
+		if (! FormantGrid_addBandwidthPoint ((structFormantGrid *)OBJECT, GET_INTEGER (L"Formant number"),
 			GET_REAL (L"Time"), GET_REAL (L"Bandwidth"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
@@ -903,7 +903,7 @@ FORM (FormantGrid_addFormantPoint, L"FormantGrid: Add formant point", L"FormantG
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! FormantGrid_addFormantPoint (OBJECT, GET_INTEGER (L"Formant number"),
+		if (! FormantGrid_addFormantPoint ((structFormantGrid *)OBJECT, GET_INTEGER (L"Formant number"),
 			GET_REAL (L"Time"), GET_REAL (L"Frequency"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
@@ -938,7 +938,7 @@ DIRECT (FormantGrid_edit)
 		return Melder_error1 (L"Cannot edit a FormantGrid from batch.");
 	} else {
 		WHERE (SELECTED) {
-			FormantGridEditor editor = FormantGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT);
+			FormantGridEditor editor = FormantGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structFormantGrid *)OBJECT);
 			if (! praat_installEditor (editor, IOBJECT)) return 0;
 			Editor_setPublishCallback (FormantGridEditor_as_Editor (editor), cb_FormantGridEditor_publish, NULL);
 		}
@@ -952,7 +952,7 @@ FORM (FormantGrid_formula_bandwidths, L"FormantGrid: Formula (bandwidths)", L"Fo
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! FormantGrid_formula_bandwidths (OBJECT, GET_STRING (L"formula"), interpreter, NULL)) return 0;
+		if (! FormantGrid_formula_bandwidths ((structFormantGrid *)OBJECT, GET_STRING (L"formula"), interpreter, NULL)) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -963,7 +963,7 @@ FORM (FormantGrid_formula_frequencies, L"FormantGrid: Formula (frequencies)", L"
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! FormantGrid_formula_frequencies (OBJECT, GET_STRING (L"formula"), interpreter, NULL)) return 0;
+		if (! FormantGrid_formula_frequencies ((structFormantGrid *)OBJECT, GET_STRING (L"formula"), interpreter, NULL)) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -977,7 +977,7 @@ FORM (FormantGrid_removeBandwidthPointsBetween, L"Remove bandwidth points betwee
 	OK
 DO
 	WHERE (SELECTED) {
-		FormantGrid_removeBandwidthPointsBetween (OBJECT, GET_INTEGER (L"Formant number"),
+		FormantGrid_removeBandwidthPointsBetween ((structFormantGrid *)OBJECT, GET_INTEGER (L"Formant number"),
 			GET_REAL (L"From time"), GET_REAL (L"To time"));
 		praat_dataChanged (OBJECT);
 	}
@@ -990,7 +990,7 @@ FORM (FormantGrid_removeFormantPointsBetween, L"Remove formant points between", 
 	OK
 DO
 	WHERE (SELECTED) {
-		FormantGrid_removeFormantPointsBetween (OBJECT, GET_INTEGER (L"Formant number"),
+		FormantGrid_removeFormantPointsBetween ((structFormantGrid *)OBJECT, GET_INTEGER (L"Formant number"),
 			GET_REAL (L"From time"), GET_REAL (L"To time"));
 		praat_dataChanged (OBJECT);
 	}
@@ -1003,19 +1003,19 @@ FORM (FormantGrid_to_Formant, L"FormantGrid: To Formant", 0)
 DO
 	double intensity = GET_REAL (L"Intensity");
 	REQUIRE (intensity >= 0.0, L"Intensity cannot be negative.")
-	EVERY_TO (FormantGrid_to_Formant (OBJECT, GET_REAL (L"Time step"), intensity))
+	EVERY_TO (FormantGrid_to_Formant ((structFormantGrid *)OBJECT, GET_REAL (L"Time step"), intensity))
 END
 
 /***** FORMANTGRID & SOUND *****/
 
 DIRECT (Sound_FormantGrid_filter)
-	Sound me = ONLY (classSound);
-	if (! praat_new2 (Sound_FormantGrid_filter (me, ONLY (classFormantGrid)), my name, L"_filt")) return 0;
+	Sound me = (structSound *)ONLY (classSound);
+	if (! praat_new2 (Sound_FormantGrid_filter (me, (structFormantGrid *)ONLY (classFormantGrid)), my name, L"_filt")) return 0;
 END
 
 DIRECT (Sound_FormantGrid_filter_noscale)
-	Sound me = ONLY (classSound);
-	if (! praat_new2 (Sound_FormantGrid_filter_noscale (me, ONLY (classFormantGrid)), my name, L"_filt")) return 0;
+	Sound me = (structSound *)ONLY (classSound);
+	if (! praat_new2 (Sound_FormantGrid_filter_noscale (me, (structFormantGrid *)ONLY (classFormantGrid)), my name, L"_filt")) return 0;
 END
 
 /***** FORMANTTIER *****/
@@ -1059,7 +1059,7 @@ FORM (FormantTier_downto_TableOfReal, L"Down to TableOfReal", 0)
 	BOOLEAN (L"Include bandwidths", 0)
 	OK
 DO
-	EVERY_TO (FormantTier_downto_TableOfReal (OBJECT, GET_INTEGER (L"Include formants"), GET_INTEGER (L"Include bandwidths")))
+	EVERY_TO (FormantTier_downto_TableOfReal ((structFormantTier *)OBJECT, GET_INTEGER (L"Include formants"), GET_INTEGER (L"Include bandwidths")))
 END
 
 FORM (FormantTier_getBandwidthAtTime, L"FormantTier: Get bandwidth", L"FormantTier: Get bandwidth at time...")
@@ -1067,7 +1067,7 @@ FORM (FormantTier_getBandwidthAtTime, L"FormantTier: Get bandwidth", L"FormantTi
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Melder_informationReal (FormantTier_getBandwidthAtTime (ONLY (classFormantTier), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (FormantTier_getBandwidthAtTime ((structFormantTier *)ONLY (classFormantTier), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"Time")), L"Hertz");
 END
 	
@@ -1076,7 +1076,7 @@ FORM (FormantTier_getValueAtTime, L"FormantTier: Get value", L"FormantTier: Get 
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Melder_informationReal (FormantTier_getValueAtTime (ONLY (classFormantTier), GET_INTEGER (L"Formant number"),
+	Melder_informationReal (FormantTier_getValueAtTime ((structFormantTier *)ONLY (classFormantTier), GET_INTEGER (L"Formant number"),
 		GET_REAL (L"Time")), L"Hertz");
 END
 	
@@ -1088,20 +1088,20 @@ FORM (FormantTier_speckle, L"Draw FormantTier", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (FormantTier_speckle (OBJECT, GRAPHICS,
+	EVERY_DRAW (FormantTier_speckle ((structFormantTier *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Maximum frequency"), GET_INTEGER (L"Garnish")))
 END
 
 /***** FORMANTTIER & SOUND *****/
 
 DIRECT (Sound_FormantTier_filter)
-	Sound me = ONLY (classSound);
-	if (! praat_new2 (Sound_FormantTier_filter (me, ONLY (classFormantTier)), my name, L"_filt")) return 0;
+	Sound me = (structSound *)ONLY (classSound);
+	if (! praat_new2 (Sound_FormantTier_filter (me, (structFormantTier *)ONLY (classFormantTier)), my name, L"_filt")) return 0;
 END
 
 DIRECT (Sound_FormantTier_filter_noscale)
-	Sound me = ONLY (classSound);
-	if (! praat_new2 (Sound_FormantTier_filter_noscale (me, ONLY (classFormantTier)), my name, L"_filt")) return 0;
+	Sound me = (structSound *)ONLY (classSound);
+	if (! praat_new2 (Sound_FormantTier_filter_noscale (me, (structFormantTier *)ONLY (classFormantTier)), my name, L"_filt")) return 0;
 END
 
 /***** HARMONICITY *****/
@@ -1112,7 +1112,7 @@ FORM (Harmonicity_draw, L"Draw harmonicity", 0)
 	REAL (L"Maximum", L"0.0 (= auto)")
 	OK
 DO
-	EVERY_DRAW (Matrix_drawRows (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_drawRows ((structMatrix *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), 0.0, 0.0,
 		GET_REAL (L"Minimum"), GET_REAL (L"Maximum")))
 END
@@ -1130,7 +1130,7 @@ FORM (Harmonicity_getMaximum, L"Harmonicity: Get maximum", L"Harmonicity: Get ma
 	dia_Vector_getExtremum (dia);
 	OK
 DO
-	Melder_informationReal (Vector_getMaximum (ONLY (classHarmonicity),
+	Melder_informationReal (Vector_getMaximum ((structVector *)ONLY (classHarmonicity),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Interpolation") - 1), L"dB");
 END
 
@@ -1138,7 +1138,7 @@ FORM (Harmonicity_getMean, L"Harmonicity: Get mean", L"Harmonicity: Get mean..."
 	praat_dia_timeRange (dia);
 	OK
 DO
-	Melder_informationReal (Harmonicity_getMean (ONLY (classHarmonicity),
+	Melder_informationReal (Harmonicity_getMean ((structHarmonicity *)ONLY (classHarmonicity),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"dB");
 END
 
@@ -1146,7 +1146,7 @@ FORM (Harmonicity_getMinimum, L"Harmonicity: Get minimum", L"Harmonicity: Get mi
 	dia_Vector_getExtremum (dia);
 	OK
 DO
-	Melder_informationReal (Vector_getMinimum (ONLY (classHarmonicity),
+	Melder_informationReal (Vector_getMinimum ((structVector *)ONLY (classHarmonicity),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Interpolation") - 1), L"dB");
 END
 
@@ -1154,7 +1154,7 @@ FORM (Harmonicity_getStandardDeviation, L"Harmonicity: Get standard deviation", 
 	praat_dia_timeRange (dia);
 	OK
 DO
-	Melder_informationReal (Harmonicity_getStandardDeviation (ONLY (classHarmonicity),
+	Melder_informationReal (Harmonicity_getStandardDeviation ((structHarmonicity *)ONLY (classHarmonicity),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"dB");
 END
 
@@ -1185,7 +1185,7 @@ FORM (Harmonicity_getValueInFrame, L"Get value in frame", L"Harmonicity: Get val
 	INTEGER (L"Frame number", L"10")
 	OK
 DO
-	Harmonicity me = ONLY (classHarmonicity);
+	Harmonicity me = (structHarmonicity *)ONLY (classHarmonicity);
 	long frameNumber = GET_INTEGER (L"Frame number");
 	Melder_informationReal (frameNumber < 1 || frameNumber > my nx ? NUMundefined : my z [1] [frameNumber], L"dB");
 END
@@ -1193,7 +1193,7 @@ END
 DIRECT (Harmonicity_help) Melder_help (L"Harmonicity"); END
 
 DIRECT (Harmonicity_to_Matrix)
-	EVERY_TO (Harmonicity_to_Matrix (OBJECT))
+	EVERY_TO (Harmonicity_to_Matrix ((structHarmonicity *)OBJECT))
 END
 
 /***** INTENSITY *****/
@@ -1205,16 +1205,16 @@ FORM (Intensity_draw, L"Draw Intensity", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Intensity_draw (OBJECT, GRAPHICS, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
+	EVERY_DRAW (Intensity_draw ((structIntensity *)OBJECT, GRAPHICS, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Minimum"), GET_REAL (L"Maximum"), GET_INTEGER (L"Garnish")))
 END
 
 DIRECT (Intensity_downto_IntensityTier)
-	EVERY_TO (Intensity_downto_IntensityTier (OBJECT))
+	EVERY_TO (Intensity_downto_IntensityTier ((structIntensity *)OBJECT))
 END
 
 DIRECT (Intensity_downto_Matrix)
-	EVERY_TO (Intensity_to_Matrix (OBJECT))
+	EVERY_TO (Intensity_to_Matrix ((structIntensity *)OBJECT))
 END
 
 FORM (Intensity_formula, L"Intensity Formula", 0)
@@ -1267,7 +1267,7 @@ FORM (Intensity_getQuantile, L"Intensity: Get quantile", 0)
 	REAL (L"Quantile (0-1)", L"0.50")
 	OK
 DO
-	Melder_informationReal (Intensity_getQuantile (ONLY (classIntensity), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
+	Melder_informationReal (Intensity_getQuantile ((structIntensity *)ONLY (classIntensity), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Quantile")), L"dB");
 END
 
@@ -1305,7 +1305,7 @@ FORM (Intensity_getValueInFrame, L"Get value in frame", L"Intensity: Get value i
 	INTEGER (L"Frame number", L"10")
 	OK
 DO
-	Intensity me = ONLY (classIntensity);
+	Intensity me = (structIntensity *)ONLY (classIntensity);
 	long frameNumber = GET_INTEGER (L"Frame number");
 	Melder_informationReal (frameNumber < 1 || frameNumber > my nx ? NUMundefined : my z [1] [frameNumber], L"dB");
 END
@@ -1313,11 +1313,11 @@ END
 DIRECT (Intensity_help) Melder_help (L"Intensity"); END
 
 DIRECT (Intensity_to_IntensityTier_peaks)
-	EVERY_TO (Intensity_to_IntensityTier_peaks (OBJECT))
+	EVERY_TO (Intensity_to_IntensityTier_peaks ((structIntensity *)OBJECT))
 END
 
 DIRECT (Intensity_to_IntensityTier_valleys)
-	EVERY_TO (Intensity_to_IntensityTier_valleys (OBJECT))
+	EVERY_TO (Intensity_to_IntensityTier_valleys ((structIntensity *)OBJECT))
 END
 
 /***** INTENSITY & PITCH *****/
@@ -1334,7 +1334,7 @@ FORM (Pitch_Intensity_draw, L"Plot intensity by pitch", 0)
 	RADIOBUTTON (L"Speckles and curve")
 	OK
 DO
-	EVERY_DRAW (Pitch_Intensity_draw (ONLY (classPitch), ONLY (classIntensity), GRAPHICS,
+	EVERY_DRAW (Pitch_Intensity_draw ((structPitch *)ONLY (classPitch), (structIntensity *)ONLY (classIntensity), GRAPHICS,
 		GET_REAL (L"From frequency"), GET_REAL (L"To frequency"),
 		GET_REAL (L"From intensity"), GET_REAL (L"To intensity"), GET_INTEGER (L"Garnish"), GET_INTEGER (L"Drawing method")))
 END
@@ -1347,7 +1347,7 @@ FORM (Pitch_Intensity_speckle, L"Plot intensity by pitch", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Pitch_Intensity_draw (ONLY (classPitch), ONLY (classIntensity), GRAPHICS,
+	EVERY_DRAW (Pitch_Intensity_draw ((structPitch *)ONLY (classPitch), (structIntensity *)ONLY (classIntensity), GRAPHICS,
 		GET_REAL (L"From frequency"), GET_REAL (L"To frequency"),
 		GET_REAL (L"From intensity"), GET_REAL (L"To intensity"), GET_INTEGER (L"Garnish"), 1))
 END
@@ -1355,8 +1355,8 @@ END
 /***** INTENSITY & POINTPROCESS *****/
 
 DIRECT (Intensity_PointProcess_to_IntensityTier)
-	Intensity intensity = ONLY (classIntensity);
-	if (! praat_new1 (Intensity_PointProcess_to_IntensityTier (intensity, ONLY (classPointProcess)),
+	Intensity intensity = (structIntensity *)ONLY (classIntensity);
+	if (! praat_new1 (Intensity_PointProcess_to_IntensityTier (intensity, (structPointProcess *)ONLY (classPointProcess)),
 		intensity -> name)) return 0;
 END
 
@@ -1389,7 +1389,7 @@ DIRECT (IntensityTier_downto_PointProcess)
 END
 
 DIRECT (IntensityTier_downto_TableOfReal)
-	EVERY_TO (IntensityTier_downto_TableOfReal (OBJECT))
+	EVERY_TO (IntensityTier_downto_TableOfReal ((structIntensityTier *)OBJECT))
 END
 
 DIRECT (IntensityTier_edit)
@@ -1398,10 +1398,10 @@ DIRECT (IntensityTier_edit)
 	} else {
 		Sound sound = NULL;
 		WHERE (SELECTED)
-			if (CLASS == classSound) sound = OBJECT;
+			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classIntensityTier)
 			if (! praat_installEditor (IntensityTierEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
-				OBJECT, sound, TRUE), IOBJECT)) return 0;
+				(structIntensityTier *)OBJECT, sound, TRUE), IOBJECT)) return 0;
 	}
 END
 
@@ -1439,7 +1439,7 @@ END
 DIRECT (IntensityTier_help) Melder_help (L"IntensityTier"); END
 
 DIRECT (IntensityTier_to_AmplitudeTier)
-	EVERY_TO (IntensityTier_to_AmplitudeTier (OBJECT))
+	EVERY_TO (IntensityTier_to_AmplitudeTier ((structIntensityTier *)OBJECT))
 END
 
 DIRECT (info_IntensityTier_Sound_edit)
@@ -1450,23 +1450,23 @@ END
 /***** INTENSITYTIER & POINTPROCESS *****/
 
 DIRECT (IntensityTier_PointProcess_to_IntensityTier)
-	IntensityTier intensity = ONLY (classIntensityTier);
-	if (! praat_new1 (IntensityTier_PointProcess_to_IntensityTier (intensity, ONLY (classPointProcess)), intensity -> name)) return 0;
+	IntensityTier intensity = (structIntensityTier *)ONLY (classIntensityTier);
+	if (! praat_new1 (IntensityTier_PointProcess_to_IntensityTier (intensity, (structPointProcess *)ONLY (classPointProcess)), intensity -> name)) return 0;
 END
 
 /***** INTENSITYTIER & SOUND *****/
 
 DIRECT (Sound_IntensityTier_multiply_old)
-	Sound sound = ONLY (classSound);
-	if (! praat_new2 (Sound_IntensityTier_multiply (sound, ONLY (classIntensityTier), TRUE), sound -> name, L"_int")) return 0;
+	Sound sound = (structSound *)ONLY (classSound);
+	if (! praat_new2 (Sound_IntensityTier_multiply (sound, (structIntensityTier *)ONLY (classIntensityTier), TRUE), sound -> name, L"_int")) return 0;
 END
 
 FORM (Sound_IntensityTier_multiply, L"Sound & IntervalTier: Multiply", 0)
 	BOOLEAN (L"Scale to 0.9", 1)
 	OK
 DO
-	Sound sound = ONLY (classSound);
-	if (! praat_new2 (Sound_IntensityTier_multiply (sound, ONLY (classIntensityTier), GET_INTEGER (L"Scale to 0.9")), sound -> name, L"_int")) return 0;
+	Sound sound = (structSound *)ONLY (classSound);
+	if (! praat_new2 (Sound_IntensityTier_multiply (sound, (structIntensityTier *)ONLY (classIntensityTier), GET_INTEGER (L"Scale to 0.9")), sound -> name, L"_int")) return 0;
 END
 
 /***** INTERVALTIER, rest in praat_TextGrid_init.c *****/
@@ -1498,7 +1498,7 @@ FORM (Ltas_computeTrendLine, L"Ltas: Compute trend line", L"Ltas: Compute trend 
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! praat_new2 (Ltas_computeTrendLine (OBJECT, GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range")),
+		if (! praat_new2 (Ltas_computeTrendLine ((structLtas *)OBJECT, GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range")),
 			NAME, L"_trend")) return 0;
 	}
 END
@@ -1511,7 +1511,7 @@ FORM (old_Ltas_draw, L"Ltas: Draw", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Ltas_draw (OBJECT, GRAPHICS, GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
+	EVERY_DRAW (Ltas_draw ((structLtas *)OBJECT, GRAPHICS, GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Power range"), GET_REAL (L"right Power range"), GET_INTEGER (L"Garnish"), L"Bars"))
 END
 
@@ -1529,7 +1529,7 @@ FORM (Ltas_draw, L"Ltas: Draw", 0)
 		OPTION (L"Speckles")
 	OK
 DO_ALTERNATIVE (old_Ltas_draw)
-	EVERY_DRAW (Ltas_draw (OBJECT, GRAPHICS, GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
+	EVERY_DRAW (Ltas_draw ((structLtas *)OBJECT, GRAPHICS, GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Power range"), GET_REAL (L"right Power range"), GET_INTEGER (L"Garnish"), GET_STRING (L"Drawing method")))
 END
 
@@ -1550,7 +1550,7 @@ DO
 END
 
 DIRECT (Ltas_getBinWidth)
-	Ltas me = ONLY (classLtas);
+	Ltas me = (structLtas *)ONLY (classLtas);
 	Melder_informationReal (my dx, L"Hertz");
 END
 
@@ -1592,7 +1592,7 @@ DO
 END
 
 DIRECT (Ltas_getHighestFrequency)
-	Ltas me = ONLY (classLtas);
+	Ltas me = (structLtas *)ONLY (classLtas);
 	Melder_informationReal (my xmax, L"Hertz");
 END
 
@@ -1612,12 +1612,12 @@ DO
 	REQUIRE (environmentMin < peakMin, L"The beginning of the environment must lie before the peak.")
 	REQUIRE (peakMin < peakMax, L"The end of the peak must lie after its beginning.")
 	REQUIRE (environmentMax > peakMax, L"The end of the environment must lie after the peak.")
-	Melder_informationReal (Ltas_getLocalPeakHeight (ONLY (classLtas), environmentMin, environmentMax,
+	Melder_informationReal (Ltas_getLocalPeakHeight ((structLtas *)ONLY (classLtas), environmentMin, environmentMax,
 		peakMin, peakMax, GET_INTEGER (L"Averaging method")), L"dB");
 END
 
 DIRECT (Ltas_getLowestFrequency)
-	Ltas me = ONLY (classLtas);
+	Ltas me = (structLtas *)ONLY (classLtas);
 	Melder_informationReal (my xmin, L"Hertz");
 END
 
@@ -1665,7 +1665,7 @@ DO
 END
 
 DIRECT (Ltas_getNumberOfBins)
-	Ltas me = ONLY (classLtas);
+	Ltas me = (structLtas *)ONLY (classLtas);
 	Melder_information2 (Melder_integer (my nx), L" bins");
 END
 
@@ -1680,7 +1680,7 @@ FORM (Ltas_getSlope, L"Ltas: Get slope", 0)
 		RADIOBUTTON (L"dB")
 	OK
 DO
-	Melder_informationReal (Ltas_getSlope (ONLY (classLtas), GET_REAL (L"left Low band"), GET_REAL (L"right Low band"),
+	Melder_informationReal (Ltas_getSlope ((structLtas *)ONLY (classLtas), GET_REAL (L"left Low band"), GET_REAL (L"right Low band"),
 		GET_REAL (L"left High band"), GET_REAL (L"right High band"), GET_INTEGER (L"Averaging method")), L"dB");
 END
 
@@ -1714,7 +1714,7 @@ FORM (Ltas_getValueInBin, L"Get value in bin", L"Ltas: Get value in bin...")
 	INTEGER (L"Bin number", L"100")
 	OK
 DO
-	Ltas me = ONLY (classLtas);
+	Ltas me = (structLtas *)ONLY (classLtas);
 	long binNumber = GET_INTEGER (L"Bin number");
 	Melder_informationReal (binNumber < 1 || binNumber > my nx ? NUMundefined : my z [1] [binNumber], L"dB");
 END
@@ -1742,17 +1742,17 @@ FORM (Ltas_subtractTrendLine, L"Ltas: Subtract trend line", L"Ltas: Subtract tre
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! praat_new2 (Ltas_subtractTrendLine (OBJECT, GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range")),
+		if (! praat_new2 (Ltas_subtractTrendLine ((structLtas *)OBJECT, GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range")),
 			NAME, L"_fit")) return 0;
 	}
 END
 
 DIRECT (Ltas_to_Matrix)
-	EVERY_TO (Ltas_to_Matrix (OBJECT))
+	EVERY_TO (Ltas_to_Matrix ((structLtas *)OBJECT))
 END
 
 DIRECT (Ltas_to_SpectrumTier_peaks)
-	EVERY_TO (Ltas_to_SpectrumTier_peaks (OBJECT))
+	EVERY_TO (Ltas_to_SpectrumTier_peaks ((structLtas *)OBJECT))
 END
 
 /***** MANIPULATION *****/
@@ -1768,7 +1768,7 @@ DIRECT (Manipulation_edit)
 		return Melder_error1 (L"Cannot edit a Manipulation from batch.");
 	} else {
 		WHERE (SELECTED) {
-			ManipulationEditor editor = ManipulationEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT);
+			ManipulationEditor editor = ManipulationEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structManipulation *)OBJECT);
 			if (! praat_installEditor (editor, IOBJECT)) return 0;
 			Editor_setPublishCallback (ManipulationEditor_as_Editor (editor), cb_ManipulationEditor_publish, NULL);
 		}
@@ -1777,7 +1777,7 @@ END
 
 DIRECT (Manipulation_extractDurationTier)
 	WHERE (SELECTED) {
-		Manipulation ana = OBJECT;
+		Manipulation ana = (structManipulation *)OBJECT;
 		if (ana -> duration) {
 			if (! praat_new1 (Data_copy (ana -> duration), NULL)) return 0;
 		} else {
@@ -1788,7 +1788,7 @@ END
 
 DIRECT (Manipulation_extractOriginalSound)
 	WHERE (SELECTED) {
-		Manipulation ana = OBJECT;
+		Manipulation ana = (structManipulation *)OBJECT;
 		if (ana -> sound) {
 			if (! praat_new1 (Data_copy (ana -> sound), NULL)) return 0;
 		} else {
@@ -1799,7 +1799,7 @@ END
 
 DIRECT (Manipulation_extractPitchTier)
 	WHERE (SELECTED) {
-		Manipulation ana = OBJECT;
+		Manipulation ana = (structManipulation *)OBJECT;
 		if (ana -> pitch) {
 			if (! praat_new1 (Data_copy (ana -> pitch), NULL)) return 0;
 		} else {
@@ -1810,7 +1810,7 @@ END
 
 DIRECT (Manipulation_extractPulses)
 	WHERE (SELECTED) {
-		Manipulation ana = OBJECT;
+		Manipulation ana = (structManipulation *)OBJECT;
 		if (ana -> pulses) {
 			if (! praat_new1 (Data_copy (ana -> pulses), NULL)) return 0;
 		} else {
@@ -1820,26 +1820,26 @@ DIRECT (Manipulation_extractPulses)
 END
 
 DIRECT (Manipulation_getResynthesis_lpc)
-	EVERY_TO (Manipulation_to_Sound (OBJECT, Manipulation_PITCH_LPC))
+	EVERY_TO (Manipulation_to_Sound ((structManipulation *)OBJECT, Manipulation_PITCH_LPC))
 END
 
 DIRECT (Manipulation_getResynthesis_overlapAdd)
-	EVERY_TO (Manipulation_to_Sound (OBJECT, Manipulation_OVERLAPADD))
+	EVERY_TO (Manipulation_to_Sound ((structManipulation *)OBJECT, Manipulation_OVERLAPADD))
 END
 
 DIRECT (Manipulation_help) Melder_help (L"Manipulation"); END
 
 DIRECT (Manipulation_play_lpc)
-	EVERY_CHECK (Manipulation_play (OBJECT, Manipulation_PITCH_LPC))
+	EVERY_CHECK (Manipulation_play ((structManipulation *)OBJECT, Manipulation_PITCH_LPC))
 END
 
 DIRECT (Manipulation_play_overlapAdd)
-	EVERY_CHECK (Manipulation_play (OBJECT, Manipulation_OVERLAPADD))
+	EVERY_CHECK (Manipulation_play ((structManipulation *)OBJECT, Manipulation_OVERLAPADD))
 END
 
 DIRECT (Manipulation_removeDuration)
 	WHERE (SELECTED) {
-		Manipulation ana = OBJECT;
+		Manipulation ana = (structManipulation *)OBJECT;
 		forget (ana -> duration);
 		praat_dataChanged (ana);
 	}
@@ -1847,18 +1847,18 @@ END
 
 DIRECT (Manipulation_removeOriginalSound)
 	WHERE (SELECTED) {
-		Manipulation ana = OBJECT;
+		Manipulation ana = (structManipulation *)OBJECT;
 		forget (ana -> sound);
 		praat_dataChanged (ana);
 	}
 END
 
 FORM_WRITE (Manipulation_writeToBinaryFileWithoutSound, L"Binary file without Sound", 0, 0)
-	if (! Manipulation_writeToBinaryFileWithoutSound (ONLY_OBJECT, file)) return 0;
+	if (! Manipulation_writeToBinaryFileWithoutSound ((structManipulation *)ONLY_OBJECT, file)) return 0;
 END
 
 FORM_WRITE (Manipulation_writeToTextFileWithoutSound, L"Text file without Sound", 0, 0)
-	if (! Manipulation_writeToTextFileWithoutSound (ONLY_OBJECT, file)) return 0;
+	if (! Manipulation_writeToTextFileWithoutSound ((structManipulation *)ONLY_OBJECT, file)) return 0;
 END
 
 DIRECT (info_DurationTier_Manipulation_replace)
@@ -1874,8 +1874,8 @@ END
 /***** MANIPULATION & DURATIONTIER *****/
 
 DIRECT (Manipulation_replaceDurationTier)
-	Manipulation ana = ONLY (classManipulation);
-	if (! Manipulation_replaceDurationTier (ana, ONLY (classDurationTier))) return 0;
+	Manipulation ana = (structManipulation *)ONLY (classManipulation);
+	if (! Manipulation_replaceDurationTier (ana, (structDurationTier *)ONLY (classDurationTier))) return 0;
 	praat_dataChanged (ana);
 END
 
@@ -1884,8 +1884,8 @@ DIRECT (Manipulation_replaceDurationTier_help) Melder_help (L"Manipulation: Repl
 /***** MANIPULATION & PITCHTIER *****/
 
 DIRECT (Manipulation_replacePitchTier)
-	Manipulation ana = ONLY (classManipulation);
-	if (! Manipulation_replacePitchTier (ana, ONLY (classPitchTier))) return 0;
+	Manipulation ana = (structManipulation *)ONLY (classManipulation);
+	if (! Manipulation_replacePitchTier (ana, (structPitchTier *)ONLY (classPitchTier))) return 0;
 	praat_dataChanged (ana);
 END
 
@@ -1894,23 +1894,23 @@ DIRECT (Manipulation_replacePitchTier_help) Melder_help (L"Manipulation: Replace
 /***** MANIPULATION & POINTPROCESS *****/
 
 DIRECT (Manipulation_replacePulses)
-	Manipulation ana = ONLY (classManipulation);
-	if (! Manipulation_replacePulses (ana, ONLY (classPointProcess))) return 0;
+	Manipulation ana = (structManipulation *)ONLY (classManipulation);
+	if (! Manipulation_replacePulses (ana, (structPointProcess *)ONLY (classPointProcess))) return 0;
 	praat_dataChanged (ana);
 END
 
 /***** MANIPULATION & SOUND *****/
 
 DIRECT (Manipulation_replaceOriginalSound)
-	Manipulation ana = ONLY (classManipulation);
-	if (! Manipulation_replaceOriginalSound (ana, ONLY (classSound))) return 0;
+	Manipulation ana = (structManipulation *)ONLY (classManipulation);
+	if (! Manipulation_replaceOriginalSound (ana, (structSound *)ONLY (classSound))) return 0;
 	praat_dataChanged (ana);
 END
 
 /***** MANIPULATION & TEXTTIER *****/
 
 DIRECT (Manipulation_TextTier_to_Manipulation)
-	if (! praat_new1 (Manipulation_AnyTier_to_Manipulation (ONLY (classManipulation), ONLY (classTextTier)),
+	if (! praat_new1 (Manipulation_AnyTier_to_Manipulation ((structManipulation *)ONLY (classManipulation), (structAnyTier *)ONLY (classTextTier)),
 		((Manipulation) (ONLY (classManipulation))) -> name)) return 0;	
 END
 
@@ -1918,7 +1918,7 @@ END
 
 DIRECT (Matrix_appendRows)
 	Matrix m1 = NULL, m2 = NULL;
-	WHERE (SELECTED) { if (m1) m2 = OBJECT; else m1 = OBJECT; }
+	WHERE (SELECTED) { if (m1) m2 = (structMatrix *)OBJECT; else m1 = (structMatrix *)OBJECT; }
 	if (! praat_new3 (Matrix_appendRows (m1, m2), m1 -> name, L"_", m2 -> name)) return 0;
 END
 
@@ -2027,25 +2027,25 @@ DO
 	if (! praat_Fon_formula (dia, interpreter)) return 0;
 END
 
-DIRECT (Matrix_getHighestX) Matrix me = ONLY_OBJECT; Melder_informationReal (my xmax, NULL); END
-DIRECT (Matrix_getHighestY) Matrix me = ONLY_OBJECT; Melder_informationReal (my ymax, NULL); END
-DIRECT (Matrix_getLowestX) Matrix me = ONLY_OBJECT; Melder_informationReal (my xmin, NULL); END
-DIRECT (Matrix_getLowestY) Matrix me = ONLY_OBJECT; Melder_informationReal (my ymin, NULL); END
-DIRECT (Matrix_getNumberOfColumns) Matrix me = ONLY_OBJECT; Melder_information1 (Melder_integer (my nx)); END
-DIRECT (Matrix_getNumberOfRows) Matrix me = ONLY_OBJECT; Melder_information1 (Melder_integer (my ny)); END
-DIRECT (Matrix_getColumnDistance) Matrix me = ONLY_OBJECT; Melder_informationReal (my dx, NULL); END
-DIRECT (Matrix_getRowDistance) Matrix me = ONLY_OBJECT; Melder_informationReal (my dy, NULL); END
-DIRECT (Matrix_getSum) Matrix me = ONLY_OBJECT; Melder_informationReal (Matrix_getSum (me), NULL); END
+DIRECT (Matrix_getHighestX) Matrix me = (structMatrix *)ONLY_OBJECT; Melder_informationReal (my xmax, NULL); END
+DIRECT (Matrix_getHighestY) Matrix me = (structMatrix *)ONLY_OBJECT; Melder_informationReal (my ymax, NULL); END
+DIRECT (Matrix_getLowestX) Matrix me = (structMatrix *)ONLY_OBJECT; Melder_informationReal (my xmin, NULL); END
+DIRECT (Matrix_getLowestY) Matrix me = (structMatrix *)ONLY_OBJECT; Melder_informationReal (my ymin, NULL); END
+DIRECT (Matrix_getNumberOfColumns) Matrix me = (structMatrix *)ONLY_OBJECT; Melder_information1 (Melder_integer (my nx)); END
+DIRECT (Matrix_getNumberOfRows) Matrix me = (structMatrix *)ONLY_OBJECT; Melder_information1 (Melder_integer (my ny)); END
+DIRECT (Matrix_getColumnDistance) Matrix me = (structMatrix *)ONLY_OBJECT; Melder_informationReal (my dx, NULL); END
+DIRECT (Matrix_getRowDistance) Matrix me = (structMatrix *)ONLY_OBJECT; Melder_informationReal (my dy, NULL); END
+DIRECT (Matrix_getSum) Matrix me = (structMatrix *)ONLY_OBJECT; Melder_informationReal (Matrix_getSum (me), NULL); END
 
 DIRECT (Matrix_getMaximum)
-	Matrix me = ONLY_OBJECT;
+	Matrix me = (structMatrix *)ONLY_OBJECT;
 	double minimum = NUMundefined, maximum = NUMundefined;
 	Matrix_getWindowExtrema (me, 0, 0, 0, 0, & minimum, & maximum);
 	Melder_informationReal (maximum, NULL);
 END
 
 DIRECT (Matrix_getMinimum)
-	Matrix me = ONLY_OBJECT;
+	Matrix me = (structMatrix *)ONLY_OBJECT;
 	double minimum = NUMundefined, maximum = NUMundefined;
 	Matrix_getWindowExtrema (me, 0, 0, 0, 0, & minimum, & maximum);
 	Melder_informationReal (minimum, NULL);
@@ -2056,14 +2056,14 @@ FORM (Matrix_getValueAtXY, L"Matrix: Get value at xy", 0)
 	REAL (L"Y", L"0")
 	OK
 DO
-	Matrix me = ONLY_OBJECT;
+	Matrix me = (structMatrix *)ONLY_OBJECT;
 	double x = GET_REAL (L"X"), y = GET_REAL (L"Y");
 	Melder_information6 (Melder_double (Matrix_getValueAtXY (me, x, y)),
 		L" (at x = ", Melder_double (x), L" and y = ", Melder_double (y), L")");
 END
 
 FORM (Matrix_getValueInCell, L"Matrix: Get value in cell", 0)
-	NATURAL (L"Row number", L"1") NATURAL (L"Column number", L"1") OK DO Matrix me = ONLY_OBJECT;
+	NATURAL (L"Row number", L"1") NATURAL (L"Column number", L"1") OK DO Matrix me = (structMatrix *)ONLY_OBJECT;
 	long row = GET_INTEGER (L"Row number"), column = GET_INTEGER (L"Column number");
 	REQUIRE (row <= my ny, L"Row number must not exceed number of rows.")
 	REQUIRE (column <= my nx, L"Column number must not exceed number of columns.")
@@ -2160,7 +2160,7 @@ FORM (Matrix_setValue, L"Matrix: Set value", L"Matrix: Set value...")
 	OK
 DO
 	WHERE (SELECTED) {
-		Matrix me = OBJECT;
+		Matrix me = (structMatrix *)OBJECT;
 		long row = GET_INTEGER (L"Row number"), column = GET_INTEGER (L"Column number");
 		REQUIRE (row <= my ny, L"Row number must not be greater than number of rows.")
 		REQUIRE (column <= my nx, L"Column number must not be greater than number of columns.")
@@ -2170,49 +2170,49 @@ DO
 END
 
 DIRECT (Matrix_to_Cochleagram)
-	EVERY_TO (Matrix_to_Cochleagram (OBJECT))
+	EVERY_TO (Matrix_to_Cochleagram ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_Excitation)
-	EVERY_TO (Matrix_to_Excitation (OBJECT))
+	EVERY_TO (Matrix_to_Excitation ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_Harmonicity)
-	EVERY_TO (Matrix_to_Harmonicity (OBJECT))
+	EVERY_TO (Matrix_to_Harmonicity ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_Intensity)
-	EVERY_TO (Matrix_to_Intensity (OBJECT))
+	EVERY_TO (Matrix_to_Intensity ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_Pitch)
-	EVERY_TO (Matrix_to_Pitch (OBJECT))
+	EVERY_TO (Matrix_to_Pitch ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_Spectrogram)
-	EVERY_TO (Matrix_to_Spectrogram (OBJECT))
+	EVERY_TO (Matrix_to_Spectrogram ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_Spectrum)
-	EVERY_TO (Matrix_to_Spectrum (OBJECT))
+	EVERY_TO (Matrix_to_Spectrum ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_Ltas)
-	EVERY_TO (Matrix_to_Ltas (OBJECT))
+	EVERY_TO (Matrix_to_Ltas ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_ParamCurve)
 	Matrix m1 = NULL, m2 = NULL;
-	WHERE (SELECTED) { if (m1) m2 = OBJECT; else m1 = OBJECT; }
+	WHERE (SELECTED) { if (m1) m2 = (structMatrix *)OBJECT; else m1 = (structMatrix *)OBJECT; }
 	if (! praat_new3 (ParamCurve_create (m1, m2), m1 -> name, L"_", m2 -> name)) return 0;
 END
 
 DIRECT (Matrix_to_PointProcess)
-	EVERY_TO (Matrix_to_PointProcess (OBJECT))
+	EVERY_TO (Matrix_to_PointProcess ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_Polygon)
-	EVERY_TO (Matrix_to_Polygon (OBJECT))
+	EVERY_TO (Matrix_to_Polygon ((structMatrix *)OBJECT))
 END
 
 FORM (Matrix_to_Sound_mono, L"Matrix: To Sound (mono)", 0)
@@ -2220,27 +2220,27 @@ FORM (Matrix_to_Sound_mono, L"Matrix: To Sound (mono)", 0)
 	LABEL (L"", L"(negative values count from last row)")
 	OK
 DO
-	EVERY_TO (Matrix_to_Sound_mono (OBJECT, GET_INTEGER (L"Row")))
+	EVERY_TO (Matrix_to_Sound_mono ((structMatrix *)OBJECT, GET_INTEGER (L"Row")))
 END
 
 DIRECT (Matrix_to_TableOfReal)
-	EVERY_TO (Matrix_to_TableOfReal (OBJECT))
+	EVERY_TO (Matrix_to_TableOfReal ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_Transition)
-	EVERY_TO (Matrix_to_Transition (OBJECT))
+	EVERY_TO (Matrix_to_Transition ((structMatrix *)OBJECT))
 END
 
 DIRECT (Matrix_to_VocalTract)
-	EVERY_TO (Matrix_to_VocalTract (OBJECT))
+	EVERY_TO (Matrix_to_VocalTract ((structMatrix *)OBJECT))
 END
 
 FORM_WRITE (Matrix_writeToMatrixTextFile, L"Save Matrix as matrix text file", 0, L"mat")
-	if (! Matrix_writeToMatrixTextFile (ONLY_OBJECT, file)) return 0;
+	if (! Matrix_writeToMatrixTextFile ((structMatrix *)ONLY_OBJECT, file)) return 0;
 END
 
 FORM_WRITE (Matrix_writeToHeaderlessSpreadsheetFile, L"Save Matrix as spreadsheet", 0, L"txt")
-	if (! Matrix_writeToHeaderlessSpreadsheetFile (ONLY_OBJECT, file)) return 0;
+	if (! Matrix_writeToHeaderlessSpreadsheetFile ((structMatrix *)ONLY_OBJECT, file)) return 0;
 END
 
 /***** PARAMCURVE *****/
@@ -2256,7 +2256,7 @@ FORM (ParamCurve_draw, L"Draw parametrized curve", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (ParamCurve_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (ParamCurve_draw ((structParamCurve *)OBJECT, GRAPHICS,
 		GET_REAL (L"Tmin"), GET_REAL (L"Tmax"), GET_REAL (L"Step"),
 		GET_REAL (L"Xmin"), GET_REAL (L"Xmax"), GET_REAL (L"Ymin"), GET_REAL (L"Ymax"),
 		GET_INTEGER (L"Garnish")))
@@ -2267,13 +2267,13 @@ DIRECT (ParamCurve_help) Melder_help (L"ParamCurve"); END
 /***** PITCH *****/
 
 DIRECT (Pitch_getNumberOfVoicedFrames)
-	Pitch me = ONLY (classPitch);
+	Pitch me = (structPitch *)ONLY (classPitch);
 	Melder_information2 (Melder_integer (Pitch_countVoicedFrames (me)), L" voiced frames");
 END
 
 DIRECT (Pitch_difference)
 	Pitch pit1 = NULL, pit2 = NULL;
-	WHERE (SELECTED && CLASS == classPitch) { if (pit1) pit2 = OBJECT; else pit1 = OBJECT; }
+	WHERE (SELECTED && CLASS == classPitch) { if (pit1) pit2 = (structPitch *)OBJECT; else pit1 = (structPitch *)OBJECT; }
 	Pitch_difference (pit1, pit2);
 END
 
@@ -2285,7 +2285,7 @@ FORM (Pitch_draw, L"Pitch: Draw", L"Pitch: Draw...")
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_NO, kPitch_unit_HERTZ))
 END
 
@@ -2298,7 +2298,7 @@ FORM (Pitch_drawErb, L"Pitch: Draw erb", L"Pitch: Draw...")
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_NO, kPitch_unit_ERB))
 END
 
@@ -2311,7 +2311,7 @@ FORM (Pitch_drawLogarithmic, L"Pitch: Draw logarithmic", L"Pitch: Draw...")
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_NO, kPitch_unit_HERTZ_LOGARITHMIC))
 END
 
@@ -2324,7 +2324,7 @@ FORM (Pitch_drawMel, L"Pitch: Draw mel", L"Pitch: Draw...")
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_NO, kPitch_unit_MEL))
 END
 
@@ -2338,7 +2338,7 @@ FORM (Pitch_drawSemitones, L"Pitch: Draw semitones", L"Pitch: Draw...")
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_NO, kPitch_unit_SEMITONES_100))
 END
 
@@ -2347,7 +2347,7 @@ DIRECT (Pitch_edit)
 		return Melder_error1 (L"Cannot edit a Pitch from batch.");
 	else
 		WHERE (SELECTED)
-			if (! praat_installEditor (PitchEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT))
+			if (! praat_installEditor (PitchEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structPitch *)OBJECT), IOBJECT))
 				return 0;
 END
 
@@ -2357,7 +2357,7 @@ FORM (Pitch_formula, L"Pitch: Formula", L"Formula...")
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! Pitch_formula (OBJECT, GET_STRING (L"formula"), interpreter)) return 0;
+		if (! Pitch_formula ((structPitch *)OBJECT, GET_STRING (L"formula"), interpreter)) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -2371,7 +2371,7 @@ FORM (Pitch_getMaximum, L"Pitch: Get maximum", 0)
 	OK
 DO
 	enum kPitch_unit unit = GET_ENUM (kPitch_unit, L"Unit");
-	double value = Pitch_getMaximum (ONLY (classPitch), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
+	double value = Pitch_getMaximum ((structPitch *)ONLY (classPitch), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		unit, GET_INTEGER (L"Interpolation") - 1);
 	value = ClassFunction_convertToNonlogarithmic (classPitch, value, Pitch_LEVEL_FREQUENCY, unit);
 	Melder_informationReal (value, ClassFunction_getUnitText (classPitch, Pitch_LEVEL_FREQUENCY, unit, 0));
@@ -2383,7 +2383,7 @@ FORM (Pitch_getMean, L"Pitch: Get mean", 0)
 	OK
 DO
 	enum kPitch_unit unit = GET_ENUM (kPitch_unit, L"Unit");
-	double value = Pitch_getMean (ONLY (classPitch), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), unit);
+	double value = Pitch_getMean ((structPitch *)ONLY (classPitch), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), unit);
 	value = ClassFunction_convertToNonlogarithmic (classPitch, value, Pitch_LEVEL_FREQUENCY, unit);
 	Melder_informationReal (value, ClassFunction_getUnitText (classPitch, Pitch_LEVEL_FREQUENCY, unit, 0));
 END
@@ -2399,7 +2399,7 @@ DO
 	int unit = GET_INTEGER (L"Unit");
 	double slope;
 	long nVoiced = (unit == 1 ? Pitch_getMeanAbsSlope_hertz : unit == 2 ? Pitch_getMeanAbsSlope_mel : unit == 3 ? Pitch_getMeanAbsSlope_semitones : Pitch_getMeanAbsSlope_erb)
-		(ONLY (classPitch), & slope);
+		((structPitch *)ONLY (classPitch), & slope);
 	if (nVoiced < 2) {
 		Melder_information1 (L"--undefined--");
 	} else {
@@ -2409,7 +2409,7 @@ END
 
 DIRECT (Pitch_getMeanAbsSlope_noOctave)
 	double slope;
-	(void) Pitch_getMeanAbsSlope_noOctave (ONLY (classPitch), & slope);
+	(void) Pitch_getMeanAbsSlope_noOctave ((structPitch *)ONLY (classPitch), & slope);
 	Melder_informationReal (slope, L"Semitones/s");
 END
 
@@ -2460,7 +2460,7 @@ DO
 		unit == 3 ? kPitch_unit_LOG_HERTZ :
 		unit == 4 ? kPitch_unit_SEMITONES_1 :
 		kPitch_unit_ERB;
-	value = Pitch_getStandardDeviation (ONLY (classPitch), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), unit);
+	value = Pitch_getStandardDeviation ((structPitch *)ONLY (classPitch), GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), unit);
 	unitText =
 		unit == kPitch_unit_HERTZ ? L"Hz" :
 		unit == kPitch_unit_MEL ? L"mel" :
@@ -2478,7 +2478,7 @@ FORM (Pitch_getTimeOfMaximum, L"Pitch: Get time of maximum", 0)
 	RADIOBUTTON (L"Parabolic")
 	OK
 DO
-	Melder_informationReal (Pitch_getTimeOfMaximum (ONLY (classPitch),
+	Melder_informationReal (Pitch_getTimeOfMaximum ((structPitch *)ONLY (classPitch),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_ENUM (kPitch_unit, L"Unit"), GET_INTEGER (L"Interpolation") - 1), L"seconds");
 END
@@ -2491,7 +2491,7 @@ FORM (Pitch_getTimeOfMinimum, L"Pitch: Get time of minimum", 0)
 	RADIOBUTTON (L"Parabolic")
 	OK
 DO
-	Melder_informationReal (Pitch_getTimeOfMinimum (ONLY (classPitch),
+	Melder_informationReal (Pitch_getTimeOfMinimum ((structPitch *)ONLY (classPitch),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_ENUM (kPitch_unit, L"Unit"), GET_INTEGER (L"Interpolation") - 1), L"seconds");
 END
@@ -2524,26 +2524,26 @@ END
 DIRECT (Pitch_help) Melder_help (L"Pitch"); END
 
 DIRECT (Pitch_hum)
-	EVERY_CHECK (Pitch_hum (OBJECT, 0, 0))
+	EVERY_CHECK (Pitch_hum ((structPitch *)OBJECT, 0, 0))
 END
 
 DIRECT (Pitch_interpolate)
-	EVERY_TO (Pitch_interpolate (OBJECT))
+	EVERY_TO (Pitch_interpolate ((structPitch *)OBJECT))
 END
 
 DIRECT (Pitch_killOctaveJumps)
-	EVERY_TO (Pitch_killOctaveJumps (OBJECT))
+	EVERY_TO (Pitch_killOctaveJumps ((structPitch *)OBJECT))
 END
 
 DIRECT (Pitch_play)
-	EVERY_CHECK (Pitch_play (OBJECT, 0, 0))
+	EVERY_CHECK (Pitch_play ((structPitch *)OBJECT, 0, 0))
 END
 
 FORM (Pitch_smooth, L"Pitch: Smooth", L"Pitch: Smooth...")
 	REAL (L"Bandwidth (Hertz)", L"10.0")
 	OK
 DO
-	EVERY_TO (Pitch_smooth (OBJECT, GET_REAL (L"Bandwidth")))
+	EVERY_TO (Pitch_smooth ((structPitch *)OBJECT, GET_REAL (L"Bandwidth")))
 END
 
 FORM (Pitch_speckle, L"Pitch: Speckle", L"Pitch: Draw...")
@@ -2555,7 +2555,7 @@ FORM (Pitch_speckle, L"Pitch: Speckle", L"Pitch: Draw...")
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_YES, kPitch_unit_HERTZ))
 END
 
@@ -2568,7 +2568,7 @@ FORM (Pitch_speckleErb, L"Pitch: Speckle erb", L"Pitch: Draw...")
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_YES, kPitch_unit_ERB))
 END
 
@@ -2581,7 +2581,7 @@ FORM (Pitch_speckleLogarithmic, L"Pitch: Speckle logarithmic", L"Pitch: Draw..."
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_YES, kPitch_unit_HERTZ_LOGARITHMIC))
 END
 
@@ -2594,7 +2594,7 @@ FORM (Pitch_speckleMel, L"Pitch: Speckle mel", L"Pitch: Draw...")
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_YES, kPitch_unit_MEL))
 END
 
@@ -2608,7 +2608,7 @@ FORM (Pitch_speckleSemitones, L"Pitch: Speckle semitones", L"Pitch: Draw...")
 	OK
 DO
 	GET_TMIN_TMAX_FMIN_FMAX
-	EVERY_DRAW (Pitch_draw (OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
+	EVERY_DRAW (Pitch_draw ((structPitch *)OBJECT, GRAPHICS, tmin, tmax, fmin, fmax,
 		GET_INTEGER (L"Garnish"), Pitch_speckle_YES, kPitch_unit_SEMITONES_100))
 END
 
@@ -2621,7 +2621,7 @@ FORM (Pitch_subtractLinearFit, L"Pitch: subtract linear fit", 0)
 		RADIOBUTTON (L"ERB")
 	OK
 DO
-	EVERY_TO (Pitch_subtractLinearFit (OBJECT, GET_INTEGER (L"Unit") - 1))
+	EVERY_TO (Pitch_subtractLinearFit ((structPitch *)OBJECT, GET_INTEGER (L"Unit") - 1))
 END
 
 DIRECT (Pitch_to_IntervalTier)
@@ -2629,23 +2629,23 @@ DIRECT (Pitch_to_IntervalTier)
 END
 
 DIRECT (Pitch_to_Matrix)
-	EVERY_TO (Pitch_to_Matrix (OBJECT))
+	EVERY_TO (Pitch_to_Matrix ((structPitch *)OBJECT))
 END
 
 DIRECT (Pitch_to_PitchTier)
-	EVERY_TO (Pitch_to_PitchTier (OBJECT))
+	EVERY_TO (Pitch_to_PitchTier ((structPitch *)OBJECT))
 END
 
 DIRECT (Pitch_to_PointProcess)
-	EVERY_TO (Pitch_to_PointProcess (OBJECT))
+	EVERY_TO (Pitch_to_PointProcess ((structPitch *)OBJECT))
 END
 
 DIRECT (Pitch_to_Sound_pulses)
-	EVERY_TO (Pitch_to_Sound (OBJECT, 0, 0, FALSE))
+	EVERY_TO (Pitch_to_Sound ((structPitch *)OBJECT, 0, 0, FALSE))
 END
 
 DIRECT (Pitch_to_Sound_hum)
-	EVERY_TO (Pitch_to_Sound (OBJECT, 0, 0, TRUE))
+	EVERY_TO (Pitch_to_Sound ((structPitch *)OBJECT, 0, 0, TRUE))
 END
 
 FORM (Pitch_to_Sound_sine, L"Pitch: To Sound (sine)", 0)
@@ -2655,7 +2655,7 @@ FORM (Pitch_to_Sound_sine, L"Pitch: To Sound (sine)", 0)
 		OPTION (L"at nearest zero crossings")
 	OK
 DO
-	EVERY_TO (Pitch_to_Sound_sine (OBJECT, 0, 0, GET_REAL (L"Sampling frequency"), GET_INTEGER (L"Cut voiceless stretches") - 1))
+	EVERY_TO (Pitch_to_Sound_sine ((structPitch *)OBJECT, 0, 0, GET_REAL (L"Sampling frequency"), GET_INTEGER (L"Cut voiceless stretches") - 1))
 END
 
 FORM (Pitch_to_TextGrid, L"To TextGrid...", L"Pitch: To TextGrid...")
@@ -2685,7 +2685,7 @@ FORM (old_PitchTier_Pitch_draw, L"PitchTier & Pitch: Draw", 0)
 	OK
 DO
 	praat_picture_open ();
-	PitchTier_Pitch_draw (ONLY (classPitchTier), ONLY (classPitch), GRAPHICS,
+	PitchTier_Pitch_draw ((structPitchTier *)ONLY (classPitchTier), (structPitch *)ONLY (classPitch), GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"From frequency"), GET_REAL (L"To frequency"),
 		GET_INTEGER (L"Line type for non-periodic intervals") - 1,
@@ -2710,7 +2710,7 @@ FORM (PitchTier_Pitch_draw, L"PitchTier & Pitch: Draw", 0)
 	OK
 DO_ALTERNATIVE (old_PitchTier_Pitch_draw)
 	praat_picture_open ();
-	PitchTier_Pitch_draw (ONLY (classPitchTier), ONLY (classPitch), GRAPHICS,
+	PitchTier_Pitch_draw ((structPitchTier *)ONLY (classPitchTier), (structPitch *)ONLY (classPitch), GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"From frequency"), GET_REAL (L"To frequency"),
 		GET_INTEGER (L"Line type for non-periodic intervals") - 1,
@@ -2719,29 +2719,29 @@ DO_ALTERNATIVE (old_PitchTier_Pitch_draw)
 END
 
 DIRECT (Pitch_PitchTier_to_Pitch)
-	Pitch pitch = ONLY (classPitch);
-	PitchTier tier = ONLY (classPitchTier);
+	Pitch pitch = (structPitch *)ONLY (classPitch);
+	PitchTier tier = (structPitchTier *)ONLY (classPitchTier);
 	if (! praat_new2 (Pitch_PitchTier_to_Pitch (pitch, tier), pitch -> name, L"_stylized")) return 0;
 END
 
 /***** PITCH & POINTPROCESS *****/
 
 DIRECT (Pitch_PointProcess_to_PitchTier)
-	Pitch pitch = ONLY (classPitch);
-	if (! praat_new1 (Pitch_PointProcess_to_PitchTier (pitch, ONLY (classPointProcess)), pitch -> name)) return 0;
+	Pitch pitch = (structPitch *)ONLY (classPitch);
+	if (! praat_new1 (Pitch_PointProcess_to_PitchTier (pitch, (structPointProcess *)ONLY (classPointProcess)), pitch -> name)) return 0;
 END
 
 /***** PITCH & SOUND *****/
 
 DIRECT (Sound_Pitch_to_Manipulation)
-	Pitch pitch = ONLY (classPitch);
-	if (! praat_new1 (Sound_Pitch_to_Manipulation (ONLY (classSound), pitch), pitch -> name)) return 0;
+	Pitch pitch = (structPitch *)ONLY (classPitch);
+	if (! praat_new1 (Sound_Pitch_to_Manipulation ((structSound *)ONLY (classSound), pitch), pitch -> name)) return 0;
 END
 
 DIRECT (Sound_Pitch_to_PointProcess_cc)
 	wchar_t name [200];
 	praat_name2 (name, classSound, classPitch);
-	if (! praat_new1 (Sound_Pitch_to_PointProcess_cc (ONLY (classSound), ONLY (classPitch)), name)) return 0;
+	if (! praat_new1 (Sound_Pitch_to_PointProcess_cc ((structSound *)ONLY (classSound), (structPitch *)ONLY (classPitch)), name)) return 0;
 END
 
 FORM (Sound_Pitch_to_PointProcess_peaks, L"Sound & Pitch: To PointProcess (peaks)", 0)
@@ -2751,7 +2751,7 @@ FORM (Sound_Pitch_to_PointProcess_peaks, L"Sound & Pitch: To PointProcess (peaks
 DO
 	wchar_t name [200];
 	praat_name2 (name, classSound, classPitch);
-	if (! praat_new1 (Sound_Pitch_to_PointProcess_peaks (ONLY (classSound), ONLY (classPitch),
+	if (! praat_new1 (Sound_Pitch_to_PointProcess_peaks ((structSound *)ONLY (classSound), (structPitch *)ONLY (classPitch),
 		GET_INTEGER (L"Include maxima"), GET_INTEGER (L"Include minima")), name)) return 0;
 END
 
@@ -2789,7 +2789,7 @@ FORM (PitchTier_downto_TableOfReal, L"PitchTier: Down to TableOfReal", NULL)
 	RADIOBUTTON (L"Semitones")
 	OK
 DO
-	EVERY_TO (PitchTier_downto_TableOfReal (OBJECT, GET_INTEGER (L"Unit") - 1))
+	EVERY_TO (PitchTier_downto_TableOfReal ((structPitchTier *)OBJECT, GET_INTEGER (L"Unit") - 1))
 END
 
 FORM (old_PitchTier_draw, L"PitchTier: Draw", 0)
@@ -2803,7 +2803,7 @@ DO
 	double maximumFrequency = GET_REAL (STRING_TO_FREQUENCY);
 	REQUIRE (maximumFrequency > minimumFrequency,
 		L"Maximum frequency must be greater than minimum frequency.")
-	EVERY_DRAW (PitchTier_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (PitchTier_draw ((structPitchTier *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), minimumFrequency, maximumFrequency,
 		GET_INTEGER (L"Garnish"), L"lines and speckles"))
 END
@@ -2824,7 +2824,7 @@ DO_ALTERNATIVE (old_PitchTier_draw)
 	double maximumFrequency = GET_REAL (STRING_TO_FREQUENCY);
 	REQUIRE (maximumFrequency > minimumFrequency,
 		L"Maximum frequency must be greater than minimum frequency.")
-	EVERY_DRAW (PitchTier_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (PitchTier_draw ((structPitchTier *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), minimumFrequency, maximumFrequency,
 		GET_INTEGER (L"Garnish"), GET_STRING (L"Drawing method")))
 END
@@ -2835,10 +2835,10 @@ DIRECT (PitchTier_edit)
 	} else {
 		Sound sound = NULL;
 		WHERE (SELECTED)
-			if (CLASS == classSound) sound = OBJECT;
+			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classPitchTier)
 			if (! praat_installEditor (PitchTierEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
-				OBJECT, sound, TRUE), IOBJECT)) return 0;
+				(structPitchTier *)OBJECT, sound, TRUE), IOBJECT)) return 0;
 	}
 END
 
@@ -2904,7 +2904,7 @@ END
 DIRECT (PitchTier_help) Melder_help (L"PitchTier"); END
 
 DIRECT (PitchTier_hum)
-	EVERY_CHECK (PitchTier_hum (OBJECT))
+	EVERY_CHECK (PitchTier_hum ((structPitchTier *)OBJECT))
 END
 
 FORM (PitchTier_interpolateQuadratically, L"PitchTier: Interpolate quadratically", 0)
@@ -2921,7 +2921,7 @@ DO
 END
 
 DIRECT (PitchTier_play)
-	EVERY_CHECK (PitchTier_play (OBJECT))
+	EVERY_CHECK (PitchTier_play ((structPitchTier *)OBJECT))
 END
 
 DIRECT (PitchTier_playSine)
@@ -2948,7 +2948,7 @@ DO
 		unit == 4 ? kPitch_unit_SEMITONES_1 :
 		kPitch_unit_ERB;
 	WHERE (SELECTED) {
-		PitchTier_shiftFrequencies (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Frequency shift"), unit);
+		PitchTier_shiftFrequencies ((structPitchTier *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Frequency shift"), unit);
 		iferror return 0;
 		praat_dataChanged (OBJECT);
 	}
@@ -2961,7 +2961,7 @@ FORM (PitchTier_multiplyFrequencies, L"PitchTier: Multiply frequencies", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		PitchTier_multiplyFrequencies (OBJECT,
+		PitchTier_multiplyFrequencies ((structPitchTier *)OBJECT,
 			GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Factor"));
 		praat_dataChanged (OBJECT);
 	}
@@ -2975,13 +2975,13 @@ FORM (PitchTier_stylize, L"PitchTier: Stylize", L"PitchTier: Stylize...")
 	OK
 DO
 	WHERE (SELECTED) {
-		PitchTier_stylize (OBJECT, GET_REAL (L"Frequency resolution"), GET_INTEGER (L"Unit") - 1);
+		PitchTier_stylize ((structPitchTier *)OBJECT, GET_REAL (L"Frequency resolution"), GET_INTEGER (L"Unit") - 1);
 		praat_dataChanged (OBJECT);
 	}
 END
 
 DIRECT (PitchTier_to_PointProcess)
-	EVERY_TO (PitchTier_to_PointProcess (OBJECT))
+	EVERY_TO (PitchTier_to_PointProcess ((structPitchTier *)OBJECT))
 END
 
 FORM (PitchTier_to_Sound_phonation, L"PitchTier: To Sound (phonation)", 0)
@@ -2995,7 +2995,7 @@ FORM (PitchTier_to_Sound_phonation, L"PitchTier: To Sound (phonation)", 0)
 	BOOLEAN (L"Hum", 0)
 	OK
 DO
-	EVERY_TO (PitchTier_to_Sound_phonation (OBJECT, GET_REAL (L"Sampling frequency"),
+	EVERY_TO (PitchTier_to_Sound_phonation ((structPitchTier *)OBJECT, GET_REAL (L"Sampling frequency"),
 		GET_REAL (L"Adaptation factor"), GET_REAL (L"Maximum period"),
 		GET_REAL (L"Open phase"), GET_REAL (L"Collision phase"), GET_REAL (L"Power 1"), GET_REAL (L"Power 2"), GET_INTEGER (L"Hum")))
 END
@@ -3008,7 +3008,7 @@ FORM (PitchTier_to_Sound_pulseTrain, L"PitchTier: To Sound (pulse train)", 0)
 	BOOLEAN (L"Hum", 0)
 	OK
 DO
-	EVERY_TO (PitchTier_to_Sound_pulseTrain (OBJECT, GET_REAL (L"Sampling frequency"),
+	EVERY_TO (PitchTier_to_Sound_pulseTrain ((structPitchTier *)OBJECT, GET_REAL (L"Sampling frequency"),
 		GET_REAL (L"Adaptation factor"), GET_REAL (L"Adaptation time"),
 		GET_INTEGER (L"Interpolation depth"), GET_INTEGER (L"Hum")))
 END
@@ -3017,7 +3017,7 @@ FORM (PitchTier_to_Sound_sine, L"PitchTier: To Sound (sine)", 0)
 	POSITIVE (L"Sampling frequency (Hz)", L"44100")
 	OK
 DO
-	EVERY_TO (PitchTier_to_Sound_sine (OBJECT, 0.0, 0.0, GET_REAL (L"Sampling frequency")))
+	EVERY_TO (PitchTier_to_Sound_sine ((structPitchTier *)OBJECT, 0.0, 0.0, GET_REAL (L"Sampling frequency")))
 END
 
 DIRECT (info_PitchTier_Sound_edit)
@@ -3026,18 +3026,18 @@ DIRECT (info_PitchTier_Sound_edit)
 END
 
 FORM_WRITE (PitchTier_writeToPitchTierSpreadsheetFile, L"Save PitchTier as spreadsheet", 0, L"PitchTier")
-	if (! PitchTier_writeToPitchTierSpreadsheetFile (ONLY_OBJECT, file)) return 0;
+	if (! PitchTier_writeToPitchTierSpreadsheetFile ((structPitchTier *)ONLY_OBJECT, file)) return 0;
 END
 
 FORM_WRITE (PitchTier_writeToHeaderlessSpreadsheetFile, L"Save PitchTier as spreadsheet", 0, L"txt")
-	if (! PitchTier_writeToHeaderlessSpreadsheetFile (ONLY_OBJECT, file)) return 0;
+	if (! PitchTier_writeToHeaderlessSpreadsheetFile ((structPitchTier *)ONLY_OBJECT, file)) return 0;
 END
 
 /***** PITCHTIER & POINTPROCESS *****/
 
 DIRECT (PitchTier_PointProcess_to_PitchTier)
-	PitchTier pitch = ONLY (classPitchTier);
-	if (! praat_new1 (PitchTier_PointProcess_to_PitchTier (pitch, ONLY (classPointProcess)), pitch -> name)) return 0;
+	PitchTier pitch = (structPitchTier *)ONLY (classPitchTier);
+	if (! praat_new1 (PitchTier_PointProcess_to_PitchTier (pitch, (structPointProcess *)ONLY (classPointProcess)), pitch -> name)) return 0;
 END
 
 /***** POINTPROCESS *****/
@@ -3047,7 +3047,7 @@ FORM (PointProcess_addPoint, L"PointProcess: Add point", L"PointProcess: Add poi
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! PointProcess_addPoint (OBJECT, GET_REAL (L"Time"))) return 0;
+		if (! PointProcess_addPoint ((structPointProcess *)OBJECT, GET_REAL (L"Time"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3079,7 +3079,7 @@ END
 
 DIRECT (PointProcess_difference)
 	PointProcess point1 = NULL, point2 = NULL;
-	WHERE (SELECTED) { if (point1) point2 = OBJECT; else point1 = OBJECT; }
+	WHERE (SELECTED) { if (point1) point2 = (structPointProcess *)OBJECT; else point1 = (structPointProcess *)OBJECT; }
 	if (! praat_new1 (PointProcesses_difference (point1, point2), L"difference")) return 0;
 END
 
@@ -3088,7 +3088,7 @@ FORM (PointProcess_draw, L"PointProcess: Draw", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (PointProcess_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (PointProcess_draw ((structPointProcess *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Garnish")))
 END
 
@@ -3098,10 +3098,10 @@ DIRECT (PointProcess_edit)
 	} else {
 		Sound sound = NULL;
 		WHERE (SELECTED)
-			if (CLASS == classSound) sound = OBJECT;
+			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classPointProcess)
 			if (! praat_installEditor (PointEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
-				OBJECT, sound), IOBJECT)) return 0;
+				(structPointProcess *)OBJECT, sound), IOBJECT)) return 0;
 	}
 END
 
@@ -3111,7 +3111,7 @@ FORM (PointProcess_fill, L"PointProcess: Fill", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		int status = PointProcess_fill (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Period"));
+		int status = PointProcess_fill ((structPointProcess *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Period"));
 		praat_dataChanged (OBJECT);
 		if (! status) return 0;
 	}
@@ -3121,7 +3121,7 @@ FORM (PointProcess_getInterval, L"PointProcess: Get interval", L"PointProcess: G
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Melder_informationReal (PointProcess_getInterval (ONLY (classPointProcess), GET_REAL (L"Time")), L"seconds");
+	Melder_informationReal (PointProcess_getInterval ((structPointProcess *)ONLY (classPointProcess), GET_REAL (L"Time")), L"seconds");
 END
 
 static void dia_PointProcess_getRangeProperty (Any dia) {
@@ -3135,7 +3135,7 @@ FORM (PointProcess_getJitter_local, L"PointProcess: Get jitter (local)", L"Point
 	dia_PointProcess_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (PointProcess_getJitter_local (ONLY (classPointProcess),
+	Melder_informationReal (PointProcess_getJitter_local ((structPointProcess *)ONLY (classPointProcess),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), NULL);
 END
@@ -3144,7 +3144,7 @@ FORM (PointProcess_getJitter_local_absolute, L"PointProcess: Get jitter (local, 
 	dia_PointProcess_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (PointProcess_getJitter_local_absolute (ONLY (classPointProcess),
+	Melder_informationReal (PointProcess_getJitter_local_absolute ((structPointProcess *)ONLY (classPointProcess),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), L"seconds");
 END
@@ -3153,7 +3153,7 @@ FORM (PointProcess_getJitter_rap, L"PointProcess: Get jitter (rap)", L"PointProc
 	dia_PointProcess_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (PointProcess_getJitter_rap (ONLY (classPointProcess),
+	Melder_informationReal (PointProcess_getJitter_rap ((structPointProcess *)ONLY (classPointProcess),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), NULL);
 END
@@ -3162,7 +3162,7 @@ FORM (PointProcess_getJitter_ppq5, L"PointProcess: Get jitter (ppq5)", L"PointPr
 	dia_PointProcess_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (PointProcess_getJitter_ppq5 (ONLY (classPointProcess),
+	Melder_informationReal (PointProcess_getJitter_ppq5 ((structPointProcess *)ONLY (classPointProcess),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), NULL);
 END
@@ -3171,7 +3171,7 @@ FORM (PointProcess_getJitter_ddp, L"PointProcess: Get jitter (ddp)", L"PointProc
 	dia_PointProcess_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (PointProcess_getJitter_ddp (ONLY (classPointProcess),
+	Melder_informationReal (PointProcess_getJitter_ddp ((structPointProcess *)ONLY (classPointProcess),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), NULL);
 END
@@ -3180,7 +3180,7 @@ FORM (PointProcess_getMeanPeriod, L"PointProcess: Get mean period", L"PointProce
 	dia_PointProcess_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (PointProcess_getMeanPeriod (ONLY (classPointProcess),
+	Melder_informationReal (PointProcess_getMeanPeriod ((structPointProcess *)ONLY (classPointProcess),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), L"seconds");
 END
@@ -3189,7 +3189,7 @@ FORM (PointProcess_getStdevPeriod, L"PointProcess: Get stdev period", L"PointPro
 	dia_PointProcess_getRangeProperty (dia);
 	OK
 DO
-	Melder_informationReal (PointProcess_getStdevPeriod (ONLY (classPointProcess),
+	Melder_informationReal (PointProcess_getStdevPeriod ((structPointProcess *)ONLY (classPointProcess),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), L"seconds");
 END
@@ -3198,25 +3198,25 @@ FORM (PointProcess_getLowIndex, L"PointProcess: Get low index", L"PointProcess: 
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Melder_information1 (Melder_integer (PointProcess_getLowIndex (ONLY_OBJECT, GET_REAL (L"Time"))));
+	Melder_information1 (Melder_integer (PointProcess_getLowIndex ((structPointProcess *)ONLY_OBJECT, GET_REAL (L"Time"))));
 END
 
 FORM (PointProcess_getHighIndex, L"PointProcess: Get high index", L"PointProcess: Get high index...")
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Melder_information1 (Melder_integer (PointProcess_getHighIndex (ONLY_OBJECT, GET_REAL (L"Time"))));
+	Melder_information1 (Melder_integer (PointProcess_getHighIndex ((structPointProcess *)ONLY_OBJECT, GET_REAL (L"Time"))));
 END
 
 FORM (PointProcess_getNearestIndex, L"PointProcess: Get nearest index", L"PointProcess: Get nearest index...")
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Melder_information1 (Melder_integer (PointProcess_getNearestIndex (ONLY_OBJECT, GET_REAL (L"Time"))));
+	Melder_information1 (Melder_integer (PointProcess_getNearestIndex ((structPointProcess *)ONLY_OBJECT, GET_REAL (L"Time"))));
 END
 
 DIRECT (PointProcess_getNumberOfPoints)
-	PointProcess me = ONLY_OBJECT;
+	PointProcess me = (structPointProcess *)ONLY_OBJECT;
 	Melder_information1 (Melder_integer (my nt));
 END
 
@@ -3224,7 +3224,7 @@ FORM (PointProcess_getNumberOfPeriods, L"PointProcess: Get number of periods", L
 	dia_PointProcess_getRangeProperty (dia);
 	OK
 DO
-	Melder_information1 (Melder_integer (PointProcess_getNumberOfPeriods (ONLY (classPointProcess),
+	Melder_information1 (Melder_integer (PointProcess_getNumberOfPeriods ((structPointProcess *)ONLY (classPointProcess),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor"))));
 END
@@ -3233,7 +3233,7 @@ FORM (PointProcess_getTimeFromIndex, L"Get time", 0 /*"PointProcess: Get time fr
 	NATURAL (L"Point number", L"10")
 	OK
 DO
-	PointProcess me = ONLY_OBJECT;
+	PointProcess me = (structPointProcess *)ONLY_OBJECT;
 	long i = GET_INTEGER (L"Point number");
 	if (i > my nt) Melder_information1 (L"--undefined--");
 	else Melder_informationReal (my t [i], L"seconds");
@@ -3242,18 +3242,18 @@ END
 DIRECT (PointProcess_help) Melder_help (L"PointProcess"); END
 
 DIRECT (PointProcess_hum)
-	EVERY_CHECK (PointProcess_hum (OBJECT,
+	EVERY_CHECK (PointProcess_hum ((structPointProcess *)OBJECT,
 		((PointProcess) OBJECT) -> xmin, ((PointProcess) OBJECT) -> xmax))
 END
 
 DIRECT (PointProcess_intersection)
 	PointProcess point1 = NULL, point2 = NULL;
-	WHERE (SELECTED) { if (point1) point2 = OBJECT; else point1 = OBJECT; }
+	WHERE (SELECTED) { if (point1) point2 = (structPointProcess *)OBJECT; else point1 = (structPointProcess *)OBJECT; }
 	if (! praat_new1 (PointProcesses_intersection (point1, point2), L"intersection")) return 0;
 END
 
 DIRECT (PointProcess_play)
-	EVERY_CHECK (PointProcess_play (OBJECT))
+	EVERY_CHECK (PointProcess_play ((structPointProcess *)OBJECT))
 END
 
 FORM (PointProcess_removePoint, L"PointProcess: Remove point", L"PointProcess: Remove point...")
@@ -3261,7 +3261,7 @@ FORM (PointProcess_removePoint, L"PointProcess: Remove point", L"PointProcess: R
 	OK
 DO
 	WHERE (SELECTED) {
-		PointProcess_removePoint (OBJECT, GET_INTEGER (L"Index"));
+		PointProcess_removePoint ((structPointProcess *)OBJECT, GET_INTEGER (L"Index"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3271,7 +3271,7 @@ FORM (PointProcess_removePointNear, L"PointProcess: Remove point near", L"PointP
 	OK
 DO
 	WHERE (SELECTED) {
-		PointProcess_removePointNear (OBJECT, GET_REAL (L"Time"));
+		PointProcess_removePointNear ((structPointProcess *)OBJECT, GET_REAL (L"Time"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3282,7 +3282,7 @@ FORM (PointProcess_removePoints, L"PointProcess: Remove points", L"PointProcess:
 	OK
 DO
 	WHERE (SELECTED) {
-		PointProcess_removePoints (OBJECT, GET_INTEGER (L"From index"), GET_INTEGER (L"To index"));
+		PointProcess_removePoints ((structPointProcess *)OBJECT, GET_INTEGER (L"From index"), GET_INTEGER (L"To index"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3293,7 +3293,7 @@ FORM (PointProcess_removePointsBetween, L"PointProcess: Remove points between", 
 	OK
 DO
 	WHERE (SELECTED) {
-		PointProcess_removePointsBetween (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"));
+		PointProcess_removePointsBetween ((structPointProcess *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3303,14 +3303,14 @@ DIRECT (PointProcess_to_IntervalTier)
 END
 
 DIRECT (PointProcess_to_Matrix)
-	EVERY_TO (PointProcess_to_Matrix (OBJECT))
+	EVERY_TO (PointProcess_to_Matrix ((structPointProcess *)OBJECT))
 END
 
 FORM (PointProcess_to_PitchTier, L"PointProcess: To PitchTier", L"PointProcess: To PitchTier...")
 	POSITIVE (L"Maximum interval (s)", L"0.02")
 	OK
 DO
-	EVERY_TO (PointProcess_to_PitchTier (OBJECT, GET_REAL (L"Maximum interval")))
+	EVERY_TO (PointProcess_to_PitchTier ((structPointProcess *)OBJECT, GET_REAL (L"Maximum interval")))
 END
 
 FORM (PointProcess_to_TextGrid, L"PointProcess: To TextGrid...", L"PointProcess: To TextGrid...")
@@ -3327,7 +3327,7 @@ FORM (PointProcess_to_TextGrid_vuv, L"PointProcess: To TextGrid (vuv)...", L"Poi
 	REAL (L"Mean period (s)", L"0.01")
 	OK
 DO
-	EVERY_TO (PointProcess_to_TextGrid_vuv (OBJECT, GET_REAL (L"Maximum period"),
+	EVERY_TO (PointProcess_to_TextGrid_vuv ((structPointProcess *)OBJECT, GET_REAL (L"Maximum period"),
 		GET_REAL (L"Mean period")))
 END
 
@@ -3345,7 +3345,7 @@ FORM (PointProcess_to_Sound_phonation, L"PointProcess: To Sound (phonation)", L"
 	POSITIVE (L"Power 2", L"4.0")
 	OK
 DO
-	EVERY_TO (PointProcess_to_Sound_phonation (OBJECT, GET_REAL (L"Sampling frequency"),
+	EVERY_TO (PointProcess_to_Sound_phonation ((structPointProcess *)OBJECT, GET_REAL (L"Sampling frequency"),
 		GET_REAL (L"Adaptation factor"), GET_REAL (L"Maximum period"),
 		GET_REAL (L"Open phase"), GET_REAL (L"Collision phase"), GET_REAL (L"Power 1"), GET_REAL (L"Power 2")))
 END
@@ -3357,18 +3357,18 @@ FORM (PointProcess_to_Sound_pulseTrain, L"PointProcess: To Sound (pulse train)",
 	NATURAL (L"Interpolation depth (samples)", L"2000")
 	OK
 DO
-	EVERY_TO (PointProcess_to_Sound_pulseTrain (OBJECT, GET_REAL (L"Sampling frequency"),
+	EVERY_TO (PointProcess_to_Sound_pulseTrain ((structPointProcess *)OBJECT, GET_REAL (L"Sampling frequency"),
 		GET_REAL (L"Adaptation factor"), GET_REAL (L"Adaptation time"),
 		GET_INTEGER (L"Interpolation depth")))
 END
 
 DIRECT (PointProcess_to_Sound_hum)
-	EVERY_TO (PointProcess_to_Sound_hum (OBJECT))
+	EVERY_TO (PointProcess_to_Sound_hum ((structPointProcess *)OBJECT))
 END
 
 DIRECT (PointProcess_union)
 	PointProcess point1 = NULL, point2 = NULL;
-	WHERE (SELECTED) { if (point1) point2 = OBJECT; else point1 = OBJECT; }
+	WHERE (SELECTED) { if (point1) point2 = (structPointProcess *)OBJECT; else point1 = (structPointProcess *)OBJECT; }
 	if (! praat_new1 (PointProcesses_union (point1, point2), L"union")) return 0;
 END
 
@@ -3376,21 +3376,21 @@ FORM (PointProcess_upto_IntensityTier, L"PointProcess: Up to IntensityTier", L"P
 	POSITIVE (L"Intensity (dB)", L"70.0")
 	OK
 DO
-	EVERY_TO (PointProcess_upto_IntensityTier (OBJECT, GET_REAL (L"Intensity")))
+	EVERY_TO (PointProcess_upto_IntensityTier ((structPointProcess *)OBJECT, GET_REAL (L"Intensity")))
 END
 
 FORM (PointProcess_upto_PitchTier, L"PointProcess: Up to PitchTier", L"PointProcess: Up to PitchTier...")
 	POSITIVE (L"Frequency (Hz)", L"190.0")
 	OK
 DO
-	EVERY_TO (PointProcess_upto_PitchTier (OBJECT, GET_REAL (L"Frequency")))
+	EVERY_TO (PointProcess_upto_PitchTier ((structPointProcess *)OBJECT, GET_REAL (L"Frequency")))
 END
 
 FORM (PointProcess_upto_TextTier, L"PointProcess: Up to TextTier", L"PointProcess: Up to TextTier...")
 	SENTENCE (L"Text", L"")
 	OK
 DO
-	EVERY_TO (PointProcess_upto_TextTier (OBJECT, GET_STRING (L"Text")))
+	EVERY_TO (PointProcess_upto_TextTier ((structPointProcess *)OBJECT, GET_STRING (L"Text")))
 END
 
 FORM (PointProcess_voice, L"PointProcess: Fill unvoiced parts", 0)
@@ -3399,7 +3399,7 @@ FORM (PointProcess_voice, L"PointProcess: Fill unvoiced parts", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		int status = PointProcess_voice (OBJECT, GET_REAL (L"Period"), GET_REAL (L"Maximum voiced period"));
+		int status = PointProcess_voice ((structPointProcess *)OBJECT, GET_REAL (L"Period"), GET_REAL (L"Maximum voiced period"));
 		praat_dataChanged (OBJECT);
 		if (! status) return 0;
 	}
@@ -3419,8 +3419,8 @@ END
 END*/
 
 DIRECT (Point_Sound_transplantDomain)
-	PointProcess point = ONLY (classPointProcess);
-	Sound sound = ONLY (classSound);
+	PointProcess point = (structPointProcess *)ONLY (classPointProcess);
+	Sound sound = (structSound *)ONLY (classSound);
 	point -> xmin = sound -> xmin;
 	point -> xmax = sound -> xmax;
 	praat_dataChanged (point);
@@ -3431,7 +3431,7 @@ FORM (Point_Sound_getShimmer_local, L"PointProcess & Sound: Get shimmer (local)"
 	POSITIVE (L"Maximum amplitude factor", L"1.6")
 	OK
 DO
-	Melder_informationReal (PointProcess_Sound_getShimmer_local (ONLY (classPointProcess), ONLY (classSound),
+	Melder_informationReal (PointProcess_Sound_getShimmer_local ((structPointProcess *)ONLY (classPointProcess), (structSound *)ONLY (classSound),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"),
 		GET_REAL (L"Maximum period factor"), GET_REAL (L"Maximum amplitude factor")), NULL);
@@ -3442,7 +3442,7 @@ FORM (Point_Sound_getShimmer_local_dB, L"PointProcess & Sound: Get shimmer (loca
 	POSITIVE (L"Maximum amplitude factor", L"1.6")
 	OK
 DO
-	Melder_informationReal (PointProcess_Sound_getShimmer_local_dB (ONLY (classPointProcess), ONLY (classSound),
+	Melder_informationReal (PointProcess_Sound_getShimmer_local_dB ((structPointProcess *)ONLY (classPointProcess), (structSound *)ONLY (classSound),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"),
 		GET_REAL (L"Maximum period factor"), GET_REAL (L"Maximum amplitude factor")), NULL);
@@ -3453,7 +3453,7 @@ FORM (Point_Sound_getShimmer_apq3, L"PointProcess & Sound: Get shimmer (apq3)", 
 	POSITIVE (L"Maximum amplitude factor", L"1.6")
 	OK
 DO
-	Melder_informationReal (PointProcess_Sound_getShimmer_apq3 (ONLY (classPointProcess), ONLY (classSound),
+	Melder_informationReal (PointProcess_Sound_getShimmer_apq3 ((structPointProcess *)ONLY (classPointProcess), (structSound *)ONLY (classSound),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"),
 		GET_REAL (L"Maximum period factor"), GET_REAL (L"Maximum amplitude factor")), NULL);
@@ -3464,7 +3464,7 @@ FORM (Point_Sound_getShimmer_apq5, L"PointProcess & Sound: Get shimmer (apq)", L
 	POSITIVE (L"Maximum amplitude factor", L"1.6")
 	OK
 DO
-	Melder_informationReal (PointProcess_Sound_getShimmer_apq5 (ONLY (classPointProcess), ONLY (classSound),
+	Melder_informationReal (PointProcess_Sound_getShimmer_apq5 ((structPointProcess *)ONLY (classPointProcess), (structSound *)ONLY (classSound),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"),
 		GET_REAL (L"Maximum period factor"), GET_REAL (L"Maximum amplitude factor")), NULL);
@@ -3475,7 +3475,7 @@ FORM (Point_Sound_getShimmer_apq11, L"PointProcess & Sound: Get shimmer (apq11)"
 	POSITIVE (L"Maximum amplitude factor", L"1.6")
 	OK
 DO
-	Melder_informationReal (PointProcess_Sound_getShimmer_apq11 (ONLY (classPointProcess), ONLY (classSound),
+	Melder_informationReal (PointProcess_Sound_getShimmer_apq11 ((structPointProcess *)ONLY (classPointProcess), (structSound *)ONLY (classSound),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"),
 		GET_REAL (L"Maximum period factor"), GET_REAL (L"Maximum amplitude factor")), NULL);
@@ -3486,7 +3486,7 @@ FORM (Point_Sound_getShimmer_dda, L"PointProcess & Sound: Get shimmer (dda)", L"
 	POSITIVE (L"Maximum amplitude factor", L"1.6")
 	OK
 DO
-	Melder_informationReal (PointProcess_Sound_getShimmer_dda (ONLY (classPointProcess), ONLY (classSound),
+	Melder_informationReal (PointProcess_Sound_getShimmer_dda ((structPointProcess *)ONLY (classPointProcess), (structSound *)ONLY (classSound),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"),
 		GET_REAL (L"Maximum period factor"), GET_REAL (L"Maximum amplitude factor")), NULL);
@@ -3496,16 +3496,16 @@ FORM (PointProcess_Sound_to_AmplitudeTier_period, L"PointProcess & Sound: To Amp
 	dia_PointProcess_getRangeProperty (dia);
 	OK
 DO
-	PointProcess point = ONLY (classPointProcess);
-	Sound sound = ONLY (classSound);
+	PointProcess point = (structPointProcess *)ONLY (classPointProcess);
+	Sound sound = (structSound *)ONLY (classSound);
 	if (! praat_new3 (PointProcess_Sound_to_AmplitudeTier_period (point, sound,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), sound -> name, L"_", point -> name)) return 0;
 END
 
 DIRECT (PointProcess_Sound_to_AmplitudeTier_point)
-	PointProcess point = ONLY (classPointProcess);
-	Sound sound = ONLY (classSound);
+	PointProcess point = (structPointProcess *)ONLY (classPointProcess);
+	Sound sound = (structSound *)ONLY (classSound);
 	if (! praat_new3 (PointProcess_Sound_to_AmplitudeTier_point (point, sound), sound -> name, L"_", point -> name)) return 0;
 END
 
@@ -3517,8 +3517,8 @@ FORM (PointProcess_Sound_to_Ltas, L"PointProcess & Sound: To Ltas", 0)
 	POSITIVE (L"Maximum period factor", L"1.3")
 	OK
 DO
-	PointProcess point = ONLY (classPointProcess);
-	Sound sound = ONLY (classSound);
+	PointProcess point = (structPointProcess *)ONLY (classPointProcess);
+	Sound sound = (structSound *)ONLY (classSound);
 	if (! praat_new1 (PointProcess_Sound_to_Ltas (point, sound,
 		GET_REAL (L"Maximum frequency"), GET_REAL (L"Band width"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), sound -> name)) return 0;
@@ -3531,8 +3531,8 @@ FORM (PointProcess_Sound_to_Ltas_harmonics, L"PointProcess & Sound: To Ltas (har
 	POSITIVE (L"Maximum period factor", L"1.3")
 	OK
 DO
-	PointProcess point = ONLY (classPointProcess);
-	Sound sound = ONLY (classSound);
+	PointProcess point = (structPointProcess *)ONLY (classPointProcess);
+	Sound sound = (structSound *)ONLY (classSound);
 	if (! praat_new1 (PointProcess_Sound_to_Ltas_harmonics (point, sound,
 		GET_INTEGER (L"Maximum harmonic"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")), sound -> name)) return 0;
@@ -3543,8 +3543,8 @@ FORM (Sound_PointProcess_to_SoundEnsemble_correlate, L"Sound & PointProcess: To 
 	REAL (L"To time (s)", L"1.0")
 	OK
 DO
-	Sound sound = ONLY (classSound);
-	PointProcess point = ONLY (classPointProcess);
+	Sound sound = (structSound *)ONLY (classSound);
+	PointProcess point = (structPointProcess *)ONLY (classPointProcess);
 	if (! praat_new1 (Sound_PointProcess_to_SoundEnsemble_correlate (sound, point, GET_REAL (L"From time"), GET_REAL (L"To time")), point -> name)) return 0;
 END
 
@@ -3557,7 +3557,7 @@ FORM (Polygon_draw, L"Polygon: Draw", 0)
 	REAL (L"Ymax", L"0.0")
 	OK
 DO
-	EVERY_DRAW (Polygon_draw (OBJECT, GRAPHICS, GET_REAL (L"Xmin"), GET_REAL (L"Xmax"),
+	EVERY_DRAW (Polygon_draw ((structPolygon *)OBJECT, GRAPHICS, GET_REAL (L"Xmin"), GET_REAL (L"Xmax"),
 		GET_REAL (L"Ymin"), GET_REAL (L"Ymax")))
 END
 
@@ -3569,7 +3569,7 @@ FORM (Polygon_drawCircles, L"Polygon: Draw circles", 0)
 	POSITIVE (L"Diameter (mm)", L"3")
 	OK
 DO
-	EVERY_DRAW (Polygon_drawCircles (OBJECT, GRAPHICS,
+	EVERY_DRAW (Polygon_drawCircles ((structPolygon *)OBJECT, GRAPHICS,
 		GET_REAL (L"Xmin"), GET_REAL (L"Xmax"), GET_REAL (L"Ymin"), GET_REAL (L"Ymax"),
 		GET_REAL (L"Diameter")))
 END
@@ -3584,7 +3584,7 @@ FORM (Polygons_drawConnection, L"Polygons: Draw connection", 0)
 	OK
 DO
 	Polygon polygon1 = NULL, polygon2 = NULL;
-	WHERE (SELECTED) { if (polygon1) polygon2 = OBJECT; else polygon1 = OBJECT; }
+	WHERE (SELECTED) { if (polygon1) polygon2 = (structPolygon *)OBJECT; else polygon1 = (structPolygon *)OBJECT; }
 	EVERY_DRAW (Polygons_drawConnection (polygon1, polygon2, GRAPHICS,
 		GET_REAL (L"Xmin"), GET_REAL (L"Xmax"), GET_REAL (L"Ymin"), GET_REAL (L"Ymax"),
 		GET_INTEGER (L"Arrow"), GET_REAL (L"Relative length")))
@@ -3600,7 +3600,7 @@ FORM (Polygon_paint, L"Polygon: Paint", 0)
 	REAL (L"Ymax", L"0.0 (= all)")
 	OK
 DO
-	EVERY_DRAW (Polygon_paint (OBJECT, GRAPHICS, GET_COLOUR (L"Colour"),
+	EVERY_DRAW (Polygon_paint ((structPolygon *)OBJECT, GRAPHICS, GET_COLOUR (L"Colour"),
 		GET_REAL (L"Xmin"), GET_REAL (L"Xmax"), GET_REAL (L"Ymin"), GET_REAL (L"Ymax")))
 END
 
@@ -3612,7 +3612,7 @@ FORM (Polygon_paintCircles, L"Polygon: Paint circles", 0)
 	POSITIVE (L"Diameter (mm)", L"3")
 	OK
 DO
-	EVERY_DRAW (Polygon_paintCircles (OBJECT, GRAPHICS,
+	EVERY_DRAW (Polygon_paintCircles ((structPolygon *)OBJECT, GRAPHICS,
 		GET_REAL (L"Xmin"), GET_REAL (L"Xmax"), GET_REAL (L"Ymin"), GET_REAL (L"Ymax"),
 		GET_REAL (L"Diameter")))
 END
@@ -3645,7 +3645,7 @@ FORM (Sound_Pitch_PointProcess_voiceReport, L"Voice report", L"Voice")
 	OK
 DO
 	MelderInfo_open ();
-	Sound_Pitch_PointProcess_voiceReport (ONLY (classSound), ONLY (classPitch), ONLY (classPointProcess),
+	Sound_Pitch_PointProcess_voiceReport ((structSound *)ONLY (classSound), (structPitch *)ONLY (classPitch), (structPointProcess *)ONLY (classPointProcess),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Pitch range"), GET_REAL (L"right Pitch range"),
 		GET_REAL (L"Maximum period factor"), GET_REAL (L"Maximum amplitude factor"),
@@ -3659,8 +3659,8 @@ FORM (Sound_Point_Pitch_Duration_to_Sound, L"To Sound", 0)
 	POSITIVE (L"Longest period (s)", L"0.02")
 	OK
 DO
-	if (! praat_new1 (Sound_Point_Pitch_Duration_to_Sound (ONLY (classSound), ONLY (classPointProcess),
-		ONLY (classPitchTier), ONLY (classDurationTier), GET_REAL (L"Longest period")), L"manip")) return 0;
+	if (! praat_new1 (Sound_Point_Pitch_Duration_to_Sound ((structSound *)ONLY (classSound), (structPointProcess *)ONLY (classPointProcess),
+		(structPitchTier *)ONLY (classPitchTier), (structDurationTier *)ONLY (classDurationTier), GET_REAL (L"Longest period")), L"manip")) return 0;
 END
 
 /***** SPECTROGRAM *****/
@@ -3677,7 +3677,7 @@ FORM (Spectrogram_paint, L"Spectrogram: Paint", L"Spectrogram: Paint...")
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Spectrogram_paint (OBJECT, GRAPHICS, GET_REAL (L"left Time range"),
+	EVERY_DRAW (Spectrogram_paint ((structSpectrogram *)OBJECT, GRAPHICS, GET_REAL (L"left Time range"),
 		GET_REAL (L"right Time range"), GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"Maximum"), GET_INTEGER (L"Autoscaling"),
 		GET_REAL (L"Dynamic range"), GET_REAL (L"Pre-emphasis"),
@@ -3701,7 +3701,7 @@ FORM (Spectrogram_getPowerAt, L"Spectrogram: Get power at (time, frequency)", 0)
 	REAL (L"Frequency (Hz)", L"1000")
 	OK
 DO
-	Spectrogram me = ONLY_OBJECT;
+	Spectrogram me = (structSpectrogram *)ONLY_OBJECT;
 	double time = GET_REAL (L"Time"), frequency = GET_REAL (L"Frequency");
 	MelderInfo_open ();
 	MelderInfo_write1 (Melder_double (Matrix_getValueAtXY (me, time, frequency)));
@@ -3717,21 +3717,21 @@ DIRECT (Spectrogram_movie)
 END
 
 DIRECT (Spectrogram_to_Matrix)
-	EVERY_TO (Spectrogram_to_Matrix (OBJECT))
+	EVERY_TO (Spectrogram_to_Matrix ((structSpectrogram *)OBJECT))
 END
 
 FORM (Spectrogram_to_Sound, L"Spectrogram: To Sound", 0)
 	REAL (L"Sampling frequency (Hz)", L"44100")
 	OK
 DO
-	EVERY_TO (Spectrogram_to_Sound (OBJECT, GET_REAL (L"Sampling frequency")))
+	EVERY_TO (Spectrogram_to_Sound ((structSpectrogram *)OBJECT, GET_REAL (L"Sampling frequency")))
 END
 
 FORM (Spectrogram_to_Spectrum, L"Spectrogram: To Spectrum (slice)", 0)
 	REAL (L"Time (seconds)", L"0.0")
 	OK
 DO
-	EVERY_TO (Spectrogram_to_Spectrum (OBJECT, GET_REAL (L"Time")))
+	EVERY_TO (Spectrogram_to_Spectrum ((structSpectrogram *)OBJECT, GET_REAL (L"Time")))
 END
 
 DIRECT (Spectrogram_view)
@@ -3750,7 +3750,7 @@ FORM (Spectrum_cepstralSmoothing, L"Spectrum: Cepstral smoothing", 0)
 	POSITIVE (L"Bandwidth (Hz)", L"500.0")
 	OK
 DO
-	EVERY_TO (Spectrum_cepstralSmoothing (OBJECT, GET_REAL (L"Bandwidth")))
+	EVERY_TO (Spectrum_cepstralSmoothing ((structSpectrum *)OBJECT, GET_REAL (L"Bandwidth")))
 END
 
 FORM (Spectrum_draw, L"Spectrum: Draw", 0)
@@ -3761,7 +3761,7 @@ FORM (Spectrum_draw, L"Spectrum: Draw", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Spectrum_draw (OBJECT, GRAPHICS, GET_REAL (L"left Frequency range"),
+	EVERY_DRAW (Spectrum_draw ((structSpectrum *)OBJECT, GRAPHICS, GET_REAL (L"left Frequency range"),
 		GET_REAL (L"right Frequency range"), GET_REAL (L"Minimum power"), GET_REAL (L"Maximum power"),
 		GET_INTEGER (L"Garnish")))
 END
@@ -3774,7 +3774,7 @@ FORM (Spectrum_drawLogFreq, L"Spectrum: Draw (log freq)", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Spectrum_drawLogFreq (OBJECT, GRAPHICS, GET_REAL (L"left Frequency range"),
+	EVERY_DRAW (Spectrum_drawLogFreq ((structSpectrum *)OBJECT, GRAPHICS, GET_REAL (L"left Frequency range"),
 		GET_REAL (L"right Frequency range"), GET_REAL (L"Minimum power"), GET_REAL (L"Maximum power"),
 		GET_INTEGER (L"Garnish")))
 END
@@ -3800,58 +3800,58 @@ END
 
 FORM (Spectrum_getBandDensity, L"Spectrum: Get band density", 0)
 	REAL (L"Band floor (Hz)", L"200.0") REAL (L"Band ceiling (Hz)", L"1000") OK DO
-	Melder_informationReal (Spectrum_getBandDensity (ONLY_OBJECT,
+	Melder_informationReal (Spectrum_getBandDensity ((structSpectrum *)ONLY_OBJECT,
 		GET_REAL (L"Band floor"), GET_REAL (L"Band ceiling")), L" Pa2 / Hz2"); END
 FORM (Spectrum_getBandDensityDifference, L"Spectrum: Get band density difference", 0)
 	REAL (L"Low band floor (Hz)", L"0") REAL (L"Low band ceiling (Hz)", L"500")
 	REAL (L"High band floor (Hz)", L"500") REAL (L"High band ceiling (Hz)", L"4000") OK DO
-	Melder_informationReal (Spectrum_getBandDensityDifference (ONLY_OBJECT,
+	Melder_informationReal (Spectrum_getBandDensityDifference ((structSpectrum *)ONLY_OBJECT,
 		GET_REAL (L"Low band floor"), GET_REAL (L"Low band ceiling"), GET_REAL (L"High band floor"), GET_REAL (L"High band ceiling")), L"dB"); END
 FORM (Spectrum_getBandEnergy, L"Spectrum: Get band energy", 0)
 	REAL (L"Band floor (Hz)", L"200.0") REAL (L"Band ceiling (Hz)", L"1000") OK DO
-	Melder_informationReal (Spectrum_getBandEnergy (ONLY_OBJECT, GET_REAL (L"Band floor"), GET_REAL (L"Band ceiling")), L"Pa2 sec"); END
+	Melder_informationReal (Spectrum_getBandEnergy ((structSpectrum *)ONLY_OBJECT, GET_REAL (L"Band floor"), GET_REAL (L"Band ceiling")), L"Pa2 sec"); END
 FORM (Spectrum_getBandEnergyDifference, L"Spectrum: Get band energy difference", 0)
 	REAL (L"Low band floor (Hz)", L"0") REAL (L"Low band ceiling (Hz)", L"500")
 	REAL (L"High band floor (Hz)", L"500") REAL (L"High band ceiling (Hz)", L"4000") OK DO
-	Melder_informationReal (Spectrum_getBandEnergyDifference (ONLY_OBJECT,
+	Melder_informationReal (Spectrum_getBandEnergyDifference ((structSpectrum *)ONLY_OBJECT,
 		GET_REAL (L"Low band floor"), GET_REAL (L"Low band ceiling"), GET_REAL (L"High band floor"), GET_REAL (L"High band ceiling")), L"dB"); END	
 FORM (Spectrum_getBinFromFrequency, L"Spectrum: Get bin from frequency", 0)
 	REAL (L"Frequency (Hz)", L"2000") OK DO
 	Melder_informationReal (Sampled_xToIndex (ONLY_OBJECT, GET_REAL (L"Frequency")), NULL); END
-DIRECT (Spectrum_getBinWidth) Spectrum me = ONLY_OBJECT; Melder_informationReal (my dx, L"Hertz"); END
+DIRECT (Spectrum_getBinWidth) Spectrum me = (structSpectrum *)ONLY_OBJECT; Melder_informationReal (my dx, L"Hertz"); END
 FORM (Spectrum_getCentralMoment, L"Spectrum: Get central moment", L"Spectrum: Get central moment...")
 	POSITIVE (L"Moment", L"3.0")
 	POSITIVE (L"Power", L"2.0") OK DO
-	Melder_informationReal (Spectrum_getCentralMoment (ONLY_OBJECT,
+	Melder_informationReal (Spectrum_getCentralMoment ((structSpectrum *)ONLY_OBJECT,
 	GET_REAL (L"Moment"), GET_REAL (L"Power")), L"Hertz to the power 'moment'"); END
 FORM (Spectrum_getCentreOfGravity, L"Spectrum: Get centre of gravity", L"Spectrum: Get centre of gravity...")
 	POSITIVE (L"Power", L"2.0") OK DO
-	Melder_informationReal (Spectrum_getCentreOfGravity (ONLY_OBJECT, GET_REAL (L"Power")), L"Hertz"); END
+	Melder_informationReal (Spectrum_getCentreOfGravity ((structSpectrum *)ONLY_OBJECT, GET_REAL (L"Power")), L"Hertz"); END
 FORM (Spectrum_getFrequencyFromBin, L"Spectrum: Get frequency from bin", 0)
 	NATURAL (L"Band number", L"1") OK DO
 	Melder_informationReal (Sampled_indexToX (ONLY_OBJECT, GET_INTEGER (L"Band number")), L"Hertz"); END
-DIRECT (Spectrum_getHighestFrequency) Spectrum me = ONLY_OBJECT; Melder_informationReal (my xmax, L"Hertz"); END
+DIRECT (Spectrum_getHighestFrequency) Spectrum me = (structSpectrum *)ONLY_OBJECT; Melder_informationReal (my xmax, L"Hertz"); END
 FORM (Spectrum_getImaginaryValueInBin, L"Spectrum: Get imaginary value in bin", 0)
-	NATURAL (L"Bin number", L"100") OK DO Spectrum me = ONLY_OBJECT;
+	NATURAL (L"Bin number", L"100") OK DO Spectrum me = (structSpectrum *)ONLY_OBJECT;
 	long binNumber = GET_INTEGER (L"Bin number");
 	REQUIRE (binNumber <= my nx, L"Bin number must not exceed number of bins.");
 	Melder_informationReal (my z [2] [binNumber], NULL); END
 FORM (Spectrum_getKurtosis, L"Spectrum: Get kurtosis", L"Spectrum: Get kurtosis...")
 	POSITIVE (L"Power", L"2.0") OK DO
-	Melder_informationReal (Spectrum_getKurtosis (ONLY_OBJECT, GET_REAL (L"Power")), NULL); END
-DIRECT (Spectrum_getLowestFrequency) Spectrum me = ONLY_OBJECT; Melder_informationReal (my xmin, L"Hertz"); END
-DIRECT (Spectrum_getNumberOfBins) Spectrum me = ONLY_OBJECT; Melder_information2 (Melder_integer (my nx), L" bins"); END
+	Melder_informationReal (Spectrum_getKurtosis ((structSpectrum *)ONLY_OBJECT, GET_REAL (L"Power")), NULL); END
+DIRECT (Spectrum_getLowestFrequency) Spectrum me = (structSpectrum *)ONLY_OBJECT; Melder_informationReal (my xmin, L"Hertz"); END
+DIRECT (Spectrum_getNumberOfBins) Spectrum me = (structSpectrum *)ONLY_OBJECT; Melder_information2 (Melder_integer (my nx), L" bins"); END
 FORM (Spectrum_getRealValueInBin, L"Spectrum: Get real value in bin", 0)
-	NATURAL (L"Bin number", L"100") OK DO Spectrum me = ONLY_OBJECT;
+	NATURAL (L"Bin number", L"100") OK DO Spectrum me = (structSpectrum *)ONLY_OBJECT;
 	long binNumber = GET_INTEGER (L"Bin number");
 	REQUIRE (binNumber <= my nx, L"Bin number must not exceed number of bins.");
 	Melder_informationReal (my z [1] [binNumber], NULL); END
 FORM (Spectrum_getSkewness, L"Spectrum: Get skewness", L"Spectrum: Get skewness...")
 	POSITIVE (L"Power", L"2.0") OK DO
-	Melder_informationReal (Spectrum_getSkewness (ONLY_OBJECT, GET_REAL (L"Power")), NULL); END
+	Melder_informationReal (Spectrum_getSkewness ((structSpectrum *)ONLY_OBJECT, GET_REAL (L"Power")), NULL); END
 FORM (Spectrum_getStandardDeviation, L"Spectrum: Get standard deviation", L"Spectrum: Get standard deviation...")
 	POSITIVE (L"Power", L"2.0") OK DO
-	Melder_informationReal (Spectrum_getStandardDeviation (ONLY_OBJECT, GET_REAL (L"Power")), L"Hertz"); END
+	Melder_informationReal (Spectrum_getStandardDeviation ((structSpectrum *)ONLY_OBJECT, GET_REAL (L"Power")), L"Hertz"); END
 
 DIRECT (Spectrum_help) Melder_help (L"Spectrum"); END
 
@@ -3864,7 +3864,7 @@ FORM (Spectrum_list, L"Spectrum: List", 0)
 	BOOLEAN (L"Include power density", true)
 	OK
 DO
-	EVERY (Spectrum_list (OBJECT, GET_INTEGER (L"Include bin number"), GET_INTEGER (L"Include frequency"),
+	EVERY (Spectrum_list ((structSpectrum *)OBJECT, GET_INTEGER (L"Include bin number"), GET_INTEGER (L"Include frequency"),
 		GET_INTEGER (L"Include real part"), GET_INTEGER (L"Include imaginary part"),
 		GET_INTEGER (L"Include energy density"), GET_INTEGER (L"Include power density")))
 END
@@ -3874,7 +3874,7 @@ FORM (Spectrum_lpcSmoothing, L"Spectrum: LPC smoothing", 0)
 	POSITIVE (L"Pre-emphasis from (Hz)", L"50.0")
 	OK
 DO
-	EVERY_TO (Spectrum_lpcSmoothing (OBJECT, GET_INTEGER (L"Number of peaks"), GET_REAL (L"Pre-emphasis from")))
+	EVERY_TO (Spectrum_lpcSmoothing ((structSpectrum *)OBJECT, GET_INTEGER (L"Number of peaks"), GET_REAL (L"Pre-emphasis from")))
 END
 
 FORM (Spectrum_passHannBand, L"Spectrum: Filter (pass Hann band)", L"Spectrum: Filter (pass Hann band)...")
@@ -3884,7 +3884,7 @@ FORM (Spectrum_passHannBand, L"Spectrum: Filter (pass Hann band)", L"Spectrum: F
 	OK
 DO
 	WHERE (SELECTED) {
-		Spectrum_passHannBand (OBJECT, GET_REAL (L"From frequency"), GET_REAL (L"To frequency"), GET_REAL (L"Smoothing"));
+		Spectrum_passHannBand ((structSpectrum *)OBJECT, GET_REAL (L"From frequency"), GET_REAL (L"To frequency"), GET_REAL (L"Smoothing"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3896,7 +3896,7 @@ FORM (Spectrum_stopHannBand, L"Spectrum: Filter (stop Hann band)", L"Spectrum: F
 	OK
 DO
 	WHERE (SELECTED) {
-		Spectrum_stopHannBand (OBJECT, GET_REAL (L"From frequency"), GET_REAL (L"To frequency"), GET_REAL (L"Smoothing"));
+		Spectrum_stopHannBand ((structSpectrum *)OBJECT, GET_REAL (L"From frequency"), GET_REAL (L"To frequency"), GET_REAL (L"Smoothing"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3905,7 +3905,7 @@ FORM (Spectrum_to_Excitation, L"Spectrum: To Excitation", 0)
 	POSITIVE (L"Frequency resolution (Bark)", L"0.1")
 	OK
 DO
-	EVERY_TO (Spectrum_to_Excitation (OBJECT, GET_REAL (L"Frequency resolution")))
+	EVERY_TO (Spectrum_to_Excitation ((structSpectrum *)OBJECT, GET_REAL (L"Frequency resolution")))
 END
 
 FORM (Spectrum_to_Formant_peaks, L"Spectrum: To Formant (peaks)", 0)
@@ -3913,40 +3913,40 @@ FORM (Spectrum_to_Formant_peaks, L"Spectrum: To Formant (peaks)", 0)
 	NATURAL (L"Maximum number of formants", L"1000")
 	OK
 DO
-	EVERY_TO (Spectrum_to_Formant (OBJECT, GET_INTEGER (L"Maximum number of formants")))
+	EVERY_TO (Spectrum_to_Formant ((structSpectrum *)OBJECT, GET_INTEGER (L"Maximum number of formants")))
 END
 
 FORM (Spectrum_to_Ltas, L"Spectrum: To Long-term average spectrum", 0)
 	POSITIVE (L"Bandwidth (Hz)", L"1000")
 	OK
 DO
-	EVERY_TO (Spectrum_to_Ltas (OBJECT, GET_REAL (L"Bandwidth")))
+	EVERY_TO (Spectrum_to_Ltas ((structSpectrum *)OBJECT, GET_REAL (L"Bandwidth")))
 END
 
 DIRECT (Spectrum_to_Ltas_1to1)
-	EVERY_TO (Spectrum_to_Ltas_1to1 (OBJECT))
+	EVERY_TO (Spectrum_to_Ltas_1to1 ((structSpectrum *)OBJECT))
 END
 
 DIRECT (Spectrum_to_Matrix)
-	EVERY_TO (Spectrum_to_Matrix (OBJECT))
+	EVERY_TO (Spectrum_to_Matrix ((structSpectrum *)OBJECT))
 END
 
 DIRECT (Spectrum_to_Sound)
-	EVERY_TO (Spectrum_to_Sound (OBJECT))
+	EVERY_TO (Spectrum_to_Sound ((structSpectrum *)OBJECT))
 END
 
 DIRECT (Spectrum_to_Spectrogram)
-	EVERY_TO (Spectrum_to_Spectrogram (OBJECT))
+	EVERY_TO (Spectrum_to_Spectrogram ((structSpectrum *)OBJECT))
 END
 
 DIRECT (Spectrum_to_SpectrumTier_peaks)
-	EVERY_TO (Spectrum_to_SpectrumTier_peaks (OBJECT))
+	EVERY_TO (Spectrum_to_SpectrumTier_peaks ((structSpectrum *)OBJECT))
 END
 
 /***** SPECTRUMTIER *****/
 
 DIRECT (SpectrumTier_downto_Table)
-	EVERY_TO (SpectrumTier_downto_Table (OBJECT, true, true, true))
+	EVERY_TO (SpectrumTier_downto_Table ((structSpectrumTier *)OBJECT, true, true, true))
 END
 
 FORM (old_SpectrumTier_draw, L"SpectrumTier: Draw", 0)   // 2010/10/19
@@ -3957,7 +3957,7 @@ FORM (old_SpectrumTier_draw, L"SpectrumTier: Draw", 0)   // 2010/10/19
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (SpectrumTier_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (SpectrumTier_draw ((structSpectrumTier *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Power range"), GET_REAL (L"right Power range"),
 		GET_INTEGER (L"Garnish"), L"lines and speckles"))
@@ -3976,7 +3976,7 @@ FORM (SpectrumTier_draw, L"SpectrumTier: Draw", 0)
 		OPTION (L"lines and speckles")
 	OK
 DO_ALTERNATIVE (old_SpectrumTier_draw)
-	EVERY_DRAW (SpectrumTier_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (SpectrumTier_draw ((structSpectrumTier *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Power range"), GET_REAL (L"right Power range"),
 		GET_INTEGER (L"Garnish"), GET_STRING (L"Drawing method")))
@@ -3988,7 +3988,7 @@ FORM (SpectrumTier_list, L"SpectrumTier: List", 0)
 	BOOLEAN (L"Include power density", true)
 	OK
 DO
-	EVERY (SpectrumTier_list (OBJECT, GET_INTEGER (L"Include indexes"), GET_INTEGER (L"Include frequency"),
+	EVERY (SpectrumTier_list ((structSpectrumTier *)OBJECT, GET_INTEGER (L"Include indexes"), GET_INTEGER (L"Include frequency"),
 		GET_INTEGER (L"Include power density")))
 END
 
@@ -3997,7 +3997,7 @@ FORM (SpectrumTier_removePointsBelow, L"SpectrumTier: Remove points below", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		RealTier_removePointsBelow (OBJECT, GET_REAL (L"Remove all points below"));
+		RealTier_removePointsBelow ((structRealTier *)OBJECT, GET_REAL (L"Remove all points below"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -4072,20 +4072,20 @@ END
 
 DIRECT (Strings_equal)
 	Strings s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1) s2 = (structStrings *)OBJECT; else s1 = (structStrings *)OBJECT; }
 	Melder_information1 (Melder_integer (Data_equal (s1, s2)));
 END
 
 DIRECT (Strings_genericize)
 	WHERE (SELECTED) {
-		int status = Strings_genericize (OBJECT);
+		int status = Strings_genericize ((structStrings *)OBJECT);
 		praat_dataChanged (OBJECT);
 		if (! status) return 0;
 	}
 END
 
 DIRECT (Strings_getNumberOfStrings)
-	Strings me = ONLY_OBJECT;
+	Strings me = (structStrings *)ONLY_OBJECT;
 	Melder_information1 (Melder_integer (my numberOfStrings));
 END
 
@@ -4093,7 +4093,7 @@ FORM (Strings_getString, L"Get string", 0)
 	NATURAL (L"Index", L"1")
 	OK
 DO
-	Strings me = ONLY_OBJECT;
+	Strings me = (structStrings *)ONLY_OBJECT;
 	long index = GET_INTEGER (L"Index");
 	Melder_information1 (index > my numberOfStrings ? L"" : my strings [index]);
 END
@@ -4102,7 +4102,7 @@ DIRECT (Strings_help) Melder_help (L"Strings"); END
 
 DIRECT (Strings_nativize)
 	WHERE (SELECTED) {
-		int status = Strings_nativize (OBJECT);
+		int status = Strings_nativize ((structStrings *)OBJECT);
 		praat_dataChanged (OBJECT);
 		if (! status) return 0;
 	}
@@ -4110,7 +4110,7 @@ END
 
 DIRECT (Strings_randomize)
 	WHERE (SELECTED) {
-		Strings_randomize (OBJECT);
+		Strings_randomize ((structStrings *)OBJECT);
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -4121,27 +4121,27 @@ END
 
 DIRECT (Strings_sort)
 	WHERE (SELECTED) {
-		Strings_sort (OBJECT);
+		Strings_sort ((structStrings *)OBJECT);
 		praat_dataChanged (OBJECT);
 	}
 END
 
 DIRECT (Strings_to_Distributions)
-	EVERY_TO (Strings_to_Distributions (OBJECT))
+	EVERY_TO (Strings_to_Distributions ((structStrings *)OBJECT))
 END
 
 DIRECT (Strings_to_WordList)
-	EVERY_TO (Strings_to_WordList (OBJECT))
+	EVERY_TO (Strings_to_WordList ((structStrings *)OBJECT))
 END
 
 FORM_WRITE (Strings_writeToRawTextFile, L"Save Strings as text file", 0, L"txt")
-	if (! Strings_writeToRawTextFile (ONLY_OBJECT, file)) return 0;
+	if (! Strings_writeToRawTextFile ((structStrings *)ONLY_OBJECT, file)) return 0;
 END
 
 /***** TABLE, rest in praat_Stat.c *****/
 
 DIRECT (Table_to_Matrix)
-	EVERY_TO (Table_to_Matrix (OBJECT))
+	EVERY_TO (Table_to_Matrix ((structTable *)OBJECT))
 END
 
 /***** TEXTGRID, rest in praat_TextGrid_init.c *****/
@@ -4170,7 +4170,7 @@ END
 /***** TIMEFRAMESAMPLED *****/
 
 DIRECT (TimeFrameSampled_getNumberOfFrames)
-	Sampled me = ONLY_OBJECT;
+	Sampled me = (structSampled *)ONLY_OBJECT;
 	Melder_information2 (Melder_integer (my nx), L" frames");
 END
 
@@ -4178,11 +4178,11 @@ FORM (TimeFrameSampled_getFrameFromTime, L"Get frame number from time", L"Get fr
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Melder_informationReal (Sampled_xToIndex (ONLY_OBJECT, GET_REAL (L"Time")), NULL);
+	Melder_informationReal (Sampled_xToIndex ((structSampled *)ONLY_OBJECT, GET_REAL (L"Time")), NULL);
 END
 
 DIRECT (TimeFrameSampled_getFrameLength)
-	Sampled me = ONLY_OBJECT;
+	Sampled me = (structSampled *)ONLY_OBJECT;
 	Melder_informationReal (my dx, L"seconds");
 END
 
@@ -4190,23 +4190,23 @@ FORM (TimeFrameSampled_getTimeFromFrame, L"Get time from frame number", L"Get ti
 	NATURAL (L"Frame number", L"1")
 	OK
 DO
-	Melder_informationReal (Sampled_indexToX (ONLY_OBJECT, GET_INTEGER (L"Frame number")), L"seconds");
+	Melder_informationReal (Sampled_indexToX ((structSampled *)ONLY_OBJECT, GET_INTEGER (L"Frame number")), L"seconds");
 END
 
 /***** TIMEFUNCTION *****/
 
 DIRECT (TimeFunction_getDuration)
-	Function me = ONLY_OBJECT;
+	Function me = (structFunction *)ONLY_OBJECT;
 	Melder_informationReal (my xmax - my xmin, L"seconds");
 END
 
 DIRECT (TimeFunction_getEndTime)
-	Function me = ONLY_OBJECT;
+	Function me = (structFunction *)ONLY_OBJECT;
 	Melder_informationReal (my xmax, L"seconds");
 END
 
 DIRECT (TimeFunction_getStartTime)
-	Function me = ONLY_OBJECT;
+	Function me = (structFunction *)ONLY_OBJECT;
 	Melder_informationReal (my xmin, L"seconds");
 END
 
@@ -4215,7 +4215,7 @@ FORM (TimeFunction_scaleTimesBy, L"Scale times by", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		Function_scaleXBy (OBJECT, GET_REAL (L"Factor"));
+		Function_scaleXBy ((structFunction *)OBJECT, GET_REAL (L"Factor"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -4228,7 +4228,7 @@ DO
 	double tminto = GET_REAL (L"New start time"), tmaxto = GET_REAL (L"New end time");
 	REQUIRE (tminto < tmaxto, L"New end time should be greater than new start time.")
 	WHERE (SELECTED) {
-		Function me = OBJECT;
+		Function me = (structFunction *)OBJECT;
 		Function_scaleXTo (me, tminto, tmaxto);
 		praat_dataChanged (me);
 	}
@@ -4239,7 +4239,7 @@ FORM (TimeFunction_shiftTimesBy, L"Shift times by", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		Function_shiftXBy (OBJECT, GET_REAL (L"Shift"));
+		Function_shiftXBy ((structFunction *)OBJECT, GET_REAL (L"Shift"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -4254,7 +4254,7 @@ FORM (TimeFunction_shiftTimesTo, L"Shift times to", 0)
 DO
 	int shift = GET_INTEGER (L"Shift");
 	WHERE (SELECTED) {
-		Function me = OBJECT;
+		Function me = (structFunction *)OBJECT;
 		Function_shiftXTo (me, shift == 1 ? my xmin : shift == 2 ? 0.5 * (my xmin + my xmax) : my xmax, GET_REAL (L"To time"));
 		praat_dataChanged (me);
 	}
@@ -4262,7 +4262,7 @@ END
 
 DIRECT (TimeFunction_shiftToZero)
 	WHERE (SELECTED) {
-		Function me = OBJECT;
+		Function me = (structFunction *)OBJECT;
 		Function_shiftXTo (me, my xmin, 0.0);
 		praat_dataChanged (me);
 	}
@@ -4274,7 +4274,7 @@ FORM (TimeTier_getHighIndexFromTime, L"Get high index", L"AnyTier: Get high inde
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	AnyTier me = ONLY_OBJECT;
+	AnyTier me = (structAnyTier *)ONLY_OBJECT;
 	Melder_information1 (my points -> size == 0 ? L"--undefined--" : Melder_integer (AnyTier_timeToHighIndex (me, GET_REAL (L"Time"))));
 END
 
@@ -4282,7 +4282,7 @@ FORM (TimeTier_getLowIndexFromTime, L"Get low index", L"AnyTier: Get low index f
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	AnyTier me = ONLY_OBJECT;
+	AnyTier me = (structAnyTier *)ONLY_OBJECT;
 	Melder_information1 (my points -> size == 0 ? L"--undefined--" : Melder_integer (AnyTier_timeToLowIndex (me, GET_REAL (L"Time"))));
 END
 
@@ -4290,12 +4290,12 @@ FORM (TimeTier_getNearestIndexFromTime, L"Get nearest index", L"AnyTier: Get nea
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	AnyTier me = ONLY_OBJECT;
+	AnyTier me = (structAnyTier *)ONLY_OBJECT;
 	Melder_information1 (my points -> size == 0 ? L"--undefined--" : Melder_integer (AnyTier_timeToNearestIndex (me, GET_REAL (L"Time"))));
 END
 
 DIRECT (TimeTier_getNumberOfPoints)
-	AnyTier me = ONLY_OBJECT;
+	AnyTier me = (structAnyTier *)ONLY_OBJECT;
 	Melder_information2 (Melder_integer (my points -> size), L" points");
 END
 
@@ -4303,7 +4303,7 @@ FORM (TimeTier_getTimeFromIndex, L"Get time", 0 /*"AnyTier: Get time from index.
 	NATURAL (L"Point number", L"10")
 	OK
 DO
-	AnyTier me = ONLY_OBJECT;
+	AnyTier me = (structAnyTier *)ONLY_OBJECT;
 	long i = GET_INTEGER (L"Point number");
 	if (i > my points -> size) Melder_information1 (L"--undefined--");
 	else Melder_informationReal (((AnyPoint) my points -> item [i]) -> time, L"seconds");
@@ -4314,7 +4314,7 @@ FORM (TimeTier_removePoint, L"Remove one point", L"AnyTier: Remove point...")
 	OK
 DO
 	WHERE (SELECTED) {
-		AnyTier_removePoint (OBJECT, GET_INTEGER (L"Point number"));
+		AnyTier_removePoint ((structAnyTier *)OBJECT, GET_INTEGER (L"Point number"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -4324,7 +4324,7 @@ FORM (TimeTier_removePointNear, L"Remove one point", L"AnyTier: Remove point nea
 	OK
 DO
 	WHERE (SELECTED) {
-		AnyTier_removePointNear (OBJECT, GET_REAL (L"Time"));
+		AnyTier_removePointNear ((structAnyTier *)OBJECT, GET_REAL (L"Time"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -4335,7 +4335,7 @@ FORM (TimeTier_removePointsBetween, L"Remove points", L"AnyTier: Remove points b
 	OK
 DO
 	WHERE (SELECTED) {
-		AnyTier_removePointsBetween (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"));
+		AnyTier_removePointsBetween ((structAnyTier *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -4343,7 +4343,7 @@ END
 /***** TRANSITION *****/
 
 DIRECT (Transition_conflate)
-	EVERY_TO (Transition_to_Distributions_conflate (OBJECT))
+	EVERY_TO (Transition_to_Distributions_conflate ((structTransition *)OBJECT))
 END
 
 FORM (Transition_drawAsNumbers, L"Draw as numbers", 0)
@@ -4355,14 +4355,14 @@ FORM (Transition_drawAsNumbers, L"Draw as numbers", 0)
 	NATURAL (L"Precision", L"2")
 	OK
 DO
-	EVERY_DRAW (Transition_drawAsNumbers (OBJECT, GRAPHICS,
+	EVERY_DRAW (Transition_drawAsNumbers ((structTransition *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"Format"), GET_INTEGER (L"Precision")))
 END
 
 DIRECT (Transition_eigen)
 	WHERE (SELECTED) {
 		Matrix vec, val;
-		if (! Transition_eigen (OBJECT, & vec, & val)) return 0;
+		if (! Transition_eigen ((structTransition *)OBJECT, & vec, & val)) return 0;
 		if (! praat_new1 (vec, L"eigenvectors")) return 0;
 		if (! praat_new1 (val, L"eigenvalues")) return 0;
 	}
@@ -4374,11 +4374,11 @@ FORM (Transition_power, L"Transition: Power...", 0)
 	NATURAL (L"Power", L"2")
 	OK
 DO
-	EVERY_TO (Transition_power (OBJECT, GET_INTEGER (L"Power")))
+	EVERY_TO (Transition_power ((structTransition *)OBJECT, GET_INTEGER (L"Power")))
 END
 
 DIRECT (Transition_to_Matrix)
-	EVERY_TO (Transition_to_Matrix (OBJECT))
+	EVERY_TO (Transition_to_Matrix ((structTransition *)OBJECT))
 END
 
 /***** Praat menu *****/
@@ -4465,7 +4465,7 @@ void praat_TimeFunction_modify_init (void *klas) {
 						praat_addAction1 (klas, 0, L"Scale times...", 0, praat_HIDDEN + praat_DEPTH_2, DO_TimeFunction_scaleTimesTo);   // hidden 2008
 }
 
-void praat_TimeFrameSampled_query_init (void *klas);   // Query buttons for frame-based time-based subclasses of Sampled.
+extern "C" void praat_TimeFrameSampled_query_init (void *klas);   // Query buttons for frame-based time-based subclasses of Sampled.
 void praat_TimeFrameSampled_query_init (void *klas) {
 	praat_TimeFunction_query_init (klas);
 	praat_addAction1 (klas, 1, L"Query time sampling", 0, 1, 0);
@@ -4497,6 +4497,16 @@ void praat_TimeTier_modify_init (void *klas) {
 	praat_addAction1 (klas, 0, L"Remove points between...", 0, 1, DO_TimeTier_removePointsBetween);
 }
 
+INCLUDE_LIBRARY (praat_uvafon_Sound_init)
+INCLUDE_LIBRARY (praat_uvafon_TextGrid_init)
+INCLUDE_LIBRARY (praat_uvafon_Stat_init)
+INCLUDE_LIBRARY (praat_uvafon_Artsynth_init)
+INCLUDE_LIBRARY (praat_uvafon_David_init)
+INCLUDE_LIBRARY (praat_uvafon_gram_init)
+INCLUDE_LIBRARY (praat_uvafon_FFNet_init)
+INCLUDE_LIBRARY (praat_uvafon_LPC_init)
+INCLUDE_LIBRARY (praat_uvafon_Exp_init)
+
 void praat_uvafon_init (void);
 void praat_uvafon_init (void) {
 	Thing_recognizeClassesByName (classSound, classMatrix, classPolygon, classPointProcess, classParamCurve,
@@ -4520,8 +4530,8 @@ void praat_uvafon_init (void) {
 	SpectrumEditor_prefs ();
 	FormantGridEditor_prefs ();
 
-	INCLUDE_LIBRARY (praat_uvafon_Sound_init)
-	INCLUDE_LIBRARY (praat_uvafon_TextGrid_init)
+	praat_uvafon_Sound_init();
+	praat_uvafon_TextGrid_init();
 
 	praat_addMenuCommand (L"Objects", L"Praat", L"Praat test...", 0, praat_HIDDEN, DO_Praat_test);
 
@@ -4534,7 +4544,7 @@ void praat_uvafon_init (void) {
 	praat_addMenuCommand (L"Objects", L"Open", L"Read Matrix from LVS AP file...", 0, praat_HIDDEN, DO_Matrix_readAP);
 	praat_addMenuCommand (L"Objects", L"Open", L"Read Strings from raw text file...", 0, 0, DO_Strings_readFromRawTextFile);
 
-	INCLUDE_LIBRARY (praat_uvafon_Stat_init)
+	praat_uvafon_Stat_init();
 
 	praat_addMenuCommand (L"Objects", L"New", L"Tiers", 0, 0, 0);
 		praat_addMenuCommand (L"Objects", L"New", L"Create empty PointProcess...", 0, 1, DO_PointProcess_createEmpty);
@@ -5246,13 +5256,13 @@ praat_addAction2 (classPointProcess, 1, classSound, 1, L"Synthesize", 0, 0, 0);
 	praat_addAction4 (classDurationTier, 1, classPitchTier, 1, classPointProcess, 1, classSound, 1, L"To Sound...", 0, 0, DO_Sound_Point_Pitch_Duration_to_Sound);
 
 	praat_addMenuCommand (L"Objects", L"New", L"-- new synthesis --", 0, 0, 0);
-	INCLUDE_LIBRARY (praat_uvafon_Artsynth_init)
-	INCLUDE_LIBRARY (praat_uvafon_David_init)
+	praat_uvafon_Artsynth_init();
+	praat_uvafon_David_init();
 	praat_addMenuCommand (L"Objects", L"New", L"-- new grammars --", 0, 0, 0);
-	INCLUDE_LIBRARY (praat_uvafon_gram_init)
-	INCLUDE_LIBRARY (praat_uvafon_FFNet_init)
-	INCLUDE_LIBRARY (praat_uvafon_LPC_init)
-	INCLUDE_LIBRARY (praat_uvafon_Exp_init)
+	praat_uvafon_gram_init();
+	praat_uvafon_FFNet_init();
+	praat_uvafon_LPC_init();
+	praat_uvafon_Exp_init();
 }
 
 /* End of file praat_Fon.c */

@@ -46,13 +46,13 @@ Spectrum Spectrogram_to_Spectrum (I, double tim) {
 	return thee;
 error:
 	forget (thee);
-	return Melder_errorp ("(Spectrogram_to_Spectrum:) Not performed.");
+	return (structSpectrum *)Melder_errorp ("(Spectrogram_to_Spectrum:) Not performed.");
 }
 
 Spectrogram Spectrum_to_Spectrogram (I) {
 	iam (Spectrum);
 	long i;
-	Spectrogram thee = Spectrogram_create (0, 1, 1, 1, 0.5, my xmin, my xmax, my nx, my dx, my x1);
+	Spectrogram thee = (structSpectrogram *)Spectrogram_create (0, 1, 1, 1, 0.5, my xmin, my xmax, my nx, my dx, my x1);
 	if (! thee) return NULL;
 	for (i = 1; i <= my nx; i ++)
 		thy z [i] [1] = my z [1] [i] * my z [1] [i] + my z [2] [i] * my z [2] [i];

@@ -122,7 +122,7 @@ int LineMinimizer_init (I, long nParameters, Any object, double (*func)
 
 /******************  class SteepestDescentMinimizer**************************/
 
-typedef struct structSteepestDescentMinimizer_parameters {
+typedef struct structSteepestDescentMinimizer_parameters_decl {
 	double eta, momentum;
 } *structSteepestDescentMinimizer_parameters;
 
@@ -141,7 +141,7 @@ Any SteepestDescentMinimizer_create (long nParameters, Any object, double (*func
 
 /**********  class VDSmagtMinimizer ********************************/
 
-typedef struct structVDSmagtMinimizer_parameters {
+typedef struct structVDSmagtMinimizer_parameters_decl {
 	double lineSearchGradient;
 	long lineSearchMaxNumOfIterations;
 } *structVDSmagtMinimizer_parameters;

@@ -125,7 +125,7 @@ Transition Distributions_to_Transition (Distributions underlying, Distributions 
 end:
 	iferror {
 		forget (thee);
-		return Melder_errorp1 (L"Distributions to Transition: not performed.");
+		return (structTransition *)Melder_errorp1 (L"Distributions to Transition: not performed.");
 	}
 	return thee;
 }
@@ -143,7 +143,7 @@ Distributions Distributions_Transition_map (Distributions me, Transition map) {
 	/*
 	 * Create the output object.
 	 */
-	thee = Data_copy (me); cherror
+	thee = (structDistributions *)Data_copy (me); cherror
 
 	/*
 	 * Compute the elements of the surface distributions.
@@ -157,7 +157,7 @@ Distributions Distributions_Transition_map (Distributions me, Transition map) {
 end:
 	iferror {
 		forget (thee);
-		return Melder_errorp1 (L"Distributions & Transition: Mapping not performed.");
+		return (structDistributions *)Melder_errorp1 (L"Distributions & Transition: Mapping not performed.");
 	}
 	return thee;
 }
@@ -186,7 +186,7 @@ Distributions Transition_to_Distributions_conflate (Transition me) {
 end:
 	iferror {
 		forget (thee);
-		return Melder_errorp ("(Transition_to_Distributions_conflate:) Not performed.");
+		return (structDistributions *)Melder_errorp ("(Transition_to_Distributions_conflate:) Not performed.");
 	}
 	return thee;
 }

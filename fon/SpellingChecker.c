@@ -64,7 +64,7 @@ class_methods (SpellingChecker, Data) {
 
 SpellingChecker WordList_upto_SpellingChecker (WordList me) {
 	SpellingChecker thee = Thing_new (SpellingChecker); cherror
-	thy wordList = Data_copy (me); cherror
+	thy wordList = (structWordList *)Data_copy (me); cherror
 	thy separatingCharacters = Melder_wcsdup_e (L".,;:()\""); cherror
 end:
 	iferror forget (thee);
@@ -72,11 +72,11 @@ end:
 }
 
 WordList SpellingChecker_extractWordList (SpellingChecker me) {
-	return Data_copy (my wordList);
+	return (structWordList *)Data_copy (my wordList);
 }
 
 int SpellingChecker_replaceWordList (SpellingChecker me, WordList list) {
-	WordList newList = Data_copy (list);
+	WordList newList = (structWordList *)Data_copy (list);
 	if (! newList) return 0;
 	forget (my wordList);
 	my wordList = newList;
@@ -85,12 +85,12 @@ int SpellingChecker_replaceWordList (SpellingChecker me, WordList list) {
 
 SortedSetOfString SpellingChecker_extractUserDictionary (SpellingChecker me) {
 	if (! my userDictionary)
-		return Melder_errorp ("This spelling checker does not contain a user dictionary.");
-	return Data_copy (my userDictionary);
+		return (structSortedSetOfString *)Melder_errorp ("This spelling checker does not contain a user dictionary.");
+	return (structSortedSetOfString *)Data_copy (my userDictionary);
 }
 
 int SpellingChecker_replaceUserDictionary (SpellingChecker me, SortedSetOfString userDictionary) {
-	SortedSetOfString newDict = Data_copy (userDictionary);
+	SortedSetOfString newDict = (structSortedSetOfString *)Data_copy (userDictionary);
 	if (! newDict) return 0;
 	forget (my userDictionary);
 	my userDictionary = newDict;

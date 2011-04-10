@@ -142,14 +142,14 @@ void Excitation_draw (Excitation me, Graphics g,
 }
 
 Matrix Excitation_to_Matrix (Excitation me) {
-	Matrix thee = Data_copy (me);
+	Matrix thee = (structMatrix *)Data_copy (me);
 	if (! thee) return NULL;
 	Thing_overrideClass (thee, classMatrix);
 	return thee;
 }
 
 Excitation Matrix_to_Excitation (Matrix me) {
-	Excitation thee = Data_copy (me);
+	Excitation thee = (structExcitation *)Data_copy (me);
 	if (! thee) return NULL;
 	Thing_overrideClass (thee, classExcitation);
 	return thee;

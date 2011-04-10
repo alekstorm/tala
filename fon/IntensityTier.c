@@ -88,7 +88,7 @@ end:
 IntensityTier IntensityTier_PointProcess_to_IntensityTier (IntensityTier me, PointProcess pp) {
 	long i;
 	IntensityTier thee = NULL;
-	if (my points -> size == 0) return Melder_errorp ("No intensity points.");
+	if (my points -> size == 0) return (structIntensityTier *)Melder_errorp ("No intensity points.");
 	thee = IntensityTier_create (pp -> xmin, pp -> xmax); cherror;
 	for (i = 1; i <= pp -> nt; i ++) {
 		double time = pp -> t [i];
@@ -116,7 +116,7 @@ void Sound_IntensityTier_multiply_inline (Sound me, IntensityTier intensity) {
 }
 
 Sound Sound_IntensityTier_multiply (Sound me, IntensityTier intensity, int scale) {
-	Sound thee = Data_copy (me);
+	Sound thee = (structSound *)Data_copy (me);
 	if (! thee) return NULL;
 	Sound_IntensityTier_multiply_inline (thee, intensity);
 	if (scale) Vector_scale (thee, 0.9);

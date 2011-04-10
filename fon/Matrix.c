@@ -608,7 +608,7 @@ Matrix Matrix_readFromRawTextFile (MelderFile fs) {   // BUG: not Unicode-compat
 
 end:
 	Melder_fclose (fs, f);
-	iferror { forget (me); return Melder_errorp3 (
+	iferror { forget (me); return (structMatrix *)Melder_errorp3 (
 		L"(Matrix_readFromRawTextFile:) File ", MelderFile_messageName (fs), L" not read."); }
 	return me;
 }
@@ -620,7 +620,7 @@ int Matrix_eigen (I, Matrix *eigenvectors, Matrix *eigenvalues) {
 
 	Eigen eigen = Thing_new (Eigen); cherror
 	Eigen_initFromSymmetricMatrix (eigen, my z, my nx); cherror
-	*eigenvectors = Data_copy (me); cherror
+	*eigenvectors = (structMatrix *)Data_copy (me); cherror
 	*eigenvalues = Matrix_create (1, 1, 1, 1, 1, my ymin, my ymax, my ny, my dy, my y1); cherror
 	for (long i = 1; i <= my nx; i ++) {
 		(*eigenvalues) -> z [i] [1] = eigen -> eigenvalues [i];
@@ -641,9 +641,9 @@ Matrix Matrix_power (I, long power) {
 	iam (Matrix);
 	long ipow;
 	Matrix thee = NULL, him = NULL;
-	if (my nx != my ny) return Melder_errorp ("(Matrix_power:) Matrix not square.");
-	thee = Data_copy (me);
-	him = Data_copy (me);
+	if (my nx != my ny) return (structMatrix *)Melder_errorp ("(Matrix_power:) Matrix not square.");
+	thee = (structMatrix *)Data_copy (me);
+	him = (structMatrix *)Data_copy (me);
 	if (! thee || ! him) goto end;
 	for (ipow = 2; ipow <= power; ipow ++) {
 		long irow, icol;
@@ -781,7 +781,7 @@ Matrix Table_to_Matrix (Table me) {
 		Table_numericize_Assert (me, icol);
 	}
 	for (irow = 1; irow <= my rows -> size; irow ++) {
-		TableRow row = my rows -> item [irow];
+		TableRow row = (structTableRow *)my rows -> item [irow];
 		for (icol = 1; icol <= my numberOfColumns; icol ++) {
 			thy z [irow] [icol] = row -> cells [icol]. number;
 		}

@@ -117,7 +117,7 @@ Spectrum Spectrum_lpcSmoothing (Spectrum me, int numberOfPeaks, double preemphas
 	
 	NUMburg (sound -> z [1], sound -> nx, a, numberOfCoefficients, & gain);
 	for (i = 1; i <= numberOfCoefficients; i ++) a [i] = - a [i];
-	thee = Data_copy (me); cherror
+	thee = (structSpectrum *)Data_copy (me); cherror
 
 	nfft = 2 * (thy nx - 1);
 	ndata = numberOfCoefficients < nfft ? numberOfCoefficients : nfft - 1;
@@ -147,7 +147,7 @@ end:
 
 Sound Sound_filter_formula (Sound me, const wchar_t *formula, Interpreter *interpreter) {
 	Spectrum spec = NULL;
-	Sound thee = Data_copy (me), him = NULL; cherror
+	Sound thee = (structSound *)Data_copy (me), him = NULL; cherror
 	if (my ny == 1) {
 		spec = Sound_to_Spectrum (me, TRUE); cherror
 		Matrix_formula ((Matrix) spec, formula, interpreter, NULL); cherror
@@ -174,7 +174,7 @@ end:
 
 Sound Sound_filter_passHannBand (Sound me, double fmin, double fmax, double smooth) {
 	Spectrum spec = NULL;
-	Sound thee = Data_copy (me), him = NULL; cherror
+	Sound thee = (structSound *)Data_copy (me), him = NULL; cherror
 	if (my ny == 1) {
 		spec = Sound_to_Spectrum (me, TRUE); cherror
 		Spectrum_passHannBand (spec, fmin, fmax, smooth);
@@ -201,7 +201,7 @@ end:
 
 Sound Sound_filter_stopHannBand (Sound me, double fmin, double fmax, double smooth) {
 	Spectrum spec = NULL;
-	Sound thee = Data_copy (me), him = NULL; cherror
+	Sound thee = (structSound *)Data_copy (me), him = NULL; cherror
 	if (my ny == 1) {
 		spec = Sound_to_Spectrum (me, TRUE); cherror
 		Spectrum_stopHannBand (spec, fmin, fmax, smooth);

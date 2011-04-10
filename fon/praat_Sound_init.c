@@ -46,7 +46,7 @@
 	#define LONG_MAX  2147483647
 #endif
 
-int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
+extern "C" int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
 void praat_TimeFunction_query_init (void *klas);
 void praat_TimeFunction_modify_init (void *klas);
 
@@ -71,23 +71,23 @@ FORM (LongSound_extractPart, L"LongSound: Extract part", 0)
 	BOOLEAN (L"Preserve times", 1)
 	OK
 DO
-	EVERY_TO (LongSound_extractPart (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Preserve times")))
+	EVERY_TO (LongSound_extractPart ((structLongSound *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Preserve times")))
 END
 
 FORM (LongSound_getIndexFromTime, L"LongSound: Get sample index from time", L"Sound: Get index from time...")
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Melder_informationReal (Sampled_xToIndex (ONLY (classLongSound), GET_REAL (L"Time")), NULL);
+	Melder_informationReal (Sampled_xToIndex ((structLongSound *)ONLY (classLongSound), GET_REAL (L"Time")), NULL);
 END
 
 DIRECT (LongSound_getSamplePeriod)
-	LongSound me = ONLY (classLongSound);
+	LongSound me = (structLongSound *)ONLY (classLongSound);
 	Melder_informationReal (my dx, L"seconds");
 END
 
 DIRECT (LongSound_getSampleRate)
-	LongSound me = ONLY (classLongSound);
+	LongSound me = (structLongSound *)ONLY (classLongSound);
 	Melder_informationReal (1 / my dx, L"Hertz");
 END
 
@@ -95,11 +95,11 @@ FORM (LongSound_getTimeFromIndex, L"LongSound: Get time from sample index", L"So
 	INTEGER (L"Sample index", L"100")
 	OK
 DO
-	Melder_informationReal (Sampled_indexToX (ONLY (classLongSound), GET_INTEGER (L"Sample index")), L"seconds");
+	Melder_informationReal (Sampled_indexToX ((structLongSound *)ONLY (classLongSound), GET_INTEGER (L"Sample index")), L"seconds");
 END
 
 DIRECT (LongSound_getNumberOfSamples)
-	LongSound me = ONLY (classLongSound);
+	LongSound me = (structLongSound *)ONLY (classLongSound);
 	Melder_information2 (Melder_integer (my nx), L" samples");
 END
 
@@ -117,10 +117,10 @@ DO
 	int n = 0;
 	EVERY (n ++)
 	if (n == 1 || MelderAudio_getOutputMaximumAsynchronicity () < kMelder_asynchronicityLevel_ASYNCHRONOUS) {
-		EVERY (LongSound_playPart (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), NULL, NULL))
+		EVERY (LongSound_playPart ((structLongSound *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), NULL, NULL))
 	} else {
 		MelderAudio_setOutputMaximumAsynchronicity (kMelder_asynchronicityLevel_INTERRUPTABLE);
-		EVERY (LongSound_playPart (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), NULL, NULL))
+		EVERY (LongSound_playPart ((structLongSound *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), NULL, NULL))
 		MelderAudio_setOutputMaximumAsynchronicity (kMelder_asynchronicityLevel_ASYNCHRONOUS);
 	}
 END
@@ -138,7 +138,7 @@ FORM (LongSound_writePartToAudioFile, L"LongSound: Save part as audio file", 0)
 DO
 	structMelderFile file = { 0 };
 	if (! Melder_relativePathToFile (GET_STRING (L"Audio file"), & file)) return 0;
-	if (! LongSound_writePartToAudioFile16 (ONLY (classLongSound), GET_INTEGER (L"Type"),
+	if (! LongSound_writePartToAudioFile16 ((structLongSound *)ONLY (classLongSound), GET_INTEGER (L"Type"),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), & file)) return 0;
 END
 	
@@ -185,51 +185,51 @@ FORM_WRITE (LongSound_writeToWavFile, L"Save as WAV file", 0, L"wav")
 END
 
 FORM_WRITE (LongSound_writeLeftChannelToAifcFile, L"Save left channel as AIFC file", 0, L"aifc")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_AIFC, 0, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_AIFC, 0, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeLeftChannelToAiffFile, L"Save left channel as AIFF file", 0, L"aiff")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_AIFF, 0, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_AIFF, 0, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeLeftChannelToNextSunFile, L"Save left channel as NeXT/Sun file", 0, L"au")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_NEXT_SUN, 0, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_NEXT_SUN, 0, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeLeftChannelToNistFile, L"Save left channel as NIST file", 0, L"nist")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_NIST, 0, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_NIST, 0, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeLeftChannelToFlacFile, L"Save left channel as FLAC file", 0, L"flac")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_FLAC, 0, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_FLAC, 0, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeLeftChannelToWavFile, L"Save left channel as WAV file", 0, L"wav")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_WAV, 0, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_WAV, 0, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeRightChannelToAifcFile, L"Save right channel as AIFC file", 0, L"aifc")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_AIFC, 1, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_AIFC, 1, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeRightChannelToAiffFile, L"Save right channel as AIFF file", 0, L"aiff")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_AIFF, 1, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_AIFF, 1, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeRightChannelToNextSunFile, L"Save right channel as NeXT/Sun file", 0, L"au")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_NEXT_SUN, 1, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_NEXT_SUN, 1, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeRightChannelToNistFile, L"Save right channel as NIST file", 0, L"nist")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_NIST, 1, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_NIST, 1, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeRightChannelToFlacFile, L"Save right channel as FLAC file", 0, L"flac")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_FLAC, 1, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_FLAC, 1, file)) return 0;
 END
 
 FORM_WRITE (LongSound_writeRightChannelToWavFile, L"Save right channel as WAV file", 0, L"wav")
-	if (! LongSound_writeChannelToAudioFile16 (ONLY_OBJECT, Melder_WAV, 1, file)) return 0;
+	if (! LongSound_writeChannelToAudioFile16 ((structLongSound *)ONLY_OBJECT, Melder_WAV, 1, file)) return 0;
 END
 
 FORM (LongSoundPrefs, L"LongSound preferences", L"LongSound")
@@ -290,7 +290,7 @@ FORM (Sound_autoCorrelate, L"Sound: autocorrelate", L"Sound: Autocorrelate...")
  	OK
 DO
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		if (! praat_new2 (Sound_autoCorrelate (me,
 			GET_ENUM (kSounds_convolve_scaling, L"Amplitude scaling"),
 			GET_ENUM (kSounds_convolve_signalOutsideTimeDomain, L"Signal outside time domain is...")),
@@ -300,7 +300,7 @@ END
 
 DIRECT (Sounds_combineToStereo)
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1 != NULL) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1 != NULL) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 != NULL && s2 != NULL);
 	if (! praat_new3 (Sounds_combineToStereo (s1, s2),
 		s1 -> name, L"_", s2 -> name)) return 0;
@@ -349,7 +349,7 @@ DIRECT (Sounds_concatenateRecoverably)
 	Sound thee = NULL;
 	TextGrid him = NULL;
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		if (numberOfChannels == 0) {
 			numberOfChannels = my ny;
 		} else if (my ny != numberOfChannels) {
@@ -367,7 +367,7 @@ DIRECT (Sounds_concatenateRecoverably)
 	him = TextGrid_create (0.0, nx * dx, L"labels", L""); cherror
 	nx = 0;
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		double tmax = tmin + my nx * dx;
 		for (long channel = 1; channel <= numberOfChannels; channel ++) {
 			NUMdvector_copyElements (my z [channel], thy z [channel] + nx, 1, my nx);
@@ -386,21 +386,21 @@ END
 
 DIRECT (Sound_convertToMono)
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		if (! praat_new2 (Sound_convertToMono (me), my name, L"_mono")) return 0;
 	}
 END
 
 DIRECT (Sound_convertToStereo)
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		if (! praat_new2 (Sound_convertToStereo (me), my name, L"_stereo")) return 0;
 	}
 END
 
 DIRECT (Sounds_convolve_old)
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1 != NULL) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1 != NULL) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 != NULL && s2 != NULL);
 	if (! praat_new3 (Sounds_convolve (s1, s2, kSounds_convolve_scaling_SUM, kSounds_convolve_signalOutsideTimeDomain_ZERO),
 		s1 -> name, L"_", s2 -> name)) return 0;
@@ -412,7 +412,7 @@ FORM (Sounds_convolve, L"Sounds: Convolve", L"Sounds: Convolve...")
 	OK
 DO
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1 != NULL) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1 != NULL) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 != NULL && s2 != NULL);
 	if (! praat_new3 (Sounds_convolve (s1, s2,
 		GET_ENUM (kSounds_convolve_scaling, L"Amplitude scaling"),
@@ -534,7 +534,7 @@ FORM (old_Sounds_crossCorrelate, L"Cross-correlate (short)", 0)
 	OK
 DO
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1 != NULL) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1 != NULL) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	if (! praat_new4 (Sounds_crossCorrelate_short (s1, s2, GET_REAL (L"From lag"), GET_REAL (L"To lag"),
 		GET_INTEGER (L"Normalize")), L"cc_", s1 -> name, L"_", s2 -> name)) return 0;
 END
@@ -545,7 +545,7 @@ FORM (Sounds_crossCorrelate, L"Sounds: Cross-correlate", L"Sounds: Cross-correla
 	OK
 DO_ALTERNATIVE (old_Sounds_crossCorrelate)
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1 != NULL) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1 != NULL) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 != NULL && s2 != NULL);
 	if (! praat_new3 (Sounds_crossCorrelate (s1, s2,
 		GET_ENUM (kSounds_convolve_scaling, L"Amplitude scaling"),
@@ -558,7 +558,7 @@ FORM (Sound_deemphasizeInline, L"Sound: De-emphasize (in-line)", L"Sound: De-emp
 	OK
 DO
 	WHERE (SELECTED) {
-		Sound_deEmphasis (OBJECT, GET_REAL (L"From frequency"));
+		Sound_deEmphasis ((structSound *)OBJECT, GET_REAL (L"From frequency"));
 		Vector_scale (OBJECT, 0.99);
 		praat_dataChanged (OBJECT);
 	}
@@ -574,7 +574,7 @@ FORM (Sound_deepenBandModulation, L"Deepen band modulation", L"Sound: Deepen ban
 	OK
 DO
 	WHERE (SELECTED)
-		if (! praat_new3 (Sound_deepenBandModulation (OBJECT, GET_REAL (L"Enhancement"),
+		if (! praat_new3 (Sound_deepenBandModulation ((structSound *)OBJECT, GET_REAL (L"Enhancement"),
 			GET_REAL (L"From frequency"), GET_REAL (L"To frequency"),
 			GET_REAL (L"Slow modulation"), GET_REAL (L"Fast modulation"), GET_REAL (L"Band smoothing")),
 			NAME, L"_", Melder_integer ((long) GET_REAL (L"Enhancement")))) return 0;
@@ -588,7 +588,7 @@ FORM (old_Sound_draw, L"Sound: Draw", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Sound_draw (OBJECT, GRAPHICS, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
+	EVERY_DRAW (Sound_draw ((structSound *)OBJECT, GRAPHICS, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_INTEGER (L"Garnish"), L"curve"))
 END
 
@@ -606,7 +606,7 @@ FORM (Sound_draw, L"Sound: Draw", 0)
 		OPTION (L"Speckles")
 	OK
 DO_ALTERNATIVE (old_Sound_draw)
-	EVERY_DRAW (Sound_draw (OBJECT, GRAPHICS, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
+	EVERY_DRAW (Sound_draw ((structSound *)OBJECT, GRAPHICS, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_INTEGER (L"Garnish"), GET_STRING (L"Drawing method")))
 END
 
@@ -639,7 +639,7 @@ END
 
 DIRECT (Sound_extractAllChannels)
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		for (long channel = 1; channel <= my ny; channel ++) {
 			if (! praat_new3 (Sound_extractChannel (me, channel), my name, L"_ch", Melder_integer (channel))) return 0;
 		}
@@ -652,7 +652,7 @@ FORM (Sound_extractChannel, L"Sound: Extract channel", 0)
 DO
 	long channel = GET_INTEGER (L"Channel");
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		if (! praat_new3 (Sound_extractChannel (me, channel),
 			my name, L"_ch", Melder_integer (channel))) return 0;
 	}
@@ -660,7 +660,7 @@ END
 
 DIRECT (Sound_extractLeftChannel)
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		if (! praat_new2 (Sound_extractChannel (me, 1), my name, L"_left")) return 0;
 	}
 END
@@ -674,7 +674,7 @@ FORM (Sound_extractPart, L"Sound: Extract part", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		if (! praat_new2 (Sound_extractPart (me,
 			GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 			GET_ENUM (kSound_windowShape, L"Window shape"), GET_REAL (L"Relative width"),
@@ -685,7 +685,7 @@ END
 
 DIRECT (Sound_extractRightChannel)
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		if (! praat_new2 (Sound_extractChannel (me, 2), my name, L"_right")) return 0;
 	}
 END
@@ -695,7 +695,7 @@ FORM (Sound_filter_deemphasis, L"Sound: Filter (de-emphasis)", L"Sound: Filter (
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! praat_new2 (Sound_filter_deemphasis (OBJECT, GET_REAL (L"From frequency")),
+		if (! praat_new2 (Sound_filter_deemphasis ((structSound *)OBJECT, GET_REAL (L"From frequency")),
 			NAME, L"_deemp")) return 0;
 	}
 END
@@ -706,7 +706,7 @@ FORM (Sound_filter_formula, L"Sound: Filter (formula)...", L"Formula...")
 	OK
 DO
 	WHERE (SELECTED)
-		if (! praat_new2 (Sound_filter_formula (OBJECT, GET_STRING (L"formula"), interpreter),
+		if (! praat_new2 (Sound_filter_formula ((structSound *)OBJECT, GET_STRING (L"formula"), interpreter),
 			NAME, L"_filt")) return 0;
 END
 
@@ -716,7 +716,7 @@ FORM (Sound_filter_oneFormant, L"Sound: Filter (one formant)", L"Sound: Filter (
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! praat_new2 (Sound_filter_oneFormant (OBJECT, GET_REAL (L"Frequency"), GET_REAL (L"Bandwidth")),
+		if (! praat_new2 (Sound_filter_oneFormant ((structSound *)OBJECT, GET_REAL (L"Frequency"), GET_REAL (L"Bandwidth")),
 			NAME, L"_filt")) return 0;
 	}
 END
@@ -727,7 +727,7 @@ FORM (Sound_filterWithOneFormantInline, L"Sound: Filter with one formant (in-lin
 	OK
 DO
 	WHERE (SELECTED) {
-		Sound_filterWithOneFormantInline (OBJECT, GET_REAL (L"Frequency"), GET_REAL (L"Bandwidth"));
+		Sound_filterWithOneFormantInline ((structSound *)OBJECT, GET_REAL (L"Frequency"), GET_REAL (L"Bandwidth"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -739,7 +739,7 @@ FORM (Sound_filter_passHannBand, L"Sound: Filter (pass Hann band)", L"Sound: Fil
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! praat_new2 (Sound_filter_passHannBand (OBJECT,
+		if (! praat_new2 (Sound_filter_passHannBand ((structSound *)OBJECT,
 			GET_REAL (L"From frequency"), GET_REAL (L"To frequency"), GET_REAL (L"Smoothing")),
 			NAME, L"_band")) return 0;
 	}
@@ -750,7 +750,7 @@ FORM (Sound_filter_preemphasis, L"Sound: Filter (pre-emphasis)", L"Sound: Filter
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! praat_new2 (Sound_filter_preemphasis (OBJECT, GET_REAL (L"From frequency")),
+		if (! praat_new2 (Sound_filter_preemphasis ((structSound *)OBJECT, GET_REAL (L"From frequency")),
 			NAME, L"_preemp")) return 0;
 	}
 END
@@ -762,7 +762,7 @@ FORM (Sound_filter_stopHannBand, L"Sound: Filter (stop Hann band)", L"Sound: Fil
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! praat_new2 (Sound_filter_stopHannBand (OBJECT,
+		if (! praat_new2 (Sound_filter_stopHannBand ((structSound *)OBJECT,
 			GET_REAL (L"From frequency"), GET_REAL (L"To frequency"), GET_REAL (L"Smoothing")),
 			NAME, L"_band")) return 0;
 	}
@@ -790,7 +790,7 @@ FORM (Sound_formula_part, L"Sound: Formula (part)", L"Sound: Formula...")
 	OK
 DO
 	WHERE_DOWN (SELECTED) {
-		Matrix_formula_part (OBJECT,
+		Matrix_formula_part ((structMatrix *)OBJECT,
 			GET_REAL (L"From time"), GET_REAL (L"To time"),
 			GET_INTEGER (L"From channel") - 0.5, GET_INTEGER (L"To channel") + 0.5,
 			GET_STRING (L"formula"), interpreter, NULL);
@@ -820,11 +820,11 @@ FORM (Sound_getEnergy, L"Sound: Get energy", L"Sound: Get energy...")
 	REAL (L"right Time range (s)", L"0.0 (= all)")
 	OK
 DO
-	Melder_informationReal (Sound_getEnergy (ONLY (classSound), GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"Pa2 sec");
+	Melder_informationReal (Sound_getEnergy ((structSound *)ONLY (classSound), GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"Pa2 sec");
 END
 
 DIRECT (Sound_getEnergyInAir)
-	Melder_informationReal (Sound_getEnergyInAir (ONLY (classSound)), L"Joule/m2");
+	Melder_informationReal (Sound_getEnergyInAir ((structSound *)ONLY (classSound)), L"Joule/m2");
 END
 
 FORM (Sound_getIndexFromTime, L"Get sample number from time", L"Get sample number from time...")
@@ -835,7 +835,7 @@ DO
 END
 
 DIRECT (Sound_getIntensity_dB)
-	Melder_informationReal (Sound_getIntensity_dB (ONLY (classSound)), L"dB");
+	Melder_informationReal (Sound_getIntensity_dB ((structSound *)ONLY (classSound)), L"dB");
 END
 
 FORM (Sound_getMaximum, L"Sound: Get maximum", L"Sound: Get maximum...")
@@ -868,7 +868,7 @@ FORM (Sound_getMean, L"Sound: Get mean", L"Sound: Get mean...")
 	REAL (L"right Time range (s)", L"0.0 (= all)")
 	OK
 DO_ALTERNATIVE (old_Sound_getMean)
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	long channel = GET_INTEGER (L"Channel");
 	if (channel > my ny) channel = 1;
 	Melder_informationReal (Vector_getMean (me, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), channel), L"Pascal");
@@ -893,7 +893,7 @@ FORM (old_Sound_getNearestZeroCrossing, L"Sound: Get nearest zero crossing", L"S
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	if (my ny > 1) return Melder_error1 (L"Cannot determine a zero crossing for a stereo sound.");
 	Melder_informationReal (Sound_getNearestZeroCrossing (me, GET_REAL (L"Time"), 1), L"seconds");
 END
@@ -903,19 +903,19 @@ FORM (Sound_getNearestZeroCrossing, L"Sound: Get nearest zero crossing", L"Sound
 	REAL (L"Time (s)", L"0.5")
 	OK
 DO_ALTERNATIVE (old_Sound_getNearestZeroCrossing)
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	long channel = GET_INTEGER (L"Channel");
 	if (channel > my ny) channel = 1;
 	Melder_informationReal (Sound_getNearestZeroCrossing (me, GET_REAL (L"Time"), channel), L"seconds");
 END
 
 DIRECT (Sound_getNumberOfChannels)
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	Melder_information2 (Melder_integer (my ny), my ny == 1 ? L" channel (mono)" : my ny == 2 ? L" channels (stereo)" : L"channels");
 END
 
 DIRECT (Sound_getNumberOfSamples)
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	Melder_information2 (Melder_integer (my nx), L" samples");
 END
 
@@ -924,11 +924,11 @@ FORM (Sound_getPower, L"Sound: Get power", L"Sound: Get power...")
 	REAL (L"right Time range (s)", L"0.0 (= all)")
 	OK
 DO
-	Melder_informationReal (Sound_getPower (ONLY (classSound), GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"Pa2");
+	Melder_informationReal (Sound_getPower ((structSound *)ONLY (classSound), GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"Pa2");
 END
 
 DIRECT (Sound_getPowerInAir)
-	Melder_informationReal (Sound_getPowerInAir (ONLY (classSound)), L"Watt/m2");
+	Melder_informationReal (Sound_getPowerInAir ((structSound *)ONLY (classSound)), L"Watt/m2");
 END
 
 FORM (Sound_getRootMeanSquare, L"Sound: Get root-mean-square", L"Sound: Get root-mean-square...")
@@ -936,16 +936,16 @@ FORM (Sound_getRootMeanSquare, L"Sound: Get root-mean-square", L"Sound: Get root
 	REAL (L"right Time range (s)", L"0.0 (= all)")
 	OK
 DO
-	Melder_informationReal (Sound_getRootMeanSquare (ONLY (classSound), GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"Pascal");
+	Melder_informationReal (Sound_getRootMeanSquare ((structSound *)ONLY (classSound), GET_REAL (L"left Time range"), GET_REAL (L"right Time range")), L"Pascal");
 END
 
 DIRECT (Sound_getSamplePeriod)
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	Melder_informationReal (my dx, L"seconds");
 END
 
 DIRECT (Sound_getSampleRate)
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	Melder_informationReal (1 / my dx, L"Hertz");
 END
 
@@ -964,7 +964,7 @@ FORM (Sound_getStandardDeviation, L"Sound: Get standard deviation", L"Sound: Get
 	REAL (L"right Time range (s)", L"0.0 (= all)")
 	OK
 DO_ALTERNATIVE (old_Sound_getStandardDeviation)
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	long channel = GET_INTEGER (L"Channel");
 	if (channel > my ny) channel = 1;
 	Melder_informationReal (Vector_getStandardDeviation (me,
@@ -1012,7 +1012,7 @@ FORM (old_Sound_getValueAtIndex, L"Sound: Get value at sample number", L"Sound: 
 	INTEGER (L"Sample number", L"100")
 	OK
 DO
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	long sampleIndex = GET_INTEGER (L"Sample number");
 	Melder_informationReal (sampleIndex < 1 || sampleIndex > my nx ? NUMundefined :
 		my ny == 1 ? my z [1] [sampleIndex] : 0.5 * (my z [1] [sampleIndex] + my z [2] [sampleIndex]), L"Pascal");
@@ -1023,7 +1023,7 @@ FORM (Sound_getValueAtIndex, L"Sound: Get value at sample number", L"Sound: Get 
 	INTEGER (L"Sample number", L"100")
 	OK
 DO_ALTERNATIVE (old_Sound_getValueAtIndex)
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	long sampleIndex = GET_INTEGER (L"Sample number");
 	long channel = GET_INTEGER (L"Channel");
 	if (channel > my ny) channel = 1;
@@ -1056,7 +1056,7 @@ FORM (Sound_getValueAtTime, L"Sound: Get value at time", L"Sound: Get value at t
 		RADIOBUTTON (L"Sinc700")
 	OK
 DO_ALTERNATIVE (old_Sound_getValueAtTime)
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	long channel = GET_INTEGER (L"Channel");
 	if (channel > my ny) channel = 1;
 	Melder_informationReal (Vector_getValueAtX (ONLY (classSound), GET_REAL (L"Time"),
@@ -1075,7 +1075,7 @@ DO
 	double factor = GET_REAL (L"Factor");
 	REQUIRE (minimumPitch < maximumPitch, L"Maximum pitch should be greater than minimum pitch.")
 	WHERE (SELECTED)
-		if (! praat_new3 (Sound_lengthen_overlapAdd (OBJECT, minimumPitch, maximumPitch, factor),
+		if (! praat_new3 (Sound_lengthen_overlapAdd ((structSound *)OBJECT, minimumPitch, maximumPitch, factor),
 			NAME, L"_", Melder_fixed (factor, 2))) return 0;
 END
 
@@ -1094,7 +1094,7 @@ FORM (Sound_multiplyByWindow, L"Sound: Multiply by window", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		Sound_multiplyByWindow (OBJECT, GET_ENUM (kSound_windowShape, L"Window shape"));
+		Sound_multiplyByWindow ((structSound *)OBJECT, GET_ENUM (kSound_windowShape, L"Window shape"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -1104,7 +1104,7 @@ FORM (Sound_overrideSamplingFrequency, L"Sound: Override sampling frequency", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		Sound_overrideSamplingFrequency (OBJECT, GET_REAL (L"New sampling frequency"));
+		Sound_overrideSamplingFrequency ((structSound *)OBJECT, GET_REAL (L"New sampling frequency"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -1113,10 +1113,10 @@ DIRECT (Sound_play)
 	int n = 0;
 	EVERY (n ++)
 	if (n == 1 || MelderAudio_getOutputMaximumAsynchronicity () < kMelder_asynchronicityLevel_ASYNCHRONOUS) {
-		EVERY (Sound_play (OBJECT, NULL, NULL))
+		EVERY (Sound_play ((structSound *)OBJECT, NULL, NULL))
 	} else {
 		MelderAudio_setOutputMaximumAsynchronicity (kMelder_asynchronicityLevel_INTERRUPTABLE);
-		EVERY (Sound_play (OBJECT, NULL, NULL))
+		EVERY (Sound_play ((structSound *)OBJECT, NULL, NULL))
 		MelderAudio_setOutputMaximumAsynchronicity (kMelder_asynchronicityLevel_ASYNCHRONOUS);
 	}
 END
@@ -1126,7 +1126,7 @@ FORM (Sound_preemphasizeInline, L"Sound: Pre-emphasize (in-line)", L"Sound: Pre-
 	OK
 DO
 	WHERE (SELECTED) {
-		Sound_preEmphasis (OBJECT, GET_REAL (L"From frequency"));
+		Sound_preEmphasis ((structSound *)OBJECT, GET_REAL (L"From frequency"));
 		Vector_scale (OBJECT, 0.99);
 		praat_dataChanged (OBJECT);
 	}
@@ -1260,13 +1260,13 @@ FORM (Sound_resample, L"Sound: Resample", L"Sound: Resample...")
 DO
 	double samplingFrequency = GET_REAL (L"New sampling frequency");
 	WHERE (SELECTED)
-		if (! praat_new3 (Sound_resample (OBJECT, samplingFrequency, GET_INTEGER (L"Precision")),
+		if (! praat_new3 (Sound_resample ((structSound *)OBJECT, samplingFrequency, GET_INTEGER (L"Precision")),
 			NAME, L"_", Melder_integer ((long) floor (samplingFrequency + 0.5)))) return 0;
 END
 
 DIRECT (Sound_reverse)
 	WHERE (SELECTED) {
-		Sound_reverse (OBJECT, 0, 0);
+		Sound_reverse ((structSound *)OBJECT, 0, 0);
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -1286,7 +1286,7 @@ FORM (Sound_scaleIntensity, L"Sound: Scale intensity", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		Sound_scaleIntensity (OBJECT, GET_REAL (L"New average intensity"));
+		Sound_scaleIntensity ((structSound *)OBJECT, GET_REAL (L"New average intensity"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -1297,7 +1297,7 @@ FORM (old_Sound_setValueAtIndex, L"Sound: Set value at sample number", L"Sound: 
 	OK
 DO
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		long index = GET_INTEGER (L"Sample number");
 		if (index > my nx)
 			return Melder_error3 (L"The sample number should not exceed the number of samples, which is ", Melder_integer (my nx), L".");
@@ -1314,7 +1314,7 @@ FORM (Sound_setValueAtIndex, L"Sound: Set value at sample number", L"Sound: Set 
 	OK
 DO_ALTERNATIVE (old_Sound_setValueAtIndex)
 	WHERE (SELECTED) {
-		Sound me = OBJECT;
+		Sound me = (structSound *)OBJECT;
 		long index = GET_INTEGER (L"Sample number");
 		if (index > my nx)
 			return Melder_error3 (L"The sample number should not exceed the number of samples, which is ", Melder_integer (my nx), L".");
@@ -1340,7 +1340,7 @@ FORM (Sound_setPartToZero, L"Sound: Set part to zero", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		Sound_setZero (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Cut") - 1);
+		Sound_setZero ((structSound *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Cut") - 1);
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -1360,7 +1360,7 @@ FORM (Sound_to_Manipulation, L"Sound: To Manipulation", L"Manipulation")
 DO
 	double fmin = GET_REAL (L"Minimum pitch"), fmax = GET_REAL (L"Maximum pitch");
 	REQUIRE (fmax > fmin, L"Maximum pitch must be greater than minimum pitch.");
-	EVERY_TO (Sound_to_Manipulation (OBJECT, GET_REAL (L"Time step"), fmin, fmax))
+	EVERY_TO (Sound_to_Manipulation ((structSound *)OBJECT, GET_REAL (L"Time step"), fmin, fmax))
 END
 
 FORM (Sound_to_Cochleagram, L"Sound: To Cochleagram", 0)
@@ -1370,7 +1370,7 @@ FORM (Sound_to_Cochleagram, L"Sound: To Cochleagram", 0)
 	REAL (L"Forward-masking time (s)", L"0.03")
 	OK
 DO
-	EVERY_TO (Sound_to_Cochleagram (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Cochleagram ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Frequency resolution"), GET_REAL (L"Window length"), GET_REAL (L"Forward-masking time")))
 END
 
@@ -1399,7 +1399,7 @@ FORM (Sound_to_Formant_burg, L"Sound: To Formant (Burg method)", L"Sound: To For
 	POSITIVE (L"Pre-emphasis from (Hz)", L"50")
 	OK
 DO
-	EVERY_TO (Sound_to_Formant_burg (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Formant_burg ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Max. number of formants"), GET_REAL (L"Maximum formant"),
 		GET_REAL (L"Window length"), GET_REAL (L"Pre-emphasis from")))
 END
@@ -1412,7 +1412,7 @@ FORM (Sound_to_Formant_keepAll, L"Sound: To Formant (keep all)", L"Sound: To For
 	POSITIVE (L"Pre-emphasis from (Hz)", L"50")
 	OK
 DO
-	EVERY_TO (Sound_to_Formant_keepAll (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Formant_keepAll ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Max. number of formants"), GET_REAL (L"Maximum formant"),
 		GET_REAL (L"Window length"), GET_REAL (L"Pre-emphasis from")))
 END
@@ -1425,7 +1425,7 @@ FORM (Sound_to_Formant_willems, L"Sound: To Formant (split Levinson (Willems))",
 	POSITIVE (L"Pre-emphasis from (Hz)", L"50")
 	OK
 DO
-	EVERY_TO (Sound_to_Formant_willems (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Formant_willems ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Number of formants"), GET_REAL (L"Maximum formant"),
 		GET_REAL (L"Window length"), GET_REAL (L"Pre-emphasis from")))
 END
@@ -1439,7 +1439,7 @@ FORM (Sound_to_Harmonicity_ac, L"Sound: To Harmonicity (ac)", L"Sound: To Harmon
 DO
 	double periodsPerWindow = GET_REAL (L"Periods per window");
 	REQUIRE (periodsPerWindow >= 3.0, L"Number of periods per window must be >= 3.")
-	EVERY_TO (Sound_to_Harmonicity_ac (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Harmonicity_ac ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Minimum pitch"), GET_REAL (L"Silence threshold"), periodsPerWindow))
 END
 
@@ -1450,7 +1450,7 @@ FORM (Sound_to_Harmonicity_cc, L"Sound: To Harmonicity (cc)", L"Sound: To Harmon
 	POSITIVE (L"Periods per window", L"1.0")
 	OK
 DO
-	EVERY_TO (Sound_to_Harmonicity_cc (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Harmonicity_cc ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Minimum pitch"), GET_REAL (L"Silence threshold"),
 		GET_REAL (L"Periods per window")))
 END
@@ -1462,7 +1462,7 @@ FORM (Sound_to_Harmonicity_gne, L"Sound: To Harmonicity (gne)", 0)
 	POSITIVE (L"Step (Hz)", L"80")
 	OK
 DO
-	EVERY_TO (Sound_to_Harmonicity_GNE (OBJECT, GET_REAL (L"Minimum frequency"),
+	EVERY_TO (Sound_to_Harmonicity_GNE ((structSound *)OBJECT, GET_REAL (L"Minimum frequency"),
 		GET_REAL (L"Maximum frequency"), GET_REAL (L"Bandwidth"),
 		GET_REAL (L"Step")))
 END
@@ -1504,7 +1504,7 @@ FORM (Sound_to_Ltas, L"Sound: To long-term average spectrum", 0)
 	POSITIVE (L"Bandwidth (Hz)", L"100")
 	OK
 DO
-	EVERY_TO (Sound_to_Ltas (OBJECT, GET_REAL (L"Bandwidth")))
+	EVERY_TO (Sound_to_Ltas ((structSound *)OBJECT, GET_REAL (L"Bandwidth")))
 END
 
 FORM (Sound_to_Ltas_pitchCorrected, L"Sound: To Ltas (pitch-corrected)", L"Sound: To Ltas (pitch-corrected)...")
@@ -1519,18 +1519,18 @@ FORM (Sound_to_Ltas_pitchCorrected, L"Sound: To Ltas (pitch-corrected)", L"Sound
 DO
 	double fmin = GET_REAL (L"Minimum pitch"), fmax = GET_REAL (L"Maximum pitch");
 	REQUIRE (fmax > fmin, L"Maximum pitch must be greater than minimum pitch.");
-	EVERY_TO (Sound_to_Ltas_pitchCorrected (OBJECT, fmin, fmax,
+	EVERY_TO (Sound_to_Ltas_pitchCorrected ((structSound *)OBJECT, fmin, fmax,
 		GET_REAL (L"Maximum frequency"), GET_REAL (L"Bandwidth"),
 		GET_REAL (L"Shortest period"), GET_REAL (L"Longest period"), GET_REAL (L"Maximum period factor")))
 END
 
 DIRECT (Sound_to_Matrix)
-	EVERY_TO (Sound_to_Matrix (OBJECT))
+	EVERY_TO (Sound_to_Matrix ((structSound *)OBJECT))
 END
 
 DIRECT (Sounds_to_ParamCurve)
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	if (! praat_new3 (ParamCurve_create (s1, s2), s1 -> name, L"_", s2 -> name)) return 0;
 END
 
@@ -1540,7 +1540,7 @@ FORM (Sound_to_Pitch, L"Sound: To Pitch", L"Sound: To Pitch...")
 	POSITIVE (L"Pitch ceiling (Hz)", L"600.0")
 	OK
 DO
-	EVERY_TO (Sound_to_Pitch (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Pitch ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Pitch floor"), GET_REAL (L"Pitch ceiling")))
 END
 
@@ -1561,7 +1561,7 @@ FORM (Sound_to_Pitch_ac, L"Sound: To Pitch (ac)", L"Sound: To Pitch (ac)...")
 DO
 	long maxnCandidates = GET_INTEGER (L"Max. number of candidates");
 	REQUIRE (maxnCandidates >= 2, L"Maximum number of candidates must be greater than 1.")
-	EVERY_TO (Sound_to_Pitch_ac (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Pitch_ac ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Pitch floor"), 3.0, maxnCandidates, GET_INTEGER (L"Very accurate"),
 		GET_REAL (L"Silence threshold"), GET_REAL (L"Voicing threshold"),
 		GET_REAL (L"Octave cost"), GET_REAL (L"Octave-jump cost"),
@@ -1585,7 +1585,7 @@ FORM (Sound_to_Pitch_cc, L"Sound: To Pitch (cc)", L"Sound: To Pitch (cc)...")
 DO
 	long maxnCandidates = GET_INTEGER (L"Max. number of candidates");
 	REQUIRE (maxnCandidates >= 2, L"Maximum number of candidates must be greater than 1.")
-	EVERY_TO (Sound_to_Pitch_cc (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Pitch_cc ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Pitch floor"), 1.0, maxnCandidates, GET_INTEGER (L"Very accurate"),
 		GET_REAL (L"Silence threshold"), GET_REAL (L"Voicing threshold"),
 		GET_REAL (L"Octave cost"), GET_REAL (L"Octave-jump cost"),
@@ -1605,7 +1605,7 @@ FORM (Sound_to_PointProcess_extrema, L"Sound: To PointProcess (extrema)", 0)
 	OK
 DO
 	long channel = GET_INTEGER (L"Channel");
-	EVERY_TO (Sound_to_PointProcess_extrema (OBJECT, channel > ((Sound) OBJECT) -> ny ? 1 : channel, GET_INTEGER (L"Interpolation") - 1,
+	EVERY_TO (Sound_to_PointProcess_extrema ((structSound *)OBJECT, channel > ((Sound) OBJECT) -> ny ? 1 : channel, GET_INTEGER (L"Interpolation") - 1,
 		GET_INTEGER (L"Include maxima"), GET_INTEGER (L"Include minima")))
 END
 
@@ -1616,7 +1616,7 @@ FORM (Sound_to_PointProcess_periodic_cc, L"Sound: To PointProcess (periodic, cc)
 DO
 	double fmin = GET_REAL (L"Minimum pitch"), fmax = GET_REAL (L"Maximum pitch");
 	REQUIRE (fmax > fmin, L"Maximum pitch must be greater than minimum pitch.");
-	EVERY_TO (Sound_to_PointProcess_periodic_cc (OBJECT, fmin, fmax))
+	EVERY_TO (Sound_to_PointProcess_periodic_cc ((structSound *)OBJECT, fmin, fmax))
 END
 
 FORM (Sound_to_PointProcess_periodic_peaks, L"Sound: To PointProcess (periodic, peaks)", L"Sound: To PointProcess (periodic, peaks)...")
@@ -1628,7 +1628,7 @@ FORM (Sound_to_PointProcess_periodic_peaks, L"Sound: To PointProcess (periodic, 
 DO
 	double fmin = GET_REAL (L"Minimum pitch"), fmax = GET_REAL (L"Maximum pitch");
 	REQUIRE (fmax > fmin, L"Maximum pitch must be greater than minimum pitch.");
-	EVERY_TO (Sound_to_PointProcess_periodic_peaks (OBJECT, fmin, fmax, GET_INTEGER (L"Include maxima"), GET_INTEGER (L"Include minima")))
+	EVERY_TO (Sound_to_PointProcess_periodic_peaks ((structSound *)OBJECT, fmin, fmax, GET_INTEGER (L"Include maxima"), GET_INTEGER (L"Include minima")))
 END
 
 FORM (Sound_to_PointProcess_zeroes, L"Get zeroes", 0)
@@ -1638,7 +1638,7 @@ FORM (Sound_to_PointProcess_zeroes, L"Get zeroes", 0)
 	OK
 DO
 	long channel = GET_INTEGER (L"Channel");
-	EVERY_TO (Sound_to_PointProcess_zeroes (OBJECT, channel > ((Sound) OBJECT) -> ny ? 1 : channel,
+	EVERY_TO (Sound_to_PointProcess_zeroes ((structSound *)OBJECT, channel > ((Sound) OBJECT) -> ny ? 1 : channel,
 		GET_INTEGER (L"Include raisers"), GET_INTEGER (L"Include fallers")))
 END
 
@@ -1650,7 +1650,7 @@ FORM (Sound_to_Spectrogram, L"Sound: To Spectrogram", L"Sound: To Spectrogram...
 	RADIO_ENUM (L"Window shape", kSound_to_Spectrogram_windowShape, DEFAULT)
 	OK
 DO
-	EVERY_TO (Sound_to_Spectrogram (OBJECT, GET_REAL (L"Window length"),
+	EVERY_TO (Sound_to_Spectrogram ((structSound *)OBJECT, GET_REAL (L"Window length"),
 		GET_REAL (L"Maximum frequency"), GET_REAL (L"Time step"),
 		GET_REAL (L"Frequency step"), GET_ENUM (kSound_to_Spectrogram_windowShape, L"Window shape"), 8.0, 8.0))
 END
@@ -1659,15 +1659,15 @@ FORM (Sound_to_Spectrum, L"Sound: To Spectrum", L"Sound: To Spectrum...")
 	BOOLEAN (L"Fast", 1)
 	OK
 DO
-	EVERY_TO (Sound_to_Spectrum (OBJECT, GET_INTEGER (L"Fast")))
+	EVERY_TO (Sound_to_Spectrum ((structSound *)OBJECT, GET_INTEGER (L"Fast")))
 END
 
 DIRECT (Sound_to_Spectrum_dft)
-	EVERY_TO (Sound_to_Spectrum (OBJECT, FALSE))
+	EVERY_TO (Sound_to_Spectrum ((structSound *)OBJECT, FALSE))
 END
 
 DIRECT (Sound_to_Spectrum_fft)
-	EVERY_TO (Sound_to_Spectrum (OBJECT, TRUE))
+	EVERY_TO (Sound_to_Spectrum ((structSound *)OBJECT, TRUE))
 END
 
 FORM (Sound_to_TextGrid, L"Sound: To TextGrid", L"Sound: To TextGrid...")
@@ -1750,11 +1750,11 @@ FORM_WRITE (Sound_writeToAiffFile, L"Save as AIFF file", 0, L"aiff")
 END
 
 FORM_WRITE (Sound_writeToRaw8bitUnsignedFile, L"Save as raw 8-bit unsigned sound file", 0, L"8uns")
-	if (! Sound_writeToRaw8bitUnsignedFile (ONLY_OBJECT, file)) return 0;
+	if (! Sound_writeToRaw8bitUnsignedFile ((structSound *)ONLY_OBJECT, file)) return 0;
 END
 
 FORM_WRITE (Sound_writeToRaw8bitSignedFile, L"Save as raw 8-bit signed sound file", 0, L"8sig")
-	if (! Sound_writeToRaw8bitSignedFile (ONLY_OBJECT, file)) return 0;
+	if (! Sound_writeToRaw8bitSignedFile ((structSound *)ONLY_OBJECT, file)) return 0;
 END
 
 FORM (Sound_writeToRawSoundFile, L"Save as raw sound file", 0)
@@ -1769,16 +1769,16 @@ FORM (Sound_writeToRawSoundFile, L"Save as raw sound file", 0)
 DO
 	structMelderFile file = { 0 };
 	Melder_relativePathToFile (GET_STRING (L"Raw binary file"), & file);
-	if (! Sound_writeToRawSoundFile (ONLY_OBJECT, & file, GET_INTEGER (L"Encoding"))) return 0;
+	if (! Sound_writeToRawSoundFile ((structSound *)ONLY_OBJECT, & file, GET_INTEGER (L"Encoding"))) return 0;
 END
 
 FORM_WRITE (Sound_writeToKayFile, L"Save as Kay sound file", 0, L"kay")
-	if (! Sound_writeToKayFile (ONLY_OBJECT, file)) return 0;
+	if (! Sound_writeToKayFile ((structSound *)ONLY_OBJECT, file)) return 0;
 END
 
 #ifdef macintosh
 FORM_WRITE (Sound_writeToMacSoundFile, L"Save as Macintosh sound file", 0, L"macsound")
-	if (! Sound_writeToMacSoundFile (ONLY_OBJECT, file)) return 0;
+	if (! Sound_writeToMacSoundFile ((structSound *)ONLY_OBJECT, file)) return 0;
 END
 #endif
 
@@ -1795,12 +1795,12 @@ FORM_WRITE (Sound_writeToFlacFile, L"Save as FLAC file", 0, L"flac")
 END
 
 FORM_WRITE (Sound_writeToSesamFile, L"Save as Sesam file", 0, L"sdf")
-	if (! Sound_writeToSesamFile (ONLY_OBJECT, file)) return 0;
+	if (! Sound_writeToSesamFile ((structSound *)ONLY_OBJECT, file)) return 0;
 END
 
 FORM_WRITE (Sound_writeToStereoAifcFile, L"Save as stereo AIFC file", 0, L"aifc")
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 && s2);
 	Sound stereo = Sounds_combineToStereo (s1, s2); if (stereo == NULL) return 0;
 	if (! Sound_writeToAudioFile16 (stereo, file, Melder_AIFC)) { forget (stereo); return 0; }
@@ -1809,7 +1809,7 @@ END
 
 FORM_WRITE (Sound_writeToStereoAiffFile, L"Save as stereo AIFF file", 0, L"aiff")
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 && s2);
 	Sound stereo = Sounds_combineToStereo (s1, s2); if (stereo == NULL) return 0;
 	if (! Sound_writeToAudioFile16 (stereo, file, Melder_AIFF)) { forget (stereo); return 0; }
@@ -1818,7 +1818,7 @@ END
 
 FORM_WRITE (Sound_writeToStereoNextSunFile, L"Save as stereo NeXT/Sun file", 0, L"au")
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 && s2);
 	Sound stereo = Sounds_combineToStereo (s1, s2); if (stereo == NULL) return 0;
 	if (! Sound_writeToAudioFile16 (stereo, file, Melder_NEXT_SUN)) { forget (stereo); return 0; }
@@ -1827,7 +1827,7 @@ END
 
 FORM_WRITE (Sound_writeToStereoNistFile, L"Save as stereo NIST file", 0, L"nist")
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 && s2);
 	Sound stereo = Sounds_combineToStereo (s1, s2); if (stereo == NULL) return 0;
 	if (! Sound_writeToAudioFile16 (stereo, file, Melder_NIST)) { forget (stereo); return 0; }
@@ -1836,7 +1836,7 @@ END
 
 FORM_WRITE (Sound_writeToStereoFlacFile, L"Save as stereo FLAC file", 0, L"flac")
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 && s2);
 	Sound stereo = Sounds_combineToStereo (s1, s2); if (stereo == NULL) return 0;
 	if (! Sound_writeToAudioFile16 (stereo, file, Melder_FLAC)) { forget (stereo); return 0; }
@@ -1845,7 +1845,7 @@ END
 
 FORM_WRITE (Sound_writeToStereoWavFile, L"Save as stereo WAV file", 0, L"wav")
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	Melder_assert (s1 && s2);
 	Sound stereo = Sounds_combineToStereo (s1, s2); if (stereo == NULL) return 0;
 	if (! Sound_writeToAudioFile16 (stereo, file, Melder_WAV)) { forget (stereo); return 0; }
@@ -1957,7 +1957,7 @@ static int recordFromFileProc (MelderFile file) {
 	if (last == melderSoundFromFile) last = NULL;
 	forget (melderSoundFromFile);
 	Melder_warningOff ();   /* Like "misssing samples". */
-	melderSoundFromFile = Data_readFromFile (file);
+	melderSoundFromFile = (structSound *)Data_readFromFile (file);
 	Melder_warningOn ();
 	if (! melderSoundFromFile) return 0;
 	if (! Thing_member (melderSoundFromFile, classSound)) { forget (melderSoundFromFile); return 0; }
@@ -1981,7 +1981,7 @@ static int publishPlayedProc (void) {
 
 /***** buttons *****/
 
-void praat_uvafon_Sound_init (void);
+extern "C" void praat_uvafon_Sound_init (void);
 void praat_uvafon_Sound_init (void) {
 
 	Data_recognizeFileType (macSoundOrEmptyFileRecognizer);

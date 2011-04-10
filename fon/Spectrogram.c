@@ -139,7 +139,7 @@ void Spectrogram_paint (I, Graphics g,
 
 Spectrogram Matrix_to_Spectrogram (I) {
 	iam (Matrix);
-	Spectrogram thee = Spectrogram_create (my xmin, my xmax, my nx, my dx, my x1,
+	Spectrogram thee = (structSpectrogram *)Spectrogram_create (my xmin, my xmax, my nx, my dx, my x1,
 			my ymin, my ymax, my ny, my dy, my y1);
 	if (! thee) return NULL;
 	NUMdmatrix_copyElements (my z, thy z, 1, my ny, 1, my nx);

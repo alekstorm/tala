@@ -107,9 +107,9 @@ static void Sound_alawDecode (Sound me) {
 		err = FSMakeFSSpec (0, 0, & pname [0], fspec);
 		if (err != noErr && err != fnfErr) {
 			if (err == -2095) {
-				return Melder_error1 (L"To open this movie file, you have to install QuickTime first (www.apple.com).");
+				return (structSound *)Melder_error1 (L"To open this movie file, you have to install QuickTime first (www.apple.com).");
 			}
-			return Melder_error5 (L"Error #", Melder_integer (err), L" looking for file ", file -> path, L".");
+			return (structSound *)Melder_error5 (L"Error #", Melder_integer (err), L" looking for file ", file -> path, L".");
 		}
 		return 1;
 	}
@@ -120,7 +120,7 @@ static void Sound_alawDecode (Sound me) {
 		FSRef fsref;
 		OSStatus err = FSPathMakeRef ((unsigned char *) path, & fsref, NULL);
 		if (err != noErr && err != fnfErr)
-			return Melder_error5 (L"Error #", Melder_integer (err), L" translating file name ", file -> path, L".");
+			return (structSound *)Melder_error5 (L"Error #", Melder_integer (err), L" translating file name ", file -> path, L".");
 		FSSpec *fspec = (FSSpec *) void_fspec;
 		err = FSGetCatalogInfo (& fsref, kFSCatInfoNone, NULL, NULL, fspec, NULL);
 		if (err != noErr) {
@@ -136,10 +136,10 @@ static void Sound_alawDecode (Sound me) {
 			Melder_wcsTo8bitFileRepresentation_inline (parentDir. path, path);
 			err = FSPathMakeRef ((unsigned char *) path, & parentDirectory, NULL);
 			if (err != noErr)
-				return Melder_error5 (L"Error #", Melder_integer (err), L" translating directory name ", parentDir. path, L".");
+				return (structSound *)Melder_error5 (L"Error #", Melder_integer (err), L" translating directory name ", parentDir. path, L".");
 			err = FSGetCatalogInfo (& parentDirectory, kFSCatInfoVolume | kFSCatInfoNodeID, & info, NULL, NULL, NULL);
 			if (err != noErr)
-				return Melder_error5 (L"Error #", Melder_integer (err), L" looking for directory of ", file -> path, L".");
+				return (structSound *)Melder_error5 (L"Error #", Melder_integer (err), L" looking for directory of ", file -> path, L".");
 			/*
 				Convert from Unicode to MacRoman.
 			*/
@@ -147,7 +147,7 @@ static void Sound_alawDecode (Sound me) {
 			PfromCstr (pname, romanName);
 			err = FSMakeFSSpec (info. volume, info. nodeID, & pname [0], fspec);
 			if (err != noErr && err != fnfErr)
-				return Melder_error5 (L"Error #", Melder_integer (err), L" looking for file ", file -> path, L".");
+				return (structSound *)Melder_error5 (L"Error #", Melder_integer (err), L" looking for file ", file -> path, L".");
 		}
 		return 1;
 	}
@@ -172,7 +172,7 @@ Sound Sound_readFromSoundFile (MelderFile file) {
 		fclose (f);
 		if (TRUE /* ! unshorten (file, 1024, encoding == Melder_POLYPHONE, & me) */) {
 			forget (me);
-			return Melder_errorp1 (L"(Sound_readFromSoundFile:) Cannot unshorten. Write to paul.boersma@uva.nl for more information.");
+			return (structSound *)Melder_errorp1 (L"(Sound_readFromSoundFile:) Cannot unshorten. Write to paul.boersma@uva.nl for more information.");
 		}
 		return me;
 	}
@@ -202,13 +202,13 @@ Sound Sound_readFromSesamFile (MelderFile file) {
 	if (numberOfSamples < 1 || numberOfSamples > 1000000000 ||
 			samplingFrequency < 10.0 || samplingFrequency > 100000000.0) {
 		fclose (f);
-		return Melder_errorp3 (L"(Sound_readFromSesamFile:) "
+		return (structSound *)Melder_errorp3 (L"(Sound_readFromSesamFile:) "
 			"File ", MelderFile_messageName (file), L" is not a correct SESAM or LVS file.");
 	}
 	me = Sound_createSimple (1, numberOfSamples / samplingFrequency, samplingFrequency);
 	if (! me) return NULL;
 	for (long i = 1; i <= numberOfSamples; i ++) my z [1] [i] = bingeti2LE (f) * (1.0 / 2048);   /* 12 bits. */
-	if (fclose (f) == EOF) return Melder_errorp3 (L"Error reading file ", MelderFile_messageName (file), L".");
+	if (fclose (f) == EOF) return (structSound *)Melder_errorp3 (L"Error reading file ", MelderFile_messageName (file), L".");
 	return me;
 }
 
@@ -219,15 +219,15 @@ Sound Sound_readFromMacSoundFile (MelderFile file) {
 	Melder_fileToMach (file, & fsRef);
 	int path = FSOpenResFile (& fsRef, fsRdPerm);   /* Open resource fork; there are the sounds. */
 	if (path == -1)
-		return Melder_errorp ("(Sound_readFromMacSoundFile:) Error opening resource fork.");
+		return (structSound *)Melder_errorp ("(Sound_readFromMacSoundFile:) Error opening resource fork.");
 	if (Count1Resources ('snd ') == 0) {   /* Are there really any sounds in this file? */
 		CloseResFile (path);
-		return Melder_errorp ("(Sound_readFromMacSoundFile:) No sound resources found.");
+		return (structSound *)Melder_errorp ("(Sound_readFromMacSoundFile:) No sound resources found.");
 	}
 	Handle han = Get1IndResource ('snd ', 1);   /* Take the first sound from this file. */
 	if (! han) {
 		CloseResFile (path);
-		return Melder_errorp ("(Sound_readFromMacSoundFile:) Sound too large.");
+		return (structSound *)Melder_errorp ("(Sound_readFromMacSoundFile:) Sound too large.");
 	}
 	DetachResource (han);   /* Release the sound's binding with the Resource Map. */
 	CloseResFile (path);   /* Remove the Resource Map; the sound is ours now. */
@@ -241,7 +241,7 @@ Sound Sound_readFromMacSoundFile (MelderFile file) {
 		 p -> itsSndHeader. samplePtr != NULL)
 	{
 		DisposeHandle (han);
-		return Melder_errorp ("(Sound_readFromMacSoundFile:) Sound has an unknown format.");
+		return (structSound *)Melder_errorp ("(Sound_readFromMacSoundFile:) Sound has an unknown format.");
 	}
 	SoundHeader *header = & (**(SndResourceHandle) han).itsSndHeader;
 	long numberOfSamples = header -> length;
@@ -481,11 +481,11 @@ Sound Sound_readFromBellLabsFile (MelderFile file) {
 error:
 	if (f) fclose (f);
 	Melder_free (lines);
-	return Melder_errorp3 (L"(Sound_readFromBellLabsFile:) File ", MelderFile_messageName (file), L" not read.");
+	return (structSound *)Melder_errorp3 (L"(Sound_readFromBellLabsFile:) File ", MelderFile_messageName (file), L" not read.");
 }
 
 static Sound readError (MelderFile file) {
-	return Melder_errorp3 (L"(Sound_readFrom...File:) Cannot read file ", MelderFile_messageName (file), L".");
+	return (structSound *)Melder_errorp3 (L"(Sound_readFrom...File:) Cannot read file ", MelderFile_messageName (file), L".");
 }
 
 Sound Sound_readFromKayFile (MelderFile file) {
@@ -502,7 +502,7 @@ Sound Sound_readFromKayFile (MelderFile file) {
 	if (fread (data, 1, 12, f) < 12) return readError (file);
 	if (! strnequ (data, "FORMDS16", 8)) {
 		fclose (f);
-		return Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" is not a KAY DS-16 file.");
+		return (structSound *)Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" is not a KAY DS-16 file.");
 	}
 
 	/* HEDR chunk */
@@ -510,7 +510,7 @@ Sound Sound_readFromKayFile (MelderFile file) {
 	if (fread (data, 1, 4, f) < 4) return readError (file);
 	if (! strnequ (data, "HEDR", 4)) {
 		fclose (f);
-		return Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" does not contain HEDR chunk.");
+		return (structSound *)Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" does not contain HEDR chunk.");
 	}
 	chunkSize = bingetu4LE (f);
 	if (chunkSize & 1) ++ chunkSize;
@@ -519,7 +519,7 @@ Sound Sound_readFromKayFile (MelderFile file) {
 	numberOfSamples = bingetu4LE (f);
 	if (samplingFrequency <= 0 || samplingFrequency > 1e7 || numberOfSamples >= 1000000000) {
 		fclose (f);
-		return Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" is not a correct Kay file.");
+		return (structSound *)Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" is not a correct Kay file.");
 	}
 	if (fread (data, 1, 4, f) < 4) return readError (file);   /* Absolute extrema A/B. */
 
@@ -529,7 +529,7 @@ Sound Sound_readFromKayFile (MelderFile file) {
 	while (! strnequ (data, "SDA_", 4) && ! strnequ (data, "SD_B", 4)) {
 		if (feof (f)) {
 			fclose (f);
-			return Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" does not contain readable SD chunk.");
+			return (structSound *)Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" does not contain readable SD chunk.");
 		}
 		chunkSize = bingetu4LE (f);
 		if (chunkSize & 1) ++ chunkSize;
@@ -539,7 +539,7 @@ Sound Sound_readFromKayFile (MelderFile file) {
 	chunkSize = bingetu4LE (f);
 	if (chunkSize != numberOfSamples * 2) {
 		fclose (f);
-		return Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" does not contain readable SD chunk.");
+		return (structSound *)Melder_errorp3 (L"(Sound_readFromKayFile:) File ", MelderFile_messageName (file), L" does not contain readable SD chunk.");
 	}
 
 	me = Sound_createSimple (1, numberOfSamples / samplingFrequency, samplingFrequency);
@@ -613,7 +613,7 @@ int Sound_writeToMacSoundFile (Sound me, MelderFile file) {
 	long i;
 	double *from;
 	unsigned char *to;
-	if (! dataH) return Melder_error1 (L"Sound_writeToMacSoundFile: not enough memory.");
+	if (! dataH) return (structSound *)Melder_error1 (L"Sound_writeToMacSoundFile: not enough memory.");
 	data = *dataH;
 	data -> formatType = 1;
 	data -> numberOfSynthesizers = 1;
@@ -650,15 +650,15 @@ int Sound_writeToMacSoundFile (Sound me, MelderFile file) {
 			Melder_peekWcsToUtf16 (MelderFile_name (file)), 0, NULL,
 			resourceForkName. length, resourceForkName. unicode, & fsRef, NULL);
 		if (err != noErr)
-			return Melder_error1 (L"Error %d when trying to create a Mac sound resource file.");
+			return (structSound *)Melder_error1 (L"Error %d when trying to create a Mac sound resource file.");
 	}
 	Melder_fileToMach (file, & fsRef);
 	FSDeleteFork (& fsRef, resourceForkName. length, resourceForkName. unicode);
 	OSErr err2 = FSCreateResourceFork (& fsRef, resourceForkName. length, resourceForkName. unicode, 0);
 	if (err2 == nsvErr) {
-		return Melder_error1 (L"File not found when trying to create a Mac sound resource file.");
+		return (structSound *)Melder_error1 (L"File not found when trying to create a Mac sound resource file.");
 	} else if (err2 != noErr)
-		return Melder_error3 (L"Unexpected error ", Melder_integer (err2), L" trying to create a Mac sound file.");
+		return (structSound *)Melder_error3 (L"Unexpected error ", Melder_integer (err2), L" trying to create a Mac sound file.");
 	int path = FSOpenResFile (& fsRef, fsWrPerm);
 
 	/* Write the data to the file as an 'snd ' resource. */
@@ -671,7 +671,7 @@ int Sound_writeToMacSoundFile (Sound me, MelderFile file) {
 	AddResource ((Handle) dataH, 'snd ', 128, (unsigned char *) "sound");   /* Resource manager's. */
 	if (ResError () != noErr) {
 		CloseResFile (path);
-		return Melder_error1 (L"Sound_writeToMacSoundFile: not enough disk space.");
+		return (structSound *)Melder_error1 (L"Sound_writeToMacSoundFile: not enough disk space.");
 	}
 	SetResAttrs ((Handle) dataH, resPurgeable + resChanged);
 		/* Make purgeable, like system sounds. Keep the changes. */

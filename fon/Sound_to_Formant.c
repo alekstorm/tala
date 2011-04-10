@@ -277,7 +277,7 @@ static Formant Sound_to_Formant_any_inline (Sound me, double dt_in, int numberOf
 	long nsamp_window = (long) floor (dt_window / my dx), halfnsamp_window = nsamp_window / 2;
 
 	if (nsamp_window < numberOfPoles + 1)
-		return Melder_errorp ("(Sound_to_Formant:) Window too short.");
+		return (structFormant *)Melder_errorp ("(Sound_to_Formant:) Window too short.");
 	t1 = my x1 + 0.5 * (duration - my dx - (nFrames - 1) * dt); /* Centre of first frame. */
 	if (nFrames < 1) {
 		nFrames = 1;
@@ -338,7 +338,7 @@ end:
 	NUMdvector_free (window, 1);
 	NUMdvector_free (frame, 1);
 	NUMdvector_free (cof, 1);
-	iferror { forget (thee); return Melder_errorp ("(Sound_to_Formant:) Not performed."); }
+	iferror { forget (thee); return (structFormant *)Melder_errorp ("(Sound_to_Formant:) Not performed."); }
 	if (thee) Formant_sort (thee);
 	return thee;
 }
@@ -350,7 +350,7 @@ Formant Sound_to_Formant_any (Sound me, double dt, int numberOfPoles, double max
 	Formant thee = NULL;
 	double nyquist = 0.5 / my dx;
 	if (maximumFrequency <= 0.0 || fabs (maximumFrequency / nyquist - 1) < 1.0e-12) {
-		sound = Data_copy (me);   /* Will be modified. */
+		sound = (structSound *)Data_copy (me);   /* Will be modified. */
 	} else {
 		sound = Sound_resample (me, maximumFrequency * 2, 50);
 	}

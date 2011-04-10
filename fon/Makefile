@@ -3,6 +3,8 @@
 
 include ../makefile.defs
 
+CC = $(CPP)
+
 CFLAGS = $(DEFS) -I ../num -I ../audio -I ../kar -I ../sys -I ../dwsys -I ../stat -I ../dwtools -I ../LPC -I ../fon -I ../audio/FLAC -I ../audio/mp3
 
 CPPFLAGS = $(CFLAGS)

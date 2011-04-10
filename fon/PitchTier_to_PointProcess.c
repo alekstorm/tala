@@ -52,7 +52,7 @@ PointProcess PitchTier_to_PointProcess (PitchTier me) {
 	return thee;
 error:
 	forget (thee);
-	return Melder_errorp ("(PitchTier_to_PointProcess:) Not performed.");
+	return (structPointProcess *)Melder_errorp ("(PitchTier_to_PointProcess:) Not performed.");
 }
 
 PointProcess PitchTier_Pitch_to_PointProcess (PitchTier me, Pitch vuv) {
@@ -73,7 +73,7 @@ cleanUp:
 	forget (fullPoint);
 	if (Melder_hasError ()) {
 		forget (thee);
-		return Melder_errorp1 (L"(Pitch_to_PointProcess:) Not performed.");
+		return (structPointProcess *)Melder_errorp1 (L"(Pitch_to_PointProcess:) Not performed.");
 	}
 	return thee;
 }
@@ -110,7 +110,7 @@ cleanUp:
 	forget (fullPoint);
 	if (Melder_hasError ()) {
 		forget (thee);
-		return Melder_errorp1 (L"(Pitch_to_PointProcess:) Not performed.");
+		return (structPointProcess *)Melder_errorp1 (L"(Pitch_to_PointProcess:) Not performed.");
 	}
 	return thee;
 }
@@ -128,7 +128,7 @@ PitchTier PointProcess_to_PitchTier (PointProcess me, double maximumInterval) {
 		}
 	}
 end:
-	if (Melder_hasError ()) { forget (thee); return Melder_errorp
+	if (Melder_hasError ()) { forget (thee); return (structPitchTier *)Melder_errorp
 		("(PointProcess_to_PitchTier:) Not performed."); }
 	return thee;
 }
@@ -144,7 +144,7 @@ PitchTier Pitch_PointProcess_to_PitchTier (Pitch me, PointProcess pp) {
 
 PitchTier PitchTier_PointProcess_to_PitchTier (PitchTier me, PointProcess pp) {
 	PitchTier thee = NULL;
-	if (my points -> size == 0) return Melder_errorp ("No pitch points.");
+	if (my points -> size == 0) return (structPitchTier *)Melder_errorp ("No pitch points.");
 	thee = PitchTier_create (pp -> xmin, pp -> xmax); cherror;
 	for (long i = 1; i <= pp -> nt; i ++) {
 		double time = pp -> t [i];

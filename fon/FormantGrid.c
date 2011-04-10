@@ -53,13 +53,13 @@
 
 static double getVector (I, long irow, long icol) {
 	iam (FormantGrid);
-	RealTier tier = my formants -> item [irow];
+	RealTier tier = (structRealTier *)my formants -> item [irow];
 	return RealTier_getValueAtIndex (tier, icol);
 }
 
 static double getFunction1 (I, long irow, double x) {
 	iam (FormantGrid);
-	RealTier tier = my formants -> item [irow];
+	RealTier tier = (structRealTier *)my formants -> item [irow];
 	return RealTier_getValueAtTime (tier, x);
 }
 
@@ -75,11 +75,11 @@ static void shiftX (I, double xfrom, double xto) {
 	iam (FormantGrid);
 	inherited (FormantGrid) shiftX (me, xfrom, xto);
 	for (long i = 1; i <= my formants -> size; i ++) {
-		RealTier tier = my formants -> item [i];
+		RealTier tier = (structRealTier *)my formants -> item [i];
 		tier -> methods -> shiftX (tier, xfrom, xto);
 	}
 	for (long i = 1; i <= my bandwidths -> size; i ++) {
-		RealTier tier = my bandwidths -> item [i];
+		RealTier tier = (structRealTier *)my bandwidths -> item [i];
 		tier -> methods -> shiftX (tier, xfrom, xto);
 	}
 }
@@ -88,11 +88,11 @@ static void scaleX (I, double xminfrom, double xmaxfrom, double xminto, double x
 	iam (FormantGrid);
 	inherited (FormantGrid) scaleX (me, xminfrom, xmaxfrom, xminto, xmaxto);
 	for (long i = 1; i <= my formants -> size; i ++) {
-		RealTier tier = my formants -> item [i];
+		RealTier tier = (structRealTier *)my formants -> item [i];
 		tier -> methods -> scaleX (tier, xminfrom, xmaxfrom, xminto, xmaxto);
 	}
 	for (long i = 1; i <= my bandwidths -> size; i ++) {
-		RealTier tier = my bandwidths -> item [i];
+		RealTier tier = (structRealTier *)my bandwidths -> item [i];
 		tier -> methods -> scaleX (tier, xminfrom, xmaxfrom, xminto, xmaxto);
 	}
 }
@@ -158,8 +158,10 @@ end:
 
 int FormantGrid_addFormantPoint (FormantGrid me, long iformant, double t, double value) {
 	if (iformant < 1 || iformant > my formants -> size) error1 (L"No such formant number.");
-	RealTier formantTier = my formants -> item [iformant];
-	RealTier_addPoint (formantTier, t, value);
+	{
+		RealTier formantTier = (structRealTier *)my formants -> item [iformant];
+		RealTier_addPoint (formantTier, t, value);
+	}
 end:
 	iferror return 0;
 	return 1;
@@ -167,8 +169,10 @@ end:
 
 int FormantGrid_addBandwidthPoint (FormantGrid me, long iformant, double t, double value) {
 	if (iformant < 1 || iformant > my formants -> size) error1 (L"No such formant number.");
-	RealTier bandwidthTier = my bandwidths -> item [iformant];
-	RealTier_addPoint (bandwidthTier, t, value);
+	{
+		RealTier bandwidthTier = (structRealTier *)my bandwidths -> item [iformant];
+		RealTier_addPoint (bandwidthTier, t, value);
+	}
 end:
 	iferror return 0;
 	return 1;
@@ -198,8 +202,8 @@ void Sound_FormantGrid_filter_inline (Sound me, FormantGrid formantGrid) {
 	double dt = my dx;
 	if (formantGrid -> formants -> size && formantGrid -> bandwidths -> size)
 	for (long iformant = 1; iformant <= formantGrid -> formants -> size; iformant ++) {
-		RealTier formantTier = formantGrid -> formants -> item [iformant];
-		RealTier bandwidthTier = formantGrid -> bandwidths -> item [iformant];
+		RealTier formantTier = (structRealTier *)formantGrid -> formants -> item [iformant];
+		RealTier bandwidthTier = (structRealTier *)formantGrid -> bandwidths -> item [iformant];
 		for (long isamp = 1; isamp <= my nx; isamp ++) {
 			double t = my x1 + (isamp - 1) * my dx;
 			/*
@@ -232,7 +236,7 @@ void Sound_FormantGrid_filter_inline (Sound me, FormantGrid formantGrid) {
 }
 
 Sound Sound_FormantGrid_filter (Sound me, FormantGrid formantGrid) {
-	Sound thee = Data_copy (me);
+	Sound thee = (structSound *)Data_copy (me);
 	if (! thee) return NULL;
 	Sound_FormantGrid_filter_inline (thee, formantGrid);
 	Vector_scale (thee, 0.99);
@@ -240,7 +244,7 @@ Sound Sound_FormantGrid_filter (Sound me, FormantGrid formantGrid) {
 }
 
 Sound Sound_FormantGrid_filter_noscale (Sound me, FormantGrid formantGrid) {
-	Sound thee = Data_copy (me);
+	Sound thee = (structSound *)Data_copy (me);
 	if (! thee) return NULL;
 	Sound_FormantGrid_filter_inline (thee, formantGrid);
 	return thee;
@@ -288,7 +292,7 @@ int FormantGrid_formula_bandwidths (I, const wchar_t *expression, Interpreter *i
 	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
 	if (thee == NULL) thee = me;
 	for (long irow = 1; irow <= my formants -> size; irow ++) {
-		RealTier bandwidth = thy bandwidths -> item [irow];
+		RealTier bandwidth = (structRealTier *)thy bandwidths -> item [irow];
 		for (long icol = 1; icol <= bandwidth -> points -> size; icol ++) {
 			struct Formula_Result result;
 			Formula_run (irow, icol, & result); cherror
@@ -308,7 +312,7 @@ int FormantGrid_formula_frequencies (I, const wchar_t *expression, Interpreter *
 	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
 	if (thee == NULL) thee = me;
 	for (long irow = 1; irow <= my formants -> size; irow ++) {
-		RealTier formant = thy formants -> item [irow];
+		RealTier formant = (structRealTier *)thy formants -> item [irow];
 		for (long icol = 1; icol <= formant -> points -> size; icol ++) {
 			struct Formula_Result result;
 			Formula_run (irow, icol, & result); cherror

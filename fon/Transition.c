@@ -91,7 +91,7 @@ int Transition_init (I, long numberOfStates) {
 	if (numberOfStates < 1)
 		return Melder_error1 (L"(Transition_init:) Cannot create empty matrix.");
 	my numberOfStates = numberOfStates;
-	if (! (my stateLabels = NUMvector (sizeof (char *), 1, numberOfStates))) return 0;
+	if (! (my stateLabels = (wchar_t **)NUMvector (sizeof (char *), 1, numberOfStates))) return 0;
 	if (! (my data = NUMdmatrix (1, my numberOfStates, 1, my numberOfStates))) return 0;
 	return 1;
 }
@@ -210,8 +210,8 @@ end:
 Transition Transition_power (Transition me, long power) {
 	long ipow;
 	Transition thee = NULL, him = NULL;
-	thee = Data_copy (me);
-	him = Data_copy (me);
+	thee = (structTransition *)Data_copy (me);
+	him = (structTransition *)Data_copy (me);
 	if (! thee || ! him) goto end;
 	for (ipow = 2; ipow <= power; ipow ++) {
 		long irow, icol;
@@ -256,7 +256,7 @@ Transition Matrix_to_Transition (Matrix me) {
 end:
 	if (Melder_hasError ()) {
 		forget (thee);
-		return Melder_errorp ("(Matrix_to_Transition:) Not performed.");
+		return (structTransition *)Melder_errorp ("(Matrix_to_Transition:) Not performed.");
 	}
 	return thee;
 }

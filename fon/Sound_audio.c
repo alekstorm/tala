@@ -210,7 +210,7 @@ Sound Sound_recordFixedTime (int inputSource, double gain, double balance, doubl
 	/* Check representation of shorts. */
 
 	if (sizeof (short) != 2)
-		return Melder_errorp ("(Sound_record:) Cannot record a sound on this machine.");
+		return (structSound *)Melder_errorp ("(Sound_record:) Cannot record a sound on this machine.");
 
 	/* Check sampling frequency. */
 
@@ -245,7 +245,7 @@ Sound Sound_recordFixedTime (int inputSource, double gain, double balance, doubl
 		#endif
 	}
 	if (! supportsSamplingFrequency)
-		return Melder_errorp ("(Sound_record:) Audio hardware does not support sampling frequency %.8g.", sampleRate);
+		return (structSound *)Melder_errorp ("(Sound_record:) Audio hardware does not support sampling frequency %.8g.", sampleRate);
 
 	/*
 	 * Open phase 1.
@@ -264,12 +264,12 @@ Sound Sound_recordFixedTime (int inputSource, double gain, double balance, doubl
 	} else {
 		#if defined (sgi)
 			config = ALnewconfig ();
-			if (! config) return Melder_errorp
+			if (! config) return (structSound *)Melder_errorp
 				("(Sound_record:) Do not know how to record a sound on this machine.");
 			/* We do not open the port yet, because the info is an argument to opening the port. */
 		#elif defined (macintosh)
 			if (SPBOpenDevice (NULL, siWritePermission, & refNum) != noErr)
-				return Melder_errorp ("Cannot open audio input device.\n"
+				return (structSound *)Melder_errorp ("Cannot open audio input device.\n"
 					"Perhaps somebody else is recording on your computer.");
 		#elif defined (_WIN32)
 		#else
@@ -421,7 +421,7 @@ Sound Sound_recordFixedTime (int inputSource, double gain, double balance, doubl
 					case AL_RATE_44100: sampleRate = 44100; break;
 					case AL_RATE_48000: sampleRate = 48000; break;
 					default:
-						return Melder_errorp ("(Sound_recordFixedTime:) Wrong sampling frequency.");
+						return (structSound *)Melder_errorp ("(Sound_recordFixedTime:) Wrong sampling frequency.");
 				}
 			} else {
 				/* Set sampling frequency. */
@@ -550,7 +550,7 @@ Sound Sound_recordFixedTime (int inputSource, double gain, double balance, doubl
 
 	numberOfSamples = floor (sampleRate * duration + 0.5);
 	if (numberOfSamples < 1)
-		return Melder_errorp ("(Sound_record:) Duration too short.");
+		return (structSound *)Melder_errorp ("(Sound_record:) Duration too short.");
 	if (! (buffer = NUMsvector (1, numberOfSamples * (fakeMonoByStereo ? 2 : 1)))) return NULL;
 	if (! (me = Sound_createSimple (1, numberOfSamples / sampleRate, sampleRate))) {   // STEREO BUG
 		NUMsvector_free (buffer, 1);
@@ -585,7 +585,7 @@ Sound Sound_recordFixedTime (int inputSource, double gain, double balance, doubl
 		#if defined (sgi)
 			port = ALopenport ("Sound_record", "r", config);
 			if (! port) {
-				return Melder_errorp ("(Sound_recordFixedTime:) Cannot open audio port.");
+				return (structSound *)Melder_errorp ("(Sound_recordFixedTime:) Cannot open audio port.");
 				goto error;
 			}
 		#elif defined (macintosh)
@@ -727,7 +727,7 @@ error:
 			if (fd != -1) close (fd);
 		#endif
 	}
-	return Melder_errorp ("Sound not recorded.");
+	return (structSound *)Melder_errorp ("Sound not recorded.");
 }
 
 /********** PLAYING A SOUND **********/

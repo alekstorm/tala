@@ -23,6 +23,13 @@
  * pb 2011/03/03
  */
 
+#ifndef _Vector_h_
+	#include "Vector.h"
+#endif
+#ifndef _Graphics_h_
+	#include "Graphics.h"
+#endif
+
 #ifdef __cplusplus
 	extern "C" {
 #endif
@@ -33,12 +40,6 @@ double Excitation_phonToDifferenceLimens (double phon);
 double Excitation_differenceLimensToPhon (double ndli);
 double Excitation_soundPressureToPhon (double soundPressure, double bark);
 
-#ifndef _Vector_h_
-	#include "Vector.h"
-#endif
-#ifndef _Graphics_h_
-	#include "Graphics.h"
-#endif
 
 #define Excitation_members  Vector_members
 #define Excitation_methods  Vector_methods
