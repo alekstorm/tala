@@ -48,7 +48,7 @@ static void logo (Graphics g) {
 	Graphics_text (g, 0.5, 0.16, L"Copyright \\co 1992-" xstr(PRAAT_YEAR) " by Paul Boersma and David Weenink");
 }
 
-extern "C" void praat_uvafon_init ();
+void praat_uvafon_init ();
 extern "C" void praat_contrib_Ola_KNN_init ();
 
 int main (int argc, char *argv []) {

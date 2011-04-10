@@ -61,7 +61,7 @@ AmplitudeTier IntensityTier_to_AmplitudeTier (IntensityTier me) {
 	if (! thee) return NULL;
 	Thing_overrideClass (thee, classAmplitudeTier);
 	for (i = 1; i <= thy points -> size; i ++) {
-		RealPoint point = thy points -> item [i];
+		RealPoint point = (structRealPoint *)thy points -> item [i];
 		point -> value = pow (10.0, point -> value / 20.0) * 2.0e-5;
 	}
 	return thee;
@@ -74,7 +74,7 @@ IntensityTier AmplitudeTier_to_IntensityTier (AmplitudeTier me, double threshold
 	if (! thee) return NULL;
 	Thing_overrideClass (thee, classIntensityTier);
 	for (i = 1; i <= thy points -> size; i ++) {
-		RealPoint point = thy points -> item [i];
+		RealPoint point = (structRealPoint *)thy points -> item [i];
 		double absoluteValue = fabs (point -> value);
 		point -> value = absoluteValue <= threshold_Pa ? threshold_dB : 20.0 * log10 (absoluteValue / 2.0e-5);
 	}
@@ -97,7 +97,7 @@ void Sound_AmplitudeTier_multiply_inline (Sound me, AmplitudeTier amplitude) {
 }
 
 Sound Sound_AmplitudeTier_multiply (Sound me, AmplitudeTier amplitude) {
-	Sound thee = Data_copy (me);
+	Sound thee = (structSound *)Data_copy (me);
 	if (! thee) return NULL;
 	Sound_AmplitudeTier_multiply_inline (thee, amplitude);
 	Vector_scale (thee, 0.9);
@@ -349,7 +349,7 @@ Sound AmplitudeTier_to_Sound (AmplitudeTier me, double samplingFrequency, long i
 	if (! thee) return NULL;
 	sound = thy z [1];
 	for (it = 1; it <= my points -> size; it ++) {
-		RealPoint point = my points -> item [it];
+		RealPoint point = (structRealPoint *)my points -> item [it];
 		double t = point -> time, amplitude = point -> value, angle, halfampsinangle;
 		long mid = Sampled_xToNearestIndex (thee, t), j;
 		long begin = mid - interpolationDepth, end = mid + interpolationDepth;

@@ -452,7 +452,7 @@ Pitch Pitch_create (double tmin, double tmax, long nt, double dt, double t1,
 	return me;
 error:
 	forget (me);
-	return Melder_errorp ("Pitch not created.");
+	return (structPitch *)Melder_errorp ("Pitch not created.");
 }
 
 void Pitch_setCeiling (Pitch me, double ceiling)   { my ceiling = ceiling; }

@@ -117,14 +117,14 @@ double Ltas_getLocalPeakHeight (Ltas me, double environmentMin, double environme
 }
 
 Matrix Ltas_to_Matrix (Ltas me) {
-	Matrix thee = Data_copy (me);
+	Matrix thee = (structMatrix *)Data_copy (me);
 	if (! thee) return NULL;
 	Thing_overrideClass (thee, classMatrix);
 	return thee;
 }
 
 Ltas Matrix_to_Ltas (Matrix me) {
-	Ltas thee = Data_copy (me);
+	Ltas thee = (structLtas *)Data_copy (me);
 	if (! thee) return NULL;
 	Melder_assert (sizeof (struct structLtas) == sizeof (struct structMatrix));
 	Thing_overrideClass (thee, classLtas);
@@ -135,8 +135,8 @@ Ltas Ltases_merge (Collection ltases) {
 	Ltas me, thee = NULL;
 	long iband, ispec;
 	if (ltases -> size < 1) error1 (L"Cannot merge zero Ltas objects.")
-	me = ltases -> item [1];
-	thee = Data_copy (me); cherror
+	me = (structLtas *)ltases -> item [1];
+	thee = (structLtas *)Data_copy (me); cherror
 	/*
 	 * Convert to energy.
 	 */
@@ -144,7 +144,7 @@ Ltas Ltases_merge (Collection ltases) {
 		thy z [1] [iband] = pow (10.0, thy z [1] [iband] / 10.0);
 	}
 	for (ispec = 2; ispec <= ltases -> size; ispec ++) {
-		Ltas him = ltases -> item [ispec];
+		Ltas him = (structLtas *)ltases -> item [ispec];
 		if (his xmin != thy xmin || his xmax != thy xmax) error1 (L"Frequency domains do not match.")
 		if (his dx != thy dx) error1 (L"Bandwidths do not match.")
 		if (his nx != thy nx || his x1 != thy x1) error1 (L"Frequency bands do not match.")
@@ -187,9 +187,9 @@ Ltas Ltas_computeTrendLine (Ltas me, double fmin, double fmax) {
 	 * Find the first and last bin.
 	 */
 	if ((n = Sampled_getWindowSamples (me, fmin, fmax, & imin, & imax)) < 2) {
-		return Melder_errorp ("(Ltas_computeTrendLine:) Number of bins too low (%ld). Should be at least 2.", n);
+		return (structLtas *)Melder_errorp ("(Ltas_computeTrendLine:) Number of bins too low (%ld). Should be at least 2.", n);
 	}
-	thee = Data_copy (me);
+	thee = (structLtas *)Data_copy (me);
 	/*
 	 * Compute average amplitude and frequency.
 	 */
@@ -225,9 +225,9 @@ Ltas Ltas_subtractTrendLine (Ltas me, double fmin, double fmax) {
 	 * Find the first and last bin.
 	 */
 	if ((n = Sampled_getWindowSamples (me, fmin, fmax, & imin, & imax)) < 2) {
-		return Melder_errorp ("(Ltas_subtractTrendLine:) Number of bins too low (%ld). Should be at least 2.", n);
+		return (structLtas *)Melder_errorp ("(Ltas_subtractTrendLine:) Number of bins too low (%ld). Should be at least 2.", n);
 	}
-	thee = Data_copy (me);
+	thee = (structLtas *)Data_copy (me);
 	/*
 	 * Compute average amplitude and frequency.
 	 */
@@ -317,7 +317,7 @@ Ltas PointProcess_Sound_to_Ltas (PointProcess pulses, Sound sound,
 	long numberOfPeriods = pulses -> nt - 2, ipulse, ifreq, iband, totalNumberOfEnergies = 0;
 	ltas = Ltas_create (maximumFrequency / bandWidth, bandWidth); cherror
 	ltas -> xmax = maximumFrequency;
-	numbers = Data_copy (ltas);
+	numbers = (structLtas *)Data_copy (ltas);
 	if (numberOfPeriods < 1) error1 (L"Cannot compute an Ltas if there are no periods in the point process.")
 	for (ipulse = 2; ipulse < pulses -> nt; ipulse ++) {
 		double leftInterval = pulses -> t [ipulse] - pulses -> t [ipulse - 1];

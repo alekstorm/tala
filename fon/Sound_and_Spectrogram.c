@@ -70,9 +70,9 @@ Spectrogram Sound_to_Spectrogram (Sound me, double effectiveAnalysisWidth, doubl
 	halfnsamp_window = nsamp_window / 2 - 1;
 	nsamp_window = halfnsamp_window * 2;
 	if (nsamp_window < 1)
-		return Melder_errorp ("(Sound_to_Spectrogram:) Your analysis window is too short: less than two samples.");
+		return (structSpectrogram *)Melder_errorp ("(Sound_to_Spectrogram:) Your analysis window is too short: less than two samples.");
 	if (physicalAnalysisWidth > duration)
-		return Melder_errorp ("(Sound_to_Spectrogram:) Your sound is too short:\n"
+		return (structSpectrogram *)Melder_errorp ("(Sound_to_Spectrogram:) Your sound is too short:\n"
 			"it should be at least as long as %s.",
 			windowType == kSound_to_Spectrogram_windowShape_GAUSSIAN ? "two window lengths" : "one window length");
 	numberOfTimes = 1 + (long) floor ((duration - physicalAnalysisWidth) / timeStep);   /* >= 1 */
@@ -100,7 +100,7 @@ Spectrogram Sound_to_Spectrogram (Sound me, double effectiveAnalysisWidth, doubl
 	numberOfFreqs = floor (fmax / freqStep);
 	if (numberOfFreqs < 1) return NULL;
 
-	thee = Spectrogram_create (my xmin, my xmax, numberOfTimes, timeStep, t1,
+	thee = (structSpectrogram *)Spectrogram_create (my xmin, my xmax, numberOfTimes, timeStep, t1,
 			0.0, fmax, numberOfFreqs, freqStep, 0.5 * (freqStep - binWidth_hertz)); cherror
 
 	frame = NUMdvector (1, nsampFFT); cherror

@@ -71,8 +71,8 @@ static int copy (I, thou) {
 	thy x = NULL;
 	thy y = NULL;
 	if (! inherited (ParamCurve) copy (me, thee) ||
-		! (thy x = Data_copy (my x)) ||
-		! (thy y = Data_copy (my y)))
+		! (thy x = (structSound *)Data_copy (my x)) ||
+		! (thy y = (structSound *)Data_copy (my y)))
 		return 0;
 	return 1;
 }
@@ -117,10 +117,10 @@ class_methods_end
 
 int ParamCurve_init (I, Any void_x, Any void_y) {
 	iam (ParamCurve);
-	Sound x = void_x, y = void_y;
+	Sound x = (structSound *)void_x, y = (structSound *)void_y;
 	if (x -> xmax <= y -> xmin || x -> xmin >= y -> xmax)
 		return Melder_error1 (L"Domains do not overlap.");
-	if (! (my x = Data_copy (x)) || ! (my y = Data_copy (y)))
+	if (! (my x = (structSound *)Data_copy (x)) || ! (my y = (structSound *)Data_copy (y)))
 		return 0;
 	my xmin = x -> xmin > y -> xmin ? x -> xmin : y -> xmin;
 	my xmax = x -> xmax < y -> xmax ? x -> xmax : y -> xmax; 
@@ -129,7 +129,7 @@ int ParamCurve_init (I, Any void_x, Any void_y) {
 
 Any ParamCurve_create (Any x, Any y) {
 	ParamCurve me = Thing_new (ParamCurve);
-	if (! me || ! ParamCurve_init (me, x, y)) { forget (me); return Melder_errorp ("ParamCurve not created."); }
+	if (! me || ! ParamCurve_init (me, x, y)) { forget (me); return (structSound *)Melder_errorp ("ParamCurve not created."); }
 	return me;
 }
 

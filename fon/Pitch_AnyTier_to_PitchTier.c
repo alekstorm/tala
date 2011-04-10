@@ -29,7 +29,7 @@ PitchTier PitchTier_AnyTier_to_PitchTier (PitchTier pitch, AnyTier tier) {
 	SortedSetOfDouble points = tier -> points;
 	long ipoint;
 	PitchTier result = NULL;
-	if (pitch -> points -> size == 0) return Melder_errorp ("No pitch points.");
+	if (pitch -> points -> size == 0) return (structPitchTier *)Melder_errorp ("No pitch points.");
 
 	/*
 	 * Result's domain is a union of both domains.
@@ -43,7 +43,7 @@ PitchTier PitchTier_AnyTier_to_PitchTier (PitchTier pitch, AnyTier tier) {
 	 * Copy pitch's frequencies at tier's points to the resulting PitchTier.
 	 */
 	for (ipoint = 1; ipoint <= points -> size; ipoint ++) {
-		AnyPoint point = points -> item [ipoint];
+		AnyPoint point = (structAnyPoint *)points -> item [ipoint];
 		double time = point -> time;
 		double frequency = RealTier_getValueAtTime (pitch, time);
 		if (! RealTier_addPoint (result, time, frequency)) goto end;
@@ -81,7 +81,7 @@ PitchTier Pitch_AnyTier_to_PitchTier (Pitch pitch, AnyTier tier, int checkMethod
 	 * Copy pitch's frequencies at tier's points to the resulting PitchTier.
 	 */
 	for (ipoint = 1; ipoint <= points -> size; ipoint ++) {
-		AnyPoint point = points -> item [ipoint];
+		AnyPoint point = (structAnyPoint *)points -> item [ipoint];
 		double time = point -> time;
 		double frequency = Pitch_getValueAtTime (pitch, time, kPitch_unit_HERTZ, Pitch_LINEAR);
 		if (frequency == NUMundefined && checkMethod)

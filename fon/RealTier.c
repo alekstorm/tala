@@ -107,7 +107,7 @@ static void shiftX (I, double xfrom, double xto) {
 	iam (RealTier);
 	inherited (RealTier) shiftX (me, xfrom, xto);
 	for (long i = 1; i <= my points -> size; i ++) {
-		RealPoint point = my points -> item [i];
+		RealPoint point = (structRealPoint *)my points -> item [i];
 		NUMshift (& point -> time, xfrom, xto);
 	}
 }
@@ -116,7 +116,7 @@ static void scaleX (I, double xminfrom, double xmaxfrom, double xminto, double x
 	iam (RealTier);
 	inherited (RealTier) scaleX (me, xminfrom, xmaxfrom, xminto, xmaxto);
 	for (long i = 1; i <= my points -> size; i ++) {
-		RealPoint point = my points -> item [i];
+		RealPoint point = (structRealPoint *)my points -> item [i];
 		NUMscale (& point -> time, xminfrom, xmaxfrom, xminto, xmaxto);
 	}
 }
@@ -181,15 +181,15 @@ double RealTier_getValueAtTime (I, double t) {
 	double tleft, tright, fleft, fright;
 	RealPoint pointLeft, pointRight;
 	if (n == 0) return NUMundefined;
-	pointRight = my points -> item [1];
+	pointRight = (structRealPoint *)my points -> item [1];
 	if (t <= pointRight -> time) return pointRight -> value;   /* Constant extrapolation. */
-	pointLeft = my points -> item [n];
+	pointLeft = (structRealPoint *)my points -> item [n];
 	if (t >= pointLeft -> time) return pointLeft -> value;   /* Constant extrapolation. */
 	Melder_assert (n >= 2);
 	ileft = AnyTier_timeToLowIndex (me, t), iright = ileft + 1;
 	Melder_assert (ileft >= 1 && iright <= n);
-	pointLeft = my points -> item [ileft];
-	pointRight = my points -> item [iright];
+	pointLeft = (structRealPoint *)my points -> item [ileft];
+	pointRight = (structRealPoint *)my points -> item [iright];
 	tleft = pointLeft -> time, fleft = pointLeft -> value;
 	tright = pointRight -> time, fright = pointRight -> value;
 	return t == tright ? fright   /* Be very accurate. */
@@ -202,7 +202,7 @@ double RealTier_getMaximumValue (I) {
 	double result = NUMundefined;
 	long n = my points -> size;
 	for (long i = 1; i <= n; i ++) {
-		RealPoint point = my points -> item [i];
+		RealPoint point = (structRealPoint *)my points -> item [i];
 		if (result == NUMundefined || point -> value > result)
 			result = point -> value;
 	}
@@ -214,7 +214,7 @@ double RealTier_getMinimumValue (I) {
 	double result = NUMundefined;
 	long n = my points -> size;
 	for (long i = 1; i <= n; i ++) {
-		RealPoint point = my points -> item [i];
+		RealPoint point = (structRealPoint *)my points -> item [i];
 		if (result == NUMundefined || point -> value < result)
 			result = point -> value;
 	}
@@ -332,7 +332,7 @@ void RealTier_multiplyPart (I, double tmin, double tmax, double factor) {
 	iam (RealTier);
 	long ipoint;
 	for (ipoint = 1; ipoint <= my points -> size; ipoint ++) {
-		RealPoint point = my points -> item [ipoint];
+		RealPoint point = (structRealPoint *)my points -> item [ipoint];
 		double t = point -> time;
 		if (t >= tmin && t <= tmax) {
 			point -> value *= factor;
@@ -358,7 +358,7 @@ void RealTier_draw (I, Graphics g, double tmin, double tmax, double fmin, double
 		double fright = RealTier_getValueAtTime (me, tmax);
 		if (drawLines) Graphics_line (g, tmin, fleft, tmax, fright);
 	} else for (i = imin; i <= imax; i ++) {
-		RealPoint point = my points -> item [i];
+		RealPoint point = (structRealPoint *)my points -> item [i];
 		double t = point -> time, f = point -> value;
 		if (drawSpeckles) Graphics_fillCircle_mm (g, t, f, 1);
 		if (drawLines) {
@@ -371,7 +371,7 @@ void RealTier_draw (I, Graphics g, double tmin, double tmax, double fmin, double
 			else if (i == imax)
 				Graphics_line (g, t, f, tmax, RealTier_getValueAtTime (me, tmax));
 			else {
-				RealPoint pointRight = my points -> item [i + 1];
+				RealPoint pointRight = (structRealPoint *)my points -> item [i + 1];
 				Graphics_line (g, t, f, pointRight -> time, pointRight -> value);
 			}
 		}
@@ -392,7 +392,7 @@ TableOfReal RealTier_downto_TableOfReal (I, const wchar_t *timeLabel, const wcha
 	TableOfReal_setColumnLabel (thee, 1, timeLabel); cherror
 	TableOfReal_setColumnLabel (thee, 2, valueLabel); cherror
 	for (long i = 1; i <= my points -> size; i ++) {
-		RealPoint point = my points -> item [i];
+		RealPoint point = (structRealPoint *)my points -> item [i];
 		thy data [i] [1] = point -> time;
 		thy data [i] [2] = point -> value;
 	}
@@ -403,9 +403,9 @@ end:
 
 int RealTier_interpolateQuadratically (I, long numberOfPointsPerParabola, int logarithmically) {
 	iam (RealTier);
-	RealTier thee = Data_copy (me); cherror
+	RealTier thee = (structRealTier *)Data_copy (me); cherror
 	for (long ipoint = 1; ipoint < my points -> size; ipoint ++) {
-		RealPoint point1 = my points -> item [ipoint], point2 = my points -> item [ipoint + 1];
+		RealPoint point1 = (structRealPoint *)my points -> item [ipoint], point2 = (structRealPoint *)my points -> item [ipoint + 1];
 		double time1 = point1 -> time, time2 = point2 -> time, tmid = 0.5 * (time1 + time2);
 		double value1 = point1 -> value, value2 = point2 -> value, valuemid;
 		double timeStep = (tmid - time1) / (numberOfPointsPerParabola + 1);
@@ -447,16 +447,18 @@ Table RealTier_downto_Table (I, const wchar_t *indexText, const wchar_t *timeTex
 	iam (RealTier);
 	Table thee = Table_createWithoutColumnNames (my points -> size,
 		(indexText != NULL) + (timeText != NULL) + (valueText != NULL)); cherror
-	long icol = 0;
-	if (indexText != NULL) { Table_setColumnLabel (thee, ++ icol, indexText); cherror }
-	if (timeText != NULL) { Table_setColumnLabel (thee, ++ icol, timeText); cherror }
-	if (valueText != NULL) { Table_setColumnLabel (thee, ++ icol, valueText); cherror }
-	for (long ipoint = 1; ipoint <= my points -> size; ipoint ++) {
-		RealPoint point = my points -> item [ipoint];
-		icol = 0;
-		if (indexText != NULL) { Table_setNumericValue (thee, ipoint, ++ icol, ipoint); cherror }
-		if (timeText != NULL) { Table_setNumericValue (thee, ipoint, ++ icol, point -> time); cherror }
-		if (valueText != NULL) { Table_setNumericValue (thee, ipoint, ++ icol, point -> value); cherror }
+	{
+		long icol = 0;
+		if (indexText != NULL) { Table_setColumnLabel (thee, ++ icol, indexText); cherror }
+		if (timeText != NULL) { Table_setColumnLabel (thee, ++ icol, timeText); cherror }
+		if (valueText != NULL) { Table_setColumnLabel (thee, ++ icol, valueText); cherror }
+		for (long ipoint = 1; ipoint <= my points -> size; ipoint ++) {
+			RealPoint point = (structRealPoint *)my points -> item [ipoint];
+			icol = 0;
+			if (indexText != NULL) { Table_setNumericValue (thee, ipoint, ++ icol, ipoint); cherror }
+			if (timeText != NULL) { Table_setNumericValue (thee, ipoint, ++ icol, point -> time); cherror }
+			if (valueText != NULL) { Table_setNumericValue (thee, ipoint, ++ icol, point -> value); cherror }
+		}
 	}
 end:
 	iferror forget (thee);
@@ -537,7 +539,7 @@ end:
 
 void RealTier_removePointsBelow (RealTier me, double level) {
 	for (long ipoint = my points -> size; ipoint > 0; ipoint --) {
-		RealPoint point = my points -> item [ipoint];
+		RealPoint point = (structRealPoint *)my points -> item [ipoint];
 		if (point -> value < level) {
 			AnyTier_removePoint (me, ipoint);
 		}

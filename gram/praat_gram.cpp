@@ -1291,8 +1291,10 @@ END
 
 /***** buttons *****/
 
+extern "C" void praat_TableOfReal_init (void *klas);
+
 extern "C" void praat_uvafon_gram_init (void);
-extern "C" void praat_uvafon_gram_init (void) {
+void praat_uvafon_gram_init (void) {
 	Thing_recognizeClassesByName (classNetwork, classOTGrammar, classOTHistory, classOTMulti, NULL);
 	Thing_recognizeClassByOtherName (classOTGrammar, L"OTCase");
 
@@ -1354,7 +1356,7 @@ extern "C" void praat_uvafon_gram_init (void) {
 	praat_addAction1 (classOTGrammar, 0, L"Remove constraint...", 0, 1, DO_OTGrammar_removeConstraint);
 	praat_addAction1 (classOTGrammar, 0, L"Remove harmonically bounded candidates...", 0, 1, DO_OTGrammar_removeHarmonicallyBoundedCandidates);
 
-	{ void praat_TableOfReal_init (void *klas); praat_TableOfReal_init (classOTHistory); }
+	praat_TableOfReal_init (classOTHistory);
 
 	praat_addAction1 (classOTMulti, 0, L"View & Edit", 0, praat_ATTRACTIVE, DO_OTMulti_edit);
 	praat_addAction1 (classOTMulti, 0, L"Edit", 0, praat_HIDDEN, DO_OTMulti_edit);

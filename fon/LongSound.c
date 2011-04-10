@@ -265,7 +265,7 @@ class_methods_end
 
 LongSound LongSound_open (MelderFile fs) {
 	LongSound me = Thing_new (LongSound);
-	if (! me || ! LongSound_init (me, fs)) { forget (me); return Melder_errorp ("LongSound not created."); }
+	if (! me || ! LongSound_init (me, fs)) { forget (me); return (structLongSound *)Melder_errorp ("LongSound not created."); }
 	return me;
 }
 
@@ -630,7 +630,7 @@ int LongSound_concatenate (Ordered me, MelderFile file, int audioFileType) {
 	/*
 	 * The sampling frequencies and numbers of channels must be equal for all (long)sounds.
 	 */
-	data = my item [1];
+	data = (structData *)my item [1];
 	if (data -> methods == (Data_Table) classSound) {
 		Sound sound = (Sound) data;
 		sampleRate = floor (1.0 / sound -> dx + 0.5);
@@ -647,7 +647,7 @@ int LongSound_concatenate (Ordered me, MelderFile file, int audioFileType) {
 	 */
 	for (i = 2; i <= my size; i ++) {
 		int sampleRatesMatch, numbersOfChannelsMatch;
-		data = my item [i];
+		data = (structData *)my item [i];
 		if (data -> methods == (Data_Table) classSound) {
 			Sound sound = (Sound) data;
 			sampleRatesMatch = floor (1.0 / sound -> dx + 0.5) == sampleRate;
@@ -672,7 +672,7 @@ int LongSound_concatenate (Ordered me, MelderFile file, int audioFileType) {
 		MelderFile_writeAudioFileHeader16_e (file, audioFileType, sampleRate, n, numberOfChannels); cherror
 	}
 	for (i = 1; i <= my size; i ++) {
-		data = my item [i];
+		data = (structData *)my item [i];
 		if (data -> methods == (Data_Table) classSound) {
 			Sound sound = (Sound) data;
 			if (file -> filePointer)

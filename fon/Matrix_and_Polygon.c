@@ -29,7 +29,7 @@ Polygon Matrix_to_Polygon (I) {
 	iam (Matrix);
 	Polygon thee;
 	if (my nx != 2 && my ny != 2)
-		return Melder_errorp ("Matrix_to_Polygon: matrix must have exactly 2 rows or columns.");
+		return (structPolygon *)Melder_errorp ("Matrix_to_Polygon: matrix must have exactly 2 rows or columns.");
 	if (my ny == 2) {
 		if (! (thee = Polygon_create (my nx))) return NULL;
 		NUMdvector_copyElements (my z [1], thy x, 1, my nx);

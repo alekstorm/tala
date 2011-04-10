@@ -41,7 +41,7 @@ static bool equal (I, thou) {
 
 static struct structData_Description description [] = {
 	{ L"Autosegment", inheritwa, 0, sizeof (struct structAutosegment), L"Autosegment", & theStructFunction. description },
-	{ L"name", stringwa, (int) & ((Autosegment) 0) -> name, sizeof (wchar_t *) },
+	{ L"name", stringwa, (intptr_t) & ((Autosegment) 0) -> name, sizeof (wchar_t *) },
 	{ 0 } };
 
 class_methods (Autosegment, Function)
@@ -74,7 +74,7 @@ int Tier_init (I, long initialCapacity) {
 	iam (Tier);
 	Autosegment autosegment = NULL;
 	if (! Sorted_init (me, classAutosegment, initialCapacity) ||
-			! (autosegment = Autosegment_create (-1e30, 1e30, NULL)) ||
+			! (autosegment = (structAutosegment *)Autosegment_create (-1e30, 1e30, NULL)) ||
 			! Collection_addItem (me, autosegment)) {
 		forget (autosegment);
 		return 0;
@@ -91,7 +91,7 @@ Tier Tier_create (long initialCapacity) {
 long Tier_timeToIndex (Tier me, double t) {
 	long i; 
 	for (i = 1; i <= my size; i ++) {
-		Autosegment interval = my item [i];
+		Autosegment interval = (structAutosegment *)my item [i];
 		if (t >= interval -> xmin && t < interval -> xmax)
 			return i;
 	}
@@ -131,16 +131,16 @@ void Label_suggestDomain (Label me, double *tmin, double *tmax) {
 	*tmin = 0.0;
 	*tmax = 0.0;
 	for (itier = 1; itier <= my size; itier ++) {
-		Tier tier = my item [itier];
+		Tier tier = (structTier *)my item [itier];
 		if (tier -> size) {
-			Autosegment seg = tier -> item [1];
+			Autosegment seg = (structAutosegment *)tier -> item [1];
 			if (seg -> xmin <= *tmin) {
 				if (seg -> name && seg -> name [0])
 					*tmin = seg -> xmin - 1.0;
 				else
 					*tmin = seg -> xmin;
 			}
-			seg = tier -> item [tier -> size];
+			seg = (structAutosegment *)tier -> item [tier -> size];
 			if (seg -> xmax >= *tmax)
 				*tmax = seg -> xmax;
 		}

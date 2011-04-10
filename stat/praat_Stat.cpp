@@ -1657,7 +1657,7 @@ extern "C" void praat_TableOfReal_init (void *klas) {
 }
 
 extern "C" void praat_uvafon_Stat_init (void);
-extern "C" void praat_uvafon_Stat_init (void) {
+void praat_uvafon_Stat_init (void) {
 
 	Thing_recognizeClassesByName (classTableOfReal, classDistributions, classPairDistribution,
 		classTable, classLinearRegression, classLogisticRegression, NULL);

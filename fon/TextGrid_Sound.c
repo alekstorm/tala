@@ -59,14 +59,14 @@ void TextGrid_Sound_draw (TextGrid me, Sound sound, Graphics g, double tmin, dou
 	Graphics_setCircumflexIsSuperscript (g, useTextStyles);
 	Graphics_setUnderscoreIsSubscript (g, useTextStyles);
 	for (itier = 1; itier <= ntier; itier ++) {
-		Data anyTier = my tiers -> item [itier];
+		Data anyTier = (structData *)my tiers -> item [itier];
 		double ymin = -1.0 - 0.5 * itier, ymax = ymin + 0.5;
 		Graphics_rectangle (g, tmin, tmax, ymin, ymax);
 		if (anyTier -> methods == (Data_Table) classIntervalTier) {
 			IntervalTier tier = (IntervalTier) anyTier;
 			long iinterval, ninterval = tier -> intervals -> size;
 			for (iinterval = 1; iinterval <= ninterval; iinterval ++) {
-				TextInterval interval = tier -> intervals -> item [iinterval];
+				TextInterval interval = (structTextInterval *)tier -> intervals -> item [iinterval];
 				double intmin = interval -> xmin, intmax = interval -> xmax;
 				if (intmin < tmin) intmin = tmin;
 				if (intmax > tmax) intmax = tmax;
@@ -89,7 +89,7 @@ void TextGrid_Sound_draw (TextGrid me, Sound sound, Graphics g, double tmin, dou
 			TextTier tier = (TextTier) anyTier;
 			long i, n = tier -> points -> size;
 			for (i = 1; i <= n; i ++) {
-				TextPoint point = tier -> points -> item [i];
+				TextPoint point = (structTextPoint *)tier -> points -> item [i];
 				double t = point -> time;
 				if (t > tmin && t < tmax) {
 					if (showBoundaries) {
@@ -122,14 +122,14 @@ Collection TextGrid_Sound_extractAllIntervals (TextGrid me, Sound sound, long it
 	long iseg;
 	Collection collection;
 	if (itier < 1 || itier > my tiers -> size)
-		return Melder_errorp ("Tier number %ld out of range 1..%ld.", itier, my tiers -> size);
-	tier = my tiers -> item [itier];
+		return (structCollection *)Melder_errorp ("Tier number %ld out of range 1..%ld.", itier, my tiers -> size);
+	tier = (structIntervalTier *)my tiers -> item [itier];
 	if (tier -> methods != classIntervalTier)
-		return Melder_errorp ("Tier %ld is not an interval tier.", itier);
+		return (structCollection *)Melder_errorp ("Tier %ld is not an interval tier.", itier);
 	collection = Collection_create (NULL, tier -> intervals -> size); cherror
 	for (iseg = 1; iseg <= tier -> intervals -> size; iseg ++) {
-		TextInterval segment = tier -> intervals -> item [iseg];
-		Sound interval = Sound_extractPart (sound, segment -> xmin, segment -> xmax, 0, 1.0, preserveTimes); cherror
+		TextInterval segment = (structTextInterval *)tier -> intervals -> item [iseg];
+		Sound interval = Sound_extractPart (sound, segment -> xmin, segment -> xmax, kSound_windowShape_RECTANGULAR, 1.0, preserveTimes); cherror
 		Thing_setName (interval, segment -> text ? segment -> text : L"untitled");
 		Collection_addItem (collection, interval); cherror
 	}
@@ -143,15 +143,15 @@ Collection TextGrid_Sound_extractNonemptyIntervals (TextGrid me, Sound sound, lo
 	long iseg;
 	Collection collection;
 	if (itier < 1 || itier > my tiers -> size)
-		return Melder_errorp ("Tier number %ld out of range 1..%ld.", itier, my tiers -> size);
-	tier = my tiers -> item [itier];
+		return (structCollection *)Melder_errorp ("Tier number %ld out of range 1..%ld.", itier, my tiers -> size);
+	tier = (structIntervalTier *)my tiers -> item [itier];
 	if (tier -> methods != classIntervalTier)
-		return Melder_errorp ("Tier %ld is not an interval tier.", itier);
+		return (structCollection *)Melder_errorp ("Tier %ld is not an interval tier.", itier);
 	collection = Collection_create (NULL, tier -> intervals -> size); cherror
 	for (iseg = 1; iseg <= tier -> intervals -> size; iseg ++) {
-		TextInterval segment = tier -> intervals -> item [iseg];
+		TextInterval segment = (structTextInterval *)tier -> intervals -> item [iseg];
 		if (segment -> text != NULL && segment -> text [0] != '\0') {
-			Sound interval = Sound_extractPart (sound, segment -> xmin, segment -> xmax, 0, 1.0, preserveTimes); cherror
+			Sound interval = Sound_extractPart (sound, segment -> xmin, segment -> xmax, kSound_windowShape_RECTANGULAR, 1.0, preserveTimes); cherror
 			Thing_setName (interval, segment -> text ? segment -> text : L"untitled");
 			Collection_addItem (collection, interval); cherror
 		}
@@ -169,17 +169,17 @@ Collection TextGrid_Sound_extractIntervalsWhere (TextGrid me, Sound sound, long 
 	long count = 0;
 	Collection collection;
 	if (itier < 1 || itier > my tiers -> size)
-		return Melder_errorp ("Tier number %ld out of range 1..%ld.", itier, my tiers -> size);
-	tier = my tiers -> item [itier];
+		return (structCollection *)Melder_errorp ("Tier number %ld out of range 1..%ld.", itier, my tiers -> size);
+	tier = (structIntervalTier *)my tiers -> item [itier];
 	if (tier -> methods != classIntervalTier)
-		return Melder_errorp ("Tier %ld is not an interval tier.", itier);
+		return (structCollection *)Melder_errorp ("Tier %ld is not an interval tier.", itier);
 	collection = Collection_create (NULL, 10);
 	if (! collection) goto error;
 	for (long iseg = 1; iseg <= tier -> intervals -> size; iseg ++) {
-		TextInterval segment = tier -> intervals -> item [iseg];
+		TextInterval segment = (structTextInterval *)tier -> intervals -> item [iseg];
 		if (Melder_stringMatchesCriterion (segment -> text, comparison_Melder_STRING, text)) {
 			Sound interval = Sound_extractPart (sound, segment -> xmin, segment -> xmax,
-				0, 1.0, preserveTimes);
+				kSound_windowShape_RECTANGULAR, 1.0, preserveTimes);
 			wchar_t name [1000];
 			if (! interval) goto error;
 			swprintf (name, 1000, L"%ls_%ls_%ld", sound -> name ? sound -> name : L"", text, ++ count);
@@ -345,11 +345,11 @@ void TextGrid_Pitch_draw (TextGrid grid, Pitch pitch, Graphics g,
 	Graphics_setNumberSignIsBold (g, useTextStyles);
 	Graphics_setCircumflexIsSuperscript (g, useTextStyles);
 	Graphics_setUnderscoreIsSubscript (g, useTextStyles);
-	anyTier = grid -> tiers -> item [itier];
+	anyTier = (structData *)grid -> tiers -> item [itier];
 	if (anyTier -> methods == (Data_Table) classIntervalTier) {
 		IntervalTier tier = (IntervalTier) anyTier;
 		for (i = 1; i <= tier -> intervals -> size; i ++) {
-			TextInterval interval = tier -> intervals -> item [i];
+			TextInterval interval = (structTextInterval *)tier -> intervals -> item [i];
 			double tleft = interval -> xmin, tright = interval -> xmax, tmid, f0;
 			if (! interval -> text || ! interval -> text [0]) continue;
 			if (tleft < pitch -> xmin) tleft = pitch -> xmin;
@@ -365,7 +365,7 @@ void TextGrid_Pitch_draw (TextGrid grid, Pitch pitch, Graphics g,
 	} else {
 		TextTier tier = (TextTier) anyTier;
 		for (i = 1; i <= tier -> points -> size; i ++) {
-			TextPoint point = tier -> points -> item [i];
+			TextPoint point = (structTextPoint *)tier -> points -> item [i];
 			double t = point -> time, f0;
 			if (! point -> mark || ! point -> mark [0]) continue;
 			if (t < tmin || t > tmax) continue;
@@ -419,79 +419,81 @@ int TextGrid_Sound_readFromBdfFile (MelderFile file, TextGrid *out_textGrid, Sou
 	if (numberOfBytesInHeaderRecord != (numberOfChannels + 1) * 256)
 		error5 (L"(Read from BDF file:) Number of bytes in header record (", Melder_integer (numberOfBytesInHeaderRecord),
 			L") doesn't match number of channels (", Melder_integer (numberOfChannels), L").")
-	for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
-		fread (buffer, 1, 16, f); buffer [16] = '\0';   // labels of the channels
-	}
-	double samplingFrequency = NUMundefined;
-	for (long channel = 1; channel <= numberOfChannels; channel ++) {
-		fread (buffer, 1, 80, f); buffer [80] = '\0';   // transducer type
-	}
-	for (long channel = 1; channel <= numberOfChannels; channel ++) {
-		fread (buffer, 1, 8, f); buffer [8] = '\0';   // physical dimension of channels
-	}
-	physicalMinimum = NUMdvector (1, numberOfChannels); cherror
-	for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
-		fread (buffer, 1, 8, f); buffer [8] = '\0';
-		physicalMinimum [ichannel] = atof (buffer);
-	}
-	physicalMaximum = NUMdvector (1, numberOfChannels); cherror
-	for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
-		fread (buffer, 1, 8, f); buffer [8] = '\0';
-		physicalMaximum [ichannel] = atof (buffer);
-	}
-	digitalMinimum = NUMdvector (1, numberOfChannels); cherror
-	for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
-		fread (buffer, 1, 8, f); buffer [8] = '\0';
-		digitalMinimum [ichannel] = atof (buffer);
-	}
-	digitalMaximum = NUMdvector (1, numberOfChannels); cherror
-	for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
-		fread (buffer, 1, 8, f); buffer [8] = '\0';
-		digitalMaximum [ichannel] = atof (buffer);
-	}
-	for (long channel = 1; channel <= numberOfChannels; channel ++) {
-		fread (buffer, 1, 80, f); buffer [80] = '\0';   // prefiltering
-	}
-	long numberOfSamplesPerDataRecord = 0;
-	for (long channel = 1; channel <= numberOfChannels; channel ++) {
-		fread (buffer, 1, 8, f); buffer [8] = '\0';   // number of samples in each data record
-		long numberOfSamplesInThisDataRecord = atol (buffer);
-		if (samplingFrequency == NUMundefined) {
-			numberOfSamplesPerDataRecord = numberOfSamplesInThisDataRecord;
-			samplingFrequency = numberOfSamplesInThisDataRecord / durationOfDataRecord;
+	{
+		for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
+			fread (buffer, 1, 16, f); buffer [16] = '\0';   // labels of the channels
 		}
-		if (numberOfSamplesInThisDataRecord / durationOfDataRecord != samplingFrequency)
-			error7 (L"(Read from BDF file:) Number of samples per data record in channel ", Melder_integer (channel),
-				L" (", Melder_integer (numberOfSamplesInThisDataRecord),
-				L") doesn't match sampling frequency of channel 1 (", Melder_integer (numberOfChannels), L").")
-	}
-	for (long channel = 1; channel <= numberOfChannels; channel ++) {
-		fread (buffer, 1, 32, f); buffer [32] = '\0';   // reserved
-	}
-	double duration = numberOfDataRecords * durationOfDataRecord;
-	me = Sound_createSimple (numberOfChannels, duration, samplingFrequency); cherror
-	for (long record = 1; record <= numberOfDataRecords; record ++) {
+		double samplingFrequency = NUMundefined;
 		for (long channel = 1; channel <= numberOfChannels; channel ++) {
-			double factor = channel == numberOfChannels ? 1.0 : physicalMinimum [channel] / digitalMinimum [channel];
-			for (long i = 1; i <= numberOfSamplesPerDataRecord; i ++) {
-				long sample = i + (record - 1) * numberOfSamplesPerDataRecord;
-				Melder_assert (sample <= my nx);
+			fread (buffer, 1, 80, f); buffer [80] = '\0';   // transducer type
+		}
+		for (long channel = 1; channel <= numberOfChannels; channel ++) {
+			fread (buffer, 1, 8, f); buffer [8] = '\0';   // physical dimension of channels
+			}
+		physicalMinimum = NUMdvector (1, numberOfChannels); cherror
+		for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
+			fread (buffer, 1, 8, f); buffer [8] = '\0';
+			physicalMinimum [ichannel] = atof (buffer);
+		}
+		physicalMaximum = NUMdvector (1, numberOfChannels); cherror
+		for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
+			fread (buffer, 1, 8, f); buffer [8] = '\0';
+			physicalMaximum [ichannel] = atof (buffer);
+		}
+		digitalMinimum = NUMdvector (1, numberOfChannels); cherror
+		for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
+			fread (buffer, 1, 8, f); buffer [8] = '\0';
+			digitalMinimum [ichannel] = atof (buffer);
+		}
+		digitalMaximum = NUMdvector (1, numberOfChannels); cherror
+		for (long ichannel = 1; ichannel <= numberOfChannels; ichannel ++) {
+			fread (buffer, 1, 8, f); buffer [8] = '\0';
+			digitalMaximum [ichannel] = atof (buffer);
+		}
+		for (long channel = 1; channel <= numberOfChannels; channel ++) {
+			fread (buffer, 1, 80, f); buffer [80] = '\0';   // prefiltering
+		}
+		long numberOfSamplesPerDataRecord = 0;
+		for (long channel = 1; channel <= numberOfChannels; channel ++) {
+			fread (buffer, 1, 8, f); buffer [8] = '\0';   // number of samples in each data record
+			long numberOfSamplesInThisDataRecord = atol (buffer);
+			if (samplingFrequency == NUMundefined) {
+				numberOfSamplesPerDataRecord = numberOfSamplesInThisDataRecord;
+				samplingFrequency = numberOfSamplesInThisDataRecord / durationOfDataRecord;
+			}
+			if (numberOfSamplesInThisDataRecord / durationOfDataRecord != samplingFrequency)
+				error7 (L"(Read from BDF file:) Number of samples per data record in channel ", Melder_integer (channel),
+					L" (", Melder_integer (numberOfSamplesInThisDataRecord),
+					L") doesn't match sampling frequency of channel 1 (", Melder_integer (numberOfChannels), L").")
+		}
+		for (long channel = 1; channel <= numberOfChannels; channel ++) {
+			fread (buffer, 1, 32, f); buffer [32] = '\0';   // reserved
+		}
+		double duration = numberOfDataRecords * durationOfDataRecord;
+		me = Sound_createSimple (numberOfChannels, duration, samplingFrequency); cherror
+		for (long record = 1; record <= numberOfDataRecords; record ++) {
+			for (long channel = 1; channel <= numberOfChannels; channel ++) {
+				double factor = channel == numberOfChannels ? 1.0 : physicalMinimum [channel] / digitalMinimum [channel];
+				for (long i = 1; i <= numberOfSamplesPerDataRecord; i ++) {
+						long sample = i + (record - 1) * numberOfSamplesPerDataRecord;
+					Melder_assert (sample <= my nx);
 				my z [channel] [sample] = bingeti3LE (f) * factor;
+				}
 			}
 		}
-	}
-	thee = TextGrid_create (0, duration, L"S1 S2 S3 S4 S5 S6 S7 S8", L""); cherror
-	for (int bit = 1; bit <= 8; bit ++) {
-		unsigned long bitValue = 1 << (bit - 1);
-		IntervalTier tier = thy tiers -> item [bit];
-		for (long i = 1; i <= my nx; i ++) {
-			unsigned long previousValue = i == 1 ? 0 : (long) my z [numberOfChannels] [i - 1];
-			unsigned long thisValue = (long) my z [numberOfChannels] [i];
-			if ((thisValue & bitValue) != (previousValue & bitValue)) {
-				double time = i == 1 ? 0.0 : my x1 + (i - 1.5) * my dx;
-				if (time != 0.0) TextGrid_insertBoundary (thee, bit, time);
-				if ((thisValue & bitValue) != 0) {
-					TextGrid_setIntervalText (thee, bit, tier -> intervals -> size, L"1");
+		thee = TextGrid_create (0, duration, L"S1 S2 S3 S4 S5 S6 S7 S8", L""); cherror
+		for (int bit = 1; bit <= 8; bit ++) {
+			unsigned long bitValue = 1 << (bit - 1);
+			IntervalTier tier = (structIntervalTier *)thy tiers -> item [bit];
+			for (long i = 1; i <= my nx; i ++) {
+				unsigned long previousValue = i == 1 ? 0 : (long) my z [numberOfChannels] [i - 1];
+				unsigned long thisValue = (long) my z [numberOfChannels] [i];
+				if ((thisValue & bitValue) != (previousValue & bitValue)) {
+					double time = i == 1 ? 0.0 : my x1 + (i - 1.5) * my dx;
+					if (time != 0.0) TextGrid_insertBoundary (thee, bit, time);
+					if ((thisValue & bitValue) != 0) {
+						TextGrid_setIntervalText (thee, bit, tier -> intervals -> size, L"1");
+					}
 				}
 			}
 		}

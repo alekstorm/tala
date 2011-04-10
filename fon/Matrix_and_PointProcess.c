@@ -28,7 +28,7 @@ Matrix PointProcess_to_Matrix (PointProcess me) {
 	Matrix thee;
 	long i;
 	if (my nt == 0)
-		return Melder_errorp ("PointProcess_to_Matrix: no times in PointProcess.");
+		return (structMatrix *)Melder_errorp ("PointProcess_to_Matrix: no times in PointProcess.");
 	thee = Matrix_create (1, my nt, my nt, 1, 1, 1, 1, 1, 1, 1);
 	if (! thee) return NULL;
 	for (i = 1; i <= my nt; i ++)

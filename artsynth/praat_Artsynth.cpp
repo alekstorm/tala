@@ -32,7 +32,7 @@
 #include "praat.h"
 
 extern "C" int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
-extern "C" Graphics Movie_create (const wchar_t *title, int width, int height);
+Graphics Movie_create (const wchar_t *title, int width, int height);
 
 /***** ART *****/
 
@@ -326,7 +326,7 @@ END
 DIRECT (ArticulatorySynthesisTutorial) Melder_help (L"Articulatory synthesis"); END
 
 extern "C" void praat_uvafon_Artsynth_init (void);
-extern "C" void praat_uvafon_Artsynth_init (void) {
+void praat_uvafon_Artsynth_init (void) {
 	Thing_recognizeClassesByName (classArt, classArtword, classSpeaker, NULL);
 
 	praat_addMenuCommand (L"Objects", L"New", L"Articulatory synthesis", 0, 0, 0);

@@ -64,7 +64,7 @@ static void shiftX (I, double xfrom, double xto) {
 	iam (AnyTier);
 	inherited (AnyTier) shiftX (me, xfrom, xto);
 	for (long i = 1; i <= my points -> size; i ++) {
-		AnyPoint point = my points -> item [i];
+		AnyPoint point = (structAnyPoint *)my points -> item [i];
 		NUMshift (& point -> time, xfrom, xto);
 	}
 }
@@ -73,7 +73,7 @@ static void scaleX (I, double xminfrom, double xmaxfrom, double xminto, double x
 	iam (AnyTier);
 	inherited (AnyTier) scaleX (me, xminfrom, xmaxfrom, xminto, xmaxto);
 	for (long i = 1; i <= my points -> size; i ++) {
-		AnyPoint point = my points -> item [i];
+		AnyPoint point = (structAnyPoint *)my points -> item [i];
 		NUMscale (& point -> time, xminfrom, xmaxfrom, xminto, xmaxto);
 	}
 }

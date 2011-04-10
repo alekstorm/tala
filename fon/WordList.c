@@ -203,7 +203,7 @@ Strings WordList_to_Strings (WordList me) {
 	unsigned char *word = (unsigned char *) my string;
 	thee = Thing_new (Strings); cherror
 	thy numberOfStrings = WordList_count (me);
-	if (thy numberOfStrings > 0) { thy strings = NUMpvector (1, thy numberOfStrings); cherror }
+	if (thy numberOfStrings > 0) { thy strings = (wchar_t **)NUMpvector (1, thy numberOfStrings); cherror }
 	for (long i = 1; i <= thy numberOfStrings; i ++) {
 		unsigned char *kar;
 		long length;

@@ -44,7 +44,7 @@ void Cochleagram_paint (Cochleagram me, Graphics g, double tmin, double tmax, in
 {
 	static double border [1 + 12] =
 		{ 0, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80 };
-	Cochleagram copy = Data_copy (me);
+	Cochleagram copy = (structCochleagram *)Data_copy (me);
 	long iy, ix, itmin, itmax;
 	if (! copy) return;
 	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }

@@ -95,7 +95,7 @@ Polygon Polygon_create (long numberOfPoints) {
 	if (! me) return NULL;
 	my numberOfPoints = numberOfPoints;
 	if (! (my x = NUMdvector (1, numberOfPoints)) || ! (my y = NUMdvector (1, numberOfPoints)))
-		{ forget (me); return Melder_errorp ("Polygon not created."); }
+		{ forget (me); return (structPolygon *)Melder_errorp ("Polygon not created."); }
 	return me;
 }
 
@@ -281,7 +281,7 @@ void Polygon_salesperson (I, long numberOfIterations)
 
 	/* Change me: I will follow the shortest path found. */
 
-	help = Data_copy (me);
+	help = (structPolygon *)Data_copy (me);
 	for (i = 1; i <= numberOfCities; i ++)
 	{
 		my x [i] = help -> x [shortestPath [i]];

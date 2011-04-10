@@ -286,7 +286,7 @@ double PointProcess_getInterval (PointProcess me, double t) {
 }
 
 PointProcess PointProcesses_union (PointProcess me, PointProcess thee) {
-	PointProcess him = Data_copy (me);
+	PointProcess him = (structPointProcess *)Data_copy (me);
 	long i;
 	if (thy xmin < my xmin) his xmin = thy xmin;
 	if (thy xmax > my xmax) his xmax = thy xmax;
@@ -313,7 +313,7 @@ long PointProcess_findPoint (PointProcess me, double t) {
 }
 
 PointProcess PointProcesses_intersection (PointProcess me, PointProcess thee) {
-	PointProcess him = Data_copy (me);
+	PointProcess him = (structPointProcess *)Data_copy (me);
 	long i;
 	if (thy xmin > my xmin) his xmin = thy xmin;
 	if (thy xmax < my xmax) his xmax = thy xmax;
@@ -324,7 +324,7 @@ PointProcess PointProcesses_intersection (PointProcess me, PointProcess thee) {
 }
 
 PointProcess PointProcesses_difference (PointProcess me, PointProcess thee) {
-	PointProcess him = Data_copy (me);
+	PointProcess him = (structPointProcess *)Data_copy (me);
 	long i;
 	for (i = my nt; i >= 1; i --)
 		if (PointProcess_findPoint (thee, my t [i]))

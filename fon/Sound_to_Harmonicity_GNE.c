@@ -96,20 +96,20 @@ Matrix Sound_to_Harmonicity_GNE (Sound me,
 	forget (original10k);
 	forget (lpc);
 	flatSpectrum = Sound_to_Spectrum (flat, TRUE); cherror
-	hilbertSpectrum = Data_copy (flatSpectrum); cherror
+	hilbertSpectrum = (structSpectrum *)Data_copy (flatSpectrum); cherror
 	for (col = 1; col <= hilbertSpectrum -> nx; col ++) {
 		hilbertSpectrum -> z [1] [col] = flatSpectrum -> z [2] [col];
 		hilbertSpectrum -> z [2] [col] = - flatSpectrum -> z [1] [col];
 	}
 	fmid = fmin;
 	ienvelope = 1;
-	graphics = Melder_monitor1 (0.0, L"Computing Hilbert envelopes...");
+	graphics = (structGraphics *)Melder_monitor1 (0.0, L"Computing Hilbert envelopes...");
 	while (fmid <= fmax) {
 		/*
 		 * Step 3: calculate Hilbert envelopes of bands.
 		 */
-		bandSpectrum = Data_copy (flatSpectrum);
-		hilbertBandSpectrum = Data_copy (hilbertSpectrum);
+		bandSpectrum = (structSpectrum *)Data_copy (flatSpectrum);
+		hilbertBandSpectrum = (structSpectrum *)Data_copy (hilbertSpectrum);
 		/*
 		 * 3a: Filter both the spectrum of the original flat sound and its Hilbert transform.
 		 */

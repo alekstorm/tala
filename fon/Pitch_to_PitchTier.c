@@ -42,7 +42,7 @@ PitchTier Pitch_to_PitchTier (Pitch me) {
 	return thee;
 error:
 	forget (thee);
-	return Melder_errorp ("(Pitch_to_PitchTier: ) Not performed.");
+	return (structPitchTier *)Melder_errorp ("(Pitch_to_PitchTier: ) Not performed.");
 }
 
 static void Pitch_line (Pitch me, Graphics g, double tmin, double fleft, double tmax, double fright,
@@ -96,7 +96,7 @@ void PitchTier_Pitch_draw (PitchTier me, Pitch uv, Graphics g,
 		double fright = RealTier_getValueAtTime (me, tmax);
 		Pitch_line (uv, g, tmin, fleft, tmax, fright, nonPeriodicLineType);
 	} else for (i = imin; i <= imax; i ++) {
-		RealPoint point = my points -> item [i];
+		RealPoint point = (structRealPoint *)my points -> item [i];
 		double t = point -> time, f = point -> value;
 		Graphics_fillCircle_mm (g, t, f, 1);
 		if (i == 1)
@@ -108,7 +108,7 @@ void PitchTier_Pitch_draw (PitchTier me, Pitch uv, Graphics g,
 		else if (i == imax)
 			Pitch_line (uv, g, t, f, tmax, RealTier_getValueAtTime (me, tmax), nonPeriodicLineType);
 		else {
-			RealPoint pointRight = my points -> item [i + 1];
+			RealPoint pointRight = (structRealPoint *)my points -> item [i + 1];
 			Pitch_line (uv, g, t, f, pointRight -> time, pointRight -> value, nonPeriodicLineType);
 		}
 	}
@@ -125,8 +125,8 @@ void PitchTier_Pitch_draw (PitchTier me, Pitch uv, Graphics g,
 Pitch Pitch_PitchTier_to_Pitch (Pitch me, PitchTier tier) {
 	long iframe;
 	Pitch thee = NULL;
-	if (tier -> points -> size == 0) return Melder_errorp ("No pitch points.");
-	thee = Data_copy (me);
+	if (tier -> points -> size == 0) return (structPitch *)Melder_errorp ("No pitch points.");
+	thee = (structPitch *)Data_copy (me);
 	for (iframe = 1; iframe <= my nx; iframe ++) {
 		Pitch_Frame frame = & thy frame [iframe];
 		Pitch_Candidate cand = & frame -> candidate [1];

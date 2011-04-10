@@ -33,14 +33,14 @@
 
 Sound Sound_lengthen_overlapAdd (Sound me, double fmin, double fmax, double factor) {
 	if (my ny > 1)
-		return Melder_errorp ("Overlap-add works only on mono sounds.");
+		return (structSound *)Melder_errorp ("Overlap-add works only on mono sounds.");
 	Sound sound = NULL, thee = NULL;
 	Pitch pitch = NULL;
 	PointProcess pulses = NULL;
 	PitchTier pitchTier = NULL;
 	DurationTier duration = NULL;
 
-	sound = Data_copy (me); cherror
+	sound = (structSound *)Data_copy (me); cherror
 	Vector_subtractMean (sound);
 	pitch = Sound_to_Pitch (sound, 0.8 / fmin, fmin, fmax); cherror
 	pulses = Sound_Pitch_to_PointProcess_cc (sound, pitch); cherror
@@ -61,7 +61,7 @@ end:
 Sound Sound_deepenBandModulation (Sound me, double enhancement_dB,
 	double flow, double fhigh, double slowModulation, double fastModulation, double bandSmoothing)
 {
-	Sound thee = Data_copy (me), channelSound = NULL, filtered = NULL, band = NULL, intensity = NULL;
+	Sound thee = (structSound *)Data_copy (me), channelSound = NULL, filtered = NULL, band = NULL, intensity = NULL;
 	Spectrum orgspec = NULL, spec = NULL, intensityFilter = NULL;
 	double fmin, maximumFactor = pow (10, enhancement_dB / 20), alpha = sqrt (log (2.0));
 	long i, n;
@@ -78,7 +78,7 @@ Sound Sound_deepenBandModulation (Sound me, double enhancement_dB,
 		 * Keep the part of the sound that is outside the filter bank.
 		 */
 		forget (spec);
-		spec = Data_copy (orgspec); cherror
+		spec = (structSpectrum *)Data_copy (orgspec); cherror
 		Spectrum_stopHannBand (spec, flow, fhigh, bandSmoothing);
 		forget (filtered);
 		filtered = Spectrum_to_Sound (spec); cherror
@@ -103,7 +103,7 @@ Sound Sound_deepenBandModulation (Sound me, double enhancement_dB,
 			 * Compute a relative intensity contour.
 			 */		
 			forget (intensity);
-			intensity = Data_copy (band); cherror
+			intensity = (structSound *)Data_copy (band); cherror
 			n = intensity -> nx;
 			amp = intensity -> z [1];
 			for (i = 1; i <= n; i ++) amp [i] = 10 * log10 (amp [i] * amp [i] + 1e-6);

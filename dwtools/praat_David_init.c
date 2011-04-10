@@ -4719,6 +4719,12 @@ void praat_TimeFrameSampled_query_init (void *klas)
 		DO_TimeFrameSampled_getFrameFromTime);
 }
 */
+
+INCLUDE_LIBRARY (praat_uvafon_MDS_init)
+INCLUDE_LIBRARY (praat_KlattGrid_init)
+INCLUDE_LIBRARY (praat_HMM_init)
+INCLUDE_LIBRARY (praat_BSS_init)
+
 void praat_uvafon_David_init (void);
 void praat_uvafon_David_init (void)
 {
@@ -5291,10 +5297,10 @@ void praat_uvafon_David_init (void)
 			praat_addAction1 (classTextGrid, 0, L"Replace interval text...", L"Set interval text...", 2, DO_TextGrid_replaceIntervalTexts);
 			praat_addAction1 (classTextGrid, 0, L"Replace point text...", L"Set point text...", 2, DO_TextGrid_replacePointTexts);
 
-    INCLUDE_LIBRARY (praat_uvafon_MDS_init)
-	INCLUDE_LIBRARY (praat_KlattGrid_init)
-	INCLUDE_LIBRARY (praat_HMM_init)
-	INCLUDE_LIBRARY (praat_BSS_init)
+	praat_uvafon_MDS_init();
+	praat_KlattGrid_init();
+	praat_HMM_init();
+	praat_BSS_init();
 }
 
 /* End of file praat_David.c */

@@ -46,7 +46,7 @@ Sound Pitch_to_Sound (I, double tmin, double tmax, int hum) {
 error:
 	forget (point);
 	forget (sound);
-	return Melder_errorp ("Pitch_to_Sound: not performed.");
+	return (structSound *)Melder_errorp ("Pitch_to_Sound: not performed.");
 }
 
 int Pitch_play (I, double tmin, double tmax) {

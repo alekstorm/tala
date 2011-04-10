@@ -110,7 +110,7 @@ FujisakiPitch Pitch_to_FujisakiPitch (Pitch me, double gamma, double timeResolut
 		FujisakiCommand phraseCommand = FujisakiCommand_create (onsetTime, offsetTime, amplitude);
 		Collection_addItem (thy phraseCommands, phraseCommand); cherror
 	}
-	if (intermediate1) *intermediate1 = Data_copy (thee);
+	if (intermediate1) *intermediate1 = (structFujisakiPitch *)Data_copy (thee);
 	/*
 	 * Get accent commands.
 	 */
@@ -121,27 +121,27 @@ FujisakiPitch Pitch_to_FujisakiPitch (Pitch me, double gamma, double timeResolut
 		FujisakiCommand accentCommand = FujisakiCommand_create (onsetTime, offsetTime, amplitude);
 		Collection_addItem (thy accentCommands, accentCommand); cherror
 	}
-	if (intermediate2) *intermediate2 = Data_copy (thee);
+	if (intermediate2) *intermediate2 = (structFujisakiPitch *)Data_copy (thee);
 	/*
 	 * Do some extra processing.
 	 */
 	/* ... */
-	if (intermediate3) *intermediate3 = Data_copy (thee);
+	if (intermediate3) *intermediate3 = (structFujisakiPitch *)Data_copy (thee);
 	/*
 	 * Tidy up.
 	 */
 	for (i = 1; i <= thy phraseCommands -> size; i ++) {
-		FujisakiCommand phraseCommand = thy phraseCommands -> item [i];
+		FujisakiCommand phraseCommand = (structFujisakiCommand *)thy phraseCommands -> item [i];
 		/* ... */
 	}
 	for (i = 1; i <= thy accentCommands -> size; i ++) {
-		FujisakiCommand accentCommand = thy accentCommands -> item [i];
+		FujisakiCommand accentCommand = (structFujisakiCommand *)thy accentCommands -> item [i];
 		/* ... */
 	}
 end:
 	iferror {
 		forget (thee);
-		return Melder_errorp ("(Pitch_to_FujisakiPitch:) Not performed.");
+		return (structFujisakiPitch *)Melder_errorp ("(Pitch_to_FujisakiPitch:) Not performed.");
 	}
 	return thee;
 }

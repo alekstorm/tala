@@ -130,7 +130,7 @@ VocalTract VocalTract_createFromPhone (wchar_t *phone) {
 	int i = 0, isection;
 	while (! Melder_wcsequ (data [i]. phone, phone)) i ++;
 	if (! data [i]. phone)
-		return Melder_errorp2 (L"VocalTract_createFromFant60: unknown phone ", phone);
+		return (structVocalTract *)Melder_errorp2 (L"VocalTract_createFromFant60: unknown phone ", phone);
 	me = VocalTract_create (data [i]. numberOfSections, 0.005);
 	for (isection = 1; isection <= my nx; isection ++)
 		my z [1] [isection] = data [i]. area [isection - 1] * 0.0001;

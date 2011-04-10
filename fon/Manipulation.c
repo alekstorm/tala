@@ -115,19 +115,19 @@ int Manipulation_replaceOriginalSound (Manipulation me, Sound sound) {
 
 int Manipulation_replacePulses (Manipulation me, PointProcess pulses) {
 	forget (my pulses);
-	if (! (my pulses = Data_copy (pulses))) return 0;
+	if (! (my pulses = (structPointProcess *)Data_copy (pulses))) return 0;
 	return 1;
 }
 
 int Manipulation_replacePitchTier (Manipulation me, PitchTier pitch) {
 	forget (my pitch);
-	if (! (my pitch = Data_copy (pitch))) return 0;
+	if (! (my pitch = (structPitchTier *)Data_copy (pitch))) return 0;
 	return 1;
 }
 
 int Manipulation_replaceDurationTier (Manipulation me, DurationTier duration) {
 	forget (my duration);
-	if (! (my duration = Data_copy (duration))) return 0;
+	if (! (my duration = (structDurationTier *)Data_copy (duration))) return 0;
 	return 1;
 }
 
@@ -156,7 +156,7 @@ Manipulation Sound_Pitch_to_Manipulation (Sound sound, Pitch pitch) {
 	return me;
 error:
 	forget (me);
-	return Melder_errorp ("(Sound_Pitch_to_Manipulation:) Not performed.");
+	return (structManipulation *)Melder_errorp ("(Sound_Pitch_to_Manipulation:) Not performed.");
 }
 
 Manipulation Sound_PointProcess_to_Manipulation (Sound sound, PointProcess point) {
@@ -164,12 +164,12 @@ Manipulation Sound_PointProcess_to_Manipulation (Sound sound, PointProcess point
 	if (! (me = Manipulation_create (sound -> xmin, sound -> xmax))) return NULL;
 	if (! (my sound = Sound_convertToMono (sound))) goto error;
 	Vector_subtractMean (my sound);
-	if (! (my pulses = Data_copy (point))) goto error;
+	if (! (my pulses = (structPointProcess *)Data_copy (point))) goto error;
 	if (! (my pitch = PointProcess_to_PitchTier (point, MAX_T))) goto error;
 	return me;
 error:
 	forget (me);
-	return Melder_errorp ("(Sound_PointProcess_to_Manipulation:) Not performed.");
+	return (structManipulation *)Melder_errorp ("(Sound_PointProcess_to_Manipulation:) Not performed.");
 }
 
 int Manipulation_playPart (Manipulation me, double tmin, double tmax, int method) {
@@ -178,7 +178,7 @@ int Manipulation_playPart (Manipulation me, double tmin, double tmax, int method
 		long i, imin, imax;
 		double *amp;
 		if (! my sound) return Melder_error1 (L"Cannot synthesize overlap-add without a sound.");
-		part = Data_copy (my sound);
+		part = (structSound *)Data_copy (my sound);
 		if (! part) return 0;
 		imin = Sampled_xToLowIndex (part, tmin), imax = Sampled_xToHighIndex (part, tmax);
 		amp = part -> z [1];
@@ -342,7 +342,7 @@ Sound Sound_Point_Pitch_Duration_to_Sound (Sound me, PointProcess pulses,
 	double startOfSourceVoice, endOfSourceVoice, startOfTargetVoice, endOfTargetVoice;
 	double durationOfSourceVoice, durationOfTargetVoice;
 	double startingPeriod, finishingPeriod, ttarget, voicelessPeriod;
-	if (duration -> points -> size == 0) return Melder_errorp ("No duration points.");
+	if (duration -> points -> size == 0) return (structSound *)Melder_errorp ("No duration points.");
 
 	/*
 	 * Create a Sound long enough to hold the longest possible duration-manipulated sound.
@@ -482,43 +482,43 @@ Sound Sound_Point_Pitch_Duration_to_Sound (Sound me, PointProcess pulses,
 static Sound synthesize_overlapAdd_nodur (Manipulation me) {
 	PointProcess targetPulses = NULL;
 	Sound thee = NULL;
-	if (! my sound) return Melder_errorp ("Cannot synthesize overlap-add without original sound.");
-	if (! my pulses) return Melder_errorp ("Cannot synthesize overlap-add without pulses analysis.");
-	if (! my pitch) return Melder_errorp ("Cannot synthesize overlap-add without pitch manipulation.");
+	if (! my sound) return (structSound *)Melder_errorp ("Cannot synthesize overlap-add without original sound.");
+	if (! my pulses) return (structSound *)Melder_errorp ("Cannot synthesize overlap-add without pulses analysis.");
+	if (! my pitch) return (structSound *)Melder_errorp ("Cannot synthesize overlap-add without pitch manipulation.");
 	if ((targetPulses = PitchTier_Point_to_PointProcess (my pitch, my pulses, MAX_T)) != NULL)
 		thee = Sound_Point_Point_to_Sound (my sound, my pulses, targetPulses, MAX_T);
 	forget (targetPulses);
 	if (Melder_hasError ())
-		{ forget (thee); return Melder_errorp ("(Manipulation_to_Sound:) Not performed."); }
+		{ forget (thee); return (structSound *)Melder_errorp ("(Manipulation_to_Sound:) Not performed."); }
 	return thee;
 }
 
 static Sound synthesize_overlapAdd (Manipulation me) {
 	Sound thee = NULL;
 	if (! my duration || my duration -> points -> size == 0) return synthesize_overlapAdd_nodur (me);
-	if (! my sound) return Melder_errorp ("Cannot synthesize overlap-add without original sound.");
-	if (! my pulses) return Melder_errorp ("Cannot synthesize overlap-add without pulses analysis.");
-	if (! my pitch) return Melder_errorp ("Cannot synthesize overlap-add without pitch manipulation.");
+	if (! my sound) return (structSound *)Melder_errorp ("Cannot synthesize overlap-add without original sound.");
+	if (! my pulses) return (structSound *)Melder_errorp ("Cannot synthesize overlap-add without pulses analysis.");
+	if (! my pitch) return (structSound *)Melder_errorp ("Cannot synthesize overlap-add without pitch manipulation.");
 	if (! (thee = Sound_Point_Pitch_Duration_to_Sound (my sound, my pulses, my pitch, my duration, MAX_T))) return NULL;
 	if (Melder_hasError ())
-		{ forget (thee); return Melder_errorp ("(Manipulation_to_Sound:) Not performed."); }
+		{ forget (thee); return (structSound *)Melder_errorp ("(Manipulation_to_Sound:) Not performed."); }
 	return thee;
 }
 
 static Sound synthesize_pulses (Manipulation me) {
-	if (! my pulses) return Melder_errorp ("Cannot synthesize overlap-add without pulses analysis.");
+	if (! my pulses) return (structSound *)Melder_errorp ("Cannot synthesize overlap-add without pulses analysis.");
 	return PointProcess_to_Sound_pulseTrain (my pulses, 44100, 0.7, 0.05, 30);
 }
 
 static Sound synthesize_pulses_hum (Manipulation me) {
-	if (! my pulses) return Melder_errorp ("Cannot synthesize overlap-add without pulses analysis.");
+	if (! my pulses) return (structSound *)Melder_errorp ("Cannot synthesize overlap-add without pulses analysis.");
 	return PointProcess_to_Sound_hum (my pulses);
 }
 
 static Sound synthesize_pitch (Manipulation me) {
 	Sound thee = NULL;
 	PointProcess temp = NULL;
-	if (! my pitch) return Melder_errorp ("Cannot synthesize pitch manipulation without pitch tier.");
+	if (! my pitch) return (structSound *)Melder_errorp ("Cannot synthesize pitch manipulation without pitch tier.");
 	temp = PitchTier_to_PointProcess (my pitch);
 	if (! temp) return NULL;
 	thee = PointProcess_to_Sound_pulseTrain (temp, 44100, 0.7, 0.05, 30);
@@ -543,7 +543,7 @@ static Sound synthesize_pitch (Manipulation me) {
 static Sound synthesize_pitch_hum (Manipulation me) {
 	Sound thee = NULL;
 	PointProcess temp = NULL;
-	if (! my pitch) return Melder_errorp ("Cannot synthesize pitch manipulation without pitch tier.");
+	if (! my pitch) return (structSound *)Melder_errorp ("Cannot synthesize pitch manipulation without pitch tier.");
 	temp = PitchTier_to_PointProcess (my pitch);
 	if (! temp) return NULL;
 	thee = PointProcess_to_Sound_hum (temp);
@@ -555,8 +555,8 @@ static Sound synthesize_pitch_hum (Manipulation me) {
 static Sound synthesize_pulses_pitch (Manipulation me) {
 	Sound thee = NULL;
 	PointProcess temp = NULL;
-	if (! my pulses) return Melder_errorp ("Cannot synthesize this without pulses analysis.");
-	if (! my pitch) return Melder_errorp ("Cannot synthesize this without pitch tier.");
+	if (! my pulses) return (structSound *)Melder_errorp ("Cannot synthesize this without pulses analysis.");
+	if (! my pitch) return (structSound *)Melder_errorp ("Cannot synthesize this without pitch tier.");
 	temp = PitchTier_Point_to_PointProcess (my pitch, my pulses, MAX_T);
 	if (! temp) return NULL;
 	thee = PointProcess_to_Sound_pulseTrain (temp, 44100, 0.7, 0.05, 30);
@@ -568,8 +568,8 @@ static Sound synthesize_pulses_pitch (Manipulation me) {
 static Sound synthesize_pulses_pitch_hum (Manipulation me) {
 	Sound thee = NULL;
 	PointProcess temp = NULL;
-	if (! my pulses) return Melder_errorp ("Cannot synthesize this without pulses analysis.");
-	if (! my pitch) return Melder_errorp ("Cannot synthesize this without pitch tier.");
+	if (! my pulses) return (structSound *)Melder_errorp ("Cannot synthesize this without pulses analysis.");
+	if (! my pitch) return (structSound *)Melder_errorp ("Cannot synthesize this without pitch tier.");
 	temp = PitchTier_Point_to_PointProcess (my pitch, my pulses, MAX_T);
 	if (! temp) return NULL;
 	thee = PointProcess_to_Sound_hum (temp);
@@ -632,16 +632,16 @@ static Sound synthesize_pulses_lpc (Manipulation me) {
 	Sound train = NULL, result = NULL;
 	if (! my lpc) {
 		Sound sound10k;
-		if (! my sound) return Melder_errorp ("Cannot synthesize this without LPC or original sound.");
+		if (! my sound) return (structSound *)Melder_errorp ("Cannot synthesize this without LPC or original sound.");
 		sound10k = Sound_resample (my sound, 10000, 50);
 		if (! sound10k) return NULL;
 		my lpc = Sound_to_LPC_burg (sound10k, 20, 0.025, 0.01, 50.0);
 		forget (sound10k);
 		if (! my lpc) return NULL;
 	}
-	if (! my pulses) return Melder_errorp ("Cannot synthesize this without pulses analysis.");
+	if (! my pulses) return (structSound *)Melder_errorp ("Cannot synthesize this without pulses analysis.");
 	train = PointProcess_to_Sound_pulseTrain (my pulses, 1 / my lpc -> samplingPeriod, 0.7, 0.05, 30);
-	if (! train) return Melder_errorp ("Manipulation_to_Sound: not performed.");
+	if (! train) return (structSound *)Melder_errorp ("Manipulation_to_Sound: not performed.");
 	train -> dx = my lpc -> samplingPeriod;   /* To be exact. */
 	Sound_PointProcess_fillVoiceless (train, my pulses);
 	result = LPC_and_Sound_filter (my lpc, train, TRUE);
@@ -657,15 +657,15 @@ static Sound synthesize_pitch_lpc (Manipulation me) {
 	PointProcess temp = NULL;
 	if (! my lpc) {
 		Sound sound10k;
-		if (! my sound) return Melder_errorp ("Cannot synthesize this without LPC or original sound.");
+		if (! my sound) return (structSound *)Melder_errorp ("Cannot synthesize this without LPC or original sound.");
 		sound10k = Sound_resample (my sound, 10000, 50);
 		if (! sound10k) return NULL;
 		my lpc = Sound_to_LPC_burg (sound10k, 20, 0.025, 0.01, 50.0);
 		forget (sound10k);
 		if (! my lpc) return NULL;
 	}
-	if (! my pitch) return Melder_errorp ("Cannot synthesize pitch manipulation without pitch manipulation.");
-	if (! my pulses) return Melder_errorp ("Cannot synthesize pitch manipulation without pulses.");
+	if (! my pitch) return (structSound *)Melder_errorp ("Cannot synthesize pitch manipulation without pitch manipulation.");
+	if (! my pulses) return (structSound *)Melder_errorp ("Cannot synthesize pitch manipulation without pulses.");
 	temp = PitchTier_Point_to_PointProcess (my pitch, my pulses, MAX_T);
 	if (! temp) return NULL;
 	train = PointProcess_to_Sound_pulseTrain (temp, 1 / my lpc -> samplingPeriod, 0.7, 0.05, 30);
@@ -705,13 +705,13 @@ Manipulation Manipulation_AnyTier_to_Manipulation (Manipulation ana, AnyTier tie
 	Manipulation result = NULL;
 	PitchTier pitch = NULL;
 
-	result = Data_copy (ana); cherror
+	result = (structManipulation *)Data_copy (ana); cherror
 	pitch = PitchTier_AnyTier_to_PitchTier (ana -> pitch, tier); cherror
 	forget (result -> pitch);
 	result -> pitch = pitch;
 	pitch = NULL;
 end:
-	if (Melder_hasError ()) return Melder_errorp1 (L"(Manipulation_AnyTier_to_Manipulation:) Not performed.");
+	if (Melder_hasError ()) return (structManipulation *)Melder_errorp1 (L"(Manipulation_AnyTier_to_Manipulation:) Not performed.");
 	return result;
 }
 

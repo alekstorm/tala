@@ -95,12 +95,12 @@ double FormantTier_getValueAtTime (FormantTier me, int iformant, double t) {
 	double tleft, tright, fleft, fright;
 	FormantPoint pointLeft, pointRight;
 	if (n == 0 || iformant < 1) return NUMundefined;
-	pointRight = my points -> item [1];
+	pointRight = (structFormantPoint *)my points -> item [1];
 	if (t <= pointRight -> time) {
 		if (iformant > pointRight -> numberOfFormants) return NUMundefined;
 		return pointRight -> formant [iformant-1];   /* Constant extrapolation. */
 	}
-	pointLeft = my points -> item [n];
+	pointLeft = (structFormantPoint *)my points -> item [n];
 	if (t >= pointLeft -> time) {
 		if (iformant > pointLeft -> numberOfFormants) return NUMundefined;
 		return pointLeft -> formant [iformant-1];   /* Constant extrapolation. */
@@ -108,8 +108,8 @@ double FormantTier_getValueAtTime (FormantTier me, int iformant, double t) {
 	Melder_assert (n >= 2);
 	ileft = AnyTier_timeToLowIndex (me, t), iright = ileft + 1;
 	Melder_assert (ileft >= 1 && iright <= n);
-	pointLeft = my points -> item [ileft];
-	pointRight = my points -> item [iright];
+	pointLeft = (structFormantPoint *)my points -> item [ileft];
+	pointRight = (structFormantPoint *)my points -> item [iright];
 	tleft = pointLeft -> time;
 	fleft = iformant > pointLeft -> numberOfFormants ? NUMundefined : pointLeft -> formant [iformant-1];
 	tright = pointRight -> time;
@@ -126,12 +126,12 @@ double FormantTier_getBandwidthAtTime (FormantTier me, int iformant, double t) {
 	double tleft, tright, fleft, fright;
 	FormantPoint pointLeft, pointRight;
 	if (n == 0) return 0.0;
-	pointRight = my points -> item [1];
+	pointRight = (structFormantPoint *)my points -> item [1];
 	if (t <= pointRight -> time) {
 		if (iformant > pointRight -> numberOfFormants) return NUMundefined;
 		return pointRight -> bandwidth [iformant-1];   /* Constant extrapolation. */
 	}
-	pointLeft = my points -> item [n];
+	pointLeft = (structFormantPoint *)my points -> item [n];
 	if (t >= pointLeft -> time) {
 		if (iformant > pointLeft -> numberOfFormants) return NUMundefined;
 		return pointLeft -> bandwidth [iformant-1];   /* Constant extrapolation. */
@@ -139,8 +139,8 @@ double FormantTier_getBandwidthAtTime (FormantTier me, int iformant, double t) {
 	Melder_assert (n >= 2);
 	ileft = AnyTier_timeToLowIndex (me, t), iright = ileft + 1;
 	Melder_assert (ileft >= 1 && iright <= n);
-	pointLeft = my points -> item [ileft];
-	pointRight = my points -> item [iright];
+	pointLeft = (structFormantPoint *)my points -> item [ileft];
+	pointRight = (structFormantPoint *)my points -> item [iright];
 	tleft = pointLeft -> time;
 	fleft = iformant > pointLeft -> numberOfFormants ? NUMundefined : pointLeft -> bandwidth [iformant-1];
 	tright = pointRight -> time;
@@ -160,7 +160,7 @@ void FormantTier_speckle (FormantTier me, Graphics g, double tmin, double tmax, 
 	imin = AnyTier_timeToHighIndex (me, tmin);
 	imax = AnyTier_timeToLowIndex (me, tmax);
 	if (imin > 0) for (i = imin; i <= imax; i ++) {
-		FormantPoint point = my points -> item [i];
+		FormantPoint point = (structFormantPoint *)my points -> item [i];
 		double t = point -> time;
 		for (j = 1; j <= point -> numberOfFormants; j ++) {
 			double f = point -> formant [j-1];
@@ -225,7 +225,7 @@ end:
 int FormantTier_getMinNumFormants (FormantTier me) {
 	int minNumFormants = 10, ipoint;
 	for (ipoint = 1; ipoint <= my points -> size; ipoint ++) {
-		FormantPoint point = my points -> item [ipoint];
+		FormantPoint point = (structFormantPoint *)my points -> item [ipoint];
 		if (point -> numberOfFormants < minNumFormants)
 			minNumFormants = point -> numberOfFormants;
 	}
@@ -235,7 +235,7 @@ int FormantTier_getMinNumFormants (FormantTier me) {
 int FormantTier_getMaxNumFormants (FormantTier me) {
 	int maxNumFormants = 0, ipoint;
 	for (ipoint = 1; ipoint <= my points -> size; ipoint ++) {
-		FormantPoint point = my points -> item [ipoint];
+		FormantPoint point = (structFormantPoint *)my points -> item [ipoint];
 		if (point -> numberOfFormants > maxNumFormants)
 			maxNumFormants = point -> numberOfFormants;
 	}
@@ -262,7 +262,7 @@ TableOfReal FormantTier_downto_TableOfReal (FormantTier me, int includeFormants,
 		}
 	}
 	for (long ipoint = 1; ipoint <= my points -> size; ipoint ++) {
-		FormantPoint point = my points -> item [ipoint];
+		FormantPoint point = (structFormantPoint *)my points -> item [ipoint];
 		thy data [ipoint] [1] = point -> time;
 		for (long icol = 1, iformant = 1; iformant <= maximumNumberOfFormants; iformant ++) {
 			if (includeFormants) thy data [ipoint] [++ icol] = point -> formant [iformant-1];
@@ -309,7 +309,7 @@ void Sound_FormantTier_filter_inline (Sound me, FormantTier formantTier) {
 }
 
 Sound Sound_FormantTier_filter (Sound me, FormantTier formantTier) {
-	Sound thee = Data_copy (me);
+	Sound thee = (structSound *)Data_copy (me);
 	if (! thee) return NULL;
 	Sound_FormantTier_filter_inline (thee, formantTier);
 	Vector_scale (thee, 0.99);
@@ -317,7 +317,7 @@ Sound Sound_FormantTier_filter (Sound me, FormantTier formantTier) {
 }
 
 Sound Sound_FormantTier_filter_noscale (Sound me, FormantTier formantTier) {
-	Sound thee = Data_copy (me);
+	Sound thee = (structSound *)Data_copy (me);
 	if (! thee) return NULL;
 	Sound_FormantTier_filter_inline (thee, formantTier);
 	return thee;

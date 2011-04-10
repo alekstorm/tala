@@ -58,11 +58,11 @@ FORM (IntervalTier_downto_TableOfReal, L"IntervalTier: Down to TableOfReal", 0)
 	SENTENCE (L"Label", L"")
 	OK
 DO
-	EVERY_TO (IntervalTier_downto_TableOfReal (OBJECT, GET_STRING (L"Label")))
+	EVERY_TO (IntervalTier_downto_TableOfReal ((structIntervalTier *)OBJECT, GET_STRING (L"Label")))
 END
 
 DIRECT (IntervalTier_downto_TableOfReal_any)
-	EVERY_TO (IntervalTier_downto_TableOfReal_any (OBJECT))
+	EVERY_TO (IntervalTier_downto_TableOfReal_any ((structIntervalTier *)OBJECT))
 END
 
 FORM (IntervalTier_getCentrePoints, L"IntervalTier: Get centre points", 0)
@@ -70,7 +70,7 @@ FORM (IntervalTier_getCentrePoints, L"IntervalTier: Get centre points", 0)
 	OK
 DO
 	WHERE (SELECTED)
-		if (! praat_new1 (IntervalTier_getCentrePoints (OBJECT, GET_STRING (L"Text")), GET_STRING (L"Text"))) return 0;
+		if (! praat_new1 (IntervalTier_getCentrePoints ((structIntervalTier *)OBJECT, GET_STRING (L"Text")), GET_STRING (L"Text"))) return 0;
 END
 
 FORM (IntervalTier_getEndPoints, L"IntervalTier: Get end points", 0)
@@ -78,7 +78,7 @@ FORM (IntervalTier_getEndPoints, L"IntervalTier: Get end points", 0)
 	OK
 DO
 	WHERE (SELECTED)
-		if (! praat_new1 (IntervalTier_getEndPoints (OBJECT, GET_STRING (L"Text")), GET_STRING (L"Text"))) return 0;
+		if (! praat_new1 (IntervalTier_getEndPoints ((structIntervalTier *)OBJECT, GET_STRING (L"Text")), GET_STRING (L"Text"))) return 0;
 END
 
 FORM (IntervalTier_getStartingPoints, L"IntervalTier: Get starting points", 0)
@@ -86,13 +86,13 @@ FORM (IntervalTier_getStartingPoints, L"IntervalTier: Get starting points", 0)
 	OK
 DO
 	WHERE (SELECTED)
-		if (! praat_new1 (IntervalTier_getStartingPoints (OBJECT, GET_STRING (L"Text")), GET_STRING (L"Text"))) return 0;
+		if (! praat_new1 (IntervalTier_getStartingPoints ((structIntervalTier *)OBJECT, GET_STRING (L"Text")), GET_STRING (L"Text"))) return 0;
 END
 
 DIRECT (IntervalTier_help) Melder_help (L"IntervalTier"); END
 
 FORM_WRITE (IntervalTier_writeToXwaves, L"Xwaves label file", 0, 0)
-	if (! IntervalTier_writeToXwaves (ONLY_OBJECT, file)) return 0;
+	if (! IntervalTier_writeToXwaves ((structIntervalTier *)ONLY_OBJECT, file)) return 0;
 END
 
 /***** INTERVALTIER & POINTPROCESS *****/
@@ -101,8 +101,8 @@ FORM (IntervalTier_PointProcess_endToCentre, L"From end to centre", L"IntervalTi
 	REAL (L"Phase (0-1)", L"0.5")
 	OK
 DO
-	IntervalTier tier = ONLY (classIntervalTier);
-	PointProcess point = ONLY (classPointProcess);
+	IntervalTier tier = (structIntervalTier *)ONLY (classIntervalTier);
+	PointProcess point = (structPointProcess *)ONLY (classPointProcess);
 	double phase = GET_REAL (L"Phase");
 	if (! praat_new5 (IntervalTier_PointProcess_endToCentre (tier, point, phase),
 		tier -> name, L"_", point -> name, L"_", Melder_integer ((long) (100 * phase)))) return 0;
@@ -112,8 +112,8 @@ FORM (IntervalTier_PointProcess_startToCentre, L"From start to centre", L"Interv
 	REAL (L"Phase (0-1)", L"0.5")
 	OK
 DO
-	IntervalTier tier = ONLY (classIntervalTier);
-	PointProcess point = ONLY (classPointProcess);
+	IntervalTier tier = (structIntervalTier *)ONLY (classIntervalTier);
+	PointProcess point = (structPointProcess *)ONLY (classPointProcess);
 	double phase = GET_REAL (L"Phase");
 	if (! praat_new5 (IntervalTier_PointProcess_startToCentre (tier, point, phase),
 		tier -> name, L"_", point -> name, L"_", Melder_integer ((long) (100 * phase)))) return 0;
@@ -122,8 +122,8 @@ END
 /***** LABEL (obsolete) *****/
 
 DIRECT (Label_Sound_to_TextGrid)
-	Label label = ONLY (classLabel);
-	Sound sound = ONLY (classSound);
+	Label label = (structLabel *)ONLY (classLabel);
+	Sound sound = (structSound *)ONLY (classSound);
 	if (! praat_new1 (Label_Function_to_TextGrid (label, sound), sound -> name)) return 0;
 END
 
@@ -139,7 +139,7 @@ static int pr_TextGrid_Pitch_draw (Any dia, int speckle, int unit) {
 	praat_get_timeRange (dia, & tmin, & tmax);
 	if (! praat_get_frequencyRange (dia, & fmin, & fmax)) return 0;
 	praat_picture_open ();
-	TextGrid_Pitch_draw (ONLY (classTextGrid), ONLY (classPitch), GRAPHICS,
+	TextGrid_Pitch_draw ((structTextGrid *)ONLY (classTextGrid), (structPitch *)ONLY (classPitch), GRAPHICS,
 		GET_INTEGER (STRING_TIER_NUMBER), tmin, tmax, fmin, fmax, GET_INTEGER (L"Font size"),
 		GET_INTEGER (L"Use text styles"), GET_INTEGER (L"Text alignment") - 1, GET_INTEGER (L"Garnish"), speckle, unit);
 	praat_picture_close ();
@@ -222,7 +222,7 @@ static int pr_TextGrid_Pitch_drawSeparately (Any dia, int speckle, int unit) {
 	praat_get_timeRange (dia, & tmin, & tmax);
 	if (! praat_get_frequencyRange (dia, & fmin, & fmax)) return 0;
 	praat_picture_open ();
-	TextGrid_Pitch_drawSeparately (ONLY (classTextGrid), ONLY (classPitch), GRAPHICS,
+	TextGrid_Pitch_drawSeparately ((structTextGrid *)ONLY (classTextGrid), (structPitch *)ONLY (classPitch), GRAPHICS,
 		tmin, tmax, fmin, fmax, GET_INTEGER (L"Show boundaries"),
 		GET_INTEGER (L"Use text styles"), GET_INTEGER (L"Garnish"), speckle, unit);
 	praat_picture_close ();
@@ -431,7 +431,7 @@ FORM (Pitch_TextTier_to_PitchTier, L"Pitch & TextTier to PitchTier", L"Pitch & T
 		RADIOBUTTON (L"Interpolate")
 	OK
 DO
-	if (! praat_new1 (Pitch_AnyTier_to_PitchTier (ONLY (classPitch), ONLY (classTextTier),
+	if (! praat_new1 (Pitch_AnyTier_to_PitchTier ((structPitch *)ONLY (classPitch), (structAnyTier *)ONLY (classTextTier),
 		GET_INTEGER (L"Unvoiced strategy") - 1), ((Pitch) (ONLY (classPitch))) -> name)) return 0;
 END
 
@@ -445,7 +445,7 @@ FORM (TextGrid_Sound_draw, L"TextGrid & Sound: Draw...", 0)
 	OK
 DO
 	praat_picture_open ();
-	TextGrid_Sound_draw (ONLY (classTextGrid), ONLY (classSound), GRAPHICS,
+	TextGrid_Sound_draw ((structTextGrid *)ONLY (classTextGrid), (structSound *)ONLY (classSound), GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Show boundaries"),
 		GET_INTEGER (L"Use text styles"), GET_INTEGER (L"Garnish"));
 	praat_picture_close ();
@@ -456,7 +456,7 @@ FORM (TextGrid_Sound_extractAllIntervals, L"TextGrid & Sound: Extract all interv
 	BOOLEAN (L"Preserve times", 0)
 	OK
 DO
-	if (! praat_new1 (TextGrid_Sound_extractAllIntervals (ONLY (classTextGrid), ONLY (classSound),
+	if (! praat_new1 (TextGrid_Sound_extractAllIntervals ((structTextGrid *)ONLY (classTextGrid), (structSound *)ONLY (classSound),
 		GET_INTEGER (STRING_TIER_NUMBER), GET_INTEGER (L"Preserve times")), L"dummy")) return 0;
 END
 
@@ -465,7 +465,7 @@ FORM (TextGrid_Sound_extractNonemptyIntervals, L"TextGrid & Sound: Extract non-e
 	BOOLEAN (L"Preserve times", 0)
 	OK
 DO
-	if (! praat_new1 (TextGrid_Sound_extractNonemptyIntervals (ONLY (classTextGrid), ONLY (classSound),
+	if (! praat_new1 (TextGrid_Sound_extractNonemptyIntervals ((structTextGrid *)(classTextGrid), (structSound *)ONLY (classSound),
 		GET_INTEGER (STRING_TIER_NUMBER), GET_INTEGER (L"Preserve times")), L"dummy")) return 0;
 END
 
@@ -475,7 +475,7 @@ FORM (TextGrid_Sound_extractIntervals, L"TextGrid & Sound: Extract intervals", 0
 	SENTENCE (L"Label text", L"")
 	OK
 DO
-	if (! praat_new1 (TextGrid_Sound_extractIntervalsWhere (ONLY (classTextGrid), ONLY (classSound),
+	if (! praat_new1 (TextGrid_Sound_extractIntervalsWhere ((structTextGrid *)ONLY (classTextGrid), (structSound *)ONLY (classSound),
 		GET_INTEGER (STRING_TIER_NUMBER), kMelder_string_EQUAL_TO, GET_STRING (L"Label text"),
 		GET_INTEGER (L"Preserve times")), GET_STRING (L"Label text"))) return 0;
 END
@@ -487,7 +487,7 @@ FORM (TextGrid_Sound_extractIntervalsWhere, L"TextGrid & Sound: Extract interval
 	SENTENCE (L"...the text", L"")
 	OK
 DO
-	if (! praat_new1 (TextGrid_Sound_extractIntervalsWhere (ONLY (classTextGrid), ONLY (classSound),
+	if (! praat_new1 (TextGrid_Sound_extractIntervalsWhere ((structTextGrid *)ONLY (classTextGrid), (structSound *)ONLY (classSound),
 		GET_INTEGER (STRING_TIER_NUMBER),
 		GET_ENUM (kMelder_string, L"Extract all intervals whose label..."),
 		GET_STRING (L"...the text"),
@@ -495,15 +495,15 @@ DO
 END
 
 DIRECT (TextGrid_Sound_scaleTimes)
-	TextGrid grid = ONLY (classTextGrid);
-	Sound sound = ONLY (classSound);
+	TextGrid grid = (structTextGrid *)ONLY (classTextGrid);
+	Sound sound = (structSound *)ONLY (classSound);
 	Function_scaleXTo (grid, sound -> xmin, sound -> xmax);
 	praat_dataChanged (grid);
 END
 
 DIRECT (TextGrid_Sound_cloneTimeDomain)
-	TextGrid grid = ONLY (classTextGrid);
-	Sound sound = ONLY (classSound);
+	TextGrid grid = (structTextGrid *)ONLY (classTextGrid);
+	Sound sound = (structSound *)ONLY (classSound);
 	sound -> x1 += grid -> xmin - sound -> xmin;
 	sound -> xmin = grid -> xmin;
 	sound -> xmax = grid -> xmax;
@@ -517,7 +517,7 @@ FORM (SpellingChecker_addNewWord, L"Add word to user dictionary", L"SpellingChec
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! SpellingChecker_addNewWord (OBJECT, GET_STRING (L"New word"))) return 0;
+		if (! SpellingChecker_addNewWord ((structSpellingChecker *)OBJECT, GET_STRING (L"New word"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -540,7 +540,7 @@ FORM (SpellingChecker_edit, L"Edit spelling checker", L"SpellingChecker")
 	SENTENCE (L"Allow all words starting with", L"")
 	SENTENCE (L"Allow all words ending in", L"")
 	OK
-SpellingChecker me = ONLY_OBJECT;
+SpellingChecker me = (structSpellingChecker *)ONLY_OBJECT;
 SET_STRING (L"Forbidden strings", my forbiddenStrings)
 SET_INTEGER (L"Check matching parentheses", my checkMatchingParentheses)
 SET_STRING (L"Separating characters", my separatingCharacters)
@@ -554,7 +554,7 @@ SET_STRING (L"Allow all words containing", my allowAllWordsContaining)
 SET_STRING (L"Allow all words starting with", my allowAllWordsStartingWith)
 SET_STRING (L"Allow all words ending in", my allowAllWordsEndingIn)
 DO
-	SpellingChecker me = ONLY_OBJECT;
+	SpellingChecker me = (structSpellingChecker *)ONLY_OBJECT;
 	Melder_free (my forbiddenStrings); my forbiddenStrings = Melder_wcsdup_f (GET_STRING (L"Forbidden strings"));
 	my checkMatchingParentheses = GET_INTEGER (L"Check matching parentheses");
 	Melder_free (my separatingCharacters); my separatingCharacters = Melder_wcsdup_f (GET_STRING (L"Separating characters"));
@@ -571,18 +571,18 @@ DO
 END
 
 DIRECT (SpellingChecker_extractWordList)
-	EVERY_TO (SpellingChecker_extractWordList (OBJECT))
+	EVERY_TO (SpellingChecker_extractWordList ((structSpellingChecker *)OBJECT))
 END
 
 DIRECT (SpellingChecker_extractUserDictionary)
-	EVERY_TO (SpellingChecker_extractUserDictionary (OBJECT))
+	EVERY_TO (SpellingChecker_extractUserDictionary ((structSpellingChecker *)OBJECT))
 END
 
 FORM (SpellingChecker_isWordAllowed, L"Is word allowed?", L"SpellingChecker")
 	SENTENCE (L"Word", L"")
 	OK
 DO
-	Melder_information1 (SpellingChecker_isWordAllowed (ONLY_OBJECT, GET_STRING (L"Word")) ?
+	Melder_information1 (SpellingChecker_isWordAllowed ((structSpellingChecker *)ONLY_OBJECT, GET_STRING (L"Word")) ?
 		L"1 (allowed)" : L"0 (not allowed)");
 END
 
@@ -596,11 +596,11 @@ DO
 	long startingCharacter = GET_INTEGER (L"Starting character");
 	REQUIRE (startingCharacter >= 0, L"Starting character should be 0 or positive.")
 	REQUIRE (startingCharacter <= (int) wcslen (sentence), L"Starting character should not exceed end of sentence.")
-	Melder_information1 (SpellingChecker_nextNotAllowedWord (ONLY_OBJECT, sentence, & startingCharacter));
+	Melder_information1 (SpellingChecker_nextNotAllowedWord ((structSpellingChecker *)ONLY_OBJECT, sentence, & startingCharacter));
 END
 
 DIRECT (SpellingChecker_replaceWordList)
-	if (! SpellingChecker_replaceWordList (ONLY (classSpellingChecker), ONLY (classWordList))) return 0;
+	if (! SpellingChecker_replaceWordList ((structSpellingChecker *)ONLY (classSpellingChecker), (structWordList *)ONLY (classWordList))) return 0;
 END
 
 DIRECT (SpellingChecker_replaceWordList_help)
@@ -610,7 +610,7 @@ DIRECT (SpellingChecker_replaceWordList_help)
 END
 
 DIRECT (SpellingChecker_replaceUserDictionary)
-	if (! SpellingChecker_replaceUserDictionary (ONLY (classSpellingChecker), ONLY (classSortedSetOfString))) return 0;
+	if (! SpellingChecker_replaceUserDictionary ((structSpellingChecker *)ONLY (classSpellingChecker), (structSortedSetOfString *)ONLY (classSortedSetOfString))) return 0;
 END
 
 /***** TEXTGRID *****/
@@ -620,7 +620,7 @@ FORM (TextGrid_countLabels, L"Count labels", L"TextGrid: Count labels...")
 	SENTENCE (L"Label text", L"a")
 	OK
 DO
-	Melder_information2 (Melder_integer (TextGrid_countLabels (ONLY (classTextGrid),
+	Melder_information2 (Melder_integer (TextGrid_countLabels ((structTextGrid *)ONLY (classTextGrid),
 		GET_INTEGER (STRING_TIER_NUMBER), GET_STRING (L"Label text"))), L" labels");
 END
 
@@ -631,7 +631,7 @@ FORM (TextGrid_downto_Table, L"TextGrid: Down to Table", 0)
 	BOOLEAN (L"Include empty intervals", false)
 	OK
 DO
-	EVERY_TO (TextGrid_downto_Table (OBJECT, GET_INTEGER (L"Include line number"), GET_INTEGER (L"Time decimals"),
+	EVERY_TO (TextGrid_downto_Table ((structTextGrid *)OBJECT, GET_INTEGER (L"Include line number"), GET_INTEGER (L"Time decimals"),
 		GET_INTEGER (L"Include tier names"), GET_INTEGER (L"Include empty intervals")))
 END
 
@@ -642,7 +642,7 @@ FORM (TextGrid_draw, L"TextGrid: Draw", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (TextGrid_Sound_draw (OBJECT, NULL, GRAPHICS,
+	EVERY_DRAW (TextGrid_Sound_draw ((structTextGrid *)OBJECT, NULL, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Show boundaries"),
 		GET_INTEGER (L"Use text styles"), GET_INTEGER (L"Garnish")))
 END
@@ -654,13 +654,13 @@ FORM (TextGrid_duplicateTier, L"TextGrid: Duplicate tier", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		TextGrid grid = OBJECT;
+		TextGrid grid = (structTextGrid *)OBJECT;
 		int itier = GET_INTEGER (STRING_TIER_NUMBER);
 		int position = GET_INTEGER (L"Position");
 		const wchar_t *name = GET_STRING (L"Name");
 		AnyTier newTier;
 		if (itier > grid -> tiers -> size) itier = grid -> tiers -> size;
-		newTier = Data_copy (grid -> tiers -> item [itier]);
+		newTier = (structAnyTier *)Data_copy (grid -> tiers -> item [itier]);
 		if (! newTier) return 0;
 		Thing_setName (newTier, name);
 		if (! Ordered_addItemPos (grid -> tiers, newTier, position)) return 0;
@@ -688,7 +688,7 @@ DIRECT (TextGrid_edit)
 	} else {
 		WHERE (SELECTED && CLASS == classTextGrid) {
 			TextGridEditor editor = TextGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
-				OBJECT, ONLY (classSound), NULL);
+				(structTextGrid *)OBJECT, ONLY (classSound), NULL);
 			if (! praat_installEditor (editor, IOBJECT)) return 0;
 			Editor_setPublishCallback (TextGridEditor_as_Editor (editor), cb_TextGridEditor_publish, NULL);
 		}
@@ -702,11 +702,11 @@ DIRECT (TextGrid_LongSound_edit)
 		LongSound longSound = NULL;
 		int ilongSound = 0;
 		WHERE (SELECTED)
-			if (CLASS == classLongSound) longSound = OBJECT, ilongSound = IOBJECT;
+			if (CLASS == classLongSound) longSound = (structLongSound *)OBJECT, ilongSound = IOBJECT;
 		Melder_assert (ilongSound != 0);
 		WHERE (SELECTED && CLASS == classTextGrid)
 			if (! praat_installEditor2 (TextGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
-				OBJECT, longSound, NULL), IOBJECT, ilongSound)) return 0;
+				(structTextGrid *)OBJECT, longSound, NULL), IOBJECT, ilongSound)) return 0;
 	}
 END
 
@@ -717,11 +717,11 @@ DIRECT (TextGrid_SpellingChecker_edit)
 		SpellingChecker spellingChecker = NULL;
 		int ispellingChecker = 0;
 		WHERE (SELECTED)
-			if (CLASS == classSpellingChecker) spellingChecker = OBJECT, ispellingChecker = IOBJECT;
+			if (CLASS == classSpellingChecker) spellingChecker = (structSpellingChecker *)OBJECT, ispellingChecker = IOBJECT;
 		Melder_assert (ispellingChecker != 0);
 		WHERE (SELECTED && CLASS == classTextGrid)
 			if (! praat_installEditor2 (TextGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
-				OBJECT, ONLY (classSound), spellingChecker), IOBJECT, ispellingChecker)) return 0;
+				(structTextGrid *)OBJECT, ONLY (classSound), spellingChecker), IOBJECT, ispellingChecker)) return 0;
 	}
 END
 
@@ -733,13 +733,13 @@ DIRECT (TextGrid_LongSound_SpellingChecker_edit)
 		SpellingChecker spellingChecker = NULL;
 		int ilongSound = 0, ispellingChecker = 0;
 		WHERE (SELECTED) {
-			if (CLASS == classLongSound) longSound = OBJECT, ilongSound = IOBJECT;
-			if (CLASS == classSpellingChecker) spellingChecker = OBJECT, ispellingChecker = IOBJECT;
+			if (CLASS == classLongSound) longSound = (structLongSound *)OBJECT, ilongSound = IOBJECT;
+			if (CLASS == classSpellingChecker) spellingChecker = (structSpellingChecker *)OBJECT, ispellingChecker = IOBJECT;
 		}
 		Melder_assert (ilongSound != 0 && ispellingChecker != 0);
 		WHERE (SELECTED && CLASS == classTextGrid)
 			if (! praat_installEditor3 (TextGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
-				OBJECT, longSound, spellingChecker), IOBJECT, ilongSound, ispellingChecker)) return 0;
+				(structTextGrid *)OBJECT, longSound, spellingChecker), IOBJECT, ilongSound, ispellingChecker)) return 0;
 	}
 END
 
@@ -749,29 +749,29 @@ FORM (TextGrid_extractPart, L"TextGrid: Extract part", 0)
 	BOOLEAN (L"Preserve times", 0)
 	OK
 DO
-	TextGrid grid = ONLY (classTextGrid);
+	TextGrid grid = (structTextGrid *)ONLY (classTextGrid);
 	if (! praat_new2 (TextGrid_extractPart (grid, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Preserve times")), grid -> name, L"_part")) return 0;
 END
 
 static Data pr_TextGrid_getTier_e (Any dia) {
-	TextGrid grid = ONLY_OBJECT;
+	TextGrid grid = (structTextGrid *)ONLY_OBJECT;
 	long tierNumber = GET_INTEGER (STRING_TIER_NUMBER);
-	if (tierNumber > grid -> tiers -> size) return Melder_errorp
+	if (tierNumber > grid -> tiers -> size) return (structData *)Melder_errorp
 		("Tier number (%ld) should not be larger than number of tiers (%ld).", tierNumber, grid -> tiers -> size);
-	return grid -> tiers -> item [tierNumber];
+	return (structData *)grid -> tiers -> item [tierNumber];
 }
 
 static IntervalTier pr_TextGrid_getIntervalTier_e (Any dia) {
 	Data tier = pr_TextGrid_getTier_e (dia);
 	if (! tier) return NULL;
-	if (tier -> methods != (Data_Table) classIntervalTier) return Melder_errorp1 (L"Tier should be interval tier.");
+	if (tier -> methods != (Data_Table) classIntervalTier) return (structIntervalTier *)Melder_errorp1 (L"Tier should be interval tier.");
 	return (IntervalTier) tier;
 }
 
 static TextTier pr_TextGrid_getTextTier_e (Any dia) {
 	Data tier = pr_TextGrid_getTier_e (dia);
 	if (! tier) return NULL;
-	if (tier -> methods != (Data_Table) classTextTier) return Melder_errorp1 (L"Tier should be point tier (TextTier).");
+	if (tier -> methods != (Data_Table) classTextTier) return (structTextTier *)Melder_errorp1 (L"Tier should be point tier (TextTier).");
 	return (TextTier) tier;
 }
 
@@ -779,16 +779,16 @@ static TextInterval pr_TextGrid_getInterval_e (Any dia) {
 	int intervalNumber = GET_INTEGER (STRING_INTERVAL_NUMBER);
 	IntervalTier intervalTier = pr_TextGrid_getIntervalTier_e (dia);
 	if (! intervalTier) return NULL;
-	if (intervalNumber > intervalTier -> intervals -> size) return Melder_errorp1 (L"Interval number too large.");
-	return intervalTier -> intervals -> item [intervalNumber];
+	if (intervalNumber > intervalTier -> intervals -> size) return (structTextInterval *)Melder_errorp1 (L"Interval number too large.");
+	return (structTextInterval *)intervalTier -> intervals -> item [intervalNumber];
 }
 
 static TextPoint pr_TextGrid_getPoint_e (Any dia) {	
 	long pointNumber = GET_INTEGER (STRING_POINT_NUMBER);
 	TextTier textTier = pr_TextGrid_getTextTier_e (dia);
 	if (! textTier) return NULL;
-	if (pointNumber > textTier -> points -> size) return Melder_errorp1 (L"Point number too large.");
-	return textTier -> points -> item [pointNumber];
+	if (pointNumber > textTier -> points -> size) return (structTextPoint *)Melder_errorp1 (L"Point number too large.");
+	return (structTextPoint *)textTier -> points -> item [pointNumber];
 }
 
 FORM (TextGrid_extractOneTier, L"TextGrid: Extract one tier", 0)
@@ -817,14 +817,14 @@ END
 
 DIRECT (TextGrid_genericize)
 	WHERE (SELECTED) {
-		if (! TextGrid_genericize (OBJECT)) return 0;
+		if (! TextGrid_genericize ((structTextGrid *)OBJECT)) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
 
 DIRECT (TextGrid_nativize)
 	WHERE (SELECTED) {
-		if (! TextGrid_nativize (OBJECT)) return 0;
+		if (! TextGrid_nativize ((structTextGrid *)OBJECT)) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -879,7 +879,7 @@ DO
 END
 
 DIRECT (TextGrid_getNumberOfTiers)
-	TextGrid grid = ONLY_OBJECT;
+	TextGrid grid = (structTextGrid *)ONLY_OBJECT;
 	Melder_information1 (Melder_integer (grid -> tiers -> size));
 END
 
@@ -961,7 +961,7 @@ FORM (TextGrid_insertBoundary, L"TextGrid: Insert boundary", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! TextGrid_insertBoundary (OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_REAL (L"Time"))) return 0;
+		if (! TextGrid_insertBoundary ((structTextGrid *)OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_REAL (L"Time"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -972,7 +972,7 @@ FORM (TextGrid_insertIntervalTier, L"TextGrid: Insert interval tier", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		TextGrid grid = OBJECT;
+		TextGrid grid = (structTextGrid *)OBJECT;
 		int position = GET_INTEGER (L"Position");
 		wchar_t *name = GET_STRING (L"Name");
 		IntervalTier tier = IntervalTier_create (grid -> xmin, grid -> xmax);
@@ -992,7 +992,7 @@ FORM (TextGrid_insertPoint, L"TextGrid: Insert point", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! TextGrid_insertPoint (OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_REAL (L"Time"), GET_STRING (L"text"))) return 0;
+		if (! TextGrid_insertPoint ((structTextGrid *)OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_REAL (L"Time"), GET_STRING (L"text"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -1003,7 +1003,7 @@ FORM (TextGrid_insertPointTier, L"TextGrid: Insert point tier", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		TextGrid grid = OBJECT;
+		TextGrid grid = (structTextGrid *)OBJECT;
 		int position = GET_INTEGER (L"Position");
 		wchar_t *name = GET_STRING (L"Name");
 		TextTier tier = TextTier_create (grid -> xmin, grid -> xmax);
@@ -1035,7 +1035,7 @@ FORM (TextGrid_list, L"TextGrid: List", 0)
 	BOOLEAN (L"Include empty intervals", false)
 	OK
 DO
-	EVERY (TextGrid_list (OBJECT, GET_INTEGER (L"Include line number"), GET_INTEGER (L"Time decimals"),
+	EVERY (TextGrid_list ((structTextGrid *)OBJECT, GET_INTEGER (L"Include line number"), GET_INTEGER (L"Time decimals"),
 		GET_INTEGER (L"Include tier names"), GET_INTEGER (L"Include empty intervals")))
 END
 
@@ -1064,7 +1064,7 @@ FORM (TextGrid_removeBoundaryAtTime, L"TextGrid: Remove boundary at time", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! TextGrid_removeBoundaryAtTime (OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_REAL (L"Time"))) return 0;
+		if (! TextGrid_removeBoundaryAtTime ((structTextGrid *)OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_REAL (L"Time"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -1077,7 +1077,7 @@ FORM (TextGrid_getCentrePoints, L"TextGrid: Get centre points", 0)
 DO
 	wchar_t *text = GET_STRING (L"...the text");
 	WHERE (SELECTED) {
-		if (! praat_new3 (TextGrid_getCentrePoints (OBJECT, GET_INTEGER (STRING_TIER_NUMBER),
+		if (! praat_new3 (TextGrid_getCentrePoints ((structTextGrid *)OBJECT, GET_INTEGER (STRING_TIER_NUMBER),
 			GET_ENUM (kMelder_string, L"Get centre points where label"), text), NAME, L"_", text)) return 0;
 	}
 END
@@ -1090,7 +1090,7 @@ FORM (TextGrid_getEndPoints, L"TextGrid: Get end points", 0)
 DO
 	wchar_t *text = GET_STRING (L"...the text");
 	WHERE (SELECTED) {
-		if (! praat_new3 (TextGrid_getEndPoints (OBJECT, GET_INTEGER (STRING_TIER_NUMBER),
+		if (! praat_new3 (TextGrid_getEndPoints ((structTextGrid *)OBJECT, GET_INTEGER (STRING_TIER_NUMBER),
 			GET_ENUM (kMelder_string, L"Get end points where label"), text), NAME, L"_", text)) return 0;
 	}
 END
@@ -1103,7 +1103,7 @@ FORM (TextGrid_getStartingPoints, L"TextGrid: Get starting points", 0)
 DO
 	wchar_t *text = GET_STRING (L"...the text");
 	WHERE (SELECTED) {
-		if (! praat_new3 (TextGrid_getStartingPoints (OBJECT, GET_INTEGER (STRING_TIER_NUMBER),
+		if (! praat_new3 (TextGrid_getStartingPoints ((structTextGrid *)OBJECT, GET_INTEGER (STRING_TIER_NUMBER),
 			GET_ENUM (kMelder_string, L"Get starting points where label"), text), NAME, L"_", text)) return 0;
 	}
 END
@@ -1116,7 +1116,7 @@ FORM (TextGrid_getPoints, L"Get points", 0)
 DO
 	wchar_t *text = GET_STRING (L"...the text");
 	WHERE (SELECTED)
-		if (! praat_new3 (TextGrid_getPoints (OBJECT, GET_INTEGER (STRING_TIER_NUMBER),
+		if (! praat_new3 (TextGrid_getPoints ((structTextGrid *)OBJECT, GET_INTEGER (STRING_TIER_NUMBER),
 			GET_ENUM (kMelder_string, L"Get points where label"), text), NAME, L"_", text)) return 0;
 END
 
@@ -1128,12 +1128,12 @@ DO
 	long itier = GET_INTEGER (STRING_TIER_NUMBER);
 	long iinterval = GET_INTEGER (STRING_INTERVAL_NUMBER);
 	WHERE (SELECTED) {
-		TextGrid grid = OBJECT;
+		TextGrid grid = (structTextGrid *)OBJECT;
 		IntervalTier intervalTier;
 		if (itier > grid -> tiers -> size)
 			return Melder_error7 (L"You cannot remove a boundary from tier ", Melder_integer (itier), L" of ", Thing_messageName (grid),
 				L", because that TextGrid has only ", Melder_integer (grid -> tiers -> size), L" tiers.");
-		intervalTier = grid -> tiers -> item [itier];
+		intervalTier = (structIntervalTier *)grid -> tiers -> item [itier];
 		if (intervalTier -> methods != classIntervalTier)
 			return Melder_error5 (L"You cannot remove a boundary from tier ", Melder_integer (itier), L" of ", Thing_messageName (grid),
 				L", because that tier is a point tier instead of an interval tier.");
@@ -1156,12 +1156,12 @@ DO
 	long itier = GET_INTEGER (STRING_TIER_NUMBER);
 	long ipoint = GET_INTEGER (STRING_POINT_NUMBER);
 	WHERE (SELECTED) {
-		TextGrid grid = OBJECT;
+		TextGrid grid = (structTextGrid *)OBJECT;
 		TextTier pointTier;
 		if (itier > grid -> tiers -> size)
 			return Melder_error7 (L"You cannot remove a point from tier ", Melder_integer (itier), L" of ", Thing_messageName (grid),
 				L", because that TextGrid has only ", Melder_integer (grid -> tiers -> size), L" tiers.");
-		pointTier = grid -> tiers -> item [itier];
+		pointTier = (structTextTier *)grid -> tiers -> item [itier];
 		if (pointTier -> methods != classTextTier)
 			return Melder_error5 (L"You cannot remove a point from tier ", Melder_integer (itier), L" of ", Thing_messageName (grid),
 				L", because that tier is an interval tier instead of a point tier.");
@@ -1181,12 +1181,12 @@ DO
 	long itier = GET_INTEGER (STRING_TIER_NUMBER);
 	long iinterval = GET_INTEGER (STRING_INTERVAL_NUMBER);
 	WHERE (SELECTED) {
-		TextGrid grid = OBJECT;
+		TextGrid grid = (structTextGrid *)OBJECT;
 		IntervalTier intervalTier;
 		if (itier > grid -> tiers -> size)
 			return Melder_error7 (L"You cannot remove a boundary from tier ", Melder_integer (itier), L" of ", Thing_messageName (grid),
 				L", because that TextGrid has only ", Melder_integer (grid -> tiers -> size), L" tiers.");
-		intervalTier = grid -> tiers -> item [itier];
+		intervalTier = (structIntervalTier *)grid -> tiers -> item [itier];
 		if (intervalTier -> methods != classIntervalTier)
 			return Melder_error5 (L"You cannot remove a boundary from tier ", Melder_integer (itier), L" of ", Thing_messageName (grid),
 				L", because that tier is a point tier instead of an interval tier.");
@@ -1206,7 +1206,7 @@ FORM (TextGrid_removeTier, L"TextGrid: Remove tier", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		TextGrid grid = OBJECT;
+		TextGrid grid = (structTextGrid *)OBJECT;
 		int itier = GET_INTEGER (STRING_TIER_NUMBER);
 		if (grid -> tiers -> size <= 1) {
 			return Melder_error1 (L"Sorry, I refuse to remove the last tier.");
@@ -1234,7 +1234,7 @@ FORM (TextGrid_setIntervalText, L"TextGrid: Set interval text", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! TextGrid_setIntervalText (OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_INTEGER (STRING_INTERVAL_NUMBER), GET_STRING (L"text"))) return 0;
+		if (! TextGrid_setIntervalText ((structTextGrid *)OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_INTEGER (STRING_INTERVAL_NUMBER), GET_STRING (L"text"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -1247,19 +1247,19 @@ FORM (TextGrid_setPointText, L"TextGrid: Set point text", 0)
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! TextGrid_setPointText (OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_INTEGER (STRING_POINT_NUMBER), GET_STRING (L"text"))) return 0;
+		if (! TextGrid_setPointText ((structTextGrid *)OBJECT, GET_INTEGER (STRING_TIER_NUMBER), GET_INTEGER (STRING_POINT_NUMBER), GET_STRING (L"text"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
 
 FORM_WRITE (TextGrid_writeToChronologicalTextFile, L"Text file", 0, 0)
-	if (! TextGrid_writeToChronologicalTextFile (ONLY_OBJECT, file)) return 0;
+	if (! TextGrid_writeToChronologicalTextFile ((structTextGrid *)ONLY_OBJECT, file)) return 0;
 END
 
 /***** TEXTGRID & ANYTIER *****/
 
 DIRECT (TextGrid_AnyTier_append)
-	TextGrid oldGrid = ONLY (classTextGrid), newGrid = Data_copy (oldGrid);
+	TextGrid oldGrid = (structTextGrid *)ONLY (classTextGrid), newGrid = (structTextGrid *)Data_copy (oldGrid);
 	if (! newGrid) return 0;
 	WHERE (SELECTED && OBJECT != oldGrid) if (! TextGrid_add (newGrid, OBJECT)) { forget (newGrid); return 0; }
 	if (! praat_new1 (newGrid, oldGrid -> name)) return 0;
@@ -1268,8 +1268,8 @@ END
 /***** TEXTGRID & LONGSOUND *****/
 
 DIRECT (TextGrid_LongSound_scaleTimes)
-	TextGrid grid = ONLY (classTextGrid);
-	LongSound longSound = ONLY (classLongSound);
+	TextGrid grid = (structTextGrid *)ONLY (classTextGrid);
+	LongSound longSound = (structLongSound *)ONLY (classLongSound);
 	Function_scaleXTo (grid, longSound -> xmin, longSound -> xmax);
 	praat_dataChanged (grid);
 END
@@ -1282,7 +1282,7 @@ FORM (TextTier_addPoint, L"TextTier: Add point", L"TextTier: Add point...")
 	OK
 DO
 	WHERE (SELECTED) {
-		if (! TextTier_addPoint (OBJECT, GET_REAL (L"Time"), GET_STRING (L"Text"))) return 0;
+		if (! TextTier_addPoint ((structTextTier *)OBJECT, GET_REAL (L"Time"), GET_STRING (L"Text"))) return 0;
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -1295,21 +1295,21 @@ FORM (TextTier_downto_TableOfReal, L"TextTier: Down to TableOfReal", 0)
 	SENTENCE (L"Label", L"")
 	OK
 DO
-	EVERY_TO (TextTier_downto_TableOfReal (OBJECT, GET_STRING (L"Label")))
+	EVERY_TO (TextTier_downto_TableOfReal ((structTextTier *)OBJECT, GET_STRING (L"Label")))
 END
 
 DIRECT (TextTier_downto_TableOfReal_any)
-	EVERY_TO (TextTier_downto_TableOfReal_any (OBJECT))
+	EVERY_TO (TextTier_downto_TableOfReal_any ((structTextTier *)OBJECT))
 END
 
 FORM (TextTier_getLabelOfPoint, L"Get label of point", 0)
 	NATURAL (L"Point number", L"1")
 	OK
 DO
-	TextTier me = ONLY_OBJECT;
+	TextTier me = (structTextTier *)ONLY_OBJECT;
 	long ipoint = GET_INTEGER (L"Point number");
 	REQUIRE (ipoint <= my points -> size, L"No such point.")
-	TextPoint point = my points -> item [ipoint];
+	TextPoint point = (structTextPoint *)my points -> item [ipoint];
 	Melder_information1 (point -> mark);
 END
 
@@ -1318,7 +1318,7 @@ FORM (TextTier_getPoints, L"Get points", 0)
 	OK
 DO
 	WHERE (SELECTED)
-		if (! praat_new1 (TextTier_getPoints (OBJECT, GET_STRING (L"Text")), GET_STRING (L"Text"))) return 0;
+		if (! praat_new1 (TextTier_getPoints ((structTextTier *)OBJECT, GET_STRING (L"Text")), GET_STRING (L"Text"))) return 0;
 END
 
 DIRECT (TextTier_help) Melder_help (L"TextTier"); END
@@ -1329,15 +1329,15 @@ FORM (WordList_hasWord, L"Does word occur in list?", L"WordList")
 	SENTENCE (L"Word", L"")
 	OK
 DO
-	Melder_information1 (WordList_hasWord (ONLY_OBJECT, GET_STRING (L"Word")) ? L"1" : L"0");
+	Melder_information1 (WordList_hasWord ((structWordList *)ONLY_OBJECT, GET_STRING (L"Word")) ? L"1" : L"0");
 END
 
 DIRECT (WordList_to_Strings)
-	EVERY_TO (WordList_to_Strings (OBJECT))
+	EVERY_TO (WordList_to_Strings ((structWordList *)OBJECT))
 END
 
 DIRECT (WordList_upto_SpellingChecker)
-	EVERY_TO (WordList_upto_SpellingChecker (OBJECT))
+	EVERY_TO (WordList_upto_SpellingChecker ((structWordList *)OBJECT))
 END
 
 /***** buttons *****/
@@ -1346,7 +1346,7 @@ void praat_TimeFunction_query_init (void *klas);
 void praat_TimeTier_query_init (void *klas);
 void praat_TimeTier_modify_init (void *klas);
 
-void praat_uvafon_TextGrid_init (void);
+extern "C" void praat_uvafon_TextGrid_init (void);
 void praat_uvafon_TextGrid_init (void) {
 	Thing_recognizeClassByOtherName (classTextTier, L"MarkTier");
 
