@@ -19,6 +19,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifdef __cplusplus
 class UiHistory {
   public:
 	void write (const wchar_t *string) { MelderString_append (& _contents, string); }
@@ -28,4 +29,7 @@ class UiHistory {
   private:
 	MelderString _contents;
 };
+#else
+typedef struct UiHistory UiHistory;
+#endif
 #endif

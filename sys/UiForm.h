@@ -92,6 +92,7 @@
 	are restored to all items in the form.
 */
 
+#ifdef __cplusplus
 class Interpreter;
 struct structEditorCommand;
 
@@ -258,4 +259,7 @@ class UiForm {
 	UiField * findField (const wchar_t *fieldName);
 	UiField * findField_check (const wchar_t *fieldName);
 };
+#else
+typedef struct UiForm UiForm;
+#endif
 #endif

@@ -36,10 +36,10 @@
 #include "UiForm.h"
 
 /* FIXME */
-class Interpreter;
-class UiForm;
-
 #ifdef __cplusplus
+	class Interpreter;
+	class UiForm;
+
 	extern "C" {
 #endif
 
