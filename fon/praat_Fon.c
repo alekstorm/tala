@@ -81,25 +81,25 @@ static const wchar_t *STRING_TO_FREQUENCY = L"right Frequency range";
 
 /***** Common dialog contents. *****/
 
-void praat_dia_timeRange (Any dia);
-void praat_dia_timeRange (Any dia) {
+void praat_dia_timeRange (UiForm *dia);
+void praat_dia_timeRange (UiForm *dia) {
 	REAL (STRING_FROM_TIME_SECONDS, L"0.0")
 	REAL (STRING_TO_TIME_SECONDS, L"0.0 (= all)")
 }
-void praat_get_timeRange (Any dia, double *tmin, double *tmax);
-void praat_get_timeRange (Any dia, double *tmin, double *tmax) {
+void praat_get_timeRange (UiForm *dia, double *tmin, double *tmax);
+void praat_get_timeRange (UiForm *dia, double *tmin, double *tmax) {
 	*tmin = GET_REAL (STRING_FROM_TIME);
 	*tmax = GET_REAL (STRING_TO_TIME);
 }
-int praat_get_frequencyRange (Any dia, double *fmin, double *fmax);
-int praat_get_frequencyRange (Any dia, double *fmin, double *fmax) {
+int praat_get_frequencyRange (UiForm *dia, double *fmin, double *fmax);
+int praat_get_frequencyRange (UiForm *dia, double *fmin, double *fmax) {
 	*fmin = GET_REAL (STRING_FROM_FREQUENCY);
 	*fmax = GET_REAL (STRING_TO_FREQUENCY);
 	REQUIRE (*fmax > *fmin, L"Maximum frequency must be greater than minimum frequency.")
 	return 1;
 }
-static void dia_Vector_getExtremum (Any dia) {
-	Any radio;
+static void dia_Vector_getExtremum (UiForm *dia) {
+	UiForm::UiField *radio;
 	praat_dia_timeRange (dia);
 	RADIO (L"Interpolation", 2)
 	RADIOBUTTON (L"None")
@@ -108,8 +108,8 @@ static void dia_Vector_getExtremum (Any dia) {
 	RADIOBUTTON (L"Sinc70")
 	RADIOBUTTON (L"Sinc700")
 }
-static void dia_Vector_getValue (Any dia) {
-	Any radio;
+static void dia_Vector_getValue (UiForm *dia) {
+	UiForm::UiField *radio;
 	REAL (L"Time (s)", L"0.5")
 	RADIO (L"Interpolation", 3)
 	RADIOBUTTON (L"Nearest")
@@ -119,7 +119,7 @@ static void dia_Vector_getValue (Any dia) {
 	RADIOBUTTON (L"Sinc700")
 }
 
-static int getTminTmaxFminFmax (Any dia, double *tmin, double *tmax, double *fmin, double *fmax) {
+static int getTminTmaxFminFmax (UiForm *dia, double *tmin, double *tmax, double *fmin, double *fmax) {
 	*tmin = GET_REAL (STRING_FROM_TIME);
 	*tmax = GET_REAL (STRING_TO_TIME);
 	*fmin = GET_REAL (STRING_FROM_FREQUENCY);
@@ -133,8 +133,8 @@ static int getTminTmaxFminFmax (Any dia, double *tmin, double *tmax, double *fmi
 
 /***** Two auxiliary routines, exported. *****/
 
-extern "C" int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
-int praat_Fon_formula (UiForm dia, Interpreter *interpreter) {
+extern "C" int praat_Fon_formula (UiForm *dia, Interpreter *interpreter);
+int praat_Fon_formula (UiForm *dia, Interpreter *interpreter) {
 	int IOBJECT;
 	WHERE_DOWN (SELECTED) {
 		Matrix_formula ((structMatrix *)OBJECT, GET_STRING (L"formula"), interpreter, NULL);
@@ -223,7 +223,7 @@ DO
 	}
 END
 
-static void dia_AmplitudeTier_getRangeProperty (Any dia) {
+static void dia_AmplitudeTier_getRangeProperty (UiForm *dia) {
 	REAL (L"Shortest period (s)", L"0.0001")
 	REAL (L"Longest period (s)", L"0.02")
 	POSITIVE (L"Maximum amplitude factor", L"1.6")
@@ -3124,7 +3124,7 @@ DO
 	Melder_informationReal (PointProcess_getInterval ((structPointProcess *)ONLY (classPointProcess), GET_REAL (L"Time")), L"seconds");
 END
 
-static void dia_PointProcess_getRangeProperty (Any dia) {
+static void dia_PointProcess_getRangeProperty (UiForm *dia) {
 	praat_dia_timeRange (dia);
 	REAL (L"Shortest period (s)", L"0.0001")
 	REAL (L"Longest period (s)", L"0.02")

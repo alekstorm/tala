@@ -2200,7 +2200,7 @@ static void updateText (TextGridEditor me) {
 
 static void prefs_addFields (TextGridEditor me, EditorCommand cmd) {
 	(void) me;
-	Any radio;
+	UiForm::UiField *radio;
 	NATURAL (L"Font size (points)", TextGridEditor_DEFAULT_FONT_SIZE_STRING)
 	OPTIONMENU_ENUM (L"Text alignment in intervals", kGraphics_horizontalAlignment, DEFAULT)
 	OPTIONMENU (L"The symbols %#_^ in labels", TextGridEditor_DEFAULT_USE_TEXT_STYLES + 1)

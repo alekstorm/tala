@@ -46,7 +46,7 @@
 	#define LONG_MAX  2147483647
 #endif
 
-extern "C" int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
+extern "C" int praat_Fon_formula (UiForm *dia, Interpreter *interpreter);
 void praat_TimeFunction_query_init (void *klas);
 void praat_TimeFunction_modify_init (void *klas);
 
@@ -420,7 +420,7 @@ DO
 		s1 -> name, L"_", s2 -> name)) return 0;
 END
 
-static int common_Sound_create (void *dia, Interpreter *interpreter, bool allowMultipleChannels) {
+static int common_Sound_create (UiForm *dia, Interpreter *interpreter, bool allowMultipleChannels) {
 	Sound sound = NULL;
 	long numberOfChannels = allowMultipleChannels ? GET_INTEGER (L"Number of channels") : 1;
 	double startTime = GET_REAL (L"Start time");

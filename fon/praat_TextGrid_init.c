@@ -31,9 +31,9 @@
 #include "TextGrid_Sound.h"
 #include "WordList.h"
 
-void praat_dia_timeRange (Any dia);
-void praat_get_timeRange (Any dia, double *tmin, double *tmax);
-int praat_get_frequencyRange (Any dia, double *fmin, double *fmax);
+void praat_dia_timeRange (UiForm *dia);
+void praat_get_timeRange (UiForm *dia, double *tmin, double *tmax);
+int praat_get_frequencyRange (UiForm *dia, double *fmin, double *fmax);
 
 static const wchar_t *STRING_FROM_FREQUENCY_HZ = L"left Frequency range (Hz)";
 static const wchar_t *STRING_TO_FREQUENCY_HZ = L"right Frequency range (Hz)";
@@ -134,7 +134,7 @@ END
 
 /***** PITCH & TEXTGRID *****/
 
-static int pr_TextGrid_Pitch_draw (Any dia, int speckle, int unit) {
+static int pr_TextGrid_Pitch_draw (UiForm *dia, int speckle, int unit) {
 	double tmin, tmax, fmin, fmax;
 	praat_get_timeRange (dia, & tmin, & tmax);
 	if (! praat_get_frequencyRange (dia, & fmin, & fmax)) return 0;
@@ -217,7 +217,7 @@ DO
 	if (! pr_TextGrid_Pitch_draw (dia, Pitch_speckle_NO, kPitch_unit_SEMITONES_100)) return 0;
 END
 
-static int pr_TextGrid_Pitch_drawSeparately (Any dia, int speckle, int unit) {
+static int pr_TextGrid_Pitch_drawSeparately (UiForm *dia, int speckle, int unit) {
 	double tmin, tmax, fmin, fmax;
 	praat_get_timeRange (dia, & tmin, & tmax);
 	if (! praat_get_frequencyRange (dia, & fmin, & fmax)) return 0;
@@ -753,7 +753,7 @@ DO
 	if (! praat_new2 (TextGrid_extractPart (grid, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Preserve times")), grid -> name, L"_part")) return 0;
 END
 
-static Data pr_TextGrid_getTier_e (Any dia) {
+static Data pr_TextGrid_getTier_e (UiForm *dia) {
 	TextGrid grid = (structTextGrid *)ONLY_OBJECT;
 	long tierNumber = GET_INTEGER (STRING_TIER_NUMBER);
 	if (tierNumber > grid -> tiers -> size) return (structData *)Melder_errorp
@@ -761,21 +761,21 @@ static Data pr_TextGrid_getTier_e (Any dia) {
 	return (structData *)grid -> tiers -> item [tierNumber];
 }
 
-static IntervalTier pr_TextGrid_getIntervalTier_e (Any dia) {
+static IntervalTier pr_TextGrid_getIntervalTier_e (UiForm *dia) {
 	Data tier = pr_TextGrid_getTier_e (dia);
 	if (! tier) return NULL;
 	if (tier -> methods != (Data_Table) classIntervalTier) return (structIntervalTier *)Melder_errorp1 (L"Tier should be interval tier.");
 	return (IntervalTier) tier;
 }
 
-static TextTier pr_TextGrid_getTextTier_e (Any dia) {
+static TextTier pr_TextGrid_getTextTier_e (UiForm *dia) {
 	Data tier = pr_TextGrid_getTier_e (dia);
 	if (! tier) return NULL;
 	if (tier -> methods != (Data_Table) classTextTier) return (structTextTier *)Melder_errorp1 (L"Tier should be point tier (TextTier).");
 	return (TextTier) tier;
 }
 
-static TextInterval pr_TextGrid_getInterval_e (Any dia) {
+static TextInterval pr_TextGrid_getInterval_e (UiForm *dia) {
 	int intervalNumber = GET_INTEGER (STRING_INTERVAL_NUMBER);
 	IntervalTier intervalTier = pr_TextGrid_getIntervalTier_e (dia);
 	if (! intervalTier) return NULL;
@@ -783,7 +783,7 @@ static TextInterval pr_TextGrid_getInterval_e (Any dia) {
 	return (structTextInterval *)intervalTier -> intervals -> item [intervalNumber];
 }
 
-static TextPoint pr_TextGrid_getPoint_e (Any dia) {	
+static TextPoint pr_TextGrid_getPoint_e (UiForm *dia) {	
 	long pointNumber = GET_INTEGER (STRING_POINT_NUMBER);
 	TextTier textTier = pr_TextGrid_getTextTier_e (dia);
 	if (! textTier) return NULL;
