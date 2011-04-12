@@ -37,7 +37,7 @@ DIRECT (OTGrammar_help) Melder_help (L"OTGrammar"); END
 
 /***** NETWORK *****/
 
-static void UiForm_addNetworkFields (UiForm dia) {
+static void UiForm_addNetworkFields (UiForm *dia) {
 	LABEL (L"", L"Activity spreading settings:")
 	REAL (L"left Activity range", L"-1.0")
 	REAL (L"right Activity range", L"1.0")

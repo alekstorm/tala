@@ -135,10 +135,10 @@ void praat_TableOfReal_init2  (void *klas);
 void praat_SSCP_as_TableOfReal_init (void *klas);
 
 void praat_CC_init (void *klas);
-void DTW_constraints_addCommonFields (Any dia);
-void DTW_constraints_getCommonFields (Any dia, int *begin, int *end, int *slope);
+void DTW_constraints_addCommonFields (UiForm *dia);
+void DTW_constraints_getCommonFields (UiForm *dia, int *begin, int *end, int *slope);
 void praat_Matrixft_query_init (void *klas);
-int praat_Fon_formula (Any dia, Interpreter *interpreter);
+int praat_Fon_formula (UiForm *dia, Interpreter *interpreter);
 
 #undef INCLUDE_DTW_SLOPES
 
@@ -1217,9 +1217,9 @@ DO
 	return 1;
 END
 
-void DTW_constraints_addCommonFields (Any dia)
+void DTW_constraints_addCommonFields (UiForm *dia)
 {
-	Any radio;
+	UiForm::UiField *radio;
 	LABEL (L"", L"Boundary conditions")
 	BOOLEAN (L"Match begin positions", 0)
 	BOOLEAN (L"Match end positions", 0)
@@ -1230,7 +1230,7 @@ void DTW_constraints_addCommonFields (Any dia)
 	RADIOBUTTON (L"2/3 < slope < 3/2")
 }
 
-void DTW_constraints_getCommonFields (Any dia, int *begin, int *end, int *slope)
+void DTW_constraints_getCommonFields (UiForm *dia, int *begin, int *end, int *slope)
 {
 	*begin = GET_INTEGER (L"Match begin positions");
 	*end = GET_INTEGER (L"Match end positions");
@@ -3188,14 +3188,14 @@ END
 
 /******************** Sound ****************************************/
 
-static void Sound_create_addCommonFields (Any dia)
+static void Sound_create_addCommonFields (UiForm *dia)
 {
 	REAL (L"Starting time (s)", L"0.0")
 	REAL (L"Finishing time (s)", L"0.1")
 	POSITIVE (L"Sampling frequency (Hz)", L"44100.0")
 }
 
-static int Sound_create_checkCommonFields (Any dia, double *startingTime, double *finishingTime,
+static int Sound_create_checkCommonFields (UiForm *dia, double *startingTime, double *finishingTime,
 	double *samplingFrequency)
 {
 	double numberOfSamples_real;

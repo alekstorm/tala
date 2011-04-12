@@ -54,7 +54,7 @@ static wchar_t *QUERY_BUTTON   = L"Query -";
 
 extern void praat_CC_init (void *klas);
 extern void praat_TimeFrameSampled_query_init (void *klas);
-extern int praat_Fon_formula (Any dia);
+extern int praat_Fon_formula (UiForm *dia);
 
 /********************** Cepstrum  ****************************************/
 
@@ -265,7 +265,7 @@ END
 
 /********************** Sound *******************************************/
 
-static void Sound_to_LPC_addCommonFields (Any dia) {
+static void Sound_to_LPC_addCommonFields (UiForm *dia) {
 	LABEL (L"", L"Warning 1:  for formant analysis, use \"To Formant\" instead.")
 	LABEL (L"", L"Warning 2:  if you do use \"To LPC\", you may want to resample first.")
 	LABEL (L"", L"Click Help for more details.")
@@ -275,7 +275,7 @@ static void Sound_to_LPC_addCommonFields (Any dia) {
 	POSITIVE (L"Time step (s)", L"0.005")
 	REAL (L"Pre-emphasis frequency (Hz)", L"50.0")
 }
-static int Sound_to_LPC_checkCommonFields (Any dia,
+static int Sound_to_LPC_checkCommonFields (UiForm *dia,
 	long *predictionOrder,
 	double *analysisWindowDuration,
 	double *timeStep,

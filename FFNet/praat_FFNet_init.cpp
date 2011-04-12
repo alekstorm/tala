@@ -55,26 +55,26 @@ static wchar_t *EXTRACT_BUTTON = L"Extract -";
 
 /**************** New FFNet ***************************/
 
-static void FFNet_create_addCommonFields_inputOutput (Any dia)
+static void FFNet_create_addCommonFields_inputOutput (UiForm *dia)
 {
     NATURAL (L"Number of inputs", L"4")
     NATURAL (L"Number of outputs", L"3")
 }
 
-static int FFNet_create_checkCommonFields_inputOutput (Any dia, long *numberOfInputs, long *numberOfOutputs)
+static int FFNet_create_checkCommonFields_inputOutput (UiForm *dia, long *numberOfInputs, long *numberOfOutputs)
 {
 	*numberOfInputs = GET_INTEGER (L"Number of inputs");
 	*numberOfOutputs = GET_INTEGER (L"Number of outputs");
 	return 1;
 }
 
-static void FFNet_create_addCommonFields_hidden (Any dia)
+static void FFNet_create_addCommonFields_hidden (UiForm *dia)
 {
     INTEGER (L"Number of units in hidden layer 1", L"0")
     INTEGER (L"Number of units in hidden layer 2", L"0")
 }
 
-static int FFNet_create_checkCommonFields_hidden (Any dia, 	long *numberOfHidden1, long *numberOfHidden2)
+static int FFNet_create_checkCommonFields_hidden (UiForm *dia, 	long *numberOfHidden1, long *numberOfHidden2)
 {
 	*numberOfHidden1 = GET_INTEGER (L"Number of units in hidden layer 1");
 	*numberOfHidden2 = GET_INTEGER (L"Number of units in hidden layer 2");
@@ -85,13 +85,13 @@ static int FFNet_create_checkCommonFields_hidden (Any dia, 	long *numberOfHidden
 	return 1;
 }
 
-static void FFNet_create_addCommonFields (Any dia)
+static void FFNet_create_addCommonFields (UiForm *dia)
 {
 	FFNet_create_addCommonFields_inputOutput (dia);
     FFNet_create_addCommonFields_hidden (dia);
 }
 
-static int FFNet_create_checkCommonFields (Any dia, long *numberOfInputs, long *numberOfOutputs,
+static int FFNet_create_checkCommonFields (UiForm *dia, long *numberOfInputs, long *numberOfOutputs,
 	long *numberOfHidden1, long *numberOfHidden2)
 {
 	return FFNet_create_checkCommonFields_inputOutput (dia, numberOfInputs, numberOfOutputs) &&

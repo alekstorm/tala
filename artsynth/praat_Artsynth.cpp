@@ -31,7 +31,7 @@
 #include "VocalTract_to_Spectrum.h"
 #include "praat.h"
 
-extern "C" int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
+extern "C" int praat_Fon_formula (UiForm *dia, Interpreter *interpreter);
 Graphics Movie_create (const wchar_t *title, int width, int height);
 
 /***** ART *****/
