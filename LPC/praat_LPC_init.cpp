@@ -71,7 +71,7 @@ FORM (Cepstrum_draw, L"Cepstrum: Draw", L"Cepstrum: Draw...")
     BOOLEAN (L"Garnish", 0)
 	OK
 DO
-	EVERY_DRAW (Cepstrum_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (Cepstrum_draw ((structCepstrum *)OBJECT, GRAPHICS,
 		GET_REAL (L"Minimum quefrency"), GET_REAL (L"Maximum quefrency"),
 		GET_REAL (L"Minimum"), GET_REAL (L"Maximum"),
 		GET_INTEGER (L"Garnish")))
@@ -88,17 +88,17 @@ END
 
 
 DIRECT (Cepstrum_to_Spectrum)
-	EVERY_TO (Cepstrum_to_Spectrum (OBJECT))
+	EVERY_TO (Cepstrum_to_Spectrum ((structCepstrum *)OBJECT))
 END
 
 DIRECT (Cepstrum_to_Matrix)
-	EVERY_TO (Cepstrum_to_Matrix (OBJECT))
+	EVERY_TO (Cepstrum_to_Matrix ((structCepstrum *)OBJECT))
 END
 
 /********************** Cepstrumc  ****************************************/
 
 DIRECT (Cepstrumc_to_LPC)
-	EVERY_TO (Cepstrumc_to_LPC (OBJECT))
+	EVERY_TO (Cepstrumc_to_LPC ((structCepstrumc *)OBJECT))
 END
 
 FORM (Cepstrumc_to_DTW, L"Cepstrumc: To DTW", L"Cepstrumc: To DTW...")
@@ -119,7 +119,7 @@ FORM (Cepstrumc_to_DTW, L"Cepstrumc: To DTW", L"Cepstrumc: To DTW...")
 	OK
 DO
 	Cepstrumc c1 = NULL, c2 = NULL;
-	WHERE (SELECTED && CLASS == classCepstrumc) { if (c1) c2 = OBJECT; else c1 = OBJECT; }
+	WHERE (SELECTED && CLASS == classCepstrumc) { if (c1) c2 = (structCepstrumc *)OBJECT; else c1 = (structCepstrumc *)OBJECT; }
 	NEW (Cepstrumc_to_DTW (c1, c2, GET_REAL (L"Cepstral weight"),
 		GET_REAL (L"Log energy weight"), GET_REAL (L"Regression weight"),
 		GET_REAL (L"Regression weight log energy"),
@@ -129,7 +129,7 @@ DO
 END
 
 DIRECT (Cepstrumc_to_Matrix)
-	EVERY_TO (Cepstrumc_to_Matrix (OBJECT))
+	EVERY_TO (Cepstrumc_to_Matrix ((structCepstrumc *)OBJECT))
 END
 
 /******************** Formant ********************************************/
@@ -138,7 +138,7 @@ FORM (Formant_to_LPC, L"Formant: To LPC", 0)
 	POSITIVE (L"Sampling frequency (Hz)", L"16000.0")
 	OK
 DO
-	EVERY_TO (Formant_to_LPC (OBJECT, 1.0/GET_REAL (L"Sampling frequency")))
+	EVERY_TO (Formant_to_LPC ((structFormant *)OBJECT, 1.0/GET_REAL (L"Sampling frequency")))
 END
 
 /********************LFCC ********************************************/
@@ -153,7 +153,7 @@ FORM (LFCC_to_LPC, L"LFCC: To LPC", L"LFCC: To LPC...")
 DO
 	long ncof = GET_INTEGER (L"Number of coefficients");
 	REQUIRE (ncof >= 0, L"Number of coefficients must be greater or equal zero.")
-	EVERY_TO (LFCC_to_LPC (OBJECT, ncof))
+	EVERY_TO (LFCC_to_LPC ((structLFCC *)OBJECT, ncof))
 END
 
 /********************LPC ********************************************/
@@ -168,14 +168,14 @@ FORM (LPC_drawGain, L"LPC: Draw gain", L"LPC: Draw gain...")
     BOOLEAN (L"Garnish", 1)
 	OK
 DO
-    EVERY_DRAW (LPC_drawGain (OBJECT, GRAPHICS,
+    EVERY_DRAW (LPC_drawGain ((structLPC *)OBJECT, GRAPHICS,
     	GET_REAL (L"From time"), GET_REAL (L"To time"),
     	GET_REAL (L"Minimum gain"), GET_REAL (L"Maximum gain"),
 		GET_INTEGER(L"Garnish")))
 END
 
 DIRECT (LPC_getSamplingInterval)
-	LPC me = ONLY (classLPC);
+	LPC me = (structLPC *)ONLY (classLPC);
 	Melder_information2 (Melder_double (my samplingPeriod), L" seconds");
 END
 
@@ -183,7 +183,7 @@ FORM (LPC_getNumberOfCoefficients, L"LPC: Get number of coefficients", L"LPC: Ge
 	NATURAL (L"Frame number", L"1")
 	OK
 DO
-	LPC me = ONLY (classLPC);
+	LPC me = (structLPC *)ONLY (classLPC);
 	long iframe = GET_INTEGER (L"Frame number");
 	if (iframe > my nx)
 	{
@@ -199,16 +199,16 @@ FORM (LPC_drawPoles, L"LPC: Draw poles", L"LPC: Draw poles...")
     BOOLEAN (L"Garnish", 1)
     OK
 DO
-	EVERY_DRAW (LPC_drawPoles (OBJECT, GRAPHICS, GET_REAL (L"Time"),
+	EVERY_DRAW (LPC_drawPoles ((structLPC *)OBJECT, GRAPHICS, GET_REAL (L"Time"),
 		GET_INTEGER (L"Garnish")))
 END
 
 DIRECT (LPC_to_Formant)
-	EVERY_TO (LPC_to_Formant (OBJECT, 50))
+	EVERY_TO (LPC_to_Formant ((structLPC *)OBJECT, 50))
 END
 
 DIRECT (LPC_to_Formant_keep_all)
-	EVERY_TO (LPC_to_Formant (OBJECT, 0))
+	EVERY_TO (LPC_to_Formant ((structLPC *)OBJECT, 0))
 END
 
 FORM (LPC_to_LFCC, L"LPC: To LFCC", L"LPC: To LFCC...")
@@ -217,14 +217,14 @@ FORM (LPC_to_LFCC, L"LPC: To LFCC", L"LPC: To LFCC...")
 DO
 	long ncof = GET_INTEGER (L"Number of coefficients");
 	REQUIRE (ncof >= 0, L"Number of coefficients must be greater or equal zero.")
-	EVERY_TO (LPC_to_LFCC (OBJECT, ncof))
+	EVERY_TO (LPC_to_LFCC ((structLPC *)OBJECT, ncof))
 END
 
 FORM (LPC_to_Polynomial, L"LPC: To Polynomial", L"LPC: To Polynomial (slice)...")
 	REAL (L"Time (seconds)", L"0.0")
 	OK
 DO
-	EVERY_TO (LPC_to_Polynomial (OBJECT, GET_REAL (L"Time")))
+	EVERY_TO (LPC_to_Polynomial ((structLPC *)OBJECT, GET_REAL (L"Time")))
 END
 
 FORM (LPC_to_Spectrum, L"LPC: To Spectrum", L"LPC: To Spectrum (slice)...")
@@ -234,7 +234,7 @@ FORM (LPC_to_Spectrum, L"LPC: To Spectrum", L"LPC: To Spectrum (slice)...")
 	REAL (L"De-emphasis frequency (Hz)", L"50.0")
 	OK
 DO
-	EVERY_TO (LPC_to_Spectrum (OBJECT, GET_REAL (L"Time"),
+	EVERY_TO (LPC_to_Spectrum ((structLPC *)OBJECT, GET_REAL (L"Time"),
 		GET_REAL (L"Minimum frequency resolution"),
 		GET_REAL (L"Bandwidth reduction"), GET_REAL (L"De-emphasis frequency")))
 END
@@ -245,7 +245,7 @@ FORM (LPC_to_Spectrogram, L"LPC: To Spectrogram", L"LPC: To Spectrogram...")
 	REAL (L"De-emphasis frequency (Hz)", L"50.0")
 	OK
 DO
-	EVERY_TO (LPC_to_Spectrogram (OBJECT, GET_REAL (L"Minimum frequency resolution"),
+	EVERY_TO (LPC_to_Spectrogram ((structLPC *)OBJECT, GET_REAL (L"Minimum frequency resolution"),
 		GET_REAL (L"Bandwidth reduction"), GET_REAL (L"De-emphasis frequency")))
 END
 
@@ -255,17 +255,17 @@ FORM (LPC_to_VocalTract, L"LPC: To VocalTract", L"LPC: To VocalTract (slice)..."
 	BOOLEAN (L"Length according to Wakita", 0)
 	OK
 DO
-	EVERY_TO (LPC_to_VocalTract (OBJECT, GET_REAL (L"Time"), GET_REAL (L"Length"),
+	EVERY_TO (LPC_to_VocalTract ((structLPC *)OBJECT, GET_REAL (L"Time"), GET_REAL (L"Length"),
 		GET_INTEGER(L"Length according to Wakita")))
 END
 
 DIRECT (LPC_to_Matrix)
-	EVERY_TO (LPC_to_Matrix (OBJECT))
+	EVERY_TO (LPC_to_Matrix ((structLPC *)OBJECT))
 END
 
 /********************** Sound *******************************************/
 
-static void Sound_to_LPC_addCommonFields (void *dia) {
+static void Sound_to_LPC_addCommonFields (Any dia) {
 	LABEL (L"", L"Warning 1:  for formant analysis, use \"To Formant\" instead.")
 	LABEL (L"", L"Warning 2:  if you do use \"To LPC\", you may want to resample first.")
 	LABEL (L"", L"Click Help for more details.")
@@ -275,7 +275,7 @@ static void Sound_to_LPC_addCommonFields (void *dia) {
 	POSITIVE (L"Time step (s)", L"0.005")
 	REAL (L"Pre-emphasis frequency (Hz)", L"50.0")
 }
-static int Sound_to_LPC_checkCommonFields (void * dia,
+static int Sound_to_LPC_checkCommonFields (Any dia,
 	long *predictionOrder,
 	double *analysisWindowDuration,
 	double *timeStep,
@@ -300,7 +300,7 @@ DO
 	double analysisWindowDuration, timeStep, preemphasisFrequency;
 	if (! Sound_to_LPC_checkCommonFields (dia, & numberOfPoles, & analysisWindowDuration, & timeStep, & preemphasisFrequency))
 		return 0;
-	EVERY_TO (Sound_to_LPC_auto (OBJECT, numberOfPoles, analysisWindowDuration, timeStep, preemphasisFrequency))
+	EVERY_TO (Sound_to_LPC_auto ((structSound *)OBJECT, numberOfPoles, analysisWindowDuration, timeStep, preemphasisFrequency))
 END
 
 FORM (Sound_to_LPC_covar, L"Sound: To LPC (covariance)", L"Sound: To LPC (covariance)...")
@@ -311,7 +311,7 @@ DO
 	double analysisWindowDuration, timeStep, preemphasisFrequency;
 	if (! Sound_to_LPC_checkCommonFields (dia, & numberOfPoles, & analysisWindowDuration, & timeStep, & preemphasisFrequency))
 		return 0;
-	EVERY_TO (Sound_to_LPC_covar (OBJECT, numberOfPoles, analysisWindowDuration, timeStep, preemphasisFrequency))
+	EVERY_TO (Sound_to_LPC_covar ((structSound *)OBJECT, numberOfPoles, analysisWindowDuration, timeStep, preemphasisFrequency))
 END
 
 FORM (Sound_to_LPC_burg, L"Sound: To LPC (burg)", L"Sound: To LPC (burg)...")
@@ -322,7 +322,7 @@ DO
 	double analysisWindowDuration, timeStep, preemphasisFrequency;
 	if (! Sound_to_LPC_checkCommonFields (dia, & numberOfPoles, & analysisWindowDuration, & timeStep, & preemphasisFrequency))
 		return 0;
-	EVERY_TO (Sound_to_LPC_burg (OBJECT, numberOfPoles, analysisWindowDuration, timeStep, preemphasisFrequency))
+	EVERY_TO (Sound_to_LPC_burg ((structSound *)OBJECT, numberOfPoles, analysisWindowDuration, timeStep, preemphasisFrequency))
 END
 
 FORM (Sound_to_LPC_marple, L"Sound: To LPC (marple)", L"Sound: To LPC (marple)...")
@@ -335,7 +335,7 @@ DO
 	double analysisWindowDuration, timeStep, preemphasisFrequency;
 	if (! Sound_to_LPC_checkCommonFields (dia, & numberOfPoles, & analysisWindowDuration, & timeStep, & preemphasisFrequency))
 		return 0;
-	EVERY_TO (Sound_to_LPC_marple (OBJECT, numberOfPoles, analysisWindowDuration, timeStep, preemphasisFrequency,
+	EVERY_TO (Sound_to_LPC_marple ((structSound *)OBJECT, numberOfPoles, analysisWindowDuration, timeStep, preemphasisFrequency,
 		GET_REAL (L"Tolerance 1"), GET_REAL (L"Tolerance 2")))
 END
 
@@ -351,13 +351,13 @@ FORM (Sound_to_MFCC, L"Sound: To MFCC", L"Sound: To MFCC...")
 DO
 	long p = GET_INTEGER (L"Number of coefficients");
 	REQUIRE (p < 25, L"Number of coefficients must be < 25.")
-	EVERY_TO (Sound_to_MFCC (OBJECT, p, GET_REAL (L"Window length"),
+	EVERY_TO (Sound_to_MFCC ((structSound *)OBJECT, p, GET_REAL (L"Window length"),
 		GET_REAL (L"Time step"), GET_REAL (L"Position of first filter"),
 		GET_REAL (L"Maximum frequency"), GET_REAL (L"Distance between filters")))
 END
 
 DIRECT (VocalTract_getLength)
-	VocalTract v = ONLY_OBJECT;
+	VocalTract v = (structVocalTract *)ONLY_OBJECT;
     double length = v -> xmax - v -> xmin;
     if (length <= 0.02) length = NUMundefined;
 	Melder_information2 (Melder_integer (length), L" m");
@@ -369,7 +369,7 @@ FORM (LPC_and_Sound_filter, L"LPC & Sound: Filter", L"LPC & Sound: Filter...")
 	BOOLEAN (L"Use LPC gain", 0)
 	OK
 DO
-	NEW (LPC_and_Sound_filter (ONLY(classLPC) , ONLY(classSound),
+	NEW (LPC_and_Sound_filter ((structLPC *)ONLY(classLPC) , (structSound *)ONLY(classSound),
 		GET_INTEGER (L"Use LPC gain")))
 END
 
@@ -383,12 +383,12 @@ FORM (LPC_and_Sound_filterWithFilterAtTime, L"LPC & Sound: Filter with one filte
 	OK
 DO
 	long channel = GET_INTEGER (L"Channel") - 1;
-	NEW (LPC_and_Sound_filterWithFilterAtTime (ONLY(classLPC) , ONLY(classSound), channel,
+	NEW (LPC_and_Sound_filterWithFilterAtTime ((structLPC *)ONLY(classLPC) , (structSound *)ONLY(classSound), channel,
 		GET_REAL (L"Use filter at time")))
 END
 
 DIRECT (LPC_and_Sound_filterInverse)
-	NEW (LPC_and_Sound_filterInverse (ONLY(classLPC) , ONLY(classSound)))
+	NEW (LPC_and_Sound_filterInverse ((structLPC *)ONLY(classLPC) , (structSound *)ONLY(classSound)))
 END
 
 FORM (LPC_and_Sound_filterInverseWithFilterAtTime, L"LPC & Sound: Filter (inverse) with filter at time",
@@ -401,7 +401,7 @@ FORM (LPC_and_Sound_filterInverseWithFilterAtTime, L"LPC & Sound: Filter (invers
 	OK
 DO
 	long channel = GET_INTEGER (L"Channel") - 1;
-	NEW (LPC_and_Sound_filterInverseWithFilterAtTime (ONLY(classLPC) , ONLY(classSound), channel,
+	NEW (LPC_and_Sound_filterInverseWithFilterAtTime ((structLPC *)ONLY(classLPC) , (structSound *)ONLY(classSound), channel,
 		GET_REAL (L"Use filter at time")))
 END
 
@@ -414,8 +414,8 @@ FORM (LPC_and_Sound_to_LPC_robust, L"Robust LPC analysis", L"LPC & Sound: To LPC
 	BOOLEAN (L"Variable location", 0)
 	OK
 DO
-	Sound sound = ONLY (classSound);
-	LPC lpc = ONLY (classLPC);
+	Sound sound = (structSound *)ONLY (classSound);
+	LPC lpc = (structLPC *)ONLY (classLPC);
 	if (! praat_new2 (LPC_and_Sound_to_LPC_robust (lpc, sound,
 		GET_REAL (L"Window length"), GET_REAL (L"Pre-emphasis frequency"),
 		GET_REAL (L"Number of std. dev."), GET_INTEGER (L"Maximum number of iterations"),
@@ -483,6 +483,8 @@ void praat_uvafon_LPC_init (void)
 	praat_addAction1 (classSound, 0, L"To MFCC...",L"To LPC (marple)...", 1, DO_Sound_to_MFCC);
 
 	praat_addAction1 (classVocalTract, 1, L"Get length", L"Draw", 0, DO_VocalTract_getLength);
+}
+}
 }
 
 /* End of file praat_LPC_init.c */

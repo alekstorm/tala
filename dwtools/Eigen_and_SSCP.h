@@ -32,8 +32,17 @@
 	#include "SSCP.h"
 #endif
 
+#ifdef __cplusplus
+	extern "C" {
+#endif
+
 SSCP Eigen_and_SSCP_project (I, SSCP thee);
 Covariance Eigen_and_Covariance_project (I, Covariance thee);
+
+#ifdef __cplusplus
+	}
+#endif
+
 /*
 	Purpose: project the SSCP (thee) on the eigenspace (me): S' = E' S E
 	Returns SSCP-object with square matrix dimension 'my numberOfEigenvalues'

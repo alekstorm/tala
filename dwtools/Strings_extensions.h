@@ -55,7 +55,7 @@ Strings Strings_change (Strings me, wchar_t *search, wchar_t *replace,
 	int maximumNumberOfReplaces, long *nmatches, long *nstringmatches,
 	int use_regexp);
 
-int Strings_setString (Strings me, wchar_t *new, long index);
+int Strings_setString (Strings me, wchar_t *new_, long index);
 
 Strings strings_to_Strings (wchar_t **strings, long from, long to);
 

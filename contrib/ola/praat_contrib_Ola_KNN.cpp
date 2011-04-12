@@ -58,8 +58,8 @@ FORM (KNN_Pattern_Categories_to_KNN, L"Create kNN classifier", L"kNN classifiers
     RADIOBUTTON (L"Sequential")
     OK
 DO
-    Pattern p = ONLY(classPattern);
-    Categories c = ONLY(classCategories);
+    Pattern p = (structPattern *)ONLY(classPattern);
+    Categories c = (structCategories *)ONLY(classCategories);
     int result = kOla_ERROR;
     int ordering = GET_INTEGER (L"Ordering");
 
@@ -101,7 +101,7 @@ END
 /////////////////////////////////////////////////////////////////////////////////////////
 
 DIRECT (KNN_getNumberOfInstances)
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
     Melder_information2 (Melder_integer (my nInstances), L" units");
 END
 
@@ -114,7 +114,7 @@ FORM (KNN_getOptimumModel, L"kNN model selection", L"kNN classifiers 1.1.2. Mode
     POSITIVE (L"Learning rate", L"0.2")
     OK
 DO
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
 
     int dist;
     long k = GET_INTEGER (L"k max");
@@ -168,7 +168,7 @@ FORM (KNN_evaluate, L"Evaluation", L"KNN: Get accuracy estimate...")
     OK
 
 DO
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
 
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty.", 0);
@@ -225,12 +225,12 @@ FORM (KNN_evaluateWithFeatureWeights, L"Evaluation", L"KNN & FeatureWeights: Get
     OK
 
 DO
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
 
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty", 0);
 
-    FeatureWeights fws = ONLY(classFeatureWeights);
+    FeatureWeights fws = (structFeatureWeights *)ONLY(classFeatureWeights);
 
     long k = GET_INTEGER (L"k neighbours");
     int vt = GET_INTEGER (L"Vote weighting");
@@ -272,7 +272,7 @@ END
 
 
 DIRECT  (KNN_extractInputPatterns)
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
     if (my nInstances > 0) {
         if (! praat_new1 (Data_copy(my input), L"Input Patterns")) return 0;
     } else {
@@ -281,7 +281,7 @@ DIRECT  (KNN_extractInputPatterns)
 END
 
 DIRECT  (KNN_extractOutputCategories)
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
     if (my nInstances > 0) {
         if (! praat_new1 (Data_copy(my output), L"Output Categories")) return 0;
     } else {
@@ -293,14 +293,14 @@ FORM (KNN_reset, L"Reset", L"KNN: Reset...")
     LABEL (L"", L"Warning: this command destroys all previous learning.")
     OK
 DO
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
     forget(my input);
     forget(my output);
     my nInstances = 0;
 END
 
 DIRECT  (KNN_shuffle)
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
     if (my nInstances > 0)  
         KNN_shuffleInstances(me);
     else
@@ -313,7 +313,7 @@ FORM (KNN_prune, L"Pruning", L"KNN: Prune...")
     INTEGER (L"k neighbours", L"1")
     OK
 DO
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
 
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty.", 0);
@@ -352,9 +352,9 @@ FORM (KNN_learn, L"Learning", L"kNN classifiers 1. What is a kNN classifier?")
     RADIOBUTTON (L"Sequential")
     OK
 DO
-    KNN  me = ONLY(classKNN);
-    Pattern p = ONLY(classPattern);
-    Categories c = ONLY(classCategories);
+    KNN  me = (structKNN *)ONLY(classKNN);
+    Pattern p = (structPattern *)ONLY(classPattern);
+    Categories c = (structCategories *)ONLY(classCategories);
     int method = GET_INTEGER (L"Learning method");
     int result = kOla_ERROR;
     int ordering = GET_INTEGER (L"Ordering");
@@ -403,12 +403,12 @@ FORM (KNN_evaluateWithTestSet, L"Evaluation", L"KNN & Pattern & Categories: Eval
     RADIOBUTTON (L"Flat")
     OK
 DO
-    KNN  me = ONLY(classKNN);
+    KNN  me = (structKNN *)ONLY(classKNN);
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty", 0);
 
-    Pattern p = ONLY(classPattern);
-    Categories c = ONLY(classCategories);
+    Pattern p = (structPattern *)ONLY(classPattern);
+    Categories c = (structCategories *)ONLY(classCategories);
 
     long k = GET_INTEGER (L"k neighbours");
     int vt = GET_INTEGER (L"Vote weighting");
@@ -452,14 +452,14 @@ FORM (KNN_evaluateWithTestSetAndFeatureWeights, L"Evaluation", L"KNN & Pattern &
     RADIOBUTTON (L"Flat")
     OK
 DO
-    KNN  me = ONLY(classKNN);
+    KNN  me = (structKNN *)ONLY(classKNN);
 
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty", 0);
 
-    Pattern p = ONLY(classPattern);
-    Categories c = ONLY(classCategories);
-    FeatureWeights fws = ONLY(classFeatureWeights);
+    Pattern p = (structPattern *)ONLY(classPattern);
+    Categories c = (structCategories *)ONLY(classCategories);
+    FeatureWeights fws = (structFeatureWeights *)ONLY(classFeatureWeights);
 
     long k = GET_INTEGER (L"k neighbours");
     int vt = GET_INTEGER (L"Vote weighting");
@@ -509,11 +509,11 @@ FORM (KNN_toCategories, L"Classification", L"KNN & Pattern: To Categories...")
     RADIOBUTTON (L"Flat")
     OK
 DO
-    KNN  me = ONLY(classKNN);
+    KNN  me = (structKNN *)ONLY(classKNN);
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty.", 0);
 
-    Pattern p = ONLY(classPattern);
+    Pattern p = (structPattern *)ONLY(classPattern);
 
     long k = GET_INTEGER (L"k neighbours");
     int vt = GET_INTEGER (L"Vote weighting");
@@ -554,12 +554,12 @@ FORM (KNN_toTableOfReal, L"Classification", L"KNN & Pattern: To TabelOfReal...")
     RADIOBUTTON (L"Flat")
     OK
 DO
-    KNN  me = ONLY(classKNN);
+    KNN  me = (structKNN *)ONLY(classKNN);
 
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty.", 0);
 
-    Pattern p = ONLY(classPattern);
+    Pattern p = (structPattern *)ONLY(classPattern);
 
     long k = GET_INTEGER (L"k neighbours");
     int vt = GET_INTEGER (L"Vote weighting");
@@ -601,13 +601,13 @@ FORM (KNN_toCategoriesWithFeatureWeights, L"Classification", L"KNN & Pattern & F
     RADIOBUTTON (L"Flat")
     OK
 DO
-    KNN  me = ONLY(classKNN);
+    KNN  me = (structKNN *)ONLY(classKNN);
 
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty.", 0);
 
-    Pattern p = ONLY(classPattern);
-    FeatureWeights fws = ONLY(classFeatureWeights);
+    Pattern p = (structPattern *)ONLY(classPattern);
+    FeatureWeights fws = (structFeatureWeights *)ONLY(classFeatureWeights);
 
     long k = GET_INTEGER (L"k neighbours");
     int vt = GET_INTEGER (L"Vote weighting");
@@ -645,13 +645,13 @@ FORM (KNN_toTableOfRealWithFeatureWeights, L"Classification", L"KNN & Pattern & 
     RADIOBUTTON (L"Flat")
     OK
 DO
-    KNN  me = ONLY(classKNN);
+    KNN  me = (structKNN *)ONLY(classKNN);
 
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty.", 0);
 
-    Pattern p = ONLY(classPattern);
-    FeatureWeights fws = ONLY(classFeatureWeights);
+    Pattern p = (structPattern *)ONLY(classPattern);
+    FeatureWeights fws = (structFeatureWeights *)ONLY(classFeatureWeights);
 
     long k = GET_INTEGER (L"k neighbours");
     int vt = GET_INTEGER (L"Vote weighting");
@@ -697,7 +697,7 @@ FORM (Pattern_to_Categories_cluster, L"k-means clustering", L"Pattern: To Catego
     INTEGER (L"Maximum number of reseeds", L"1000")
     OK
 DO
-    Pattern p = ONLY (classPattern);
+    Pattern p = (structPattern *)ONLY (classPattern);
     if (p->nx > 0 && p->ny > 0)
     {
         long k = GET_INTEGER (L"k clusters");
@@ -732,10 +732,10 @@ FORM (Pattern_to_Categories_clusterWithFeatureWeights, L"k-means clustering", L"
     INTEGER (L"Maximum number of reseeds", L"1000")
     OK
 DO
-    Pattern p = ONLY(classPattern);
+    Pattern p = (structPattern *)ONLY(classPattern);
     if (p->nx > 0 && p->ny > 0)
     {
-        FeatureWeights fws = ONLY(classFeatureWeights); 
+        FeatureWeights fws = (structFeatureWeights *)ONLY(classFeatureWeights); 
         
         long k = GET_INTEGER(L"k clusters");
         long rs =  GET_INTEGER(L"Maximum number of reseeds");
@@ -769,7 +769,7 @@ END
 /////////////////////////////////////////////////////////////////////////////////////////
 
 DIRECT (KNN_patternToDissimilarity)
-    Pattern p = ONLY(classPattern);
+    Pattern p = (structPattern *)ONLY(classPattern);
     FeatureWeights fws = FeatureWeights_create(p->nx);
 	if (! fws) return 0;
     if (! praat_new1 (KNN_patternToDissimilarity(p, fws), L"Output")) {
@@ -780,8 +780,8 @@ DIRECT (KNN_patternToDissimilarity)
 END
 
 DIRECT (KNN_patternToDissimilarityWithFeatureWeights)
-    Pattern p = ONLY(classPattern);
-    FeatureWeights fws = ONLY(classFeatureWeights);  
+    Pattern p = (structPattern *)ONLY(classPattern);
+    FeatureWeights fws = (structFeatureWeights *)ONLY(classFeatureWeights);  
 
     if (p->nx != fws->fweights->numberOfColumns)
         return Melder_error1 (L"The number of features and the number of feature weights should match.");
@@ -806,7 +806,7 @@ FORM (KNN_SA_computePermutation, L"To Permutation...", L"Pattern & Categories: T
     POSITIVE(L"Final temperature", L"0.000002")
     OK
 DO
-    KNN me = ONLY(classKNN);
+    KNN me = (structKNN *)ONLY(classKNN);
     
     long tries = GET_INTEGER(L"Tries per step");
     long iterations = GET_INTEGER(L"Iterations");
@@ -831,8 +831,8 @@ FORM (FeatureWeights_computeRELIEF, L"Feature weights", L"Pattern & Categories: 
     INTEGER (L"Number of neighbours", L"1")
     OK
 DO
-    Pattern p = ONLY(classPattern);
-    Categories c = ONLY(classCategories);
+    Pattern p = (structPattern *)ONLY(classPattern);
+    Categories c = (structCategories *)ONLY(classCategories);
 
     if (p->ny < 2)
         return Melder_error ("The Pattern object should contain at least 2 rows.", 0);
@@ -858,12 +858,12 @@ FORM (FeatureWeights_computeWrapperExt, L"Feature weights", L"KNN & Pattern & Ca
     OK
 
 DO
-    KNN  me = ONLY(classKNN);
+    KNN  me = (structKNN *)ONLY(classKNN);
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty", 0);
 
-    Pattern p = ONLY(classPattern);
-    Categories c = ONLY(classCategories);
+    Pattern p = (structPattern *)ONLY(classPattern);
+    Categories c = (structCategories *)ONLY(classCategories);
 
     int mode = GET_INTEGER (L"Vote weighting");
 
@@ -909,7 +909,7 @@ FORM (FeatureWeights_computeWrapperInt, L"Feature weights", L"KNN: To FeatureWei
     OK
 
 DO
-    KNN  me = ONLY(classKNN);
+    KNN  me = (structKNN *)ONLY(classKNN);
 
     if (my nInstances < 1)
         return Melder_error ("Instance base is empty", 0);
@@ -998,7 +998,7 @@ END
 #ifdef _DEBUG
 
 DIRECT (KNN_debug_KNN_SA_partition)
-    Pattern p = ONLY(classPattern);
+    Pattern p = (structPattern *)ONLY(classPattern);
     Pattern output = Pattern_create(p->ny, p->nx);
     
     if(!output)

@@ -59,7 +59,7 @@ FORM (GaussianMixture_drawConcentrationEllipses, L"GaussianMixture: Draw concent
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (GaussianMixture_drawConcentrationEllipses (OBJECT, GRAPHICS,
+	EVERY_DRAW (GaussianMixture_drawConcentrationEllipses ((structGaussianMixture *)OBJECT, GRAPHICS,
 		GET_REAL (L"Number of sigmas"), 0, NULL, GET_INTEGER (L"Principal component plane"),
 		GET_INTEGER (L"X-dimension"), GET_INTEGER (L"Y-dimension"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
@@ -81,7 +81,7 @@ FORM (GaussianMixture_and_PCA_drawConcentrationEllipses, L"GaussianMixture & PCA
 	OK
 DO
 	praat_picture_open ();
-	GaussianMixture_and_PCA_drawConcentrationEllipses (ONLY (classGaussianMixture), ONLY (classPCA), GRAPHICS,
+	GaussianMixture_and_PCA_drawConcentrationEllipses ((structGaussianMixture *)ONLY (classGaussianMixture), (structPCA *)ONLY (classPCA), GRAPHICS,
 		GET_REAL (L"Number of sigmas"), 0, NULL, GET_INTEGER (L"X-dimension"), GET_INTEGER (L"Y-dimension"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
@@ -100,19 +100,19 @@ FORM (GaussianMixture_drawMarginalPdf, L"GaussianMixture: Draw marginal pdf", L"
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (GaussianMixture_drawMarginalPdf (OBJECT, GRAPHICS,
+	EVERY_DRAW (GaussianMixture_drawMarginalPdf ((structGaussianMixture *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"X-dimension"), GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_INTEGER (L"Number of points"), GET_INTEGER (L"Number of bins"), GET_INTEGER (L"Garnish")))
 END
 
 DIRECT (GaussianMixture_getNumberOfComponents)
-	GaussianMixture me = ONLY_OBJECT;
+	GaussianMixture me = (structGaussianMixture *)ONLY_OBJECT;
 	Melder_information2 (Melder_integer (my numberOfComponents), L" (= number of components)");
 END
 
 DIRECT (GaussianMixture_getDimensionOfComponent)
-	GaussianMixture me = ONLY_OBJECT;
+	GaussianMixture me = (structGaussianMixture *)ONLY_OBJECT;
 	Melder_information2 (Melder_integer (my dimension), L" (= dimension of component)");
 END
 
@@ -121,7 +121,7 @@ FORM (GaussianMixture_getProbabilityAtPosition, L"GaussianMixture: Get probabili
 	OK
 DO
 	wchar_t *position = GET_STRING (L"Position");
-	double p = GaussianMixture_getProbabilityAtPosition_string (ONLY_OBJECT, position);
+	double p = GaussianMixture_getProbabilityAtPosition_string ((structGaussianMixture *)ONLY_OBJECT, position);
 	Melder_information3 (Melder_double (p), L" (= probability at position ", position);
 END
 
@@ -129,7 +129,7 @@ FORM (GaussianMixture_splitComponent, L"GaussianMixture: Split component", L"Gau
 	NATURAL (L"Component", L"1")
 	OK
 DO
-	if (! GaussianMixture_splitComponent (ONLY (classGaussianMixture), GET_INTEGER (L"Component"))) return 0;
+	if (! GaussianMixture_splitComponent ((structGaussianMixture *)ONLY (classGaussianMixture), GET_INTEGER (L"Component"))) return 0;
 END
 
 FORM (GaussianMixture_and_PCA_drawMarginalPdf, L"GaussianMixture & PCA: Draw pdf function", L"GaussianMixture: Draw marginal pdf...")
@@ -144,7 +144,7 @@ FORM (GaussianMixture_and_PCA_drawMarginalPdf, L"GaussianMixture & PCA: Draw pdf
 	OK
 DO
 	praat_picture_open ();
-	GaussianMixture_and_PCA_drawMarginalPdf (ONLY (classGaussianMixture), ONLY (classPCA), GRAPHICS,
+	GaussianMixture_and_PCA_drawMarginalPdf ((structGaussianMixture *)ONLY (classGaussianMixture), (structPCA *)ONLY (classPCA), GRAPHICS,
 		GET_INTEGER (L"X-dimension"), GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_INTEGER (L"Number of points"), GET_INTEGER (L"Number of bins"), GET_INTEGER (L"Garnish"));
@@ -162,8 +162,8 @@ FORM (GaussianMixture_and_PCA_to_Matrix_density, L"GaussianMixture & PCA: To Mat
 	NATURAL (L"Number of rows", L"100")
 	OK
 DO
-	GaussianMixture me = ONLY (classGaussianMixture);
-	PCA pca = ONLY (classPCA);
+	GaussianMixture me = (structGaussianMixture *)ONLY (classGaussianMixture);
+	PCA pca = (structPCA *)ONLY (classPCA);
 	if ( ! praat_new3 (GaussianMixture_and_PCA_to_Matrix_density (me, pca, GET_INTEGER (L"X-dimension"),
 		GET_INTEGER (L"Y-dimension"), GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_INTEGER (L"Number of columns"), GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_INTEGER (L"Number of rows")), Thing_getName (me), L"_", Thing_getName (pca))) return 0;
@@ -176,21 +176,21 @@ DO
 	long component = GET_INTEGER (L"Component");
 	WHERE (SELECTED)
 	{
-		Covariance cov = GaussianMixture_extractComponent (OBJECT, component);
+		Covariance cov = GaussianMixture_extractComponent ((structGaussianMixture *)OBJECT, component);
 		if (! praat_new3 (cov, NAME, L"_", Thing_getName (cov))) return 0;
 	}
 END
 
 DIRECT (GaussianMixture_extractCentroids)
-	EVERY_TO (GaussianMixture_extractCentroids (OBJECT))
+	EVERY_TO (GaussianMixture_extractCentroids ((structGaussianMixture *)OBJECT))
 END
 
 DIRECT (GaussianMixture_extractMixingProbabilities)
-	EVERY_TO (GaussianMixture_extractMixingProbabilities (OBJECT))
+	EVERY_TO (GaussianMixture_extractMixingProbabilities ((structGaussianMixture *)OBJECT))
 END
 
 DIRECT (GaussianMixture_to_PCA)
-	EVERY_TO (GaussianMixture_to_PCA (OBJECT))
+	EVERY_TO (GaussianMixture_to_PCA ((structGaussianMixture *)OBJECT))
 END
 
 FORM (GaussianMixture_to_TableOfReal_randomSampling, L"GaussianMixture: To TableOfReal (random sampling)", L"GaussianMixture: To TableOfReal (random sampling)...")
@@ -198,19 +198,19 @@ FORM (GaussianMixture_to_TableOfReal_randomSampling, L"GaussianMixture: To Table
 	OK
 DO
 	long numberOfpoints = GET_INTEGER (L"Number of data points");
-	EVERY_TO (GaussianMixture_to_TableOfReal_randomSampling (OBJECT, numberOfpoints))
+	EVERY_TO (GaussianMixture_to_TableOfReal_randomSampling ((structGaussianMixture *)OBJECT, numberOfpoints))
 END
 
 DIRECT (GaussianMixture_to_Covariance_between)
-	EVERY_CHECK (praat_new2 (GaussianMixture_to_Covariance_between (OBJECT), NAME, L"_b"))
+	EVERY_CHECK (praat_new2 (GaussianMixture_to_Covariance_between ((structGaussianMixture *)OBJECT), NAME, L"_b"))
 END
 
 DIRECT (GaussianMixture_to_Covariance_within)
-	EVERY_CHECK (praat_new2 (GaussianMixture_to_Covariance_within (OBJECT), NAME, L"_w"))
+	EVERY_CHECK (praat_new2 (GaussianMixture_to_Covariance_within ((structGaussianMixture *)OBJECT), NAME, L"_w"))
 END
 
 DIRECT (GaussianMixture_to_Covariance_total)
-	EVERY_CHECK (praat_new2 (GaussianMixture_to_Covariance_total (OBJECT), NAME, L"_t"))
+	EVERY_CHECK (praat_new2 (GaussianMixture_to_Covariance_total ((structGaussianMixture *)OBJECT), NAME, L"_t"))
 END
 
 FORM (GaussianMixture_and_TableOfReal_getLikelihoodValue, L"GaussianMixture & TableOfReal: Get likelihood value",
@@ -218,10 +218,10 @@ FORM (GaussianMixture_and_TableOfReal_getLikelihoodValue, L"GaussianMixture & Ta
 	GaussianMixture_OPTION_MENU_CRITERIA
 OK
 DO
-	TableOfReal thee = ONLY (classTableOfReal);
+	TableOfReal thee = (structTableOfReal *)ONLY (classTableOfReal);
 	int criterion = GET_INTEGER (L"Criterion based on") - 1;
 	wchar_t *criterionText = GaussianMixture_criterionText (criterion);
-	double lnpdn = GaussianMixture_and_TableOfReal_getLikelihoodValue (ONLY (classGaussianMixture), thee, criterion);
+	double lnpdn = GaussianMixture_and_TableOfReal_getLikelihoodValue ((structGaussianMixture *)ONLY (classGaussianMixture), thee, criterion);
 	Melder_information6 (Melder_double (lnpdn / thy numberOfRows), L" (= ", criterionText, L", n = ",
 		Melder_integer (thy numberOfRows), L")");
 END
@@ -281,7 +281,7 @@ FORM (HMM_ObservationSequence_to_HMM, L"HMM_ObservationSequence: To HMM", 0)
 	OK
 DO
 	long numberOfStates = GET_INTEGER (L"Number of states");
-	EVERY_CHECK (praat_new3 (HMM_createFromHMM_ObservationSequence (OBJECT, numberOfStates, GET_INTEGER (L"Left to right model")),
+	EVERY_CHECK (praat_new3 (HMM_createFromHMM_ObservationSequence ((structHMM_ObservationSequence *)OBJECT, numberOfStates, GET_INTEGER (L"Left to right model")),
 		Thing_getName (OBJECT), L"_", Melder_integer (numberOfStates)))
 END
 
@@ -289,7 +289,7 @@ FORM (HMM_draw, L"HMM: Draw", 0)
 	BOOLEAN (L"Garnish", 0)
 	OK
 DO
-	EVERY_DRAW (HMM_draw (OBJECT, GRAPHICS, GET_INTEGER (L"Garnish")))
+	EVERY_DRAW (HMM_draw ((structHMM *)OBJECT, GRAPHICS, GET_INTEGER (L"Garnish")))
 END
 
 FORM (HMM_and_HMM_StateSequence_drawTrellis, L"HMM & Strings: Draw trellis", 0)
@@ -298,7 +298,7 @@ FORM (HMM_and_HMM_StateSequence_drawTrellis, L"HMM & Strings: Draw trellis", 0)
 	OK
 DO
 	praat_picture_open ();
-	HMM_and_HMM_StateSequence_drawTrellis (ONLY (classHMM), ONLY (classHMM_StateSequence), GRAPHICS, GET_INTEGER (L"Connect"),
+	HMM_and_HMM_StateSequence_drawTrellis ((structHMM *)ONLY (classHMM), (structHMM_StateSequence *)ONLY (classHMM_StateSequence), GRAPHICS, GET_INTEGER (L"Connect"),
 		GET_INTEGER (L"Garnish"));
 	praat_picture_close ();
 	return 1;
@@ -309,7 +309,7 @@ FORM (HMM_getTransitionProbability, L"HMM: Get transition probability", L"HMM: G
 	NATURAL (L"To state number", L"1")
 	OK
 DO
-	HMM me = ONLY_OBJECT;
+	HMM me = (structHMM *)ONLY_OBJECT;
 	long s1 = GET_INTEGER (L"From state number"), s2 = GET_INTEGER (L"To state number");
 	REQUIRE (s1 <= my numberOfStates && s2 <= my numberOfStates, L"State number(s) too high.")
 	Melder_information6 (Melder_double (my transitionProbs[s1][s2]), L" : [ ", Melder_integer(s1), L", ", Melder_integer(s2), L" ]");
@@ -320,7 +320,7 @@ FORM (HMM_getEmissionProbability, L"HMM: Get emission probability", L"HMM: Get e
 	NATURAL (L"To symbol number", L"1")
 	OK
 DO
-	HMM me = ONLY_OBJECT;
+	HMM me = (structHMM *)ONLY_OBJECT;
 	long s1 = GET_INTEGER (L"From state number"), s2 = GET_INTEGER (L"To symbol number");
 	REQUIRE (s1 <= my numberOfStates, L"State number too high.")
 	REQUIRE (s2 <= my numberOfObservationSymbols, L"Symbol number too high.")
@@ -331,7 +331,7 @@ FORM (HMM_getStartProbability, L"HMM: Get start probability", L"HMM: Get start p
 	NATURAL (L"State number", L"1")
 	OK
 DO
-	HMM me = ONLY_OBJECT;
+	HMM me = (structHMM *)ONLY_OBJECT;
 	long s1 = GET_INTEGER (L"State number");
 	REQUIRE (s1 <= my numberOfStates, L"State number too high.")
 	Melder_information4 (Melder_double (my transitionProbs[0][s1]), L" : [ ", Melder_integer(s1), L" ]");
@@ -345,7 +345,7 @@ FORM (HMM_getProbabilityAtTimeBeingInState, L"HMM: Get probability of being in s
 DO
 	long istate = GET_INTEGER (L"State number");
 	long itime = GET_INTEGER (L"Time index");
-	double lnp = HMM_getProbabilityAtTimeBeingInState (ONLY_OBJECT, itime, istate);
+	double lnp = HMM_getProbabilityAtTimeBeingInState ((structHMM *)ONLY_OBJECT, itime, istate);
 	Melder_information7 (Melder_double (lnp), L" (=ln(p), p = ", Melder_naturalLogarithm (lnp), L") Being in state ",
 		Melder_integer (istate), L" at time ", Melder_integer (itime));
 END
@@ -359,7 +359,7 @@ DO
 	long istate = GET_INTEGER (L"State number");
 	long itime = GET_INTEGER (L"Time index");
 	long isymbol= GET_INTEGER (L"Symbol number");
-	double lnp = HMM_getProbabilityAtTimeBeingInStateEmittingSymbol (ONLY_OBJECT, itime, istate, isymbol);
+	double lnp = HMM_getProbabilityAtTimeBeingInStateEmittingSymbol ((structHMM *)ONLY_OBJECT, itime, istate, isymbol);
 	Melder_information9 (Melder_double (lnp), L" (=ln(p), p = ", Melder_naturalLogarithm (lnp), L") Being in state ",
 		Melder_integer (istate), L" emitting symbol ", Melder_integer (isymbol), L" at time ", Melder_integer (itime));
 END
@@ -370,7 +370,7 @@ FORM (HMM_getProbabilityOfStayingInState, L"HMM: Get probability of staying in s
 	NATURAL (L"Number of times", L"2")
 	OK
 DO
-	Melder_informationReal (HMM_getProbabilityOfStayingInState (ONLY_OBJECT, GET_INTEGER (L"State number"),
+	Melder_informationReal (HMM_getProbabilityOfStayingInState ((structHMM *)ONLY_OBJECT, GET_INTEGER (L"State number"),
 		GET_INTEGER (L"Number of times")), NULL);
 END
 
@@ -379,7 +379,7 @@ FORM (HMM_getExpectedValueOfDurationInState, L"HMM: Get expected value of durati
 	NATURAL (L"State number", L"1")
 	OK
 DO
-	Melder_informationReal (HMM_getExpectedValueOfDurationInState (ONLY_OBJECT, GET_INTEGER (L"State number")),
+	Melder_informationReal (HMM_getExpectedValueOfDurationInState ((structHMM *)ONLY_OBJECT, GET_INTEGER (L"State number")),
 		L" time units");
 END
 
@@ -387,10 +387,10 @@ FORM (HMM_getSymbolLabel, L"HMM: Get symbol label", 0)
 	NATURAL (L"Symbol number", L"1")
 	OK
 DO
-	HMM me = ONLY_OBJECT;
+	HMM me = (structHMM *)ONLY_OBJECT;
 	long is = GET_INTEGER (L"Symbol number");
 	REQUIRE (is <= my numberOfObservationSymbols, L"Symbol number too high.")
-	HMM_Observation s = my observationSymbols -> item[is];
+	HMM_Observation s = (structHMM_Observation *)my observationSymbols -> item[is];
 	Melder_information1 (s -> label);
 END
 
@@ -398,10 +398,10 @@ FORM (HMM_getStateLabel, L"HMM: Get state label", 0)
 	NATURAL (L"State number", L"1")
 	OK
 DO
-	HMM me = ONLY_OBJECT;
+	HMM me = (structHMM *)ONLY_OBJECT;
 	long is = GET_INTEGER (L"State number");
 	REQUIRE (is <= my numberOfStates, L"State number too high.")
-	HMM_State s = my states -> item[is];
+	HMM_State s = (structHMM_State *)my states -> item[is];
 	Melder_information1 (s -> label);
 END
 
@@ -413,7 +413,7 @@ DO
 	HMM m1 = NULL, m2 = NULL;
 	long n = GET_INTEGER (L"Observation length");
 	int sym = GET_INTEGER (L"Symmetric");
-	WHERE (SELECTED) { if (m1 != NULL) m2 = OBJECT; else m1 = OBJECT; }
+	WHERE (SELECTED) { if (m1 != NULL) m2 = (structHMM *)OBJECT; else m1 = (structHMM *)OBJECT; }
 	double ce = HMM_and_HMM_getCrossEntropy (m1, m2, n, sym);
 	Melder_information6 (Melder_double (ce), L" (=", (sym ? L"symmetric " : L""),
 		L" cross-entropy between models for observation length = ", Melder_integer (n), L")");
@@ -421,8 +421,8 @@ END
 
 DIRECT (HMM_and_HMM_and_HMM_ObservationSequence_getCrossEntropy)
 	HMM m1 = NULL, m2 = NULL;
-	HMM_ObservationSequence hmmos = ONLY (classHMM_ObservationSequence);
-	WHERE (SELECTED) { if (CLASS == classHMM) { if (m1 != NULL) m2 = OBJECT; else m1 = OBJECT;} }
+	HMM_ObservationSequence hmmos = (structHMM_ObservationSequence *)ONLY (classHMM_ObservationSequence);
+	WHERE (SELECTED) { if (CLASS == classHMM) { if (m1 != NULL) m2 = (structHMM *)OBJECT; else m1 = (structHMM *)OBJECT;} }
 	double ce = HMM_and_HMM_and_HMM_ObservationSequence_getCrossEntropy (m1, m2, hmmos);
 	Melder_information2 (Melder_double (ce), L" (=symmetric cross-entropy between models)");
 END
@@ -432,32 +432,32 @@ FORM (HMM_to_HMM_ObservationSequence, L"HMM: To HMM_ObservationSequence (generat
 	NATURAL (L"Number of observations", L"20")
 	OK
 DO
-	EVERY_TO (HMM_to_HMM_ObservationSequence (OBJECT, GET_INTEGER (L"Start state"),
+	EVERY_TO (HMM_to_HMM_ObservationSequence ((structHMM *)OBJECT, GET_INTEGER (L"Start state"),
 		GET_INTEGER (L"Number of observations")))
 END
 
 DIRECT (HMM_and_HMM_StateSequence_getProbability)
-	double lnp = HMM_and_HMM_StateSequence_getProbability (ONLY (classHMM), ONLY (classHMM_StateSequence));
+	double lnp = HMM_and_HMM_StateSequence_getProbability ((structHMM *)ONLY (classHMM), (structHMM_StateSequence *)ONLY (classHMM_StateSequence));
 	Melder_information4 (Melder_double (lnp), L" (=ln(p), p = ", Melder_naturalLogarithm (lnp), L")");
 END
 
 DIRECT (HMM_and_HMM_ObservationSequence_getProbability)
-	double lnp = HMM_and_HMM_ObservationSequence_getProbability (ONLY (classHMM), ONLY (classHMM_ObservationSequence));
+	double lnp = HMM_and_HMM_ObservationSequence_getProbability ((structHMM *)ONLY (classHMM), (structHMM_ObservationSequence *)ONLY (classHMM_ObservationSequence));
 	Melder_information4 (Melder_double (lnp), L" (=ln(p), p = ", Melder_naturalLogarithm (lnp), L")");
 END
 
 DIRECT (HMM_and_HMM_ObservationSequence_getCrossEntropy)
-	double ce = HMM_and_HMM_ObservationSequence_getCrossEntropy (ONLY (classHMM), ONLY (classHMM_ObservationSequence));
+	double ce = HMM_and_HMM_ObservationSequence_getCrossEntropy ((structHMM *)ONLY (classHMM), (structHMM_ObservationSequence *)ONLY (classHMM_ObservationSequence));
 	Melder_information2 (Melder_double (ce), L" (= cross-entropy)");
 END
 
 DIRECT (HMM_and_HMM_ObservationSequence_getPerplexity)
-	double py = HMM_and_HMM_ObservationSequence_getPerplexity (ONLY (classHMM), ONLY (classHMM_ObservationSequence));
+	double py = HMM_and_HMM_ObservationSequence_getPerplexity ((structHMM *)ONLY (classHMM), (structHMM_ObservationSequence *)ONLY (classHMM_ObservationSequence));
 	Melder_information2 (Melder_double (py), L" (= perplexity)");
 END
 
 DIRECT (HMM_and_HMM_ObservationSequence_to_HMM_StateSequence)
-  if (! praat_new4 (HMM_and_HMM_ObservationSequence_to_HMM_StateSequence (ONLY (classHMM), ONLY (classHMM_ObservationSequence)), Thing_getName (ONLY (classHMM)), L"_", Thing_getName (ONLY (classHMM_ObservationSequence)), L"_states")) return 0;
+  if (! praat_new4 (HMM_and_HMM_ObservationSequence_to_HMM_StateSequence ((structHMM *)ONLY (classHMM), (structHMM_ObservationSequence *)ONLY (classHMM_ObservationSequence)), Thing_getName (ONLY (classHMM)), L"_", Thing_getName (ONLY (classHMM_ObservationSequence)), L"_states")) return 0;
 END
 
 FORM (HMM_and_HMM_ObservationSequence_learn, L"HMM & HMM_ObservationSequence: Learn", L"HMM & HMM_ObservationSequences: Learn...")
@@ -470,10 +470,10 @@ DO
 	REQUIRE (minProb >= 0 && minProb < 1, L"A probabilty must be >= 0 and < 1!")
 	WHERE (SELECTED)
 	{
-		Data hmmos = OBJECT;
+		Data hmmos = (structData *)OBJECT;
 		if (CLASS == classHMM_ObservationSequence && ! Collection_addItem (me, hmmos)) goto end;
 	}
-	HMM_and_HMM_ObservationSequences_learn (ONLY (classHMM), me, GET_REAL (L"Relative precision in log"), minProb);
+	HMM_and_HMM_ObservationSequences_learn ((structHMM *)ONLY (classHMM), me, GET_REAL (L"Relative precision in log"), minProb);
 end:
 	for (long i = my size; i > 0; i--)
 	{
@@ -487,7 +487,7 @@ FORM (HMM_setTransitionProbabilities, L"HMM: Set transition probabilities", L"HM
 	SENTENCE (L"Probabilities", L"0.1 0.9")
 	OK
 DO
-	if (! HMM_setTransitionProbabilities (ONLY_OBJECT, GET_INTEGER (L"State number"), GET_STRING (L"Probabilities"))) return 0;
+	if (! HMM_setTransitionProbabilities ((structHMM *)ONLY_OBJECT, GET_INTEGER (L"State number"), GET_STRING (L"Probabilities"))) return 0;
 END
 
 FORM (HMM_setEmissionProbabilities, L"HMM: Set emission probabilities", L"HMM: Set emission probabilities...")
@@ -495,22 +495,22 @@ FORM (HMM_setEmissionProbabilities, L"HMM: Set emission probabilities", L"HMM: S
 	SENTENCE (L"Probabilities", L"0.1 0.7 0.2")
 	OK
 DO
-	if (! HMM_setEmissionProbabilities (ONLY_OBJECT, GET_INTEGER (L"State number"), GET_STRING (L"Probabilities"))) return 0;
+	if (! HMM_setEmissionProbabilities ((structHMM *)ONLY_OBJECT, GET_INTEGER (L"State number"), GET_STRING (L"Probabilities"))) return 0;
 END
 
 FORM (HMM_setStartProbabilities, L"HMM: Set start probabilities", L"HMM: Set start probabilities...")
 	SENTENCE (L"Probabilities", L"0.1 0.9")
 	OK
 DO
-	if (! HMM_setStartProbabilities (ONLY_OBJECT, GET_STRING (L"Probabilities"))) return 0;
+	if (! HMM_setStartProbabilities ((structHMM *)ONLY_OBJECT, GET_STRING (L"Probabilities"))) return 0;
 END
 
 DIRECT (HMM_extractTransitionProbabilities)
-	EVERY_CHECK (praat_new2 (HMM_extractTransitionProbabilities (OBJECT), Thing_getName (OBJECT), L"_t"))
+	EVERY_CHECK (praat_new2 (HMM_extractTransitionProbabilities ((structHMM *)OBJECT), Thing_getName (OBJECT), L"_t"))
 END
 
 DIRECT (HMM_extractEmissionProbabilities)
-	EVERY_CHECK (praat_new2 (HMM_extractEmissionProbabilities (OBJECT), Thing_getName (OBJECT), L"_e"))
+	EVERY_CHECK (praat_new2 (HMM_extractEmissionProbabilities ((structHMM *)OBJECT), Thing_getName (OBJECT), L"_e"))
 END
 
 FORM (HMM_ObservationSequence_to_TableOfReal, L"HMM_ObservationSequence: To TableOfReal ",
@@ -518,15 +518,15 @@ FORM (HMM_ObservationSequence_to_TableOfReal, L"HMM_ObservationSequence: To Tabl
 	BOOLEAN (L"As probabilities", 1)
 	OK
 DO
-	EVERY_TO (HMM_ObservationSequence_to_TableOfReal_transitions (OBJECT, GET_INTEGER (L"As probabilities")))
+	EVERY_TO (HMM_ObservationSequence_to_TableOfReal_transitions ((structHMM_ObservationSequence *)OBJECT, GET_INTEGER (L"As probabilities")))
 END
 
 FORM (HMM_and_HMM_ObservationSequence_to_TableOfReal, L"HMM & HMM_ObservationSequence: To TableOfReal", L"HMM & HMM_ObservationSequence: To TableOfReal (bigrams)...")
 	BOOLEAN (L"As probabilities", 1)
 	OK
 DO
-	HMM_ObservationSequence hmmos = ONLY (classHMM_ObservationSequence);
-	if (! praat_new2 (HMM_and_HMM_ObservationSequence_to_TableOfReal_transitions (ONLY (classHMM), hmmos,
+	HMM_ObservationSequence hmmos = (structHMM_ObservationSequence *)ONLY (classHMM_ObservationSequence);
+	if (! praat_new2 (HMM_and_HMM_ObservationSequence_to_TableOfReal_transitions ((structHMM *)ONLY (classHMM), hmmos,
 		GET_INTEGER (L"As probabilities")), Thing_getName (hmmos), L"_m")) return 0;
 END
 
@@ -534,8 +534,8 @@ FORM (HMM_and_HMM_StateSequence_to_TableOfReal, L"HMM & HMM_StateSequence: To Ta
 	BOOLEAN (L"As probabilities", 1)
 	OK
 DO
-	HMM_StateSequence hmmss = ONLY (classHMM_StateSequence);
-	 if (! praat_new2 (HMM_and_HMM_StateSequence_to_TableOfReal_transitions (ONLY (classHMM), hmmss, GET_INTEGER (L"As probabilities")),
+	HMM_StateSequence hmmss = (structHMM_StateSequence *)ONLY (classHMM_StateSequence);
+	 if (! praat_new2 (HMM_and_HMM_StateSequence_to_TableOfReal_transitions ((structHMM *)ONLY (classHMM), hmmss, GET_INTEGER (L"As probabilities")),
 		 Thing_getName (hmmss), L"_m")) return 0;
 END
 
@@ -543,19 +543,19 @@ FORM (HMM_StateSequence_to_TableOfReal, L"HMM_StateSequence: To TableOfReal", 0)
 	BOOLEAN (L"As probabilities", 1)
 	OK
 DO
-	EVERY_TO (Strings_to_TableOfReal_transitions (OBJECT, GET_INTEGER (L"As probabilities")))
+	EVERY_TO (Strings_to_TableOfReal_transitions ((structStrings *)OBJECT, GET_INTEGER (L"As probabilities")))
 END
 
 DIRECT (HMM_ObservationSequence_to_Strings)
-	EVERY_TO (HMM_ObservationSequence_to_Strings (OBJECT))
+	EVERY_TO (HMM_ObservationSequence_to_Strings ((structHMM_ObservationSequence *)OBJECT))
 END
 
 DIRECT (Strings_to_HMM_ObservationSequence)
-	EVERY_TO (Strings_to_HMM_ObservationSequence (OBJECT))
+	EVERY_TO (Strings_to_HMM_ObservationSequence ((structStrings *)OBJECT))
 END
 
 DIRECT (HMM_StateSequence_to_Strings)
-	EVERY_TO (HMM_StateSequence_to_Strings (OBJECT))
+	EVERY_TO (HMM_StateSequence_to_Strings ((structHMM_StateSequence *)OBJECT))
 END
 
 FORM (TableOfReal_to_GaussianMixture_fromRowlabels, L"TableOfReal: To GaussianMixture from row labels",
@@ -566,7 +566,7 @@ FORM (TableOfReal_to_GaussianMixture_fromRowlabels, L"TableOfReal: To GaussianMi
 	OK
 DO
 	long storage = GET_INTEGER (L"Covariance matrices are") - 1;
-	EVERY_TO (TableOfReal_to_GaussianMixture_fromRowLabels (OBJECT, storage))
+	EVERY_TO (TableOfReal_to_GaussianMixture_fromRowLabels ((structTableOfReal *)OBJECT, storage))
 END
 
 FORM (TableOfReal_to_GaussianMixture, L"TableOfReal: To GaussianMixture (no labels)",
@@ -585,7 +585,7 @@ DO
 	double lambda = GET_REAL (L"Stability coefficient lambda");
 	REQUIRE (lambda >= 0 && lambda < 1, L"Lambda must be in interval [0,1).")
 	long storage = GET_INTEGER (L"Covariance matrices are") - 1;
-	EVERY_TO (TableOfReal_to_GaussianMixture (OBJECT, GET_INTEGER (L"Number of components"),
+	EVERY_TO (TableOfReal_to_GaussianMixture ((structTableOfReal *)OBJECT, GET_INTEGER (L"Number of components"),
 		GET_REAL (L"Tolerance of minimizer"), GET_INTEGER (L"Maximum number of iterations"), lambda, storage, criterion))
 END
 
@@ -599,8 +599,8 @@ FORM (GaussianMixture_and_TableOfReal_improveLikelihood, L"GaussianMixture & Tab
 DO
 	long criterion = GET_INTEGER (L"Criterion based on") - 1;
 	double lambda = GET_REAL (L"Stability coefficient lambda");
-	GaussianMixture me = ONLY (classGaussianMixture);
-	TableOfReal thee = ONLY (classTableOfReal);
+	GaussianMixture me = (structGaussianMixture *)ONLY (classGaussianMixture);
+	TableOfReal thee = (structTableOfReal *)ONLY (classTableOfReal);
 	REQUIRE (lambda >= 0 && lambda < 1, L"Lambda must be in interval [0,1).")
 	REQUIRE (thy numberOfColumns == my dimension, L"The number of columns and the dimension of the model do not agree.");
 	REQUIRE (my numberOfComponents < thy numberOfRows / 2, L"Not enough data points.")
@@ -617,8 +617,8 @@ FORM (GaussianMixture_and_TableOfReal_to_GaussianMixture_CEMM, L"GaussianMixture
 DO
 	double lambda = GET_REAL (L"Stability coefficient lambda");
 	int criterion = GET_INTEGER (L"Criterion based on") - 1;
-	GaussianMixture me = ONLY (classGaussianMixture);
-	TableOfReal thee = ONLY (classTableOfReal);
+	GaussianMixture me = (structGaussianMixture *)ONLY (classGaussianMixture);
+	TableOfReal thee = (structTableOfReal *)ONLY (classTableOfReal);
 	REQUIRE (lambda >= 0 && lambda < 1, L"Lambda must be in interval [0,1).")
 	REQUIRE (thy numberOfColumns == my dimension, L"The number of columns and the dimension of the model do not agree.");
 	REQUIRE (my numberOfComponents < thy numberOfRows / 2, L"Not enough data points.")
@@ -628,15 +628,15 @@ DO
 END
 
 DIRECT (GaussianMixture_and_TableOfReal_to_ClassificationTable)
-	GaussianMixture me = ONLY (classGaussianMixture);
-	TableOfReal thee = ONLY (classTableOfReal);
+	GaussianMixture me = (structGaussianMixture *)ONLY (classGaussianMixture);
+	TableOfReal thee = (structTableOfReal *)ONLY (classTableOfReal);
 	if (! praat_new3 (GaussianMixture_and_TableOfReal_to_ClassificationTable (me, thee),
 		Thing_getName (me), L"_", Thing_getName (thee))) return 0;
 END
 
 DIRECT (GaussianMixture_and_TableOfReal_to_Correlation)
-	GaussianMixture me = ONLY (classGaussianMixture);
-	TableOfReal thee = ONLY (classTableOfReal);
+	GaussianMixture me = (structGaussianMixture *)ONLY (classGaussianMixture);
+	TableOfReal thee = (structTableOfReal *)ONLY (classTableOfReal);
 	if (! praat_new3 (GaussianMixture_and_TableOfReal_to_Correlation (me, thee),
 		Thing_getName (me), L"_", Thing_getName (thee))) return 0;
 END
@@ -645,14 +645,14 @@ FORM (GaussianMixture_and_TableOfReal_to_TableOfReal_BHEPNormalityTests, L"Gauss
 	REAL (L"Smoothing parameter", L"1.41")
 	OK
 DO
-	GaussianMixture me = ONLY (classGaussianMixture);
-	TableOfReal thee = ONLY (classTableOfReal);
+	GaussianMixture me = (structGaussianMixture *)ONLY (classGaussianMixture);
+	TableOfReal thee = (structTableOfReal *)ONLY (classTableOfReal);
 	double h = GET_REAL (L"Smoothing parameter");
 	if (! praat_new3 (GaussianMixture_and_TableOfReal_to_TableOfReal_BHEPNormalityTests (me, thee, h),
 		Thing_getName (me), L"_", Thing_getName (thee))) return 0;
 END
 
-void praat_HMM_init (void);
+extern "C" void praat_HMM_init (void);
 void praat_HMM_init (void)
 {
 	Thing_recognizeClassesByName (classHMM, classHMM_State, classHMM_Observation,
