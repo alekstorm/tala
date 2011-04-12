@@ -32,6 +32,10 @@
 	#include "Permutation.h"
 #endif
 
+#ifdef __cplusplus
+	extern "C" {
+#endif
+
 Collection Collection_and_Permutation_permuteItems (Collection me, Permutation him);
 Collection Collection_permuteItems(Collection me);
 /* permute the order of my items */
@@ -89,5 +93,9 @@ long OrderedOfString_isSubsetOf (I, thou, long *translation);
  
 long OrderedOfString_getSize (I);
 /* return my size */
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif /* _Collection_extensions_h_ */

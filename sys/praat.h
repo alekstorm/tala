@@ -310,7 +310,7 @@ void praat_name2 (wchar_t *name, void *klas1, void *klas2);
 		if (result == 0 && parkedError) { Melder_clearError (); Melder_error1 (parkedError); } Melder_free (parkedError); return result; \
 		} } else try { int IOBJECT = 0; (void) IOBJECT; {
 	#define END  (void) 0; } } catch (...) { } iferror return 0; praat_updateSelection (); return 1; }
-	#define DIRECT(proc)  static int DO_##proc (UiForm dummy1, const wchar_t *dummy2, Interpreter *dummy3, const wchar_t *dummy4, bool dummy5, void *dummy6) { \
+	#define DIRECT(proc)  extern "C" int DO_##proc (UiForm dummy1, const wchar_t *dummy2, Interpreter *dummy3, const wchar_t *dummy4, bool dummy5, void *dummy6) { \
 		(void) dummy1; (void) dummy2; (void) dummy3; (void) dummy4; (void) dummy5; (void) dummy6; try { int IOBJECT = 0; (void) IOBJECT; {
 #else
 	#define DO  UiForm_do (dia, modified); } else if (sendingForm == NULL) { \
