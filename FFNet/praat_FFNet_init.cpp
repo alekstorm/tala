@@ -55,26 +55,26 @@ static wchar_t *EXTRACT_BUTTON = L"Extract -";
 
 /**************** New FFNet ***************************/
 
-static void FFNet_create_addCommonFields_inputOutput (void *dia)
+static void FFNet_create_addCommonFields_inputOutput (Any dia)
 {
     NATURAL (L"Number of inputs", L"4")
     NATURAL (L"Number of outputs", L"3")
 }
 
-static int FFNet_create_checkCommonFields_inputOutput (void *dia, long *numberOfInputs, long *numberOfOutputs)
+static int FFNet_create_checkCommonFields_inputOutput (Any dia, long *numberOfInputs, long *numberOfOutputs)
 {
 	*numberOfInputs = GET_INTEGER (L"Number of inputs");
 	*numberOfOutputs = GET_INTEGER (L"Number of outputs");
 	return 1;
 }
 
-static void FFNet_create_addCommonFields_hidden (void *dia)
+static void FFNet_create_addCommonFields_hidden (Any dia)
 {
     INTEGER (L"Number of units in hidden layer 1", L"0")
     INTEGER (L"Number of units in hidden layer 2", L"0")
 }
 
-static int FFNet_create_checkCommonFields_hidden (void *dia, 	long *numberOfHidden1, long *numberOfHidden2)
+static int FFNet_create_checkCommonFields_hidden (Any dia, 	long *numberOfHidden1, long *numberOfHidden2)
 {
 	*numberOfHidden1 = GET_INTEGER (L"Number of units in hidden layer 1");
 	*numberOfHidden2 = GET_INTEGER (L"Number of units in hidden layer 2");
@@ -85,13 +85,13 @@ static int FFNet_create_checkCommonFields_hidden (void *dia, 	long *numberOfHidd
 	return 1;
 }
 
-static void FFNet_create_addCommonFields (void *dia)
+static void FFNet_create_addCommonFields (Any dia)
 {
 	FFNet_create_addCommonFields_inputOutput (dia);
     FFNet_create_addCommonFields_hidden (dia);
 }
 
-static int FFNet_create_checkCommonFields (void *dia, long *numberOfInputs, long *numberOfOutputs,
+static int FFNet_create_checkCommonFields (Any dia, long *numberOfInputs, long *numberOfOutputs,
 	long *numberOfHidden1, long *numberOfHidden2)
 {
 	return FFNet_create_checkCommonFields_inputOutput (dia, numberOfInputs, numberOfOutputs) &&
@@ -144,12 +144,12 @@ DO
 END
 
 DIRECT (FFNet_getNumberOfInputs)
-	FFNet  me = ONLY(classFFNet);
+	FFNet  me = (structFFNet *)ONLY(classFFNet);
 	Melder_information2 (Melder_integer (my nUnitsInLayer[0]), L" units");
 END
 
 DIRECT (FFNet_getNumberOfOutputs)
-	FFNet  me = ONLY(classFFNet);
+	FFNet  me = (structFFNet *)ONLY(classFFNet);
 	Melder_information2 (Melder_integer (my nUnitsInLayer[my nLayers]), L" units");
 END
 
@@ -157,7 +157,7 @@ FORM (FFNet_getNumberOfHiddenUnits, L"FFNet: Get number of hidden units", L"FFNe
 	NATURAL (L"Hidden layer number", L"1")
 	OK
 DO
-	FFNet  me = ONLY(classFFNet);
+	FFNet  me = (structFFNet *)ONLY(classFFNet);
 	long layerNumber = GET_INTEGER (L"Hidden layer number");
 	long numberOfUnits = 0;
 
@@ -169,11 +169,11 @@ FORM (FFNet_getCategoryOfOutputUnit, L"FFNet: Get category of output unit", L"")
 	NATURAL (L"Output unit", L"1")
 	OK
 DO
-	FFNet me = ONLY_OBJECT;
+	FFNet me = (structFFNet *)ONLY_OBJECT;
 	Categories c = my outputCategories;
 	long unit = GET_INTEGER (L"Output unit");
 	if (unit > c -> size) return Melder_error3 (L"Output unit cannot be larger than ", Melder_integer (c -> size), L".");
-	SimpleString ss = c -> item[unit];
+	SimpleString ss = (structSimpleString *)c -> item[unit];
 	Melder_information1 (ss -> string);
 END
 
@@ -181,13 +181,13 @@ FORM (FFNet_getOutputUnitOfCategory, L"FFNet: Get output unit of category", L"")
 	SENTENCE (L"Category", L"u")
 	OK
 DO
-	FFNet me = ONLY_OBJECT;
+	FFNet me = (structFFNet *)ONLY_OBJECT;
 	Categories c = my outputCategories;
 	wchar_t *category = GET_STRING (L"Category");
 	long index = 0;
 	for (long i = 1; i <= c -> size; i++)
 	{
-		SimpleString s = c -> item[i];
+		SimpleString s = (structSimpleString *)c -> item[i];
 		if (Melder_wcsequ (s -> string, category)) { index = i; break;};
 	}
 	Melder_information1 (Melder_integer (index));
@@ -197,7 +197,7 @@ FORM (FFNet_getNumberOfHiddenWeights, L"FFNet: Get number of hidden weights", L"
 	NATURAL (L"Hidden layer number", L"1")
 	OK
 DO
-	FFNet  me = ONLY(classFFNet);
+	FFNet  me = (structFFNet *)ONLY(classFFNet);
 	long layerNumber = GET_INTEGER (L"Hidden layer number");
 	long numberOfWeights = 0;
 	if (layerNumber > 0 && layerNumber <= my nLayers - 1)
@@ -208,7 +208,7 @@ DO
 END
 
 DIRECT (FFNet_getNumberOfOutputWeights)
-	FFNet  me = ONLY(classFFNet);
+	FFNet  me = (structFFNet *)ONLY(classFFNet);
 	Melder_information2 (Melder_integer (my nUnitsInLayer[my nLayers] * (my nUnitsInLayer[my nLayers - 1]+1)), L" weights");
 END
 
@@ -238,7 +238,7 @@ DIRECT (FFNet_help)
 END
 
 DIRECT (FFNet_getMinimum)
-	Melder_information1 (Melder_double (FFNet_getMinimum (ONLY_OBJECT)));
+	Melder_information1 (Melder_double (FFNet_getMinimum ((structFFNet *)ONLY_OBJECT)));
 END
 
 FORM (FFNet_reset, L"FFNet: Reset", L"FFNet: Reset...")
@@ -249,7 +249,7 @@ FORM (FFNet_reset, L"FFNet: Reset", L"FFNet: Reset...")
 DO
     WHERE (SELECTED)
     {
-    	FFNet_reset (OBJECT, GET_REAL (L"Range"));
+    	FFNet_reset ((structFFNet *)OBJECT, GET_REAL (L"Range"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -262,7 +262,7 @@ FORM (FFNet_selectBiasesInLayer, L"FFNet: Select biases", L"FFNet: Select biases
 DO
 	WHERE (SELECTED)
 	{
-		FFNet_selectBiasesInLayer (OBJECT, GET_INTEGER (L"Layer number"));
+		FFNet_selectBiasesInLayer ((structFFNet *)OBJECT, GET_INTEGER (L"Layer number"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -270,13 +270,13 @@ END
 DIRECT (FFNet_selectAllWeights)
 	WHERE (SELECTED)
 	{
-    	FFNet_selectAllWeights (OBJECT);
+    	FFNet_selectAllWeights ((structFFNet *)OBJECT);
 		praat_dataChanged (OBJECT);
 	}
 END
 
 DIRECT (FFNet_drawTopology)
-    EVERY_DRAW (FFNet_drawTopology (OBJECT, GRAPHICS))
+    EVERY_DRAW (FFNet_drawTopology ((structFFNet *)OBJECT, GRAPHICS))
 END
 
 FORM (FFNet_drawWeightsToLayer, L"FFNet: Draw weights to layer", 0)
@@ -289,7 +289,7 @@ FORM (FFNet_drawWeightsToLayer, L"FFNet: Draw weights to layer", 0)
     BOOLEAN (L"Garnish", 1)
     OK
 DO
-    EVERY_DRAW (FFNet_drawWeightsToLayer (OBJECT, GRAPHICS,
+    EVERY_DRAW (FFNet_drawWeightsToLayer ((structFFNet *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"Layer number"),
     	GET_INTEGER (L"Scale"), GET_INTEGER (L"Garnish")))
 END
@@ -299,7 +299,7 @@ FORM (FFNet_drawWeights, L"FFNet: Draw weights", L"FFNet: Draw weights...")
     BOOLEAN (L"Garnish", 1)
     OK
 DO
-    EVERY_DRAW (FFNet_drawWeights (OBJECT, GRAPHICS,
+    EVERY_DRAW (FFNet_drawWeights ((structFFNet *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"Layer number"), GET_INTEGER (L"Garnish")))
 END
 
@@ -311,7 +311,7 @@ FORM (FFNet_drawCostHistory, L"FFNet: Draw cost history", L"FFNet: Draw cost his
     BOOLEAN (L"Garnish", 1)
     OK
 DO
-    EVERY_DRAW (FFNet_drawCostHistory (OBJECT, GRAPHICS,
+    EVERY_DRAW (FFNet_drawCostHistory ((structFFNet *)OBJECT, GRAPHICS,
 	GET_INTEGER (L"left Iteration_range"), GET_INTEGER (L"right Iteration_range"),
 	GET_REAL (L"left Cost_range"), GET_REAL (L"right Cost_range"), GET_INTEGER (L"Garnish")))
 END
@@ -320,7 +320,7 @@ FORM (FFNet_extractWeights, L"FFNet: Extract weights", L"FFNet: Extract weights.
     NATURAL (L"Layer number", L"1")
     OK
 DO
-    EVERY_TO (FFNet_extractWeights (OBJECT, GET_INTEGER (L"Layer number")))
+    EVERY_TO (FFNet_extractWeights ((structFFNet *)OBJECT, GET_INTEGER (L"Layer number")))
 END
 
 FORM (FFNet_weightsToMatrix, L"FFNet: Weights to Matrix ", 0)
@@ -328,7 +328,7 @@ FORM (FFNet_weightsToMatrix, L"FFNet: Weights to Matrix ", 0)
     NATURAL (L"Layer number", L"1")
     OK
 DO
-    EVERY_TO (FFNet_weightsToMatrix (OBJECT, GET_INTEGER (L"Layer number"), 0))
+    EVERY_TO (FFNet_weightsToMatrix ((structFFNet *)OBJECT, GET_INTEGER (L"Layer number"), 0))
 END
 
 /******************* FFNet && Activation *************************************/
@@ -341,7 +341,7 @@ FORM (FFNet_Activation_to_Categories, L"FFNet & Activation: To Categories", 0)
 DO
 	wchar_t name [200];
 	praat_name2 (name, classFFNet, classActivation);
-	if (! praat_new1 (FFNet_Activation_to_Categories (ONLY (classFFNet), ONLY (classActivation),
+	if (! praat_new1 (FFNet_Activation_to_Categories ((structFFNet *)ONLY (classFFNet), (structActivation *)ONLY (classActivation),
 		GET_INTEGER (L"Kind of labeling")), name)) return 0;
 END
 
@@ -359,7 +359,7 @@ DO
     long pcx = GET_INTEGER (L"X-component"), pcy = GET_INTEGER (L"Y-component");
     REQUIRE (pcx != 0 && pcy != 0, L"X and Y component must differ from 0.")
     praat_picture_open ();
-    FFNet_Eigen_drawIntersection (ONLY (classFFNet), ONLY (classEigen),
+    FFNet_Eigen_drawIntersection ((structFFNet *)ONLY (classFFNet), (structEigen *)ONLY (classEigen),
     	GRAPHICS, pcx, pcy, GET_REAL (L"xmin"), GET_REAL (L"xmax"),
     	GET_REAL (L"ymin"), GET_REAL (L"ymax"));
     praat_picture_close ();
@@ -377,7 +377,7 @@ FORM (FFNet_PCA_drawDecisionPlaneInEigenspace, L"FFNet & PCA: Draw decision plan
 	OK
 DO
     praat_picture_open ();
-	FFNet_Eigen_drawDecisionPlaneInEigenspace(ONLY (classFFNet), ONLY (classPCA),
+	FFNet_Eigen_drawDecisionPlaneInEigenspace((structFFNet *)ONLY (classFFNet), (structPCA *)ONLY (classPCA),
 		GRAPHICS, GET_INTEGER (L"Unit number"), GET_INTEGER (L"Layer number"),
 		GET_INTEGER (L"Horizontal eigenvector number"),
 		GET_INTEGER (L"Vertical eigenvector number"), GET_REAL (L"left Horizontal range"),
@@ -390,7 +390,7 @@ END
 /************************* FFNet && Categories **********************************/
 
 DIRECT (FFNet_Categories_to_Activation)
-	NEW (FFNet_Categories_to_Activation (ONLY (classFFNet), ONLY (classCategories)))
+	NEW (FFNet_Categories_to_Activation ((structFFNet *)ONLY (classFFNet), (structCategories *)ONLY (classCategories)))
 END
 
 /************************* FFNet && Matrix **********************************/
@@ -399,7 +399,7 @@ FORM (FFNet_weightsFromMatrix, L"Replace weights by values from Matrix", 0)
     NATURAL (L"Layer", L"1")
     OK
 DO
-    NEW (FFNet_weightsFromMatrix (ONLY (classFFNet), ONLY (classMatrix),
+    NEW (FFNet_weightsFromMatrix ((structFFNet *)ONLY (classFFNet), (structMatrix *)ONLY (classMatrix),
     	GET_INTEGER (L"Layer")));
 END
 
@@ -409,7 +409,7 @@ FORM (FFNet_Pattern_drawActivation, L"Draw an activation", 0)
 	NATURAL (L"Pattern (row) number", L"1");
 	OK
 DO
-	EVERY_DRAW (FFNet_Pattern_drawActivation (ONLY (classFFNet), ONLY (classPattern),
+	EVERY_DRAW (FFNet_Pattern_drawActivation ((structFFNet *)ONLY (classFFNet), (structPattern *)ONLY (classPattern),
 		GRAPHICS, GET_INTEGER (L"Pattern")))
 END
 
@@ -419,8 +419,8 @@ FORM (FFNet_Pattern_to_Activation, L"To activations in layer", 0)
 DO
 	wchar_t name [200];
 	praat_name2 (name, classFFNet, classPattern);
-	if (! praat_new1 (FFNet_Pattern_to_Activation (ONLY (classFFNet),
-		ONLY (classPattern), GET_INTEGER (L"Layer")), name)) return 0;
+	if (! praat_new1 (FFNet_Pattern_to_Activation ((structFFNet *)ONLY (classFFNet),
+		(structPattern *)ONLY (classPattern), GET_INTEGER (L"Layer")), name)) return 0;
 END
 
 DIRECT (hint_FFNet_and_Pattern_classify)
@@ -441,8 +441,8 @@ FORM (FFNet_Pattern_to_Categories, L"FFNet & Pattern: To Categories", L"FFNet & 
 DO
 	wchar_t name [200];
 	praat_name2 (name, classFFNet, classPattern);
-	if (! praat_new1 (FFNet_Pattern_to_Categories (ONLY (classFFNet),
-		ONLY (classPattern), GET_INTEGER (L"Determine output category as")), name)) return 0;
+	if (! praat_new1 (FFNet_Pattern_to_Categories ((structFFNet *)ONLY (classFFNet),
+		(structPattern *)ONLY (classPattern), GET_INTEGER (L"Determine output category as")), name)) return 0;
 END
 
 /*********** FFNet Pattern Activation **********************************/
@@ -453,8 +453,8 @@ FORM (FFNet_Pattern_Activation_getCosts_total, L"FFNet & Pattern & Activation: G
 	RADIOBUTTON (L"Minimum-cross-entropy")
 	OK
 DO
-	Melder_information1 (Melder_double (FFNet_Pattern_Activation_getCosts_total (ONLY (classFFNet),
-		ONLY (classPattern), ONLY (classActivation), GET_INTEGER (L"Cost function"))));
+	Melder_information1 (Melder_double (FFNet_Pattern_Activation_getCosts_total ((structFFNet *)ONLY (classFFNet),
+		(structPattern *)ONLY (classPattern), (structActivation *)ONLY (classActivation), GET_INTEGER (L"Cost function"))));
 END
 
 FORM (FFNet_Pattern_Activation_getCosts_average, L"FFNet & Pattern & Activation: Get average costs", L"FFNet & Pattern & Activation: Get average costs...")
@@ -463,8 +463,8 @@ FORM (FFNet_Pattern_Activation_getCosts_average, L"FFNet & Pattern & Activation:
 	RADIOBUTTON (L"Minimum-cross-entropy")
 	OK
 DO
-	Melder_information1 (Melder_double (FFNet_Pattern_Activation_getCosts_average (ONLY (classFFNet),
-		ONLY (classPattern), ONLY (classActivation), GET_INTEGER (L"Cost function"))));
+	Melder_information1 (Melder_double (FFNet_Pattern_Activation_getCosts_average ((structFFNet *)ONLY (classFFNet),
+		(structPattern *)ONLY (classPattern), (structActivation *)ONLY (classActivation), GET_INTEGER (L"Cost function"))));
 END
 
 FORM (FFNet_Pattern_Activation_learnSD, L"FFNet & Pattern & Activation: Learn slow", 0)
@@ -481,8 +481,8 @@ DO
 	struct structSteepestDescentMinimizer_parameters_decl p;
     p.eta = GET_REAL (L"Learning rate");
     p.momentum = GET_REAL (L"Momentum");
-    return FFNet_Pattern_Activation_learnSD (ONLY (classFFNet), ONLY (classPattern),
-    	ONLY (classActivation), GET_INTEGER (L"Maximum number of epochs"),
+    return FFNet_Pattern_Activation_learnSD ((structFFNet *)ONLY (classFFNet), (structPattern *)ONLY (classPattern),
+    	(structActivation *)ONLY (classActivation), GET_INTEGER (L"Maximum number of epochs"),
 		GET_REAL (L"Tolerance of minimizer"), & p, GET_INTEGER (L"Cost function"));
 END
 
@@ -494,8 +494,8 @@ FORM (FFNet_Pattern_Activation_learnSM, L"FFNet & Pattern & Activation: Learn", 
 	RADIOBUTTON (L"Minimum-cross-entropy")
     OK
 DO
-    return FFNet_Pattern_Activation_learnSM (ONLY (classFFNet),
-		ONLY (classPattern), ONLY (classActivation),
+    return FFNet_Pattern_Activation_learnSM ((structFFNet *)ONLY (classFFNet),
+		(structPattern *)ONLY (classPattern), (structActivation *)ONLY (classActivation),
 		GET_INTEGER (L"Maximum number of epochs"),
 		GET_REAL (L"Tolerance of minimizer"), NULL,
 		GET_INTEGER (L"Cost function"));
@@ -509,8 +509,8 @@ FORM (FFNet_Pattern_Categories_getCosts_total, L"FFNet & Pattern & Categories: G
 	RADIOBUTTON (L"Minimum-cross-entropy")
 	OK
 DO
-	Melder_information1 (Melder_double (FFNet_Pattern_Categories_getCosts_total (ONLY (classFFNet),
-		ONLY (classPattern), ONLY (classCategories), GET_INTEGER (L"Cost function"))));
+	Melder_information1 (Melder_double (FFNet_Pattern_Categories_getCosts_total ((structFFNet *)ONLY (classFFNet),
+		(structPattern *)ONLY (classPattern), (structCategories *)ONLY (classCategories), GET_INTEGER (L"Cost function"))));
 END
 
 FORM (FFNet_Pattern_Categories_getCosts_average, L"FFNet & Pattern & Categories: Get average costs", L"FFNet & Pattern & Categories: Get average costs...")
@@ -519,8 +519,8 @@ FORM (FFNet_Pattern_Categories_getCosts_average, L"FFNet & Pattern & Categories:
 	RADIOBUTTON (L"Minimum-cross-entropy")
 	OK
 DO
-	Melder_information1 (Melder_double (FFNet_Pattern_Categories_getCosts_average (ONLY (classFFNet),
-		ONLY (classPattern), ONLY (classCategories), GET_INTEGER (L"Cost function"))));
+	Melder_information1 (Melder_double (FFNet_Pattern_Categories_getCosts_average ((structFFNet *)ONLY (classFFNet),
+		(structPattern *)ONLY (classPattern), (structCategories *)ONLY (classCategories), GET_INTEGER (L"Cost function"))));
 END
 
 FORM (Pattern_Categories_to_FFNet, L"Pattern & Categories: To FFNet", L"Pattern & Categories: To FFNet...")
@@ -528,8 +528,8 @@ FORM (Pattern_Categories_to_FFNet, L"Pattern & Categories: To FFNet", L"Pattern 
     INTEGER (L"Number of units in hidden layer 2", L"0")
     OK
 DO
-	Pattern p = ONLY (classPattern);
-	Categories uniq = NULL, l = ONLY (classCategories);
+	Pattern p = (structPattern *)ONLY (classPattern);
+	Categories uniq = NULL, l = (structCategories *)ONLY (classCategories);
 	long numberOfOutputs;
 	FFNet ffnet = NULL;
 	long nHidden1 = GET_INTEGER (L"Number of units in hidden layer 1");
@@ -575,8 +575,8 @@ FORM (FFNet_Pattern_Categories_learnSM, L"FFNet & Pattern & Categories: Learn", 
 	RADIOBUTTON (L"Minimum-cross-entropy")
     OK
 DO
-	if (! FFNet_Pattern_Categories_learnSM (ONLY (classFFNet),
-		ONLY (classPattern), ONLY (classCategories),
+	if (! FFNet_Pattern_Categories_learnSM ((structFFNet *)ONLY (classFFNet),
+		(structPattern *)ONLY (classPattern), (structCategories *)ONLY (classCategories),
 		GET_INTEGER (L"Maximum number of epochs"),
 		GET_REAL (L"Tolerance of minimizer"), NULL,
 		GET_INTEGER (L"Cost function"))) return 0;
@@ -596,8 +596,8 @@ DO
 	struct structSteepestDescentMinimizer_parameters_decl p;
 	p.eta = GET_REAL (L"Learning rate");
     p.momentum = GET_REAL (L"Momentum");
-    return FFNet_Pattern_Categories_learnSD (ONLY (classFFNet),
-		ONLY (classPattern), ONLY (classCategories),
+    return FFNet_Pattern_Categories_learnSD ((structFFNet *)ONLY (classFFNet),
+		(structPattern *)ONLY (classPattern), (structCategories *)ONLY (classCategories),
 		GET_INTEGER (L"Maximum number of epochs"),
 		GET_REAL (L"Tolerance of minimizer"), &p,
 		GET_INTEGER (L"Cost function"));
