@@ -27,8 +27,8 @@
 #include "PCA.h"
 #include "Sound.h"
 
-extern void praat_SSCP_as_TableOfReal_init (void *klas);
-extern void praat_TableOfReal_init (void *klas);
+extern "C" void praat_SSCP_as_TableOfReal_init (void *klas);
+extern "C" void praat_TableOfReal_init (void *klas);
 void praat_TableOfReal_init3  (void *klas);
 
 /********************** CrossCorrelationTable(s) ******************/
@@ -80,8 +80,8 @@ FORM (Sound_and_PCA_to_Sound_pc, L"", 0)
 	BOOLEAN (L"Whiten", 1)
 	OK
 DO
-	Sound me = ONLY (classSound);
-	PCA thee = ONLY (classPCA);
+	Sound me = (structSound *)ONLY (classSound);
+	PCA thee = (structPCA *)ONLY (classPCA);
 	if (! praat_new2 (Sound_and_PCA_to_Sound_pc (me, thee, GET_INTEGER (L"Number of components"),
 		GET_INTEGER (L"Whiten")), Thing_getName(me), L"_pc")) return 0;
 END
@@ -93,12 +93,12 @@ DIRECT (CrossCorrelationTable_to_CrossCorrelationTables)
 	if (thee == NULL) return 0;
 	WHERE (SELECTED)
 	{
-		CrossCorrelationTable ct = OBJECT, ctc;
+		CrossCorrelationTable ct = (structCrossCorrelationTable *)OBJECT, ctc;
 		id ++;
 		if (id == 1) { nrows = ct -> numberOfRows; ncols = ct -> numberOfColumns; }
 		if (ct -> numberOfRows != nrows || ct -> numberOfColumns != ncols)
 		{ status = 0; Melder_error3 (L"All tables must have the same dimensions (", Melder_integer (id), L")."); break; }
-		ctc = Data_copy (ct);
+		ctc = (structCrossCorrelationTable *)Data_copy (ct);
 		if (ctc == NULL || ! Collection_addItem (thee, ctc)) break;
 	}
 	if (Melder_hasError () || status != 1) { forget (thee); return 0; }
@@ -112,7 +112,7 @@ FORM (Sound_to_CrossCorrelationTable, L"Sound: To CrossCorrelationTable", L"Soun
 	REAL (L"Lag time (s)", L"0.0")
 	OK
 DO
-	EVERY_TO (Sound_to_CrossCorrelationTable (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
+	EVERY_TO (Sound_to_CrossCorrelationTable ((structSound *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"Lag time")))
 END
 
@@ -125,7 +125,7 @@ FORM (CrossCorrelationTables_getDiagonalityMeasure, L"CrossCorrelationTables: Ge
 	NATURAL (L"Last table", L"100")
 	OK
 DO
-	double dm = CrossCorrelationTables_getDiagonalityMeasure (ONLY_OBJECT,
+	double dm = CrossCorrelationTables_getDiagonalityMeasure ((structCrossCorrelationTables *)ONLY_OBJECT,
 		NULL, GET_INTEGER (L"First table"), GET_INTEGER (L"Last table"));
 	Melder_information2 (Melder_double (dm), L" (= average sum of squared off-diagonal elements)");
 END
@@ -134,7 +134,7 @@ FORM (CrossCorrelationTables_extractCrossCorrelationTable, L"CrossCorrelationTab
 	NATURAL (L"Index", L"1")
 	OK
 DO
-	CrossCorrelationTables me = ONLY_OBJECT;
+	CrossCorrelationTables me = (structCrossCorrelationTables *)ONLY_OBJECT;
 	long index = GET_INTEGER (L"Index");
 	if (index > my size) return Melder_error1 (L"Index too large.");
 	if (! praat_new3 (Data_copy (my item[index]), Thing_getName (me), L"_", Melder_integer (index))) return 0;
@@ -149,7 +149,7 @@ FORM (CrossCorrelationTables_to_Diagonalizer, L"CrossCorrelationTables: To Diago
 	OPTION (L"ffdiag")
 	OK
 DO
-	EVERY_TO (CrossCorrelationTables_to_Diagonalizer (OBJECT, GET_INTEGER (L"Maximum number of iterations"),
+	EVERY_TO (CrossCorrelationTables_to_Diagonalizer ((structCrossCorrelationTables *)OBJECT, GET_INTEGER (L"Maximum number of iterations"),
 		GET_REAL (L"Tolerance"), GET_INTEGER (L"Diagonalization method")))
 END
 
@@ -161,8 +161,8 @@ FORM (Diagonalizer_and_CrossCorrelationTables_improveDiagonality, L"Diagonalizer
 	OPTION (L"ffdiag")
 	OK
 DO
-	if (! Diagonalizer_and_CrossCorrelationTables_improveDiagonality (ONLY (classDiagonalizer),
-		ONLY (classCrossCorrelationTables), GET_INTEGER (L"Maximum number of iterations"),
+	if (! Diagonalizer_and_CrossCorrelationTables_improveDiagonality ((structDiagonalizer *)ONLY (classDiagonalizer),
+		(structCrossCorrelationTables *)ONLY (classCrossCorrelationTables), GET_INTEGER (L"Maximum number of iterations"),
 		GET_REAL (L"Tolerance"), GET_INTEGER (L"Diagonalization method"))) return 0;
 END
 
@@ -171,20 +171,20 @@ FORM (CrossCorrelationTables_and_Diagonalizer_getDiagonalityMeasure, L"CrossCorr
 	NATURAL (L"Last table", L"100")
 	OK
 DO
-	double dm = CrossCorrelationTables_and_Diagonalizer_getDiagonalityMeasure (ONLY (classCrossCorrelationTables),
-		ONLY (classDiagonalizer), NULL, GET_INTEGER (L"First table"), GET_INTEGER (L"Last table"));
+	double dm = CrossCorrelationTables_and_Diagonalizer_getDiagonalityMeasure ((structCrossCorrelationTables *)ONLY (classCrossCorrelationTables),
+		(structDiagonalizer *)ONLY (classDiagonalizer), NULL, GET_INTEGER (L"First table"), GET_INTEGER (L"Last table"));
 	Melder_information2 (Melder_double (dm), L" (= average sum of squared off-diagonal elements)");
 END
 
 DIRECT (CrossCorrelationTable_and_Diagonalizer_diagonalize)
-	CrossCorrelationTable me = ONLY (classCrossCorrelationTable);
-	Diagonalizer thee = ONLY (classDiagonalizer);
+	CrossCorrelationTable me = (structCrossCorrelationTable *)ONLY (classCrossCorrelationTable);
+	Diagonalizer thee = (structDiagonalizer *)ONLY (classDiagonalizer);
 	if (! praat_new3 (CrossCorrelationTable_and_Diagonalizer_diagonalize (me, thee), Thing_getName (me), L"_", Thing_getName (thee))) return 0;
 END
 
 DIRECT (CrossCorrelationTables_and_Diagonalizer_diagonalize)
-	CrossCorrelationTables me = ONLY (classCrossCorrelationTables);
-	Diagonalizer thee = ONLY (classDiagonalizer);
+	CrossCorrelationTables me = (structCrossCorrelationTables *)ONLY (classCrossCorrelationTables);
+	Diagonalizer thee = (structDiagonalizer *)ONLY (classDiagonalizer);
 	if (! praat_new3 (CrossCorrelationTables_and_Diagonalizer_diagonalize (me, thee), Thing_getName (me), L"_", Thing_getName (thee))) return 0;
 END
 
@@ -197,12 +197,12 @@ FORM (CrossCorrelationTables_and_MixingMatrix_improveUnmixing, L"", 0)
 	OPTION (L"ffdiag")
 	OK
 DO
-	if (! MixingMatrix_and_CrossCorrelationTables_improveUnmixing (ONLY (classMixingMatrix),
-		ONLY (classCrossCorrelationTables), GET_INTEGER (L"Maximum number of iterations"), GET_REAL (L"Tolerance"), GET_INTEGER (L"Diagonalization method"))) return 0;
+	if (! MixingMatrix_and_CrossCorrelationTables_improveUnmixing ((structMixingMatrix *)ONLY (classMixingMatrix),
+		(structCrossCorrelationTables *)ONLY (classCrossCorrelationTables), GET_INTEGER (L"Maximum number of iterations"), GET_REAL (L"Tolerance"), GET_INTEGER (L"Diagonalization method"))) return 0;
 END
 
 DIRECT (Diagonalizer_to_MixingMatrix)
-	EVERY_TO (Diagonalizer_to_MixingMatrix (OBJECT))
+	EVERY_TO (Diagonalizer_to_MixingMatrix ((structDiagonalizer *)OBJECT))
 END
 
 FORM (Sound_to_MixingMatrix, L"", 0)
@@ -218,7 +218,7 @@ FORM (Sound_to_MixingMatrix, L"", 0)
 	OPTION (L"ffdiag")
 	OK
 DO
-	EVERY_TO (Sound_to_MixingMatrix (OBJECT,
+	EVERY_TO (Sound_to_MixingMatrix ((structSound *)OBJECT,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_INTEGER (L"Number of cross-correlations"),
 		GET_REAL (L"Lag times"), GET_INTEGER (L"Maximum number of iterations"), GET_REAL (L"Tolerance"),
 		GET_INTEGER (L"Diagonalization method")))
@@ -231,7 +231,7 @@ FORM (Sound_to_CrossCorrelationTables, L"Sound: To CrossCorrelationTables", 0)
 	POSITIVE (L"Lag times (s)", L"0.002")
 	OK
 DO
-	EVERY_TO (Sound_to_CrossCorrelationTables (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Lag times"), GET_INTEGER (L"Number of cross-correlations")))
+	EVERY_TO (Sound_to_CrossCorrelationTables ((structSound *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"Lag times"), GET_INTEGER (L"Number of cross-correlations")))
 END
 
 FORM (Sound_to_Sound_bss, L"Sound: To Sound (blind source separation)", L"Sound: To Sound (blind source separation)...")
@@ -247,26 +247,26 @@ FORM (Sound_to_Sound_bss, L"Sound: To Sound (blind source separation)", L"Sound:
 	OPTION (L"ffdiag")
 	OK
 DO
-	EVERY_TO (Sound_to_Sound_BSS (OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
+	EVERY_TO (Sound_to_Sound_BSS ((structSound *)OBJECT, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_INTEGER (L"Number of cross-correlations"), GET_REAL (L"Lag times"),
 		GET_INTEGER (L"Maximum number of iterations"), GET_REAL (L"Tolerance"),
 		GET_INTEGER (L"Diagonalization method")))
 END
 
 DIRECT (Sound_and_MixingMatrix_mix)
-	Sound s = ONLY (classSound);
-	MixingMatrix mm = ONLY (classMixingMatrix);
+	Sound s = (structSound *)ONLY (classSound);
+	MixingMatrix mm = (structMixingMatrix *)ONLY (classMixingMatrix);
 	if (! praat_new2 (Sound_and_MixingMatrix_mix (s, mm), Thing_getName (s), L"_mixed")) return 0;
 END
 
 DIRECT (Sound_and_MixingMatrix_unmix)
-	Sound s = ONLY (classSound);
-	MixingMatrix mm = ONLY (classMixingMatrix);
+	Sound s = (structSound *)ONLY (classSound);
+	MixingMatrix mm = (structMixingMatrix *)ONLY (classMixingMatrix);
 	if (! praat_new2 (Sound_and_MixingMatrix_unmix (s, mm), Thing_getName (s), L"_unmixed")) return 0;
 END
 
 DIRECT (TableOfReal_to_MixingMatrix)
-	EVERY_TO (TableOfReal_to_MixingMatrix (OBJECT))
+	EVERY_TO (TableOfReal_to_MixingMatrix ((structTableOfReal *)OBJECT))
 END
 
 FORM (TableOfReal_and_TableOfReal_crossCorrelations, L"TableOfReal & TableOfReal: Cross-correlations", 0)
@@ -279,7 +279,7 @@ FORM (TableOfReal_and_TableOfReal_crossCorrelations, L"TableOfReal & TableOfReal
 DO
 	TableOfReal t1 = NULL, t2 = NULL;
 	int by_columns = GET_INTEGER (L"Correlations between") - 1;
-	WHERE (SELECTED && Thing_member (OBJECT, classTableOfReal)) { if (t1) t2 = OBJECT; else t1 = OBJECT; }
+	WHERE (SELECTED && Thing_member (OBJECT, classTableOfReal)) { if (t1) t2 = (structTableOfReal *)OBJECT; else t1 = (structTableOfReal *)OBJECT; }
 	if (! praat_new1 (TableOfReal_and_TableOfReal_crossCorrelations (t1, t2, by_columns,
 		GET_INTEGER (L"Center"), GET_INTEGER (L"Normalize")),
 		(by_columns ? L"by_columns" : L"by_rows"))) return 0;
@@ -291,7 +291,7 @@ void praat_TableOfReal_init3  (void *klas)
 	praat_addAction1 (klas, 2, L"To TableOfReal (cross-correlations)...", 0, 0, DO_TableOfReal_and_TableOfReal_crossCorrelations);
 }
 
-void praat_BSS_init (void);
+extern "C" void praat_BSS_init (void);
 void praat_BSS_init (void)
 {
 	Thing_recognizeClassesByName (classDiagonalizer, classMixingMatrix, classCrossCorrelationTable, classCrossCorrelationTables, NULL);

@@ -135,10 +135,10 @@ void praat_TableOfReal_init2  (void *klas);
 void praat_SSCP_as_TableOfReal_init (void *klas);
 
 void praat_CC_init (void *klas);
-void DTW_constraints_addCommonFields (void *dia);
-void DTW_constraints_getCommonFields (void *dia, int *begin, int *end, int *slope);
+void DTW_constraints_addCommonFields (Any dia);
+void DTW_constraints_getCommonFields (Any dia, int *begin, int *end, int *slope);
 void praat_Matrixft_query_init (void *klas);
-int praat_Fon_formula (UiForm dia, Interpreter *interpreter);
+int praat_Fon_formula (Any dia, Interpreter *interpreter);
 
 #undef INCLUDE_DTW_SLOPES
 
@@ -162,8 +162,8 @@ static int pr_LongSounds_writeToStereoAudioFile (MelderFile file, int audioFileT
 	LongSound me = NULL, thee = NULL;
 	WHERE (SELECTED)
 	{
-		if (me) thee = OBJECT;
-		else me = OBJECT;
+		if (me) thee = (structLongSound *)OBJECT;
+		else me = (structLongSound *)OBJECT;
 	}
 	return LongSounds_writeToStereoAudioFile16 (me, thee, audioFileType, file);
 }
@@ -218,7 +218,7 @@ FORM (BarkFilter_drawSekeyHansonFilterFunctions, L"BarkFilter: Draw filter funct
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (BarkFilter_drawSekeyHansonFilterFunctions (OBJECT, GRAPHICS,
+	EVERY_DRAW (BarkFilter_drawSekeyHansonFilterFunctions ((structBarkFilter *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"Frequency scale"),
 		GET_INTEGER (L"left Filter range"), GET_INTEGER (L"right Filter range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
@@ -231,7 +231,7 @@ FORM (Categories_append, L"Categories: Append 1 category", L"Categories: Append 
 	SENTENCE (L"Category", L"")
 	OK
 DO
-	if (! OrderedOfString_append (ONLY_OBJECT, GET_STRING (L"Category")))
+	if (! OrderedOfString_append ((structOrderedOfString *)ONLY_OBJECT, GET_STRING (L"Category")))
 		return 0;
 END
 
@@ -244,7 +244,7 @@ DIRECT (Categories_edit)
 END
 
 DIRECT (Categories_getNumberOfCategories)
-	Categories c1 = ONLY_OBJECT;
+	Categories c1 = (structCategories *)ONLY_OBJECT;
 	Melder_information2 (Melder_integer (c1 -> size), L" categories");
 END
 
@@ -253,7 +253,7 @@ DIRECT (Categories_getNumberOfDifferences)
 	long NumberOfDifferences;
 	WHERE (SELECTED && CLASS == classCategories)
 	{
-   		if (c1) c2 = OBJECT; else c1 = OBJECT;
+   		if (c1) c2 = (structCategories *)OBJECT; else c1 = (structCategories *)OBJECT;
 	}
 	NumberOfDifferences = OrderedOfString_getNumberOfDifferences (c1, c2);
 	if (NumberOfDifferences< 0) Melder_information1 (L"-1 (undefined: number of elements differ!)");
@@ -265,7 +265,7 @@ DIRECT (Categories_getFractionDifferent)
 	Categories c1 = NULL, c2 = NULL;
 	WHERE (SELECTED && CLASS == classCategories)
 	{
-   		if (c1) c2 = OBJECT; else c1 = OBJECT;
+   		if (c1) c2 = (structCategories *)OBJECT; else c1 = (structCategories *)OBJECT;
 	}
 	Melder_information1 (Melder_double (OrderedOfString_getFractionDifferent (c1,c2)));
 END
@@ -276,14 +276,14 @@ DIRECT (Categories_difference)
 	long n;
 	WHERE (SELECTED && CLASS == classCategories)
 	{
-   		if (l1) l2 = OBJECT; else l1 = OBJECT;
+   		if (l1) l2 = (structCategories *)OBJECT; else l1 = (structCategories *)OBJECT;
 	}
 	if (! OrderedOfString_difference (l1, l2, &n, &fraction)) return 0;
 	Melder_information2 (Melder_integer (n), L" differences");
 END
 
 DIRECT (Categories_selectUniqueItems)
-	EVERY_TO ((Categories) Categories_selectUniqueItems (OBJECT, 1))
+	EVERY_TO ((Categories) Categories_selectUniqueItems ((structCategories *)OBJECT, 1))
 END
 
 DIRECT (Categories_to_Confusion)
@@ -293,11 +293,11 @@ DIRECT (Categories_to_Confusion)
 	{
 		if (c1)
 		{
-			c2 = OBJECT; i2 = IOBJECT;
+			c2 = (structCategories *)OBJECT; i2 = IOBJECT;
 		}
 		else
 		{
-			c1 = OBJECT; i1 = IOBJECT;
+			c1 = (structCategories *)OBJECT; i1 = IOBJECT;
 		}
 	}
 	Melder_assert (c1 && c2);
@@ -305,21 +305,21 @@ DIRECT (Categories_to_Confusion)
 END
 
 DIRECT (Categories_to_Strings)
-	EVERY_TO (Categories_to_Strings (OBJECT))
+	EVERY_TO (Categories_to_Strings ((structCategories *)OBJECT))
 END
 
 DIRECT (Categories_join)
 	Data l1 = NULL, l2 = NULL;
 	WHERE (SELECTED && CLASS == classCategories)
 	{
-		if (l1) l2 = OBJECT; else l1 = OBJECT;
+		if (l1) l2 = (structData *)OBJECT; else l1 = (structData *)OBJECT;
 	}
 	NEW (OrderedOfString_joinItems (l1, l2))
 END
 
 DIRECT (Categories_permuteItems)
 	Collection c = NULL;
-	WHERE (SELECTED && CLASS == classCategories) c = OBJECT;
+	WHERE (SELECTED && CLASS == classCategories) c = (structCollection *)OBJECT;
 	NEW (Collection_permuteItems (c));
 END
 
@@ -329,7 +329,7 @@ FORM (CC_getValue, L"CC: Get value", L"CC: Get value...")
 	NATURAL (L"Index", L"1")
 	OK
 DO
-	Melder_informationReal (CC_getValue (ONLY_OBJECT, GET_REAL (L"Time"), GET_INTEGER (L"Index")), NULL);
+	Melder_informationReal (CC_getValue ((structCC *)ONLY_OBJECT, GET_REAL (L"Time"), GET_INTEGER (L"Index")), NULL);
 END
 
 FORM (CC_paint, L"CC: Paint", L"CC: Paint...")
@@ -342,7 +342,7 @@ FORM (CC_paint, L"CC: Paint", L"CC: Paint...")
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (CC_paint (OBJECT, GRAPHICS, GET_REAL (L"left Time range"),
+	EVERY_DRAW (CC_paint ((structCC *)OBJECT, GRAPHICS, GET_REAL (L"left Time range"),
 		GET_REAL (L"right Time range"), GET_INTEGER (L"From coefficient"),
 		GET_INTEGER (L"To coefficient"), GET_REAL (L"Minimum"),
 		GET_REAL (L"Maximum"), GET_INTEGER (L"Garnish")))
@@ -356,7 +356,7 @@ FORM (CC_drawC0, L"CC: Draw c0", L"CC: Draw c0...")
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (CC_drawC0 (OBJECT, GRAPHICS, GET_REAL (L"left Time range"),
+	EVERY_DRAW (CC_drawC0 ((structCC *)OBJECT, GRAPHICS, GET_REAL (L"left Time range"),
 		GET_REAL (L"right Time range"), GET_REAL (L"left Amplitude range"),
 		GET_REAL (L"right Amplitude range"), GET_INTEGER (L"Garnish")))
 END
@@ -377,7 +377,7 @@ DO
 
 	WHERE (SELECTED && Thing_member (OBJECT, classCC))
 	{
-		if (c1) c2 = OBJECT; else c1 = OBJECT;
+		if (c1) c2 = (structCC *)OBJECT; else c1 = (structCC *)OBJECT;
 	}
 	NEW (CCs_to_DTW (c1, c2, GET_REAL (L"Cepstral weight"),
 		GET_REAL (L"Log energy weight"), GET_REAL (L"Regression weight"),
@@ -410,7 +410,7 @@ FORM (CCA_drawEigenvector, L"CCA: Draw eigenvector", L"Eigen: Draw eigenvector..
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (CCA_drawEigenvector (OBJECT, GRAPHICS, GET_INTEGER (L"X or Y"),
+	EVERY_DRAW (CCA_drawEigenvector ((structCCA *)OBJECT, GRAPHICS, GET_INTEGER (L"X or Y"),
 		GET_INTEGER (L"Eigenvector number"),
 		GET_INTEGER (L"left Element range"), GET_INTEGER (L"right Element range"),
 		GET_REAL (L"left Amplitude range"), GET_REAL (L"right Amplitude range"),
@@ -420,7 +420,7 @@ DO
 END
 
 DIRECT (CCA_getNumberOfCorrelations)
-	CCA cca = ONLY(classCCA);
+	CCA cca = (structCCA *)ONLY(classCCA);
 	Melder_information1 (Melder_double (cca->numberOfCoefficients));
 END
 
@@ -428,7 +428,7 @@ FORM (CCA_getCorrelationCoefficient, L"CCA: Get canonical correlation coefficien
 	NATURAL (L"Coefficient number", L"1")
 	OK
 DO
-	Melder_information1 (Melder_double (CCA_getCorrelationCoefficient (ONLY (classCCA),
+	Melder_information1 (Melder_double (CCA_getCorrelationCoefficient ((structCCA *)ONLY (classCCA),
 		GET_INTEGER (L"Coefficient number"))));
 END
 
@@ -440,7 +440,7 @@ FORM (CCA_getEigenvectorElement, L"CCA: Get eigenvector element", L"Eigen: Get e
 	NATURAL (L"Element number", L"1")
 	OK
 DO
-	Melder_information1 (Melder_double (CCA_getEigenvectorElement (ONLY (classCCA),
+	Melder_information1 (Melder_double (CCA_getEigenvectorElement ((structCCA *)ONLY (classCCA),
 		GET_INTEGER (L"X or Y"), GET_INTEGER (L"Eigenvector number"),
 		GET_INTEGER (L"Element number"))));
 END
@@ -450,15 +450,15 @@ FORM (CCA_getZeroCorrelationProbability, L"CCA: Get zero correlation probability
 	OK
 DO
 	double p, chisq; long ndf;
-	CCA_getZeroCorrelationProbability (ONLY (classCCA), GET_INTEGER (L"Coefficient number"),
+	CCA_getZeroCorrelationProbability ((structCCA *)ONLY (classCCA), GET_INTEGER (L"Coefficient number"),
 		&chisq, &ndf, &p);
 	Melder_information6 (Melder_double (p), L" (=probability for chisq = ", Melder_double (chisq), L" and ndf = ", Melder_integer (ndf), L")");
 END
 
 DIRECT (CCA_and_Correlation_factorLoadings)
-	CCA cca = ONLY (classCCA);
+	CCA cca = (structCCA *)ONLY (classCCA);
 	if (! praat_new2 (CCA_and_Correlation_factorLoadings (cca,
-		ONLY (classCorrelation)), Thing_getName (cca), L"_loadings")) return 0;
+		(structCorrelation *)ONLY (classCorrelation)), Thing_getName (cca), L"_loadings")) return 0;
 END
 
 FORM (CCA_and_Correlation_getVarianceFraction, L"CCA & Correlation: Get variance fraction", L"CCA & Correlation: Get variance fraction...")
@@ -474,8 +474,8 @@ DO
 	int x_or_y = GET_INTEGER (L"X or Y");
 	int cv_from = GET_INTEGER (L"left Canonical variate range");
 	int cv_to = GET_INTEGER (L"right Canonical variate range");
-	Melder_information7 (Melder_double (CCA_and_Correlation_getVarianceFraction (ONLY (classCCA),
-		ONLY (classCorrelation), x_or_y, cv_from, cv_to)), L" (fraction variance from ",
+	Melder_information7 (Melder_double (CCA_and_Correlation_getVarianceFraction ((structCCA *)ONLY (classCCA),
+		(structCorrelation *)ONLY (classCorrelation), x_or_y, cv_from, cv_to)), L" (fraction variance from ",
 		(x_or_y == 1 ? L"y" : L"x"), L", extracted by canonical variates ", Melder_integer (cv_from), L" to ",
 		 Melder_integer (cv_to));
 END
@@ -494,24 +494,24 @@ DO
 	int x_or_y = GET_INTEGER (L"X or Y");
 	int cv_from = GET_INTEGER (L"left Canonical variate range");
 	int cv_to = GET_INTEGER (L"right Canonical variate range");
-	Melder_information7 (Melder_double (CCA_and_Correlation_getRedundancy_sl (ONLY (classCCA), ONLY (classCorrelation),
+	Melder_information7 (Melder_double (CCA_and_Correlation_getRedundancy_sl ((structCCA *)ONLY (classCCA), (structCorrelation *)ONLY (classCorrelation),
 		x_or_y, cv_from, cv_to)), L" (redundancy from ", (x_or_y == 1 ? L"y" : L"x"), L" extracted by canonical variates ",
 		Melder_integer (cv_from), L" to ", Melder_integer (cv_to));
 END
 
 
 DIRECT (CCA_and_TableOfReal_factorLoadings)
-	CCA cca = ONLY (classCCA);
+	CCA cca = (structCCA *)ONLY (classCCA);
 	if (! praat_new2 (CCA_and_TableOfReal_factorLoadings (cca,
-		ONLY (classTableOfReal)), Thing_getName (cca), L"_loadings")) return 0;
+		(structTableOfReal *)(structTableOfReal *)ONLY (classTableOfReal)), Thing_getName (cca), L"_loadings")) return 0;
 END
 
 FORM (CCA_and_TableOfReal_scores, L"CCA & TableOfReal: To TableOfReal (scores)", L"CCA & TableOfReal: To TableOfReal (scores)...")
 	INTEGER (L"Number of canonical correlations", L"0 (=all)")
 	OK
 DO
-	CCA cca = ONLY (classCCA);
-	if (! praat_new2 (CCA_and_TableOfReal_scores (cca, ONLY (classTableOfReal),
+	CCA cca = (structCCA *)ONLY (classCCA);
+	if (! praat_new2 (CCA_and_TableOfReal_scores (cca, (structTableOfReal *)(structTableOfReal *)ONLY (classTableOfReal),
 		GET_INTEGER (L"Number of canonical correlations")),
 		Thing_getName (cca), L"_scores")) return 0;
 END
@@ -521,7 +521,7 @@ FORM (CCA_and_TableOfReal_predict, L"CCA & TableOfReal: Predict", L"CCA & TableO
 	INTEGER (L"Column number", L"1")
 	OK
 DO
-	NEW (CCA_and_TableOfReal_predict (ONLY (classCCA), ONLY(classTableOfReal),
+	NEW (CCA_and_TableOfReal_predict ((structCCA *)ONLY (classCCA), (structTableOfReal *)ONLY(classTableOfReal),
 		GET_INTEGER (L"Column number")))
 END
 
@@ -548,7 +548,7 @@ DO
 END
 
 DIRECT (ChebyshevSeries_to_Polynomial)
-	EVERY_TO (ChebyshevSeries_to_Polynomial (OBJECT))
+	EVERY_TO (ChebyshevSeries_to_Polynomial ((structChebyshevSeries *)OBJECT))
 END
 
 /***************** ClassificationTable ****************************************/
@@ -558,15 +558,15 @@ DIRECT (ClassificationTable_help)
 END
 
 DIRECT (ClassificationTable_to_Confusion)
-	EVERY_TO (ClassificationTable_to_Confusion (OBJECT))
+	EVERY_TO (ClassificationTable_to_Confusion ((structClassificationTable *)OBJECT))
 END
 
 DIRECT (ClassificationTable_to_Correlation_columns)
-	EVERY_TO (ClassificationTable_to_Correlation_columns (OBJECT))
+	EVERY_TO (ClassificationTable_to_Correlation_columns ((structClassificationTable *)OBJECT))
 END
 
 DIRECT (ClassificationTable_to_Strings_maximumProbability)
-	EVERY_TO (ClassificationTable_to_Strings_maximumProbability (OBJECT))
+	EVERY_TO (ClassificationTable_to_Strings_maximumProbability ((structClassificationTable *)OBJECT))
 END
 
 /********************** Confusion *******************************************/
@@ -576,12 +576,12 @@ DIRECT (Confusion_help)
 END
 
 DIRECT (Confusion_to_TableOfReal_marginals)
-	EVERY_TO (Confusion_to_TableOfReal_marginals (OBJECT))
+	EVERY_TO (Confusion_to_TableOfReal_marginals ((structConfusion *)OBJECT))
 END
 
 DIRECT (Confusion_difference)
 	Confusion c1 = NULL, c2 = NULL;
-	WHERE (SELECTED && CLASS == classConfusion) { if (c1) c2 = OBJECT; else c1 = OBJECT; }
+	WHERE (SELECTED && CLASS == classConfusion) { if (c1) c2 = (structConfusion *)OBJECT; else c1 = (structConfusion *)OBJECT; }
     NEW (Confusion_difference (c1, c2))
 END
 
@@ -594,7 +594,7 @@ FORM (Confusion_condense, L"Confusion: Condense", L"Confusion: Condense...")
 	RADIOBUTTON (L"Regular Expressions")
 	OK
 DO
-	EVERY_TO (Confusion_condense (OBJECT, GET_STRING (L"Search"),
+	EVERY_TO (Confusion_condense ((structConfusion *)OBJECT, GET_STRING (L"Search"),
 		GET_STRING (L"Replace"), GET_INTEGER (L"Replace limit"),
 		GET_INTEGER (L"Search and replace are") - 1))
 END
@@ -609,14 +609,14 @@ FORM (Confusion_drawAsNumbers, L"", L"")
 	NATURAL (L"Precision", L"5")
 	OK
 DO
-	EVERY_DRAW (Confusion_drawAsNumbers (OBJECT, GRAPHICS,
+	EVERY_DRAW (Confusion_drawAsNumbers ((structConfusion *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"Draw marginals"),
 		GET_INTEGER (L"Format"), GET_INTEGER (L"Precision")))
 END
 
 DIRECT (Confusion_getFractionCorrect)
 	double f; long n;
-	Confusion_getFractionCorrect (ONLY (classConfusion), &f, &n);
+	Confusion_getFractionCorrect ((structConfusion *)ONLY (classConfusion), &f, &n);
 	Melder_information2 (Melder_double (f), L" (fraction correct)");
 END
 
@@ -634,7 +634,7 @@ FORM (Confusion_Matrix_draw, L"Confusion & Matrix: Draw confusions with arrows",
 DO
 	long categoryPosition = GET_INTEGER (L"Category position");
 	REQUIRE (categoryPosition >= 0, L"Category position must be >= 0")
-	EVERY_DRAW (Confusion_Matrix_draw(ONLY(classConfusion), ONLY(classMatrix), GRAPHICS,
+	EVERY_DRAW (Confusion_Matrix_draw((structConfusion *)ONLY(classConfusion), (structMatrix *)ONLY(classMatrix), GRAPHICS,
 		categoryPosition, GET_REAL (L"lower level(%)"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
@@ -657,7 +657,7 @@ FORM (Correlation_confidenceIntervals, L"Correlation: Confidence intervals...", 
 DO
 	double cl = GET_REAL (L"Confidence level");
 	double numberOfTests = GET_INTEGER (L"Number of tests");
-	EVERY_TO (Correlation_confidenceIntervals (OBJECT, cl, numberOfTests,
+	EVERY_TO (Correlation_confidenceIntervals ((structCorrelation *)OBJECT, cl, numberOfTests,
 		GET_INTEGER (L"Approximation")))
 END
 
@@ -667,7 +667,7 @@ FORM (Correlation_testDiagonality_bartlett, L"Correlation: Get diagonality (bart
 DO
 	double chisq, p;
 	long nc = GET_INTEGER (L"Number of contraints");
-	Correlation me = ONLY_OBJECT;
+	Correlation me = (structCorrelation *)ONLY_OBJECT;
 	Correlation_testDiagonality_bartlett (me, nc, &chisq, &p);
 	Melder_information5 (Melder_double (p), L" (=probability, based on chisq = ",
 		Melder_double (chisq), L"and ndf = ", Melder_integer (my numberOfRows * (my numberOfRows - 1) / 2));
@@ -699,7 +699,7 @@ FORM (Covariance_getProbabilityAtPosition, L"Covariance: Get probability at posi
 	OK
 DO
 	wchar_t *position = GET_STRING (L"Position");
-	double p = Covariance_getProbabilityAtPosition_string (ONLY_OBJECT, position);
+	double p = Covariance_getProbabilityAtPosition_string ((structCovariance *)ONLY_OBJECT, position);
 	Melder_information4 (Melder_double (p), L" (= probability at position ", position, L")");
 END
 
@@ -712,7 +712,7 @@ FORM (Covariance_getSignificanceOfOneMean, L"Covariance: Get significance of one
 	OK
 DO
 	double t, p; double ndf;
-	Covariance_getSignificanceOfOneMean (ONLY_OBJECT, GET_INTEGER (L"Index"),
+	Covariance_getSignificanceOfOneMean ((structCovariance *)ONLY_OBJECT, GET_INTEGER (L"Index"),
 		GET_REAL (L"Value"), &p, &t , &ndf);
 	Melder_information5 (Melder_double (p), L" (=probability, based on t = ",
 		Melder_double (t), L" and ndf = ", Melder_integer (ndf));
@@ -731,7 +731,7 @@ FORM (Covariance_getSignificanceOfMeansDifference, L"Covariance: Get significanc
 	OK
 DO
 	double t, p; double ndf;
-	Covariance_getSignificanceOfMeansDifference (ONLY_OBJECT,
+	Covariance_getSignificanceOfMeansDifference ((structCovariance *)ONLY_OBJECT,
 		GET_INTEGER (L"Index1"), GET_INTEGER (L"Index2"),
 		GET_REAL (L"Value"), GET_INTEGER (L"Paired"),
 		GET_INTEGER (L"Equal variances"), &p, &t , &ndf);
@@ -748,7 +748,7 @@ FORM (Covariance_getSignificanceOfOneVariance, L"Covariance: Get significance of
 	OK
 DO
 	double chisq, p; long ndf;
-	Covariance_getSignificanceOfOneVariance (ONLY_OBJECT, GET_INTEGER (L"Index"),
+	Covariance_getSignificanceOfOneVariance ((structCovariance *)ONLY_OBJECT, GET_INTEGER (L"Index"),
 		GET_REAL (L"Value"), &p, &chisq , &ndf);
 	Melder_information5 (Melder_double (p), L" (=probability, based on chisq = ",
 		Melder_double (chisq), L"and ndf = ", Melder_integer (ndf));
@@ -761,7 +761,7 @@ FORM (Covariance_getSignificanceOfVariancesRatio, L"Covariance: Get significance
 	OK
 DO
 	double f, p; long ndf;
-	Covariance_getSignificanceOfVariancesRatio (ONLY_OBJECT,
+	Covariance_getSignificanceOfVariancesRatio ((structCovariance *)ONLY_OBJECT,
 		GET_INTEGER (L"Index1"), GET_INTEGER (L"Index2"),
 		GET_REAL (L"Hypothesized ratio"), &p, &f , &ndf);
 	Melder_information7 (Melder_double (p), L" (=probability, based on F = ",
@@ -788,7 +788,7 @@ DO
 	int equalCovariances = GET_INTEGER (L"Covariances are equal");
 	WHERE (SELECTED && CLASS == classCovariance)
 	{
-		if (c1) c2 = OBJECT; else c1 = OBJECT;
+		if (c1) c2 = (structCovariance *)OBJECT; else c1 = (structCovariance *)OBJECT;
 	}
 	MelderInfo_open ();
 	difference = Covariances_getMultivariateCentroidDifference (c1, c2, equalCovariances, &prob, &fisher, &df1, &df2);
@@ -807,7 +807,7 @@ FORM (Covariance_to_TableOfReal_randomSampling, L"Covariance: To TableOfReal (ra
 	INTEGER (L"Number of data points", L"0")
 	OK
 DO
-	EVERY_TO (Covariance_to_TableOfReal_randomSampling (OBJECT,
+	EVERY_TO (Covariance_to_TableOfReal_randomSampling ((structCovariance *)OBJECT,
 		GET_INTEGER (L"Number of data points")))
 END
 
@@ -850,7 +850,7 @@ FORM (Covariance_and_TableOfReal_mahalanobis, L"Covariance & TableOfReal: To Tab
 	BOOLEAN (L"Centroid from table", 0)
 	OK
 DO
-	NEW (Covariance_and_TableOfReal_mahalanobis (ONLY (classCovariance), ONLY (classTableOfReal),
+	NEW (Covariance_and_TableOfReal_mahalanobis ((structCovariance *)ONLY (classCovariance), (structTableOfReal *)ONLY (classTableOfReal),
 		GET_INTEGER (L"Centroid from table")))
 END
 
@@ -861,8 +861,8 @@ DIRECT (Discriminant_help)
 END
 
 DIRECT (Discriminant_setGroupLabels)
-	if (! Discriminant_setGroupLabels (ONLY(classDiscriminant),
-		ONLY (classStrings))) return 0;
+	if (! Discriminant_setGroupLabels ((structDiscriminant *)ONLY(classDiscriminant),
+		(structStrings *)ONLY (classStrings))) return 0;
 END
 
 FORM (Discriminant_and_Pattern_to_Categories, L"Discriminant & Pattern: To Categories", L"Discriminant & Pattern: To Categories...")
@@ -871,7 +871,7 @@ FORM (Discriminant_and_Pattern_to_Categories, L"Discriminant & Pattern: To Categ
 	OK
 DO
 	NEW (Discriminant_and_Pattern_to_Categories
-		(ONLY (classDiscriminant), ONLY_GENERIC (classPattern),
+		((structDiscriminant *)ONLY (classDiscriminant), (structPattern *)ONLY_GENERIC (classPattern),
 		GET_INTEGER (L"Pool covariance matrices"),
 		GET_INTEGER (L"Use apriori probabilities")))
 END
@@ -883,7 +883,7 @@ DO
 	long dimension = GET_INTEGER (L"Number of dimensions");
 	REQUIRE (dimension >= 0, L"Number of dimensions must be greater equal zero.")
 	NEW (Discriminant_and_TableOfReal_to_Configuration
-		(ONLY (classDiscriminant), ONLY_GENERIC (classTableOfReal),
+		((structDiscriminant *)ONLY (classDiscriminant), (structTableOfReal *)ONLY_GENERIC (classTableOfReal),
 			dimension))
 END
 
@@ -896,8 +896,8 @@ FORM (Discriminant_and_TableOfReal_to_ClassificationTable, L"Discriminant & Tabl
 	BOOLEAN (L"Use apriori probabilities", 1)
 	OK
 DO
-	Discriminant d = ONLY (classDiscriminant);
-	TableOfReal t = ONLY_GENERIC (classTableOfReal);
+	Discriminant d = (structDiscriminant *)ONLY (classDiscriminant);
+	TableOfReal t = (structTableOfReal *)ONLY_GENERIC (classTableOfReal);
 	if (! praat_new3 (Discriminant_and_TableOfReal_to_ClassificationTable
 		(d,	t, GET_INTEGER (L"Pool covariance matrices"),
 		GET_INTEGER (L"Use apriori probabilities")),
@@ -909,10 +909,10 @@ FORM (Discriminant_and_TableOfReal_mahalanobis, L"Discriminant & TableOfReal: To
 	BOOLEAN (L"Pool covariance matrices", 0)
 	OK
 DO
-	Discriminant d = ONLY (classDiscriminant);
+	Discriminant d = (structDiscriminant *)ONLY (classDiscriminant);
 	long group = Discriminant_groupLabelToIndex (d, GET_STRING (L"Group label"));
 	REQUIRE (group > 0, L"Group label does not exist.")
-	NEW (Discriminant_and_TableOfReal_mahalanobis (d, ONLY(classTableOfReal), group,
+	NEW (Discriminant_and_TableOfReal_mahalanobis (d, (structTableOfReal *)ONLY(classTableOfReal), group,
 		GET_INTEGER (L"Pool covariance matrices")))
 END
 
@@ -923,7 +923,7 @@ FORM (Discriminant_getWilksLambda, L"Discriminant: Get Wilks' lambda", L"Discrim
 DO
 	long from = GET_INTEGER (L"From");
 	REQUIRE (from >= 1, L"Number must be greater than or equal to one.")
-	Melder_information1 (Melder_double (Discriminant_getWilksLambda (ONLY_OBJECT, from)));
+	Melder_information1 (Melder_double (Discriminant_getWilksLambda ((structDiscriminant *)ONLY_OBJECT, from)));
 END
 
 FORM (Discriminant_getCumulativeContributionOfComponents, L"Discriminant: Get cumulative contribution of components", L"Eigen: Get cumulative contribution of components...")
@@ -944,12 +944,12 @@ DO
 	long ndf, n = GET_INTEGER (L"Number of dimensions");
 	double chisq, p;
 	REQUIRE (n >= 0, L"Number of dimensions must be greater than or equal to zero.")
-	Discriminant_getPartialDiscriminationProbability (ONLY_OBJECT, n, &p, &chisq, &ndf);
+	Discriminant_getPartialDiscriminationProbability ((structDiscriminant *)ONLY_OBJECT, n, &p, &chisq, &ndf);
 	Melder_information5 (Melder_double (p), L" (=probability, based on chisq = ", Melder_double (chisq), L"and ndf = ", Melder_integer (ndf));
 END
 
 DIRECT (Discriminant_getHomegeneityOfCovariances_box)
-	Discriminant thee = ONLY_OBJECT;
+	Discriminant thee = (structDiscriminant *)ONLY_OBJECT;
 	double chisq, p;
 	long ndf;
 	SSCPs_getHomegeneityOfCovariances_box (thy groups, &p, &chisq, &ndf);
@@ -958,7 +958,7 @@ DIRECT (Discriminant_getHomegeneityOfCovariances_box)
 END
 
 DIRECT (Discriminant_reportEqualityOfCovariances_wald)
-	Discriminant thee = ONLY_OBJECT;
+	Discriminant thee = (structDiscriminant *)ONLY_OBJECT;
 	double chisq, prob, df;
 	MelderInfo_open ();
 	Covariances_equality ((Ordered)(thy groups), 2, &prob, &chisq, &df);
@@ -978,7 +978,7 @@ FORM (Discriminant_getConcentrationEllipseArea, L"Discriminant: Get concentratio
 	INTEGER (L"Y-dimension", L"2")
 	OK
 DO
-	Discriminant d = ONLY_OBJECT;
+	Discriminant d = (structDiscriminant *)ONLY_OBJECT;
 	long group = Discriminant_groupLabelToIndex (d, GET_STRING (L"Group label"));
 	REQUIRE (group > 0, L"Group label does not exist.")
 	Melder_information1 (Melder_double (Discriminant_getConcentrationEllipseArea(d, group,
@@ -994,7 +994,7 @@ FORM (Discriminant_getConfidenceEllipseArea, L"Discriminant: Get confidence elli
 	INTEGER (L"Y-dimension", L"2")
 	OK
 DO
-	Discriminant d = ONLY_OBJECT;
+	Discriminant d = (structDiscriminant *)ONLY_OBJECT;
 	long group = Discriminant_groupLabelToIndex (d, GET_STRING (L"Group label"));
 	REQUIRE (group > 0, L"Group label does not exist.")
 	Melder_information1 (Melder_double (Discriminant_getConcentrationEllipseArea(d, group,
@@ -1006,14 +1006,14 @@ FORM (Discriminant_getLnDeterminant_group, L"Discriminant: Get determinant (grou
 	SENTENCE (L"Group label", L"")
 	OK
 DO
-	Discriminant d = ONLY_OBJECT;
+	Discriminant d = (structDiscriminant *)ONLY_OBJECT;
 	long group = Discriminant_groupLabelToIndex (d, GET_STRING (L"Group label"));
 	REQUIRE (group > 0, L"Group label does not exist.")
 	Melder_information1 (Melder_double (Discriminant_getLnDeterminant_group (d, group)));
 END
 
 DIRECT (Discriminant_getLnDeterminant_total)
-	Melder_information1 (Melder_double (Discriminant_getLnDeterminant_total (ONLY_OBJECT)));
+	Melder_information1 (Melder_double (Discriminant_getLnDeterminant_total ((structDiscriminant *)ONLY_OBJECT)));
 END
 
 FORM (Discriminant_invertEigenvector, L"Discriminant: Invert eigenvector", 0)
@@ -1037,7 +1037,7 @@ FORM (Discriminant_drawSigmaEllipses, L"Discriminant: Draw sigma ellipses", L"Di
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Discriminant_drawConcentrationEllipses (OBJECT, GRAPHICS,
+	EVERY_DRAW (Discriminant_drawConcentrationEllipses ((structDiscriminant *)OBJECT, GRAPHICS,
 		GET_REAL (L"Number of sigmas"), 0, NULL, GET_INTEGER (L"Discriminant plane"),
 		GET_INTEGER (L"X-dimension"), GET_INTEGER (L"Y-dimension"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
@@ -1059,7 +1059,7 @@ FORM (Discriminant_drawOneSigmaEllipse, L"Discriminant: Draw one sigma ellipse",
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Discriminant_drawConcentrationEllipses (OBJECT, GRAPHICS,
+	EVERY_DRAW (Discriminant_drawConcentrationEllipses ((structDiscriminant *)OBJECT, GRAPHICS,
 		GET_REAL (L"Number of sigmas"), 0, GET_STRING (L"Label"),
 		GET_INTEGER (L"Discriminant plane"),
 		GET_INTEGER (L"X-dimension"), GET_INTEGER (L"Y-dimension"),
@@ -1081,7 +1081,7 @@ FORM (Discriminant_drawConfidenceEllipses, L"Discriminant: Draw confidence ellip
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Discriminant_drawConcentrationEllipses (OBJECT, GRAPHICS,
+	EVERY_DRAW (Discriminant_drawConcentrationEllipses ((structDiscriminant *)OBJECT, GRAPHICS,
 		GET_REAL (L"Confidence level"), 1, NULL, GET_INTEGER (L"Discriminant plane"),
 		GET_INTEGER (L"X-dimension"), GET_INTEGER (L"Y-dimension"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
@@ -1104,7 +1104,7 @@ FORM (Discriminant_drawOneConfidenceEllipse, L"Discriminant: Draw one confidence
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Discriminant_drawConcentrationEllipses (OBJECT, GRAPHICS,
+	EVERY_DRAW (Discriminant_drawConcentrationEllipses ((structDiscriminant *)OBJECT, GRAPHICS,
 		GET_REAL (L"Confidence level"), 1, GET_STRING (L"Label"), GET_INTEGER (L"Discriminant plane"),
 		GET_INTEGER (L"X-dimension"), GET_INTEGER (L"Y-dimension"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
@@ -1113,7 +1113,7 @@ DO
 END
 
 DIRECT (Discriminant_extractBetweenGroupsSSCP)
-	EVERY_TO (Discriminant_extractBetweenGroupsSSCP (OBJECT))
+	EVERY_TO (Discriminant_extractBetweenGroupsSSCP ((structDiscriminant *)OBJECT))
 END
 /*
 FORM (Discriminant_extractCoefficients, "Extract coefficients...", 0)
@@ -1127,31 +1127,31 @@ DO
 END
 */
 DIRECT (Discriminant_extractGroupCentroids)
-	EVERY_TO (Discriminant_extractGroupCentroids (OBJECT))
+	EVERY_TO (Discriminant_extractGroupCentroids ((structDiscriminant *)OBJECT))
 END
 
 DIRECT (Discriminant_extractGroupStandardDeviations)
-	EVERY_TO (Discriminant_extractGroupStandardDeviations (OBJECT))
+	EVERY_TO (Discriminant_extractGroupStandardDeviations ((structDiscriminant *)OBJECT))
 END
 
 DIRECT (Discriminant_extractGroupLabels)
-	EVERY_TO (Discriminant_extractGroupLabels (OBJECT))
+	EVERY_TO (Discriminant_extractGroupLabels ((structDiscriminant *)OBJECT))
 END
 
 DIRECT (Discriminant_extractPooledWithinGroupsSSCP)
-	EVERY_TO (Discriminant_extractPooledWithinGroupsSSCP (OBJECT))
+	EVERY_TO (Discriminant_extractPooledWithinGroupsSSCP ((structDiscriminant *)OBJECT))
 END
 
 FORM (Discriminant_extractWithinGroupSSCP, L"Discriminant: Extract within-group SSCP", L"Discriminant: Extract within-group SSCP...")
 	NATURAL (L"Group index", L"1")
 	OK
 DO
-	EVERY_TO (Discriminant_extractWithinGroupSSCP (OBJECT,
+	EVERY_TO (Discriminant_extractWithinGroupSSCP ((structDiscriminant *)OBJECT,
 		GET_INTEGER (L"Group index")))
 END
 
 DIRECT (Discriminant_getNumberOfFunctions)
-	Melder_information1 (Melder_integer (Discriminant_getNumberOfFunctions (ONLY_OBJECT)));
+	Melder_information1 (Melder_integer (Discriminant_getNumberOfFunctions ((structDiscriminant *)ONLY_OBJECT)));
 END
 
 DIRECT (Discriminant_getDimensionOfFunctions)
@@ -1159,14 +1159,14 @@ DIRECT (Discriminant_getDimensionOfFunctions)
 END
 
 DIRECT (Discriminant_getNumberOfGroups)
-	Melder_information1 (Melder_integer (Discriminant_getNumberOfGroups (ONLY_OBJECT)));
+	Melder_information1 (Melder_integer (Discriminant_getNumberOfGroups ((structDiscriminant *)ONLY_OBJECT)));
 END
 
 FORM (Discriminant_getNumberOfObservations, L"Discriminant: Get number of observations", L"Discriminant: Get number of observations...")
 	INTEGER (L"Group", L"0 (=total)")
 	OK
 DO
-	Melder_information1 (Melder_integer (Discriminant_getNumberOfObservations (ONLY_OBJECT, GET_INTEGER (L"Group"))));
+	Melder_information1 (Melder_integer (Discriminant_getNumberOfObservations ((structDiscriminant *)ONLY_OBJECT, GET_INTEGER (L"Group"))));
 END
 
 
@@ -1183,10 +1183,10 @@ DO
 	Sound s1 = NULL, s2 = NULL;
 	WHERE (SELECTED && CLASS == classSound)
 	{
-		if (s1) s2 = OBJECT; else s1 = OBJECT;
+		if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT;
 	}
 	praat_picture_open ();
-	DTW_and_Sounds_draw (ONLY (classDTW), s2, s1, GRAPHICS,
+	DTW_and_Sounds_draw ((structDTW *)ONLY (classDTW), s2, s1, GRAPHICS,
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_INTEGER (L"Garnish"));
@@ -1206,10 +1206,10 @@ DO
 	Sound s1 = NULL, s2 = NULL;
 	WHERE (SELECTED && CLASS == classSound)
 	{
-		if (s1) s2 = OBJECT; else s1 = OBJECT;
+		if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT;
 	}
 	praat_picture_open ();
-	DTW_and_Sounds_drawWarpX (ONLY (classDTW), s2, s1, GRAPHICS,
+	DTW_and_Sounds_drawWarpX ((structDTW *)ONLY (classDTW), s2, s1, GRAPHICS,
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_REAL (L"Time"), GET_INTEGER (L"Garnish"));
@@ -1217,7 +1217,7 @@ DO
 	return 1;
 END
 
-void DTW_constraints_addCommonFields (void *dia)
+void DTW_constraints_addCommonFields (Any dia)
 {
 	Any radio;
 	LABEL (L"", L"Boundary conditions")
@@ -1230,7 +1230,7 @@ void DTW_constraints_addCommonFields (void *dia)
 	RADIOBUTTON (L"2/3 < slope < 3/2")
 }
 
-void DTW_constraints_getCommonFields (void *dia, int *begin, int *end, int *slope)
+void DTW_constraints_getCommonFields (Any dia, int *begin, int *end, int *slope)
 {
 	*begin = GET_INTEGER (L"Match begin positions");
 	*end = GET_INTEGER (L"Match end positions");
@@ -1247,7 +1247,7 @@ FORM (DTW_drawPath, L"DTW: Draw path", 0)
     BOOLEAN (L"Garnish", 0);
     OK
 DO
-    EVERY_DRAW (DTW_drawPath (OBJECT, GRAPHICS,
+    EVERY_DRAW (DTW_drawPath ((structDTW *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_INTEGER (L"Garnish")))
@@ -1261,7 +1261,7 @@ FORM (DTW_drawDistancesAlongPath, L"DTW: Draw distances along path", 0)
     BOOLEAN (L"Garnish", 0);
     OK
 DO
-    EVERY_DRAW (DTW_drawDistancesAlongPath (OBJECT, GRAPHICS,
+    EVERY_DRAW (DTW_drawDistancesAlongPath ((structDTW *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_INTEGER (L"Garnish")))
@@ -1277,7 +1277,7 @@ FORM (DTW_paintDistances, L"DTW: Paint distances", 0)
     BOOLEAN (L"Garnish", 0);
 	OK
 DO
-	EVERY_DRAW (DTW_paintDistances (OBJECT, GRAPHICS,
+	EVERY_DRAW (DTW_paintDistances ((structDTW *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_REAL (L"Minimum"), GET_REAL (L"Maximum"),
@@ -1293,7 +1293,7 @@ FORM (DTW_drawWarpX, L"DTW: Draw warp (x)", L"DTW: Draw warp (x)...")
     BOOLEAN (L"Garnish", 0);
 	OK
 DO
-	EVERY_DRAW (DTW_drawWarpX (OBJECT, GRAPHICS,
+	EVERY_DRAW (DTW_drawWarpX ((structDTW *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_REAL (L"Time"), GET_INTEGER (L"Garnish")))
@@ -1303,21 +1303,21 @@ FORM (DTW_getPathY, L"DTW: Get time along path", L"DTW: Get time along path...")
 	REAL (L"Time (s)", L"0.0")
 	OK
 DO
-	Melder_information1 (Melder_double (DTW_getPathY (ONLY_OBJECT, GET_REAL (L"Time"))));
+	Melder_information1 (Melder_double (DTW_getPathY ((structDTW *)ONLY_OBJECT, GET_REAL (L"Time"))));
 END
 
 FORM (DTW_getYTime, L"DTW: Get y time", L"DTW: Get y time...")
 	REAL (L"Time at x (s)", L"0.0")
 	OK
 DO
-	Melder_information1 (Melder_double (DTW_getYTime (ONLY_OBJECT, GET_REAL (L"Time at x"))));
+	Melder_information1 (Melder_double (DTW_getYTime ((structDTW *)ONLY_OBJECT, GET_REAL (L"Time at x"))));
 END
 
 FORM (DTW_getXTime, L"DTW: Get x time", L"DTW: Get x time...")
 	REAL (L"Time at y (s)", L"0.0")
 	OK
 DO
-	Melder_information1 (Melder_double (DTW_getXTime (ONLY_OBJECT, GET_REAL (L"Time at y"))));
+	Melder_information1 (Melder_double (DTW_getXTime ((structDTW *)ONLY_OBJECT, GET_REAL (L"Time at y"))));
 END
 
 FORM (DTW_getMaximumConsecutiveSteps, L"DTW: Get maximum consecutive steps", L"DTW: Get maximum consecutive steps...")
@@ -1330,12 +1330,12 @@ DO
 	int direction[] = {DTW_START, DTW_X, DTW_Y, DTW_XANDY};
 	wchar_t *string[] = {L"", L"x", L"y", L"diagonal"};
 	int d = GET_INTEGER (L"Direction");
-	Melder_information4 (Melder_integer (DTW_getMaximumConsecutiveSteps (ONLY_OBJECT, direction[d])),
+	Melder_information4 (Melder_integer (DTW_getMaximumConsecutiveSteps ((structDTW *)ONLY_OBJECT, direction[d])),
 		L" (=maximum number of consecutive steps in ", string[d], L" direction");
 END
 
 DIRECT (DTW_getWeightedDistance)
-	DTW me = ONLY_OBJECT;
+	DTW me = (structDTW *)ONLY_OBJECT;
 	Melder_information1 (Melder_double (my weightedDistance));
 END
 
@@ -1345,7 +1345,7 @@ FORM (DTW_findPath, L"DTW: Find path", 0)
 DO
 	int begin, end, slope;
 	DTW_constraints_getCommonFields (dia, &begin, &end, &slope);
-	EVERY (DTW_findPath (OBJECT, begin, end, slope))
+	EVERY (DTW_findPath ((structDTW *)OBJECT, begin, end, slope))
 END
 
 #ifdef INCLUDE_DTW_SLOPES
@@ -1361,7 +1361,7 @@ FORM (DTW_pathFinder_slopes, L"DTW: Find path (slopes)", L"DTW: Find path (slope
 	REAL (L"Diagonal weight", L"2.0")
 	OK
 DO
-	EVERY_CHECK (DTW_pathFinder_slopes (OBJECT, GET_INTEGER (L"Non-diagonal steps"), GET_INTEGER (L"Diagonal steps"),
+	EVERY_CHECK (DTW_pathFinder_slopes ((structDTW *)OBJECT, GET_INTEGER (L"Non-diagonal steps"), GET_INTEGER (L"Diagonal steps"),
 		GET_REAL (L"X weight"), GET_REAL (L"Y weight"), GET_REAL (L"Diagonal weight")))
 END
 #endif
@@ -1375,7 +1375,7 @@ FORM (DTW_pathFinder_band, L"DTW: Find path (Sakoe-Chiba band)", L"DTW: Find pat
 	REAL (L"Diagonal weight", L"2.0")
 	OK
 DO
-	EVERY_CHECK (DTW_pathFinder_band (OBJECT, GET_REAL (L"Adjustment window duration"),
+	EVERY_CHECK (DTW_pathFinder_band ((structDTW *)OBJECT, GET_REAL (L"Adjustment window duration"),
 		GET_INTEGER (L"Adjustment window includes end"),
 		GET_REAL (L"X weight"), GET_REAL (L"Y weight"), GET_REAL (L"Diagonal weight")))
 END
@@ -1388,7 +1388,7 @@ FORM (DTW_to_Polygon_slopes, L"DTW: To Polygon (slopes)", L"DTW: To Polygon (slo
 	INTEGER (L"Diagonal steps", L"0 (=no constraints)")
 	OK
 DO
-	EVERY_TO (DTW_to_Polygon_slopes (OBJECT, GET_INTEGER (L"Non-diagonal steps"), GET_INTEGER (L"Diagonal steps")))
+	EVERY_TO (DTW_to_Polygon_slopes ((structDTW *)OBJECT, GET_INTEGER (L"Non-diagonal steps"), GET_INTEGER (L"Diagonal steps")))
 END
 
 FORM (DTW_to_Polygon_band, L"DTW: To Polygon (band)", L"DTW: To Polygon (band)...")
@@ -1396,19 +1396,19 @@ FORM (DTW_to_Polygon_band, L"DTW: To Polygon (band)", L"DTW: To Polygon (band)..
 	BOOLEAN (L"Adjustment window includes end", 0)
 	OK
 DO
-	EVERY_TO (DTW_to_Polygon_band (OBJECT, GET_REAL (L"Adjustment window duration"), GET_INTEGER (L"Adjustment window includes end")))
+	EVERY_TO (DTW_to_Polygon_band ((structDTW *)OBJECT, GET_REAL (L"Adjustment window duration"), GET_INTEGER (L"Adjustment window includes end")))
 END
 
 DIRECT (DTW_distancesToMatrix)
-	EVERY_TO (DTW_distancesToMatrix (OBJECT))
+	EVERY_TO (DTW_distancesToMatrix ((structDTW *)OBJECT))
 END
 
 DIRECT (DTW_swapAxes)
-	EVERY_TO (DTW_swapAxes (OBJECT))
+	EVERY_TO (DTW_swapAxes ((structDTW *)OBJECT))
 END
 
 DIRECT (DTW_and_TextGrid_to_TextGrid)
-	NEW (DTW_and_TextGrid_to_TextGrid (ONLY (classDTW), ONLY (classTextGrid)))
+	NEW (DTW_and_TextGrid_to_TextGrid ((structDTW *)ONLY (classDTW), (structTextGrid *)ONLY (classTextGrid)))
 END
 /******************** Eigen ********************************************/
 
@@ -1461,12 +1461,12 @@ DO
 END
 
 DIRECT (Eigen_getNumberOfEigenvalues)
-	Eigen me = ONLY_OBJECT;
+	Eigen me = (structEigen *)ONLY_OBJECT;
 	Melder_information1 (Melder_integer (my numberOfEigenvalues));
 END
 
 DIRECT (Eigen_getDimension)
-	Eigen me = ONLY_OBJECT;
+	Eigen me = (structEigen *)ONLY_OBJECT;
 	Melder_information1 (Melder_integer (my dimension));
 END
 
@@ -1474,7 +1474,7 @@ FORM (Eigen_getEigenvalue, L"Eigen: Get eigenvalue", L"Eigen: Get eigenvalue..."
 	NATURAL (L"Eigenvalue number", L"1")
 	OK
 DO
-	Eigen me = ONLY_OBJECT;
+	Eigen me = (structEigen *)ONLY_OBJECT;
 	long number = GET_INTEGER (L"Eigenvalue number");
 	if (number > my numberOfEigenvalues) return Melder_error2 (L"DO_Eigen_getEigenvalue: Eigenvalue number must be smaller than ", Melder_integer(my numberOfEigenvalues + 1));
 	Melder_information1 (Melder_double (my eigenvalues[number]));
@@ -1517,18 +1517,18 @@ FORM (Eigen_and_Matrix_project, L"Eigen & Matrix: Project", L"Eigen & Matrix: Pr
 	INTEGER (L"Number of dimensions", L"0")
 	OK
 DO
-	NEW (Eigen_and_Matrix_project (ONLY_GENERIC (classEigen),
-		ONLY_GENERIC (classMatrix), GET_INTEGER (L"Number of dimensions")))
+	NEW (Eigen_and_Matrix_project ((structEigen *)ONLY_GENERIC (classEigen),
+		(structMatrix *)ONLY_GENERIC (classMatrix), GET_INTEGER (L"Number of dimensions")))
 END
 
 DIRECT (Eigen_and_SSCP_project)
-	NEW (Eigen_and_SSCP_project (ONLY_GENERIC (classEigen),
-		ONLY (classSSCP)))
+	NEW (Eigen_and_SSCP_project ((structEigen *)ONLY_GENERIC (classEigen),
+		(structSSCP *)ONLY (classSSCP)))
 END
 
 DIRECT (Eigen_and_Covariance_project)
-	NEW (Eigen_and_Covariance_project (ONLY_GENERIC (classEigen),
-		ONLY (classCovariance)))
+	NEW (Eigen_and_Covariance_project ((structEigen *)ONLY_GENERIC (classEigen),
+		(structCovariance *)ONLY (classCovariance)))
 END
 
 /******************** Index ********************************************/
@@ -1538,7 +1538,7 @@ DIRECT (Index_help)
 END
 
 DIRECT (Index_getNumberOfClasses)
-	Index thee = ONLY_OBJECT;
+	Index thee = (structIndex *)ONLY_OBJECT;
 	Melder_information1 (Melder_integer (thy classes -> size));
 END
 
@@ -1546,12 +1546,12 @@ FORM (StringsIndex_getClassLabel, L"StringsIndex: Get class label", L"StringsInd
 	NATURAL (L"Class index", L"1")
 	OK
 DO
-	StringsIndex thee = ONLY_OBJECT;
+	StringsIndex thee = (structStringsIndex *)ONLY_OBJECT;
 	long klas = GET_INTEGER (L"Class index");
 	long numberOfClasses = thy classes -> size;
 	SimpleString ss;
 	if (klas > numberOfClasses) return Melder_error3 (L"Element index must be less than or equal ", Melder_integer (numberOfClasses), L".");
-	ss = thy classes -> item[klas];
+	ss = (structSimpleString *)thy classes -> item[klas];
 	Melder_information1 (ss -> string);
 END
 
@@ -1559,12 +1559,12 @@ FORM (StringsIndex_getLabel, L"StringsIndex: Get label", L"StringsIndex: Get lab
 	NATURAL (L"Element index", L"1")
 	OK
 DO
-	StringsIndex thee = ONLY_OBJECT;
+	StringsIndex thee = (structStringsIndex *)ONLY_OBJECT;
 	long klas, index = GET_INTEGER (L"Element index");
 	SimpleString ss;
 	if (index > thy numberOfElements) return Melder_error3 (L"Element index must be less than or equal ", Melder_integer (thy numberOfElements), L".");
 	klas = thy classIndex[index];
-	ss = thy classes -> item [klas];
+	ss = (structSimpleString *)thy classes -> item [klas];
 	Melder_information1 (ss -> string);
 END
 
@@ -1572,7 +1572,7 @@ FORM (Index_getIndex, L"Index: Get index", L"Index: Get index...")
 	NATURAL (L"Element index", L"1")
 	OK
 DO
-	Index thee = ONLY_OBJECT;
+	Index thee = (structIndex *)ONLY_OBJECT;
 	long index = GET_INTEGER (L"Element index");
 	if (index > thy numberOfElements) return Melder_error3 (L"Element index must be less than or equal ", Melder_integer (thy numberOfElements), L".");
 	Melder_information1 (Melder_integer (thy classIndex[index]));
@@ -1582,7 +1582,7 @@ FORM (StringsIndex_getClassIndex, L"StringsIndex: Get class index", L"StringsInd
 	WORD (L"Class label", L"label")
 	OK
 DO
-	StringsIndex thee = ONLY_OBJECT;
+	StringsIndex thee = (structStringsIndex *)ONLY_OBJECT;
 	wchar_t *klasLabel = GET_STRING (L"Class label");
 	long index = StringsIndex_getClass (thee, klasLabel);
 	Melder_information1 (Melder_integer (index));
@@ -1593,7 +1593,7 @@ FORM (Index_extractPart, L"Index: Extract part", L"Index: Extract part...")
 	INTEGER (L"right Range", L"0")
 	OK
 DO
-	Index thee = ONLY_OBJECT;
+	Index thee = (structIndex *)ONLY_OBJECT;
 	if (! praat_new2 (Index_extractPart (thee, GET_INTEGER (L"left Range"), GET_INTEGER (L"right Range")),
 		Thing_getName (thee), L"_part")) return 0;
 END
@@ -1606,7 +1606,7 @@ DO
 END
 
 DIRECT (StringsIndex_to_Strings)
-	EVERY_TO (StringsIndex_to_Strings (OBJECT))
+	EVERY_TO (StringsIndex_to_Strings ((structStringsIndex *)OBJECT))
 END
 
 /******************** Excitation ********************************************/
@@ -1631,10 +1631,10 @@ FORM (Excitations_formula,L"Excitations: Formula", 0)
 DO
 	WHERE (SELECTED && Thing_member (OBJECT, classExcitations))
 	{
-		Ordered ms = OBJECT;
+		Ordered ms = (structOrdered *)OBJECT;
 		int j;
 		for (j = 1; j <= ms -> size; j++)
-			if (! Matrix_formula (ms->item[j], GET_STRING (L"formula"), interpreter, NULL)) break;
+			if (! Matrix_formula ((structMatrix *)ms->item[j], GET_STRING (L"formula"), interpreter, NULL)) break;
 		praat_dataChanged (OBJECT);
 		iferror return 0;
 	}
@@ -1642,7 +1642,7 @@ END
 
 DIRECT (Excitations_addItem)
 	Excitations e = NULL;
-	WHERE (SELECTED && CLASS == classExcitations) e = OBJECT;
+	WHERE (SELECTED && CLASS == classExcitations) e = (structExcitations *)OBJECT;
 	WHERE_DOWN (SELECTED && CLASS == classExcitation)
 	{
 		(void) Collection_addItem (e, Data_copy (OBJECT));
@@ -1657,14 +1657,14 @@ FORM (Excitations_getItem, L"Excitations: Get item", 0)
 DO
 	WHERE (SELECTED && CLASS == classExcitations)
 	{
-		Excitation me = Excitations_getItem (OBJECT, GET_INTEGER (L"Item number"));
+		Excitation me = (structExcitation *)Excitations_getItem ((structExcitations *)OBJECT, GET_INTEGER (L"Item number"));
 		if (me == NULL || ! praat_new1 (me, Thing_getName (me))) return 0;
 	}
 END
 
 DIRECT (Excitations_append)
    Data e1 = NULL, e2 = NULL;
-   WHERE (SELECTED && CLASS == classExcitations) { if (e1) e2 = OBJECT; else e1 = OBJECT; }
+   WHERE (SELECTED && CLASS == classExcitations) { if (e1) e2 = (structData *)OBJECT; else e1 = (structData *)OBJECT; }
    NEW (Collections_merge (e1, e2))
 END
 
@@ -1672,11 +1672,11 @@ FORM (Excitations_to_Pattern,L"Excitations: To Pattern", 0)
 	NATURAL (L"Join", L"1")
 	OK
 DO
-    EVERY_TO (Excitations_to_Pattern (OBJECT, GET_INTEGER (L"Join")))
+    EVERY_TO (Excitations_to_Pattern ((structExcitations *)OBJECT, GET_INTEGER (L"Join")))
 END
 
 DIRECT (Excitations_to_TableOfReal)
-	EVERY_TO (Excitations_to_TableOfReal (OBJECT))
+	EVERY_TO (Excitations_to_TableOfReal ((structExcitations *)OBJECT))
 END
 
 /************************* FilterBank ***********************************/
@@ -1690,7 +1690,7 @@ FORM (FilterBank_drawFilters, L"FilterBank: Draw filters", 0)
 	REAL (L"right Amplitude range", L"0.0")
 	OK
 DO
-	EVERY_DRAW (Matrix_drawRows (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_drawRows ((structMatrix *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Amplitude range"), GET_REAL (L"right Amplitude range")))
@@ -1704,7 +1704,7 @@ FORM (FilterBank_drawOneContour, L"FilterBank: Draw one contour", 0)
 	REAL (L"Height (dB)", L"40.0")
 	OK
 DO
-	EVERY_DRAW (Matrix_drawOneContour (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_drawOneContour ((structMatrix *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"Height")))
@@ -1719,7 +1719,7 @@ FORM (FilterBank_drawContours, L"FilterBank: Draw contours", 0)
 	REAL (L"right Amplitude range", L"0.0")
 	OK
 DO
-	EVERY_DRAW (Matrix_drawContours (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_drawContours ((structMatrix *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Amplitude range"), GET_REAL (L"right Amplitude range")))
@@ -1741,7 +1741,7 @@ FORM (FilterBank_drawFrequencyScales, L"FilterBank: Draw frequency scales", L"Fi
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (FilterBank_drawFrequencyScales (OBJECT, GRAPHICS,
+	EVERY_DRAW (FilterBank_drawFrequencyScales ((structMatrix *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"Horizontal frequency scale"),
 		GET_REAL (L"left Horizontal frequency range"),
 		GET_REAL (L"right Horizontal frequency range"),
@@ -1759,7 +1759,7 @@ FORM (FilterBank_paintImage, L"FilterBank: Paint image", 0)
 	REAL (L"right Amplitude range", L"0.0")
 	OK
 DO
-	EVERY_DRAW (Matrix_paintImage (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_paintImage ((structMatrix *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Amplitude range"), GET_REAL (L"right Amplitude range")))
@@ -1774,7 +1774,7 @@ FORM (FilterBank_paintContours, L"FilterBank: Paint contours", 0)
 	REAL (L"right Amplitude range", L"0.0")
 	OK
 DO
-	EVERY_DRAW (Matrix_paintContours (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_paintContours ((structMatrix *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Amplitude range"), GET_REAL (L"right Amplitude range")))
@@ -1790,7 +1790,7 @@ FORM (FilterBank_paintCells, L"FilterBank: Paint cells", 0)
 	REAL (L"right Amplitude range", L"0.0")
 	OK
 DO
-	EVERY_DRAW (Matrix_paintCells (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_paintCells ((structMatrix *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Amplitude range"), GET_REAL (L"right Amplitude range")))
@@ -1805,7 +1805,7 @@ FORM (FilterBank_paintSurface, L"FilterBank: Paint surface", 0)
 	REAL (L"right Amplitude range", L"0.0")
 	OK
 DO
-	EVERY_DRAW (Matrix_paintSurface (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_paintSurface ((structMatrix *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_REAL (L"left Amplitude range"), GET_REAL (L"right Amplitude range"),
@@ -1820,7 +1820,7 @@ FORM (FilterBank_getFrequencyInHertz, L"FilterBank: Get frequency in Hertz", L"F
 	RADIOBUTTON (L"mel")
 	OK
 DO
-	double f = FilterBank_getFrequencyInHertz (ONLY_OBJECT,
+	double f = FilterBank_getFrequencyInHertz ((structFilterBank *)ONLY_OBJECT,
 		GET_REAL (L"Frequency"), GET_INTEGER (L"Unit"));
 	Melder_informationReal (f, L"Hertz");
 END
@@ -1833,7 +1833,7 @@ FORM (FilterBank_getFrequencyInBark, L"FilterBank: Get frequency in Bark", L"Fil
 	RADIOBUTTON (L"mel")
 	OK
 DO
-	Melder_informationReal (FilterBank_getFrequencyInBark (ONLY_OBJECT, GET_REAL (L"Frequency"),
+	Melder_informationReal (FilterBank_getFrequencyInBark ((structFilterBank *)ONLY_OBJECT, GET_REAL (L"Frequency"),
 		GET_INTEGER (L"Unit")), L"Bark");
 END
 
@@ -1845,7 +1845,7 @@ FORM (FilterBank_getFrequencyInMel, L"FilterBank: Get frequency in mel", L"Filte
 	RADIOBUTTON (L"mel")
 	OK
 DO
-	double f = FilterBank_getFrequencyInMel (ONLY_OBJECT,
+	double f = FilterBank_getFrequencyInMel ((structFilterBank *)ONLY_OBJECT,
 		GET_REAL (L"Frequency"), GET_INTEGER (L"Unit"));
 	Melder_informationReal (f, L"mel");
 END
@@ -1854,15 +1854,15 @@ FORM (FilterBank_equalizeIntensities, L"FilterBank: Equalize intensities", L"")
 	REAL (L"Intensity (dB)", L"80.0")
 	OK
 DO
-	EVERY (FilterBank_equalizeIntensities (OBJECT, GET_REAL (L"Intensity")))
+	EVERY (FilterBank_equalizeIntensities ((structFilterBank *)OBJECT, GET_REAL (L"Intensity")))
 END
 
 DIRECT (FilterBank_to_Matrix)
-	EVERY_TO (FilterBank_to_Matrix (OBJECT))
+	EVERY_TO (FilterBank_to_Matrix ((structFilterBank *)OBJECT))
 END
 
 DIRECT (FilterBank_to_Intensity)
-	EVERY_TO (FilterBank_to_Intensity (OBJECT))
+	EVERY_TO (FilterBank_to_Intensity ((structFilterBank *)OBJECT))
 END
 
 /*********** FormantFilter *******************************************/
@@ -1887,7 +1887,7 @@ FORM (FormantFilter_drawFilterFunctions, L"FormantFilter: Draw filter functions"
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (FormantFilter_drawFilterFunctions (OBJECT, GRAPHICS,
+	EVERY_DRAW (FormantFilter_drawFilterFunctions ((structFormantFilter *)OBJECT, GRAPHICS,
 		GET_REAL (L"Bandwidth"), GET_INTEGER (L"Frequency scale"),
 		GET_INTEGER (L"left Filter range"), GET_INTEGER (L"right Filter range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
@@ -1904,7 +1904,7 @@ FORM (FormantFilter_drawSpectrum, L"FormantFilter: Draw spectrum (slice)", L"Fil
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (FilterBank_drawTimeSlice (OBJECT, GRAPHICS,
+	EVERY_DRAW (FilterBank_drawTimeSlice ((structFilterBank *)OBJECT, GRAPHICS,
 		GET_REAL (L"Time"), GET_REAL (L"left Frequency range"),
 		GET_REAL (L"right Frequency range"), GET_REAL (L"left Amplitude range"),
 		GET_REAL (L"right Amplitude range"), L"Hz", GET_INTEGER (L"Garnish")))
@@ -1921,7 +1921,7 @@ FORM (old_FormantGrid_draw, L"FormantGrid: Draw", 0)
 	BOOLEAN (L"Garnish", true)
 	OK
 DO
-	EVERY_DRAW (FormantGrid_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (FormantGrid_draw ((structFormantGrid *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_INTEGER (L"Bandwidths"), GET_INTEGER (L"Garnish"), L"lines and speckles"))
@@ -1941,7 +1941,7 @@ FORM (FormantGrid_draw, L"FormantGrid: Draw", 0)
 		OPTION (L"lines and speckles")
 	OK
 DO_ALTERNATIVE (old_FormantGrid_draw)
-	EVERY_DRAW (FormantGrid_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (FormantGrid_draw ((structFormantGrid *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
 		GET_INTEGER (L"Bandwidths"), GET_INTEGER (L"Garnish"), GET_STRING (L"Drawing method")))
@@ -1958,7 +1958,7 @@ FORM (FunctionTerms_draw, L"FunctionTerms: Draw", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (FunctionTerms_draw (OBJECT, GRAPHICS, GET_REAL (L"Xmin"), GET_REAL (L"Xmax"),
+	EVERY_DRAW (FunctionTerms_draw ((structFunctionTerms *)OBJECT, GRAPHICS, GET_REAL (L"Xmin"), GET_REAL (L"Xmax"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_INTEGER (L"Extrapolate"), GET_INTEGER (L"Garnish")))
 END
@@ -1973,7 +1973,7 @@ FORM (FunctionTerms_drawBasisFunction, L"FunctionTerms: Draw basis function", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (FunctionTerms_drawBasisFunction (OBJECT, GRAPHICS,
+	EVERY_DRAW (FunctionTerms_drawBasisFunction ((structFunctionTerms *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"Index"),
 		GET_REAL (L"Xmin"), GET_REAL (L"Xmax"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
@@ -1984,12 +1984,12 @@ FORM (FunctionTerms_evaluate, L"FunctionTerms: Evaluate", 0)
 	REAL (L"X", L"0.0")
 	OK
 DO
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	Melder_information1 (Melder_double (FunctionTerms_evaluate (f, GET_REAL (L"X"))));
 END
 
 DIRECT (FunctionTerms_getNumberOfCoefficients)
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	Melder_information1 (Melder_integer (f -> numberOfCoefficients));
 END
 
@@ -1999,13 +1999,13 @@ FORM (FunctionTerms_getCoefficient, L"FunctionTerms: Get coefficient", 0)
 	OK
 DO
 	long index = GET_INTEGER (L"Index");
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	REQUIRE (index <= f -> numberOfCoefficients, L"Index too large.")
 	Melder_information1 (Melder_double (f -> coefficients[index]));
 END
 
 DIRECT (FunctionTerms_getDegree)
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	Melder_information1 (Melder_integer (FunctionTerms_getDegree (f)));
 END
 
@@ -2015,7 +2015,7 @@ FORM (FunctionTerms_getMaximum, L"FunctionTerms: Get maximum", L"Polynomial: Get
 	REAL (L"Xmax", L"0.0")
 	OK
 DO
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	double x = FunctionTerms_getMaximum (f, GET_REAL (L"Xmin"),
 		GET_REAL (L"Xmax"));
 	Melder_information1 (Melder_double (x));
@@ -2027,7 +2027,7 @@ FORM (FunctionTerms_getMinimum, L"FunctionTerms: Get minimum", L"Polynomial: Get
 	REAL (L"Xmax", L"0.0")
 	OK
 DO
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	double x = FunctionTerms_getMinimum (f, GET_REAL (L"Xmin"),
 		GET_REAL (L"Xmax"));
 	Melder_information1 (Melder_double (x));
@@ -2039,7 +2039,7 @@ FORM (FunctionTerms_getXOfMaximum, L"FunctionTerms: Get x of maximum", L"Polynom
 	REAL (L"Xmax", L"0.0")
 	OK
 DO
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	double x = FunctionTerms_getXOfMaximum (f, GET_REAL (L"Xmin"),
 		GET_REAL (L"Xmax"));
 	Melder_information1 (Melder_double (x));
@@ -2051,7 +2051,7 @@ FORM (FunctionTerms_getXOfMinimum, L"FunctionTerms: Get x of minimum", L"Polynom
 	REAL (L"Xmax", L"0.0")
 	OK
 DO
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	double x = FunctionTerms_getXOfMinimum (f, GET_REAL (L"Xmin"),
 		GET_REAL (L"Xmax"));
 	Melder_information1 (Melder_double (x));
@@ -2064,7 +2064,7 @@ FORM (FunctionTerms_setCoefficient, L"FunctionTerms: Set coefficient", 0)
 	REAL (L"Value", L"0.0")
 	OK
 DO
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	if (! FunctionTerms_setCoefficient (f, GET_INTEGER (L"Index"),
 		GET_REAL (L"Value"))) return 0;
 END
@@ -2074,7 +2074,7 @@ FORM (FunctionTerms_setDomain, L"FunctionTerms: Set domain", 0)
 	REAL (L"Xmax", L"2.0")
 	OK
 DO
-	FunctionTerms f = ONLY_GENERIC (classFunctionTerms);
+	FunctionTerms f = (structFunctionTerms *)ONLY_GENERIC (classFunctionTerms);
 	double xmin = GET_REAL (L"Xmin"), xmax = GET_REAL (L"Xmax");
 	REQUIRE (xmin < xmax, L"Xmax must be larger than Xmin.")
 	FunctionTerms_setDomain (f, xmin, xmax);
@@ -2090,7 +2090,7 @@ FORM (Intensity_to_TextGrid_detectSilences, L"Intensity: To TextGrid (silences)"
 	WORD (L"Sounding interval label", L"sounding")
 	OK
 DO
-	EVERY_TO (Intensity_to_TextGrid_detectSilences (OBJECT, GET_REAL (L"Silence threshold"),
+	EVERY_TO (Intensity_to_TextGrid_detectSilences ((structIntensity *)OBJECT, GET_REAL (L"Silence threshold"),
 		GET_REAL (L"Minimum silent interval duration"), GET_REAL (L"Minimum sounding interval duration"),
 		GET_STRING (L"Silent interval label"), GET_STRING (L"Sounding interval label")))
 END
@@ -2153,7 +2153,7 @@ DO
 	double flutter = GET_REAL (L"Flutter percentage");
 	int outputType = GET_INTEGER (L"Output type") - 1;
 	REQUIRE (flutter >= 0 && flutter <= 100, L"Flutter must be between 0 and 100%")
-	EVERY_TO (KlattTable_to_Sound (OBJECT, GET_REAL (L"Sampling frequency"), GET_INTEGER (L"Synthesis model"),
+	EVERY_TO (KlattTable_to_Sound ((structKlattTable *)OBJECT, GET_REAL (L"Sampling frequency"), GET_INTEGER (L"Synthesis model"),
 		GET_INTEGER (L"Number of formants"), GET_REAL (L"Frame duration"), GET_INTEGER (L"Voicing source"),
 		GET_REAL (L"Flutter percentage"), outputType))
 END
@@ -2162,15 +2162,15 @@ FORM (KlattTable_to_KlattGrid, L"KlattTable: To KlattGrid", 0)
 	POSITIVE (L"Frame duration (s)", L"0.002")
 	OK
 DO
-	EVERY_TO (KlattTable_to_KlattGrid (OBJECT, GET_REAL (L"Frame duration")))
+	EVERY_TO (KlattTable_to_KlattGrid ((structKlattTable *)OBJECT, GET_REAL (L"Frame duration")))
 END
 
 DIRECT (KlattTable_to_Table)
-	EVERY_TO (KlattTable_to_Table (OBJECT))
+	EVERY_TO (KlattTable_to_Table ((structKlattTable *)OBJECT))
 END
 
 DIRECT (Table_to_KlattTable)
-	EVERY_TO (Table_to_KlattTable (OBJECT))
+	EVERY_TO (Table_to_KlattTable ((structTable *)OBJECT))
 END
 
 /******************* LegendreSeries *********************************/
@@ -2194,7 +2194,7 @@ END
 DIRECT (LegendreSeries_help) Melder_help (L"LegendreSeries"); END
 
 DIRECT (LegendreSeries_to_Polynomial)
-	EVERY_TO (LegendreSeries_to_Polynomial (OBJECT))
+	EVERY_TO (LegendreSeries_to_Polynomial ((structLegendreSeries *)OBJECT))
 END
 /********************* LongSound **************************************/
 
@@ -2232,7 +2232,7 @@ FORM (Matrix_drawAsSquares,L"Matrix: Draw as squares", L"Matrix: Draw as squares
     BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Matrix_drawAsSquares (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_drawAsSquares ((structMatrix *)OBJECT, GRAPHICS,
     	GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
     	GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_INTEGER (L"Garnish")))
@@ -2254,7 +2254,7 @@ FORM (Matrix_drawDistribution, L"Matrix: Draw distribution", L"Matrix: Draw dist
     BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Matrix_drawDistribution (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_drawDistribution ((structMatrix *)OBJECT, GRAPHICS,
     	GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
     	GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
     	GET_REAL (L"Minimum value"), GET_REAL (L"Maximum value"),
@@ -2279,7 +2279,7 @@ FORM (Matrix_drawCumulativeDistribution, L"Matrix: Draw cumulative distribution"
     BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Matrix_drawDistribution (OBJECT, GRAPHICS,
+	EVERY_DRAW (Matrix_drawDistribution ((structMatrix *)OBJECT, GRAPHICS,
     	GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
     	GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
     	GET_REAL (L"Minimum value"), GET_REAL (L"Maximum value"),
@@ -2298,11 +2298,11 @@ FORM (Matrix_scale, L"Matrix: Scale", 0)
 DO
 	int scale = GET_INTEGER (L"Scale factor");
 	REQUIRE (scale > 0 && scale < 4, L"Illegal value for scale.")
-	EVERY (Matrix_scale (OBJECT, scale))
+	EVERY (Matrix_scale ((structMatrix *)OBJECT, scale))
 END
 
 DIRECT (Matrix_transpose)
-	EVERY_TO (Matrix_transpose (OBJECT))
+	EVERY_TO (Matrix_transpose ((structMatrix *)OBJECT))
 END
 
 FORM (Matrix_solveEquation, L"Matrix: Solve equation", L"Matrix: Solve equation...")
@@ -2311,13 +2311,13 @@ FORM (Matrix_solveEquation, L"Matrix: Solve equation", L"Matrix: Solve equation.
 DO
 	WHERE (SELECTED)
 	{
-		if (! praat_new2 (Matrix_solveEquation (OBJECT, GET_REAL (L"Tolerance")), NAME, L"_solution")) return 0;
+		if (! praat_new2 (Matrix_solveEquation ((structMatrix *)OBJECT, GET_REAL (L"Tolerance")), NAME, L"_solution")) return 0;
 	}
 END
 
 DIRECT (Matrix_Categories_to_TableOfReal)
-	NEW (Matrix_and_Categories_to_TableOfReal (ONLY_GENERIC (classMatrix),
-		ONLY (classCategories)))
+	NEW (Matrix_and_Categories_to_TableOfReal ((structMatrix *)ONLY_GENERIC (classMatrix),
+		(structCategories *)ONLY (classCategories)))
 END
 
 
@@ -2337,7 +2337,7 @@ DO
     long x = GET_INTEGER (L"Column for X-axis");
 	long y = GET_INTEGER (L"Column for Y-axis");
     REQUIRE (x != 0 && y != 0, L"X and Y component must differ from 0.")
-    EVERY_DRAW (Matrix_scatterPlot (OBJECT, GRAPHICS, x, y,
+    EVERY_DRAW (Matrix_scatterPlot ((structMatrix *)OBJECT, GRAPHICS, x, y,
     	GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
     	GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
     	GET_REAL (L"Mark size"), GET_STRING (L"Mark string"),
@@ -2345,7 +2345,7 @@ DO
 END
 
 DIRECT (Matrix_to_Activation)
-	EVERY_TO (Matrix_to_Activation (OBJECT))
+	EVERY_TO (Matrix_to_Activation ((structMatrix *)OBJECT))
 END
 
 FORM (Matrices_to_DTW, L"Matrices: To DTW", L"Matrix: To DTW...")
@@ -2359,7 +2359,7 @@ DO
 	DTW_constraints_getCommonFields (dia, &begin, &end, &slope);
 	WHERE (SELECTED && Thing_member (OBJECT, classMatrix))
 	{
-		if (m1) m2 = OBJECT; else m1 = OBJECT;
+		if (m1) m2 = (structMatrix *)OBJECT; else m1 = (structMatrix *)OBJECT;
 	}
 	NEW (Matrices_to_DTW (m1, m2, begin, end, slope, GET_REAL (L"Distance metric")))
 
@@ -2369,28 +2369,28 @@ FORM (Matrix_to_Pattern, L"Matrix: To Pattern", 0)
 	NATURAL (L"Join", L"1")
 	OK
 DO
-	EVERY_TO (Matrix_to_Pattern (OBJECT, GET_INTEGER (L"Join")))
+	EVERY_TO (Matrix_to_Pattern ((structMatrix *)OBJECT, GET_INTEGER (L"Join")))
 END
 
 /***** MATRIXFT *************/
 
 DIRECT (Matrixft_getHighestFrequency)
-	Matrix me = ONLY_OBJECT;
+	Matrix me = (structMatrix *)ONLY_OBJECT;
 	Melder_information1 (Melder_double (my ymax));
 END
 
 DIRECT (Matrixft_getLowestFrequency)
-	Matrix me = ONLY_OBJECT;
+	Matrix me = (structMatrix *)ONLY_OBJECT;
 	Melder_information1 (Melder_double (my ymin));
 END
 
 DIRECT (Matrixft_getNumberOfFrequencies)
-	Matrix me = ONLY_OBJECT;
+	Matrix me = (structMatrix *)ONLY_OBJECT;
 	Melder_information1 (Melder_integer (my ny));
 END
 
 DIRECT (Matrixft_getFrequencyDistance)
-	Matrix me = ONLY_OBJECT;
+	Matrix me = (structMatrix *)ONLY_OBJECT;
 	Melder_information1 (Melder_double (my dy));
 END
 
@@ -2398,14 +2398,14 @@ FORM (Matrixft_getFrequencyOfRow, L"Get frequency of row", 0)
 	NATURAL (L"Row number", L"1")
 	OK
 DO
-	Melder_information1 (Melder_double (Matrix_rowToY (ONLY_OBJECT, GET_INTEGER (L"Row number"))));
+	Melder_information1 (Melder_double (Matrix_rowToY ((structMatrix *)ONLY_OBJECT, GET_INTEGER (L"Row number"))));
 END
 
 FORM (Matrixft_getXofColumn, L"Get time of column", 0)
 	NATURAL (L"Column number", L"1")
 	OK
 DO
-	Melder_information1 (Melder_double (Matrix_columnToX (ONLY_OBJECT, GET_INTEGER (L"Column number"))));
+	Melder_information1 (Melder_double (Matrix_columnToX ((structMatrix *)ONLY_OBJECT, GET_INTEGER (L"Column number"))));
 END
 
 FORM (Matrixft_getValueInCell, L"Get value in cell", 0)
@@ -2413,7 +2413,7 @@ FORM (Matrixft_getValueInCell, L"Get value in cell", 0)
 	POSITIVE (L"Frequency", L"1")
 	OK
 DO
-	Matrix me = ONLY_OBJECT;
+	Matrix me = (structMatrix *)ONLY_OBJECT;
 	long row, col;
 	double ta, t = GET_REAL (L"Time");
 	double fa, f = GET_REAL (L"Frequency");
@@ -2452,7 +2452,7 @@ FORM (MelFilter_drawFilterFunctions, L"MelFilter: Draw filter functions", L"Filt
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (MelFilter_drawFilterFunctions (OBJECT, GRAPHICS,
+	EVERY_DRAW (MelFilter_drawFilterFunctions ((structMelFilter *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"Frequency scale"),
 		GET_INTEGER (L"left Filter range"), GET_INTEGER (L"right Filter range"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right Frequency range"),
@@ -2470,7 +2470,7 @@ FORM (MelFilter_drawSpectrum, L"MelFilter: Draw spectrum (slice)", L"FilterBank:
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (FilterBank_drawTimeSlice (OBJECT, GRAPHICS,
+	EVERY_DRAW (FilterBank_drawTimeSlice ((structFilterBank *)OBJECT, GRAPHICS,
 		GET_REAL (L"Time"), GET_REAL (L"left Frequency range"),
 		GET_REAL (L"right Frequency range"), GET_REAL (L"left Amplitude range"),
 		GET_REAL (L"right Amplitude range"), L"Mels", GET_INTEGER (L"Garnish")))
@@ -2480,7 +2480,7 @@ FORM (MelFilter_to_MFCC, L"MelFilter: To MFCC", L"MelFilter: To MFCC...")
 	NATURAL (L"Number of coefficients", L"12")
 	OK
 DO
-	EVERY_TO (MelFilter_to_MFCC (OBJECT,
+	EVERY_TO (MelFilter_to_MFCC ((structMelFilter *)OBJECT,
 		GET_INTEGER (L"Number of coefficients")))
 END
 
@@ -2497,7 +2497,7 @@ FORM (MFCC_to_MelFilter, L"MFCC: To MelFilter", L"MFCC: To MelFilter...")
 	POSITIVE (L"Distance between filters (mel)", L"100.0")
 	OK
 DO
-	EVERY_TO (MFCC_to_MelFilter (OBJECT, GET_INTEGER (L"From coefficient"),
+	EVERY_TO (MFCC_to_MelFilter ((structMFCC *)OBJECT, GET_INTEGER (L"From coefficient"),
 		GET_INTEGER (L"To coefficient"), GET_REAL (L"Position of first filter"),
 		GET_REAL (L"Distance between filters")))
 END
@@ -2530,8 +2530,8 @@ DIRECT (MSpline_help) Melder_help (L"MSpline"); END
 /********************** Pattern *******************************************/
 
 DIRECT (Pattern_and_Categories_to_Discriminant)
-	Pattern p = ONLY (classPattern);
-	Categories c = ONLY (classCategories);
+	Pattern p = (structPattern *)ONLY (classPattern);
+	Categories c = (structCategories *)ONLY (classCategories);
 	if (! praat_new3 (Pattern_and_Categories_to_Discriminant (p, c),
 		Thing_getName (p), L"_", Thing_getName (c))) return 0;
 END
@@ -2545,7 +2545,7 @@ FORM (Pattern_draw, L"Pattern: Draw", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Pattern_draw (OBJECT, GRAPHICS, GET_INTEGER (L"Pattern number"),
+	EVERY_DRAW (Pattern_draw ((structPattern *)OBJECT, GRAPHICS, GET_INTEGER (L"Pattern number"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_INTEGER (L"Garnish")))
 END
@@ -2567,7 +2567,7 @@ FORM (Pattern_setValue, L"Pattern: Set value", L"Pattern: Set value...")
 	OK
 DO
 	WHERE (SELECTED) {
-		Pattern me = OBJECT;
+		Pattern me = (structPattern *)OBJECT;
 		long row = GET_INTEGER (L"Row number"), column = GET_INTEGER (L"Column number");
 		REQUIRE (row <= my ny, L"Row number must not be greater than number of rows.")
 		REQUIRE (column <= my nx, L"Column number must not be greater than number of columns.")
@@ -2577,7 +2577,7 @@ DO
 END
 
 DIRECT (Pattern_to_Matrix)
-	NEW (Pattern_to_Matrix (ONLY (classPattern)))
+	NEW (Pattern_to_Matrix ((structPattern *)ONLY (classPattern)))
 END
 
 /******************* PCA ******************************/
@@ -2607,13 +2607,13 @@ FORM (PCA_and_TableOfReal_getFractionVariance,L"PCA & TableOfReal: Get fraction 
 	OK
 DO
 	Melder_information1 (Melder_double (PCA_and_TableOfReal_getFractionVariance
-		(ONLY (classPCA), ONLY_GENERIC (classTableOfReal),
+		((structPCA *)ONLY (classPCA), ONLY_GENERIC (classTableOfReal),
 		GET_INTEGER (L"left Principal component range"),
 		GET_INTEGER (L"right Principal component range"))));
 END
 
 DIRECT (PCA_and_Configuration_to_TableOfReal_reconstruct)
-	NEW (PCA_and_Configuration_to_TableOfReal_reconstruct (ONLY (classPCA),
+	NEW (PCA_and_Configuration_to_TableOfReal_reconstruct ((structPCA *)ONLY (classPCA),
 		ONLY (classConfiguration)))
 END
 
@@ -2623,7 +2623,7 @@ FORM (PCA_and_TableOfReal_to_Configuration, L"PCA & TableOfReal: To Configuratio
 DO
 	long dimension = GET_INTEGER (L"Number of dimensions");
 	REQUIRE (dimension >= 0, L"Number of dimensions must be greater equal zero.")
-	NEW (PCA_and_TableOfReal_to_Configuration (ONLY (classPCA),
+	NEW (PCA_and_TableOfReal_to_Configuration ((structPCA *)ONLY (classPCA),
 		ONLY_GENERIC (classTableOfReal), dimension))
 END
 
@@ -2634,7 +2634,7 @@ FORM (PCA_getEqualityOfEigenvalues, L"PCA: Get equality of eigenvalues", L"PCA: 
 	OK
 DO
 	long ndf; double p, chisq;
-	PCA_getEqualityOfEigenvalues (ONLY_OBJECT, GET_INTEGER (L"left Eigenvalue range"),
+	PCA_getEqualityOfEigenvalues ((structPCA *)ONLY_OBJECT, GET_INTEGER (L"left Eigenvalue range"),
 		GET_INTEGER (L"right Eigenvalue range"), GET_INTEGER (L"Conservative test"),
 		&p, &chisq, &ndf);
 	Melder_information5 (Melder_double (p), L" (=probability, based on chisq = ",
@@ -2647,7 +2647,7 @@ FORM (PCA_getNumberOfComponentsVAF, L"PCA: Get number of components (VAF)", L"PC
 DO
 	double f = GET_REAL (L"Variance fraction");
 	REQUIRE (f > 0 && f <= 1, L"The variance fraction must be in interval (0-1).")
-	Melder_information1 (Melder_integer (Eigen_getDimensionOfFraction (ONLY_OBJECT, f)));
+	Melder_information1 (Melder_integer (Eigen_getDimensionOfFraction ((structEigen *)ONLY_OBJECT, f)));
 END
 
 FORM (PCA_getFractionVAF, L"PCA: Get fraction variance accounted for", L"PCA: Get fraction variance accounted for...")
@@ -2658,21 +2658,21 @@ DO
 	long from = GET_INTEGER (L"left Principal component range");
 	long to = GET_INTEGER (L"right Principal component range");
 	REQUIRE (from <= to, L"The second component must be greater than or equal to the first component.")
-	Melder_information1 (Melder_double (Eigen_getCumulativeContributionOfComponents	(ONLY_OBJECT, from, to)));
+	Melder_information1 (Melder_double (Eigen_getCumulativeContributionOfComponents	((structEigen *)ONLY_OBJECT, from, to)));
 END
 
 FORM (PCA_invertEigenvector, L"PCA: Invert eigenvector", 0)
 	NATURAL (L"Eigenvector number", L"1")
 	OK
 DO
-	EVERY (Eigen_invertEigenvector (OBJECT, GET_INTEGER (L"Eigenvector number")))
+	EVERY (Eigen_invertEigenvector ((structEigen *)OBJECT, GET_INTEGER (L"Eigenvector number")))
 END
 
 FORM (PCA_to_TableOfReal_reconstruct1, L"PCA: To TableOfReal (reconstruct)", L"PCA: To TableOfReal (reconstruct 1)...")
 	SENTENCE (L"Coefficients", L"1.0 1.0")
 	OK
 DO
-	EVERY_TO (PCA_to_TableOfReal_reconstruct1 (OBJECT, GET_STRING (L"Coefficients")))
+	EVERY_TO (PCA_to_TableOfReal_reconstruct1 ((structPCA *)OBJECT, GET_STRING (L"Coefficients")))
 END
 
 FORM (PCAs_to_Procrustes, L"PCA & PCA: To Procrustes", L"PCA & PCA: To Procrustes...")
@@ -2683,7 +2683,7 @@ DO
 	long from = GET_INTEGER (L"left Eigenvector range");
 	long to = GET_INTEGER (L"right Eigenvector range");
 	PCA me = NULL, thee = NULL;
-	WHERE (SELECTED) { if (me) thee = OBJECT; else me = OBJECT; }
+	WHERE (SELECTED) { if (me) thee = (structPCA *)OBJECT; else me = (structPCA *)OBJECT; }
 	if (! praat_new3 (Eigens_to_Procrustes (me, thee, from, to), Thing_getName (me), L"_",
 		Thing_getName (thee))) return 0;
 END
@@ -2691,7 +2691,7 @@ END
 
 DIRECT (PCAs_getAngleBetweenPc1Pc2Plane_degrees)
 	PCA me = NULL, thee = NULL;
-	WHERE (SELECTED) { if (me) thee = OBJECT; else me = OBJECT; }
+	WHERE (SELECTED) { if (me) thee = (structPCA *)OBJECT; else me = (structPCA *)OBJECT; }
 	Melder_information2 (Melder_double (Eigens_getAngleBetweenEigenplanes_degrees (me, thee)),
 		L" degrees (=angle of intersection between the two pc1-pc2 eigenplanes)");
 END
@@ -2718,7 +2718,7 @@ DO
 END
 
 DIRECT (Permutation_getNumberOfElements)
-	Permutation p = ONLY_OBJECT;
+	Permutation p = (structPermutation *)ONLY_OBJECT;
 	Melder_information1 (Melder_integer (p -> numberOfElements));
 END
 
@@ -2727,7 +2727,7 @@ FORM (Permutation_getValueAtIndex, L"Permutation: Get value", L"Permutation: Get
 	OK
 DO
 	long index = GET_INTEGER (L"Index");
-	Melder_information4 (Melder_integer (Permutation_getValueAtIndex (ONLY_OBJECT, index)), L" (value, at index = ",
+	Melder_information4 (Melder_integer (Permutation_getValueAtIndex ((structPermutation *)ONLY_OBJECT, index)), L" (value, at index = ",
 		Melder_integer (index), L")");
 END
 
@@ -2736,12 +2736,12 @@ FORM (Permutation_getIndexAtValue, L"Permutation: Get index", L"Permutation: Get
 	OK
 DO
 	long value = GET_INTEGER (L"Value");
-	Melder_information4 (Melder_integer (Permutation_getIndexAtValue (ONLY_OBJECT, value)), L" (index, at value = ",
+	Melder_information4 (Melder_integer (Permutation_getIndexAtValue ((structPermutation *)ONLY_OBJECT, value)), L" (index, at value = ",
 		Melder_integer (value), L")");
 END
 
 DIRECT (Permutation_sort)
-	Permutation_sort (ONLY_OBJECT);
+	Permutation_sort ((structPermutation *)ONLY_OBJECT);
 	praat_dataChanged (ONLY_OBJECT);
 END
 
@@ -2751,7 +2751,7 @@ FORM (Permutation_swapBlocks, L"Permutation: Swap blocks", L"Permutation: Swap b
 	NATURAL (L"Block size", L"1")
 	OK
 DO
-	if (! Permutation_swapBlocks (ONLY_OBJECT, GET_INTEGER (L"From index"), GET_INTEGER (L"To index"), GET_INTEGER (L"Block size"))) return 0;
+	if (! Permutation_swapBlocks ((structPermutation *)ONLY_OBJECT, GET_INTEGER (L"From index"), GET_INTEGER (L"To index"), GET_INTEGER (L"Block size"))) return 0;
 	praat_dataChanged (ONLY_OBJECT);
 END
 
@@ -2760,7 +2760,7 @@ FORM (Permutation_swapPositions, L"Permutation: Swap positions", L"Permutation: 
 	NATURAL (L"Second index", L"2")
 	OK
 DO
-	if (! Permutation_swapPositions (ONLY_OBJECT, GET_INTEGER (L"First index"), GET_INTEGER (L"Second index"))) return 0;
+	if (! Permutation_swapPositions ((structPermutation *)ONLY_OBJECT, GET_INTEGER (L"First index"), GET_INTEGER (L"Second index"))) return 0;
 	praat_dataChanged (ONLY_OBJECT);
 END
 
@@ -2769,7 +2769,7 @@ FORM (Permutation_swapNumbers, L"Permutation: Swap numbers", L"Permutation: Swap
 	NATURAL (L"Second number", L"2")
 	OK
 DO
-	if (! Permutation_swapNumbers (ONLY_OBJECT, GET_INTEGER (L"First number"), GET_INTEGER (L"Second number"))) return 0;
+	if (! Permutation_swapNumbers ((structPermutation *)ONLY_OBJECT, GET_INTEGER (L"First number"), GET_INTEGER (L"Second number"))) return 0;
 	praat_dataChanged (ONLY_OBJECT);
 END
 
@@ -2782,7 +2782,7 @@ FORM (Permutation_swapOneFromRange, L"Permutation: Swap one from range", L"Permu
 	BOOLEAN (L"Forbid same", 1)
 	OK
 DO
-	if (! Permutation_swapOneFromRange (ONLY_OBJECT, GET_INTEGER (L"left Index range"), GET_INTEGER (L"right Index range"),
+	if (! Permutation_swapOneFromRange ((structPermutation *)ONLY_OBJECT, GET_INTEGER (L"left Index range"), GET_INTEGER (L"right Index range"),
 		GET_INTEGER (L"Index"), GET_INTEGER (L"Forbid same"))) return 0;
 	praat_dataChanged (ONLY_OBJECT);
 END
@@ -2792,7 +2792,7 @@ FORM (Permutation_permuteRandomly, L"Permutation: Permute randomly", L"Permutati
 	INTEGER (L"right Index range", L"0")
 	OK
 DO
-	Permutation p = ONLY_OBJECT;
+	Permutation p = (structPermutation *)ONLY_OBJECT;
 	if (! praat_new2 (Permutation_permuteRandomly (p, GET_INTEGER (L"left Index range"),
 		GET_INTEGER (L"right Index range")), Thing_getName (p), L"_randomly")) return 0;
 END
@@ -2803,7 +2803,7 @@ FORM (Permutation_rotate, L"Permutation: Rotate", L"Permutation: Rotate...")
 	INTEGER (L"Step size", L"1")
 	OK
 DO
-	Permutation p = ONLY_OBJECT;
+	Permutation p = (structPermutation *)ONLY_OBJECT;
 	long step = GET_INTEGER (L"Step size");
 	if (! praat_new3 (Permutation_rotate (p, GET_INTEGER (L"left Index range"), GET_INTEGER (L"right Index range"), step), Thing_getName (p), L"_rotate", Melder_integer (step))) return 0;
 END
@@ -2813,7 +2813,7 @@ FORM (Permutation_reverse, L"Permutation: Reverse", L"Permutation: Reverse...")
 	INTEGER (L"right Index range", L"0")
 	OK
 DO
-	Permutation p = ONLY_OBJECT;
+	Permutation p = (structPermutation *)ONLY_OBJECT;
 	if (! praat_new2 (Permutation_reverse (p, GET_INTEGER (L"left Index range"), GET_INTEGER (L"right Index range")),
 		Thing_getName (p), L"_reverse")) return 0;
 END
@@ -2826,7 +2826,7 @@ FORM (Permutation_permuteBlocksRandomly, L"Permutation: Permute blocks randomly"
 	BOOLEAN (L"No doublets", 0)
 	OK
 DO
-	Permutation p = ONLY_OBJECT;
+	Permutation p = (structPermutation *)ONLY_OBJECT;
 	long blocksize = GET_INTEGER (L"Block size");
 	if (! praat_new3 (Permutation_permuteBlocksRandomly (p, GET_INTEGER (L"left Index range"),
 		GET_INTEGER (L"right Index range"), blocksize, GET_INTEGER (L"Permute within blocks"), GET_INTEGER (L"No doublets")),
@@ -2840,13 +2840,13 @@ FORM (Permutation_interleave, L"Permutation: Interleave", L"Permutation: Interle
 	INTEGER (L"Offset", L"0")
 	OK
 DO
-	Permutation p = ONLY_OBJECT;
-	if (! praat_new2 (Permutation_interleave (ONLY_OBJECT, GET_INTEGER (L"left Index range"), GET_INTEGER (L"right Index range"),
+	Permutation p = (structPermutation *)ONLY_OBJECT;
+	if (! praat_new2 (Permutation_interleave ((structPermutation *)ONLY_OBJECT, GET_INTEGER (L"left Index range"), GET_INTEGER (L"right Index range"),
 		GET_INTEGER (L"Block size"), GET_INTEGER (L"Offset")), Thing_getName (p), L"_interleave")) return 0;
 END
 
 DIRECT (Permutation_invert)
-	Permutation p = ONLY_OBJECT;
+	Permutation p = (structPermutation *)ONLY_OBJECT;
 	if (! praat_new2 (Permutation_invert (p), Thing_getName (p), L"_inverse")) return 0;
 END
 
@@ -2856,7 +2856,7 @@ DIRECT (Permutations_multiply)
 
 	WHERE (SELECTED)
 	{
-		Permutation me = OBJECT;
+		Permutation me = (structPermutation *)OBJECT;
 		if (n == 0)
 		{
 			n = my numberOfElements;
@@ -2869,16 +2869,16 @@ DIRECT (Permutations_multiply)
 	}
 	WHERE (SELECTED)
 	{
-		Permutation p = OBJECT;
+		Permutation p = (structPermutation *)OBJECT;
 		if (thee == NULL)
 		{
-			thee = Data_copy (p);
+			thee = (structPermutation *)Data_copy (p);
 			if (thee == NULL) return 0;
 		}
 		else
 		{
 			long i;
-			buf = Data_copy (thee);
+			buf = (structPermutation *)Data_copy (thee);
 			if (buf == NULL) goto end;
 			for (i = 1; i <= n; i++)
 			{
@@ -2896,13 +2896,13 @@ end:
 END
 
 DIRECT (Permutations_next)
-	Permutation p = ONLY_OBJECT;
+	Permutation p = (structPermutation *)ONLY_OBJECT;
 	Permutation_next_inline (p);
 	praat_dataChanged (p);
 END
 
 DIRECT (Permutations_previous)
-	Permutation p = ONLY_OBJECT;
+	Permutation p = (structPermutation *)ONLY_OBJECT;
 	Permutation_previous_inline (p);
 	praat_dataChanged (p);
 END
@@ -2916,7 +2916,7 @@ DO
 	Pitch p1 = NULL, p2 = NULL;
 	int begin, end, slope;
 	DTW_constraints_getCommonFields (dia, &begin, &end, &slope);
-	WHERE (SELECTED) { if (p1) p2 = OBJECT; else p1 = OBJECT; }
+	WHERE (SELECTED) { if (p1) p2 = (structPitch *)OBJECT; else p1 = (structPitch *)OBJECT; }
 	if (! praat_new4 (Pitches_to_DTW (p1, p2, GET_REAL (L"Voiced-unvoiced costs"), GET_REAL (L"Time costs weight"), begin, end, slope), L"dtw_", p1 -> name, L"_", p2 -> name)) return 0;
 
 END
@@ -2927,7 +2927,7 @@ FORM (PitchTier_to_Pitch, L"PitchTier: To Pitch", L"PitchTier: To Pitch...")
 	POSITIVE (L"Pitch ceiling", L"400.0")
 	OK
 DO
-	EVERY_TO (PitchTier_to_Pitch (ONLY(classPitchTier), GET_REAL (L"Step size"),
+	EVERY_TO (PitchTier_to_Pitch ((structPitchTier *)ONLY(classPitchTier), GET_REAL (L"Step size"),
 		GET_REAL (L"Pitch floor"),GET_REAL (L"Pitch ceiling")))
 END
 
@@ -2938,7 +2938,7 @@ FORM (Polygon_translate, L"Polygon: Translate", L"Polygon: Translate...")
 	REAL (L"Y", L"0.0")
 	OK
 DO
-	Polygon_translate (ONLY(classPolygon), GET_REAL (L"X"), GET_REAL (L"Y"));
+	Polygon_translate ((structPolygon *)ONLY(classPolygon), GET_REAL (L"X"), GET_REAL (L"Y"));
 END
 
 FORM (Polygon_rotate, L"Polygon: Rotate", L"Polygon: Rotate...")
@@ -2949,7 +2949,7 @@ FORM (Polygon_rotate, L"Polygon: Rotate", L"Polygon: Rotate...")
 	REAL (L"Y", L"0.0")
 	OK
 DO
-	Polygon_rotate (ONLY(classPolygon), GET_REAL (L"Angle"), GET_REAL (L"X"), GET_REAL (L"Y"));
+	Polygon_rotate ((structPolygon *)ONLY(classPolygon), GET_REAL (L"Angle"), GET_REAL (L"X"), GET_REAL (L"Y"));
 END
 
 FORM (Polygon_scale, L"Polygon: Scale polygon", 0)
@@ -2957,7 +2957,7 @@ FORM (Polygon_scale, L"Polygon: Scale polygon", 0)
 	REAL (L"Y", L"0.0")
 	OK
 DO
-	Polygon_scale (ONLY(classPolygon), GET_REAL (L"X"), GET_REAL (L"Y"));
+	Polygon_scale ((structPolygon *)ONLY(classPolygon), GET_REAL (L"X"), GET_REAL (L"Y"));
 END
 
 FORM (Polygon_Categories_draw, L"Polygon & Categories: Draw", 0)
@@ -2968,7 +2968,7 @@ FORM (Polygon_Categories_draw, L"Polygon & Categories: Draw", 0)
     BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Polygon_Categories_draw (ONLY(classPolygon),
+	EVERY_DRAW (Polygon_Categories_draw ((structPolygon *)ONLY(classPolygon),
 		ONLY(classCategories),
 		GRAPHICS, GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
@@ -2976,11 +2976,11 @@ DO
 END
 
 DIRECT (Polygon_reverseX)
-	Polygon_reverseX (ONLY(classPolygon));
+	Polygon_reverseX ((structPolygon *)ONLY(classPolygon));
 END
 
 DIRECT (Polygon_reverseY)
-	Polygon_reverseY (ONLY(classPolygon));
+	Polygon_reverseY ((structPolygon *)ONLY(classPolygon));
 END
 
 /***************** Polynomial *******************/
@@ -3008,17 +3008,17 @@ FORM (Polynomial_getArea, L"Polynomial: Get area", L"Polynomial: Get area...")
 	REAL (L"Xmax", L"0.0")
 	OK
 DO
-	double area = Polynomial_getArea (ONLY (classPolynomial),
+	double area = Polynomial_getArea ((structPolynomial *)ONLY (classPolynomial),
 		GET_REAL (L"Xmin"), GET_REAL (L"Xmax"));
 	Melder_information1 (Melder_double (area));
 END
 
 DIRECT (Polynomial_getDerivative)
-	EVERY_TO (Polynomial_getDerivative (OBJECT))
+	EVERY_TO (Polynomial_getDerivative ((structPolynomial *)OBJECT))
 END
 
 DIRECT (Polynomial_getPrimitive)
-	EVERY_TO (Polynomial_getPrimitive (OBJECT))
+	EVERY_TO (Polynomial_getPrimitive ((structPolynomial *)OBJECT))
 END
 
 FORM (Polynomial_scaleX, L"Polynomial: Scale x", L"Polynomial: Scale x...")
@@ -3029,15 +3029,15 @@ FORM (Polynomial_scaleX, L"Polynomial: Scale x", L"Polynomial: Scale x...")
 DO
 	double xmin = GET_REAL (L"Xmin"), xmax = GET_REAL (L"Xmax");
 	REQUIRE (xmin < xmax, L"Xmin must be smaller than Xmax.")
-	EVERY_TO (Polynomial_scaleX (OBJECT, xmin, xmax))
+	EVERY_TO (Polynomial_scaleX ((structPolynomial *)OBJECT, xmin, xmax))
 END
 
 DIRECT (Polynomial_scaleCoefficients_monic)
-	EVERY (Polynomial_scaleCoefficients_monic (OBJECT))
+	EVERY (Polynomial_scaleCoefficients_monic ((structPolynomial *)OBJECT))
 END
 
 DIRECT (Polynomial_to_Roots)
-	EVERY_TO (Polynomial_to_Roots (OBJECT))
+	EVERY_TO (Polynomial_to_Roots ((structPolynomial *)OBJECT))
 END
 
 FORM (Polynomial_evaluate_z, L"Polynomial: Get value (complex)", L"Polynomial: Get value (complex)...")
@@ -3046,7 +3046,7 @@ FORM (Polynomial_evaluate_z, L"Polynomial: Get value (complex)", L"Polynomial: G
 	OK
 DO
 	dcomplex p, z = dcomplex_create (GET_REAL (L"Real part"), GET_REAL (L"Imaginary part"));
-	Polynomial_evaluate_z (ONLY_OBJECT, &z, &p);
+	Polynomial_evaluate_z ((structPolynomial *)ONLY_OBJECT, &z, &p);
 	Melder_information4 (Melder_double (p.re), L" + ", Melder_double (p.im), L" i");
 END
 
@@ -3058,13 +3058,13 @@ FORM (Polynomial_to_Spectrum, L"Polynomial: To Spectrum", L"Polynomial: To Spect
 DO
 	long n = GET_INTEGER (L"Number of frequencies");
 	REQUIRE (n > 1, L"\"Number of frequencies\" must be greater than 1.")
-	EVERY_TO (Polynomial_to_Spectrum (OBJECT, GET_REAL (L"Nyquist frequency"),
+	EVERY_TO (Polynomial_to_Spectrum ((structPolynomial *)OBJECT, GET_REAL (L"Nyquist frequency"),
 		n, 1.0))
 END
 
 DIRECT (Polynomials_multiply)
 	Polynomial p1 = NULL, p2 = NULL;
-	WHERE (SELECTED) { if (p1) p2 = OBJECT; else p1 = OBJECT; }
+	WHERE (SELECTED) { if (p1) p2 = (structPolynomial *)OBJECT; else p1 = (structPolynomial *)OBJECT; }
 	if (! praat_new4 (Polynomials_multiply (p1, p2), p1->name, L"_", p2->name, L"_mul")) return 0;
 END
 
@@ -3081,7 +3081,7 @@ DO
 	int wantq = GET_INTEGER (L"Want quotient");
 	int wantr = GET_INTEGER (L"Want remainder");
 	REQUIRE (wantq || wantr, L"Either \'Want quotient\' or \'Want remainder\' must be chosen")
-	WHERE (SELECTED) { if (p1) p2 = OBJECT; else p1 = OBJECT; }
+	WHERE (SELECTED) { if (p1) p2 = (structPolynomial *)OBJECT; else p1 = (structPolynomial *)OBJECT; }
 	if (! wantq) q = NULL;
 	if (! wantr) r = NULL;
 	s = Polynomial_create (0,1,1);
@@ -3105,7 +3105,7 @@ FORM (Roots_draw, L"Roots: Draw", 0)
 	BOOLEAN (L"Garnish", 0)
 	OK
 DO
-	EVERY_DRAW (Roots_draw (OBJECT, GRAPHICS,
+	EVERY_DRAW (Roots_draw ((structRoots *)OBJECT, GRAPHICS,
 		GET_REAL (L"Minimum of real axis"), GET_REAL (L"Maximum of real axis"),
 		GET_REAL (L"Minimum of imaginary axis"),
 		GET_REAL (L"Maximum of imaginary axis"),
@@ -3114,14 +3114,14 @@ DO
 END
 
 DIRECT (Roots_getNumberOfRoots)
-	Melder_information1 (Melder_integer (Roots_getNumberOfRoots (ONLY (classRoots))));
+	Melder_information1 (Melder_integer (Roots_getNumberOfRoots ((structRoots *)ONLY (classRoots))));
 END
 
 FORM (Roots_getRoot, L"Roots: Get root", 0)
 	NATURAL (L"Root number", L"1")
 	OK
 DO
-	dcomplex z = Roots_getRoot (ONLY (classRoots), GET_INTEGER (L"Root number"));
+	dcomplex z = Roots_getRoot ((structRoots *)ONLY (classRoots), GET_INTEGER (L"Root number"));
 	Melder_information4 (Melder_double (z.re), (z.im < 0 ? L" - " : L" + "), Melder_double (fabs(z.im)), L" i");
 END
 
@@ -3129,7 +3129,7 @@ FORM (Roots_getRealPartOfRoot, L"Roots: Get real part", 0)
 	NATURAL (L"Root number", L"1")
 	OK
 DO
-	dcomplex z = Roots_getRoot (ONLY (classRoots), GET_INTEGER (L"Root number"));
+	dcomplex z = Roots_getRoot ((structRoots *)ONLY (classRoots), GET_INTEGER (L"Root number"));
 	Melder_information1 (Melder_double (z.re));
 END
 
@@ -3137,7 +3137,7 @@ FORM (Roots_getImaginaryPartOfRoot, L"Roots: Get imaginary part", 0)
 	NATURAL (L"Root number", L"1")
 	OK
 DO
-	dcomplex z = Roots_getRoot (ONLY (classRoots), GET_INTEGER (L"Root number"));
+	dcomplex z = Roots_getRoot ((structRoots *)ONLY (classRoots), GET_INTEGER (L"Root number"));
 	Melder_information1 (Melder_double (z.im));
 END
 
@@ -3147,7 +3147,7 @@ FORM (Roots_setRoot, L"Roots: Set root", 0)
 	REAL (L"Imaginary part", L"1.0/sqrt(2)")
 	OK
 DO
-	if (! Roots_setRoot (ONLY_OBJECT, GET_INTEGER (L"Root number"),
+	if (! Roots_setRoot ((structRoots *)ONLY_OBJECT, GET_INTEGER (L"Root number"),
 		GET_REAL (L"Real part"), GET_REAL (L"Imaginary part"))) return 0;
 END
 
@@ -3158,12 +3158,12 @@ FORM (Roots_to_Spectrum, L"Roots: To Spectrum", L"Roots: To Spectrum...")
 DO
 	long n = GET_INTEGER (L"Number of frequencies");
 	REQUIRE (n > 1, L"\"Number of frequencies\" must be greater than 1.")
-	EVERY_TO (Roots_to_Spectrum (OBJECT, GET_REAL (L"Nyquist frequency"),
+	EVERY_TO (Roots_to_Spectrum ((structRoots *)OBJECT, GET_REAL (L"Nyquist frequency"),
 		n, 1.0))
 END
 
 DIRECT (Roots_and_Polynomial_polish)
-	 Roots_and_Polynomial_polish (ONLY(classRoots), ONLY(classPolynomial));
+	 Roots_and_Polynomial_polish ((structRoots *)ONLY(classRoots), (structPolynomial *)ONLY(classPolynomial));
 END
 
 /*****************************************************************************/
@@ -3188,14 +3188,14 @@ END
 
 /******************** Sound ****************************************/
 
-static void Sound_create_addCommonFields (void *dia)
+static void Sound_create_addCommonFields (Any dia)
 {
 	REAL (L"Starting time (s)", L"0.0")
 	REAL (L"Finishing time (s)", L"0.1")
 	POSITIVE (L"Sampling frequency (Hz)", L"44100.0")
 }
 
-static int Sound_create_checkCommonFields (void *dia, double *startingTime, double *finishingTime,
+static int Sound_create_checkCommonFields (Any dia, double *startingTime, double *finishingTime,
 	double *samplingFrequency)
 {
 	double numberOfSamples_real;
@@ -3266,8 +3266,8 @@ FORM (Sound_and_Pitch_to_FormantFilter, L"Sound & Pitch: To FormantFilter", L"So
 	POSITIVE (L"Relative bandwidth", L"1.1")
 	OK
 DO
-	 if (! praat_new1 (Sound_and_Pitch_to_FormantFilter (ONLY(classSound),
-	 	ONLY(classPitch), GET_REAL (L"Analysis window duration"),
+	 if (! praat_new1 (Sound_and_Pitch_to_FormantFilter ((structSound *)ONLY(classSound),
+	 	(structPitch *)ONLY(classPitch), GET_REAL (L"Analysis window duration"),
 		GET_REAL (L"Time step"), GET_REAL (L"Position of first filter"),
 		GET_REAL (L"Maximum frequency"), GET_REAL (L"Distance between filters"),
 		GET_REAL (L"Relative bandwidth")), NULL)) return 0;
@@ -3280,7 +3280,7 @@ FORM (Sound_and_Pitch_changeGender, L"Sound & Pitch: Change gender", L"Sound & P
 	POSITIVE (L"Duration factor", L"1.0")
 	OK
 DO
-	if (! praat_new1 (Sound_and_Pitch_changeGender_old (ONLY(classSound), ONLY(classPitch),
+	if (! praat_new1 (Sound_and_Pitch_changeGender_old ((structSound *)ONLY(classSound), (structPitch *)ONLY(classPitch),
 		GET_REAL (L"Formant shift ratio"), GET_REAL (L"New pitch median"),
 		GET_REAL (L"Pitch range factor"), GET_REAL (L"Duration factor")), NULL)) return 0;
 END
@@ -3292,7 +3292,7 @@ FORM (Sound_and_Pitch_changeSpeaker, L"Sound & Pitch: Change speaker", L"Sound &
 	POSITIVE (L"Multiply duration", L"1.0")
 	OK
 DO
-	if (! praat_new1 (Sound_and_Pitch_changeSpeaker (ONLY(classSound), ONLY(classPitch),
+	if (! praat_new1 (Sound_and_Pitch_changeSpeaker ((structSound *)ONLY(classSound), (structPitch *)ONLY(classPitch),
 		GET_REAL (L"Multiply formants by"), GET_REAL (L"Multiply pitch by"),
 		GET_REAL (L"Multiply pitch range by"), GET_REAL (L"Multiply duration")), NULL)) return 0;
 END
@@ -3369,7 +3369,7 @@ FORM (Sound_drawWhere, L"Sound: Draw where", L"Sound: Draw where...")
 	OK
 DO
 	long numberOfBisections = 10;
-	EVERY_DRAW (Sound_drawWhere (OBJECT, GRAPHICS, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_INTEGER (L"Garnish"),
+	EVERY_DRAW (Sound_drawWhere ((structSound *)OBJECT, GRAPHICS, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"), GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_INTEGER (L"Garnish"),
 	GET_STRING (L"Drawing method"), numberOfBisections, GET_STRING (L"Formula"), interpreter))
 END
 
@@ -3385,7 +3385,7 @@ FORM (Sound_to_TextGrid_detectSilences, L"Sound: To TextGrid (silences)", L"Soun
 	WORD (L"Sounding interval label", L"sounding")
 	OK
 DO
-	EVERY_TO (Sound_to_TextGrid_detectSilences (OBJECT, GET_REAL (L"Minimum pitch"), GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_TextGrid_detectSilences ((structSound *)OBJECT, GET_REAL (L"Minimum pitch"), GET_REAL (L"Time step"),
 		GET_REAL (L"Silence threshold"), GET_REAL (L"Minimum silent interval duration"),
 		GET_REAL (L"Minimum sounding interval duration"), GET_STRING (L"Silent interval label"),
 		GET_STRING (L"Sounding interval label")))
@@ -3401,7 +3401,7 @@ FORM (Sound_to_BarkFilter, L"Sound: To BarkFilter", L"Sound: To BarkFilter...")
 	REAL (L"Maximum frequency (bark)", L"0");
 	OK
 DO
-	EVERY_TO (Sound_to_BarkFilter (OBJECT, GET_REAL (L"Window length"),
+	EVERY_TO (Sound_to_BarkFilter ((structSound *)OBJECT, GET_REAL (L"Window length"),
 		GET_REAL (L"Time step"), GET_REAL (L"Position of first filter"),
 		GET_REAL (L"Maximum frequency"), GET_REAL (L"Distance between filters")))
 END
@@ -3419,7 +3419,7 @@ FORM (Sound_to_FormantFilter, L"Sound: To FormantFilter", L"Sound: To FormantFil
 	REAL (L"Maximum pitch (Hz)", L"600.0")
 	OK
 DO
-	EVERY_TO (Sound_to_FormantFilter (OBJECT, GET_REAL (L"Window length"),
+	EVERY_TO (Sound_to_FormantFilter ((structSound *)OBJECT, GET_REAL (L"Window length"),
 		GET_REAL (L"Time step"), GET_REAL (L"Position of first filter"),
 		GET_REAL (L"Maximum frequency"), GET_REAL (L"Distance between filters"),
 		GET_REAL (L"Relative bandwidth"), GET_REAL (L"Minimum pitch"),
@@ -3435,7 +3435,7 @@ FORM (Sound_to_MelFilter, L"Sound: To MelFilter", L"Sound: To MelFilter...")
 	REAL (L"Maximum frequency (mel)", L"0.0");
 	OK
 DO
-	EVERY_TO (Sound_to_MelFilter (OBJECT, GET_REAL (L"Window length"),
+	EVERY_TO (Sound_to_MelFilter ((structSound *)OBJECT, GET_REAL (L"Window length"),
 		GET_REAL (L"Time step"), GET_REAL (L"Position of first filter"),
 		GET_REAL (L"Maximum frequency"), GET_REAL (L"Distance between filters")))
 END
@@ -3457,7 +3457,7 @@ DO
 	double ceiling = GET_REAL (L"Ceiling");
 	REQUIRE (minimumPitch < ceiling, L"Minimum pitch should be smaller than ceiling.")
 	REQUIRE (ceiling <= fmax, L"Maximum frequency must be greater than or equal to ceiling.")
-	EVERY_TO (Sound_to_Pitch_shs (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Pitch_shs ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		minimumPitch, fmax, ceiling,
 		GET_INTEGER (L"Max. number of subharmonics"),
 		GET_INTEGER (L"Max. number of candidates"),
@@ -3478,7 +3478,7 @@ DO
 	long channel = GET_INTEGER (L"Channel") - 1;
 	WHERE (SELECTED)
 	{
-		Sound_fade (OBJECT, channel, GET_REAL (L"Time"), GET_REAL (L"Fade time"), -1, GET_INTEGER (L"Silent from start"));
+		Sound_fade ((structSound *)OBJECT, channel, GET_REAL (L"Time"), GET_REAL (L"Fade time"), -1, GET_INTEGER (L"Silent from start"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3496,7 +3496,7 @@ DO
 	long channel = GET_INTEGER (L"Channel") - 1;
 	WHERE (SELECTED)
 	{
-		Sound_fade (OBJECT, channel, GET_REAL (L"Time"), GET_REAL (L"Fade time"), 1, GET_INTEGER (L"Silent to end"));
+		Sound_fade ((structSound *)OBJECT, channel, GET_REAL (L"Time"), GET_REAL (L"Fade time"), 1, GET_INTEGER (L"Silent to end"));
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3518,7 +3518,7 @@ FORM (Sound_to_KlattGrid_simple, L"Sound: To KlattGrid (simple)", L"Sound: To Kl
 DO
 	WHERE (SELECTED)
 	{
-		if (! praat_new1 (Sound_to_KlattGrid_simple (OBJECT, GET_REAL (L"Time step"),
+		if (! praat_new1 (Sound_to_KlattGrid_simple ((structSound *)OBJECT, GET_REAL (L"Time step"),
 			GET_INTEGER (L"Max. number of formants"), GET_REAL (L"Maximum formant"),
 			GET_REAL (L"Window length"), GET_REAL (L"Pre-emphasis from"),
 			GET_REAL (L"Pitch floor"), GET_REAL (L"Pitch ceiling"),
@@ -3540,7 +3540,7 @@ DO
 	double fmin = GET_REAL (L"Minimum filter frequency");
 	double fmax = GET_REAL (L"Maximum filter frequency");
 	REQUIRE (fmax > fmin, L"Maximum frequency must be larger than minimum frequency.")
-	EVERY_TO (Sound_to_Pitch_SPINET (OBJECT, GET_REAL (L"Time step"),
+	EVERY_TO (Sound_to_Pitch_SPINET ((structSound *)OBJECT, GET_REAL (L"Time step"),
 		GET_REAL (L"Window length"),
 		fmin, fmax, GET_INTEGER (L"Number of filters"),
 		GET_REAL (L"Ceiling"), GET_INTEGER (L"Max. number of candidates")))
@@ -3557,7 +3557,7 @@ FORM (Sound_to_Polygon, L"Sound: To Polygon", L"Sound: To Polygon...")
 	REAL (L"Connect at", L"0.0")
 	OK
 DO
-	Sound me = ONLY (classSound);
+	Sound me = (structSound *)ONLY (classSound);
 	long channel = GET_INTEGER (L"Channel");
 	if (channel > my ny) channel = 1;
 	NEW (Sound_to_Polygon (me, channel, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
@@ -3577,7 +3577,7 @@ DO
 	Sound s1 = NULL, s2 = NULL;
 	WHERE (SELECTED)
 	{
-		if (s1) s2 = OBJECT; else s1 = OBJECT;
+		if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT;
 	}
 	long channel = GET_INTEGER (L"Channel");
 	NEW (Sounds_to_Polygon_enclosed (s1, s2, channel, GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
@@ -3589,7 +3589,7 @@ FORM (Sound_filterByGammaToneFilter4, L"Sound: Filter (gammatone)", L"Sound: Fil
 	POSITIVE (L"Bandwidth (Hz)", L"150.0")
 	OK
 DO
-	EVERY_TO (Sound_filterByGammaToneFilter4 (OBJECT,
+	EVERY_TO (Sound_filterByGammaToneFilter4 ((structSound *)OBJECT,
 		GET_REAL (L"Centre frequency"), GET_REAL (L"Bandwidth")))
 END
 
@@ -3607,7 +3607,7 @@ DO
 	double minimumPitch = GET_REAL (L"Pitch floor");
 	double maximumPitch = GET_REAL (L"Pitch ceiling");
 	REQUIRE (minimumPitch < maximumPitch, L"Maximum pitch should be greater than minimum pitch.")
-	EVERY_TO (Sound_changeSpeaker (OBJECT, minimumPitch, maximumPitch,
+	EVERY_TO (Sound_changeSpeaker ((structSound *)OBJECT, minimumPitch, maximumPitch,
 		GET_REAL (L"Multiply formants by"), GET_REAL (L"Multiply pitch by"),
 		GET_REAL (L"Multiply pitch range by"), GET_REAL (L"Multiply duration by")))
 END
@@ -3628,7 +3628,7 @@ DO
 	double pitchrf = GET_REAL (L"Pitch range factor");
 	REQUIRE (minimumPitch < maximumPitch, L"Maximum pitch should be greater than minimum pitch.")
 	REQUIRE (pitchrf >= 0, L"Pitch range factor may not be negative")
-	EVERY_TO (Sound_changeGender_old (OBJECT, minimumPitch, maximumPitch,
+	EVERY_TO (Sound_changeGender_old ((structSound *)OBJECT, minimumPitch, maximumPitch,
 		GET_REAL (L"Formant shift ratio"), GET_REAL (L"New pitch median"),
 		pitchrf, GET_REAL (L"Duration factor")))
 END
@@ -3646,7 +3646,7 @@ FORM (Sound_paintWhere, L"Sound paint where", L"Sound: Paint where...")
 	OK
 DO
 	long numberOfBisections = 10;
-	EVERY_DRAW (Sound_paintWhere (OBJECT, GRAPHICS, GET_COLOUR (L"Colour"),
+	EVERY_DRAW (Sound_paintWhere ((structSound *)OBJECT, GRAPHICS, GET_COLOUR (L"Colour"),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_REAL (L"Fill from level"),
 		GET_INTEGER (L"Garnish"), numberOfBisections, GET_STRING (L"Formula"), interpreter))
@@ -3662,7 +3662,7 @@ FORM (Sounds_paintEnclosed, L"Sounds paint enclosed", L"Sounds: Paint enclosed..
 	OK
 DO
 	Sound s1 = NULL, s2 = NULL;
-	WHERE (SELECTED) { if (s1) s2 = OBJECT; else s1 = OBJECT; }
+	WHERE (SELECTED) { if (s1) s2 = (structSound *)OBJECT; else s1 = (structSound *)OBJECT; }
 	EVERY_DRAW (Sounds_paintEnclosed (s1, s2, GRAPHICS, GET_COLOUR (L"Colour"),
 		GET_REAL (L"left Time range"), GET_REAL (L"right Time range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_INTEGER (L"Garnish")))
@@ -3683,11 +3683,11 @@ FORM_READ (KlattTable_readFromRawTextFile, L"KlattTable_readFromRawTextFile", 0,
 END
 
 FORM_WRITE (Sound_writeToRawFileBE, L"Sound: Save as raw 16-bit Big Endian file", 0, L"raw")
-	if (! Sound_writeToRawFile (ONLY_OBJECT, file, 0, 0, 16, 0)) return 0;
+	if (! Sound_writeToRawFile ((structSound *)ONLY_OBJECT, file, 0, 0, 16, 0)) return 0;
 END
 
 FORM_WRITE (Sound_writeToRawFileLE, L"Sound: Save as raw 16-bit Little Endian file", 0, L"raw")
-	if (! Sound_writeToRawFile (ONLY_OBJECT, file, 0, 1, 16, 0)) return 0;
+	if (! Sound_writeToRawFile ((structSound *)ONLY_OBJECT, file, 0, 1, 16, 0)) return 0;
 END
 
 /************ Spectrograms *********************************************/
@@ -3701,7 +3701,7 @@ DO
 	DTW_constraints_getCommonFields (dia, &begin, &end, &slope);
 	WHERE (SELECTED && CLASS == classSpectrogram)
 	{
-		if (s1) s2 = OBJECT; else s1 = OBJECT;
+		if (s1) s2 = (structSpectrogram *)OBJECT; else s1 = (structSpectrogram *)OBJECT;
 	}
 	NEW (Spectrograms_to_DTW (s1, s2, begin, end, slope, 1))
 END
@@ -3717,7 +3717,7 @@ FORM (Spectrum_drawPhases, L"Spectrum: Draw phases", L"Spectrum: Draw phases..."
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Spectrum_drawPhases (OBJECT, GRAPHICS,
+	EVERY_DRAW (Spectrum_drawPhases ((structSpectrum *)OBJECT, GRAPHICS,
 		GET_REAL (L"From frequency"), GET_REAL (L"To frequency"),
 		GET_REAL (L"Minimum phase"), GET_REAL (L"Maximum phase"),
 		GET_INTEGER (L"Unwrap"), GET_INTEGER (L"Garnish")))
@@ -3726,7 +3726,7 @@ END
 DIRECT (Spectrum_conjugate)
 	WHERE (SELECTED)
 	{
-		Spectrum_conjugate (OBJECT);
+		Spectrum_conjugate ((structSpectrum *)OBJECT);
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -3735,17 +3735,17 @@ DIRECT (Spectra_multiply)
 	Spectrum s1 = NULL, s2 = NULL;
 	WHERE (SELECTED && CLASS == classSpectrum)
 	{
-		if (s1) s2 = OBJECT; else s1 = OBJECT;
+		if (s1) s2 = (structSpectrum *)OBJECT; else s1 = (structSpectrum *)OBJECT;
 	}
 	NEW (Spectra_multiply (s1, s2))
 END
 
 DIRECT (Spectrum_unwrap)
-	EVERY_TO (Spectrum_unwrap (OBJECT))
+	EVERY_TO (Spectrum_unwrap ((structSpectrum *)OBJECT))
 END
 
 DIRECT (Spectrum_to_Cepstrum)
-	EVERY_TO (Spectrum_to_Cepstrum (OBJECT))
+	EVERY_TO (Spectrum_to_Cepstrum ((structSpectrum *)OBJECT))
 END
 
 /************* Spline *************************************************/
@@ -3758,14 +3758,14 @@ FORM (Spline_drawKnots, L"Spline: Draw knots", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (Spline_drawKnots (OBJECT, GRAPHICS,
+	EVERY_DRAW (Spline_drawKnots ((structSpline *)OBJECT, GRAPHICS,
 		GET_REAL (L"Xmin"), GET_REAL (L"Xmax"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_INTEGER (L"Garnish")))
 END
 
 DIRECT (Spline_getOrder)
-	Melder_information1 (Melder_integer (Spline_getOrder (ONLY_OBJECT)));
+	Melder_information1 (Melder_integer (Spline_getOrder ((structSpline *)ONLY_OBJECT)));
 END
 
 FORM (Spline_scaleX, L"Spline: Scale x", L"Spline: Scale x...")
@@ -3776,7 +3776,7 @@ FORM (Spline_scaleX, L"Spline: Scale x", L"Spline: Scale x...")
 DO
 	double xmin = GET_REAL (L"Xmin"), xmax = GET_REAL (L"Xmax");
 	REQUIRE (xmin < xmax, L"Xmin must be smaller than Xmax.")
-	EVERY_TO (Spline_scaleX (OBJECT, xmin, xmax))
+	EVERY_TO (Spline_scaleX ((structSpline *)OBJECT, xmin, xmax))
 END
 
 /************ SSCP ***************************************************/
@@ -3794,7 +3794,7 @@ FORM (SSCP_drawConfidenceEllipse, L"SSCP: Draw confidence ellipse", 0)
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (SSCP_drawConcentrationEllipse (OBJECT, GRAPHICS,
+	EVERY_DRAW (SSCP_drawConcentrationEllipse ((structSSCP *)OBJECT, GRAPHICS,
 		GET_REAL (L"Confidence level"), 1,
 		GET_INTEGER (L"Index for X-axis"), GET_INTEGER (L"Index for Y-axis"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"), GET_REAL (L"left Vertical range"),
@@ -3812,7 +3812,7 @@ FORM (SSCP_drawSigmaEllipse, L"SSCP: Draw sigma ellipse", L"SSCP: Draw sigma ell
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (SSCP_drawConcentrationEllipse (OBJECT, GRAPHICS,
+	EVERY_DRAW (SSCP_drawConcentrationEllipse ((structSSCP *)OBJECT, GRAPHICS,
 		GET_REAL (L"Number of sigmas"), 0,
 		GET_INTEGER (L"Index for X-axis"), GET_INTEGER (L"Index for Y-axis"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
@@ -3820,7 +3820,7 @@ DO
 END
 
 DIRECT (SSCP_extractCentroid)
-	EVERY_CHECK (praat_new2 (SSCP_extractCentroid (OBJECT),
+	EVERY_CHECK (praat_new2 (SSCP_extractCentroid ((structSSCP *)OBJECT),
 		Thing_getName (OBJECT), L"_centroid"))
 END
 
@@ -3833,7 +3833,7 @@ DO
 	double conf = GET_REAL (L"Confidence level");
 	long d1 = GET_INTEGER (L"Index for X-axis");
 	long d2 = GET_INTEGER (L"Index for Y-axis");
-	Melder_information1 (Melder_double (SSCP_getConcentrationEllipseArea (ONLY_OBJECT, conf, 1, d1, d2)));
+	Melder_information1 (Melder_double (SSCP_getConcentrationEllipseArea ((structSSCP *)ONLY_OBJECT, conf, 1, d1, d2)));
 END
 
 FORM (SSCP_getFractionVariation, L"SSCP: Get fraction variation", L"SSCP: Get fraction variation...")
@@ -3841,7 +3841,7 @@ FORM (SSCP_getFractionVariation, L"SSCP: Get fraction variation", L"SSCP: Get fr
 	NATURAL (L"To dimension", L"1")
 	OK
 DO
-	Melder_information1 (Melder_double (SSCP_getFractionVariation (ONLY_OBJECT,
+	Melder_information1 (Melder_double (SSCP_getFractionVariation ((structSSCP *)ONLY_OBJECT,
 		GET_INTEGER (L"From dimension"), GET_INTEGER (L"To dimension"))));
 END
 
@@ -3855,28 +3855,28 @@ DO
 	double nsigmas = GET_REAL (L"Number of sigmas");
 	long d1 = GET_INTEGER (L"Index for X-axis");
 	long d2 = GET_INTEGER (L"Index for Y-axis");
-	Melder_information1 (Melder_double (SSCP_getConcentrationEllipseArea (ONLY_OBJECT,
+	Melder_information1 (Melder_double (SSCP_getConcentrationEllipseArea ((structSSCP *)ONLY_OBJECT,
 		nsigmas, 0, d1, d2)));
 END
 
 DIRECT (SSCP_getDegreesOfFreedom)
-	Melder_information1 (Melder_double (SSCP_getDegreesOfFreedom (ONLY_OBJECT)));
+	Melder_information1 (Melder_double (SSCP_getDegreesOfFreedom ((structSSCP *)ONLY_OBJECT)));
 END
 
 DIRECT (SSCP_getNumberOfObservations)
-	SSCP me = ONLY_OBJECT;
+	SSCP me = (structSSCP *)ONLY_OBJECT;
 	Melder_information1 (Melder_integer (my numberOfObservations));
 END
 
 DIRECT (SSCP_getTotalVariance)
-	Melder_information1 (Melder_double (SSCP_getTotalVariance (ONLY_OBJECT)));
+	Melder_information1 (Melder_double (SSCP_getTotalVariance ((structSSCP *)ONLY_OBJECT)));
 END
 
 FORM (SSCP_getCentroidElement, L"SSCP: Get centroid element", L"SSCP: Get centroid element")
 	NATURAL (L"Number", L"1")
 	OK
 DO
-	SSCP me = ONLY_OBJECT;
+	SSCP me = (structSSCP *)ONLY_OBJECT;
 	long number = GET_INTEGER (L"Number");
 	if (number < 1 || number > my numberOfColumns)
 	{
@@ -3886,7 +3886,7 @@ DO
 END
 
 DIRECT (SSCP_getLnDeterminant)
-	Melder_information1 (Melder_double (SSCP_getLnDeterminant (ONLY_OBJECT)));
+	Melder_information1 (Melder_double (SSCP_getLnDeterminant ((structSSCP *)ONLY_OBJECT)));
 END
 
 FORM (SSCP_testDiagonality_bartlett, L"SSCP: Get diagonality (bartlett)", L"SSCP: Get diagonality (bartlett)...")
@@ -3895,14 +3895,14 @@ FORM (SSCP_testDiagonality_bartlett, L"SSCP: Get diagonality (bartlett)", L"SSCP
 DO
 	double chisq, p;
 	long nc = GET_INTEGER (L"Number of contraints");
-	SSCP me = ONLY_OBJECT;
+	SSCP me = (structSSCP *)ONLY_OBJECT;
 	SSCP_testDiagonality_bartlett (me, nc, &chisq, &p);
 	Melder_information6 (Melder_double (p), L" (=probability for chisq = ", Melder_double (chisq), L" and ndf = ",
 		Melder_integer (my numberOfRows * (my numberOfRows - 1) / 2), L")");
 END
 
 DIRECT (SSCP_to_Correlation)
-	EVERY_TO (SSCP_to_Correlation (OBJECT))
+	EVERY_TO (SSCP_to_Correlation ((structSSCP *)OBJECT))
 END
 
 FORM (SSCP_to_Covariance, L"SSCP: To Covariance", L"SSCP: To Covariance...")
@@ -3910,11 +3910,11 @@ FORM (SSCP_to_Covariance, L"SSCP: To Covariance", L"SSCP: To Covariance...")
 	OK
 DO
 	long noc = GET_INTEGER (L"Number of constraints");
-	EVERY_TO (SSCP_to_Covariance (OBJECT, noc))
+	EVERY_TO (SSCP_to_Covariance ((structSSCP *)OBJECT, noc))
 END
 
 DIRECT (SSCP_to_PCA)
-	EVERY_TO (SSCP_to_PCA (OBJECT))
+	EVERY_TO (SSCP_to_PCA ((structSSCP *)OBJECT))
 END
 
 /******************* Strings ****************************/
@@ -3934,7 +3934,7 @@ Strings_append_end:
 END
 
 DIRECT (Strings_to_Categories)
-	EVERY_TO (Strings_to_Categories (OBJECT))
+	EVERY_TO (Strings_to_Categories ((structStrings *)OBJECT))
 END
 
 FORM (Strings_setString, L"Strings: Set string", L"Strings: Set string...")
@@ -3942,7 +3942,7 @@ FORM (Strings_setString, L"Strings: Set string", L"Strings: Set string...")
 	SENTENCE (L"String", L"")
 	OK
 DO
-	if (! Strings_setString (ONLY (classStrings), GET_STRING (L"String"),
+	if (! Strings_setString ((structStrings *)ONLY (classStrings), GET_STRING (L"String"),
 		GET_INTEGER (L"Index"))) return 0;
 END
 
@@ -3956,7 +3956,7 @@ FORM (Strings_change, L"Strings: Change", L"Strings: Change")
 	OK
 DO
 	long nmatches, nstringmatches;
-	EVERY_TO (Strings_change (OBJECT, GET_STRING (L"Search"),
+	EVERY_TO (Strings_change ((structStrings *)OBJECT, GET_STRING (L"Search"),
 		GET_STRING (L"Replace"), GET_INTEGER (L"Replace limit"), &nmatches,
 		&nstringmatches, GET_INTEGER (L"Search and replace are") - 1))
 END
@@ -3966,18 +3966,18 @@ FORM (Strings_extractPart, L"Strings: Extract part", L"")
 	NATURAL (L"To index", L"1")
 	OK
 DO
-	EVERY_TO (Strings_extractPart (OBJECT, GET_INTEGER (L"From index"), GET_INTEGER (L"To index")))
+	EVERY_TO (Strings_extractPart ((structStrings *)OBJECT, GET_INTEGER (L"From index"), GET_INTEGER (L"To index")))
 END
 
 FORM (Strings_to_Permutation, L"Strings: To Permutation", L"Strings: To Permutation...")
 	BOOLEAN (L"Sort", 1)
 	OK
 DO
-	EVERY_TO (Strings_to_Permutation (OBJECT, GET_INTEGER (L"Sort")))
+	EVERY_TO (Strings_to_Permutation ((structStrings *)OBJECT, GET_INTEGER (L"Sort")))
 END
 
 DIRECT (Strings_and_Permutation_permuteStrings)
-	NEW (Strings_and_Permutation_permuteStrings (ONLY (classStrings), ONLY (classPermutation)))
+	NEW (Strings_and_Permutation_permuteStrings ((structStrings *)ONLY (classStrings), (structPermutation *)ONLY (classPermutation)))
 END
 
 FORM (SVD_to_TableOfReal, L"SVD: To TableOfReal", L"SVD: To TableOfReal...")
@@ -3985,22 +3985,22 @@ FORM (SVD_to_TableOfReal, L"SVD: To TableOfReal", L"SVD: To TableOfReal...")
 	INTEGER (L"Last component", L"0 (=all)")
 	OK
 DO
-	EVERY_TO (SVD_to_TableOfReal (OBJECT, GET_INTEGER (L"First component"),
+	EVERY_TO (SVD_to_TableOfReal ((structSVD *)OBJECT, GET_INTEGER (L"First component"),
 		GET_INTEGER (L"Last component")))
 END
 
 DIRECT (SVD_extractLeftSingularVectors)
-	SVD svd = ONLY (classSVD);
+	SVD svd = (structSVD *)ONLY (classSVD);
 	if (! praat_new2 (SVD_extractLeftSingularVectors (svd), Thing_getName (svd), L"_lsv")) return 0;
 END
 
 DIRECT (SVD_extractRightSingularVectors)
-	SVD svd = ONLY (classSVD);
+	SVD svd = (structSVD *)ONLY (classSVD);
 	if (! praat_new2 (SVD_extractRightSingularVectors (svd), Thing_getName (svd), L"_rsv")) return 0;
 END
 
 DIRECT (SVD_extractSingularValues)
-	SVD svd = ONLY (classSVD);
+	SVD svd = (structSVD *)ONLY (classSVD);
 	if (! praat_new2 (SVD_extractSingularValues (svd), Thing_getName (svd), L"_sv")) return 0;
 END
 
@@ -4033,7 +4033,7 @@ FORM (Table_drawScatterPlotWithConfidenceIntervals, L"Table: Scatter plot (confi
 	BOOLEAN (L"Garnish", 1);
 	OK
 DO
-	Table_drawScatterPlotWithConfidenceIntervals (ONLY (classTable), GRAPHICS,
+	Table_drawScatterPlotWithConfidenceIntervals ((structTable *)ONLY (classTable), GRAPHICS,
 		GET_INTEGER (L"Horizontal axis column"), GET_INTEGER (L"Vertical axis column"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
@@ -4048,7 +4048,7 @@ FORM (TableOfReal_reportMultivariateNormality, L"TableOfReal: Report multivariat
 	REAL (L"Smoothing parameter", L"0.0")
 	OK
 DO
-	TableOfReal me = ONLY (classTableOfReal);
+	TableOfReal me = (structTableOfReal *)ONLY (classTableOfReal);
 	double tnb, lnmu, lnvar;
 	double h = GET_REAL (L"Smoothing parameter");
 	double prob = TableOfReal_normalityTest_BHEP (me, &h, &tnb, &lnmu, &lnvar);
@@ -4065,14 +4065,14 @@ DO
 END
 
 DIRECT (TableOfReal_and_Permutation_permuteRows)
-	TableOfReal t = ONLY (classTableOfReal);
-	Permutation p = ONLY (classPermutation);
+	TableOfReal t = (structTableOfReal *)ONLY (classTableOfReal);
+	Permutation p = (structPermutation *)ONLY (classPermutation);
 	if (! praat_new3 (TableOfReal_and_Permutation_permuteRows (t, p),
 		Thing_getName (t), L"_", Thing_getName (p))) return 0;
 END
 
 DIRECT (TableOfReal_to_Permutation_sortRowlabels)
-	EVERY_TO (TableOfReal_to_Permutation_sortRowLabels (OBJECT))
+	EVERY_TO (TableOfReal_to_Permutation_sortRowLabels ((structTableOfReal *)OBJECT))
 END
 
 DIRECT (TableOfReal_appendColumns)
@@ -4135,7 +4135,7 @@ FORM (TableOfReal_drawScatterPlot, L"TableOfReal: Draw scatter plot", L"TableOfR
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (TableOfReal_drawScatterPlot (OBJECT, GRAPHICS,
+	EVERY_DRAW (TableOfReal_drawScatterPlot ((structTableOfReal *)OBJECT, GRAPHICS,
 			GET_INTEGER (L"Horizontal axis column number"),
 			GET_INTEGER (L"Vertical axis column number"),
 			GET_INTEGER (L"left Row number range"), GET_INTEGER (L"right Row number range"),
@@ -4151,7 +4151,7 @@ FORM (TableOfReal_drawScatterPlotMatrix, L"TableOfReal: Draw scatter plots matri
 	POSITIVE (L"Fraction white", L"0.1")
 	OK
 DO
-	EVERY_DRAW (TableOfReal_drawScatterPlotMatrix (OBJECT, GRAPHICS,
+	EVERY_DRAW (TableOfReal_drawScatterPlotMatrix ((structTableOfReal *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"From column"), GET_INTEGER (L"To column"),
 		GET_REAL (L"Fraction white")))
 END
@@ -4167,7 +4167,7 @@ FORM (TableOfReal_drawBiplot, L"TableOfReal: Draw biplot", L"TableOfReal: Draw b
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (TableOfReal_drawBiplot (OBJECT, GRAPHICS,
+	EVERY_DRAW (TableOfReal_drawBiplot ((structTableOfReal *)OBJECT, GRAPHICS,
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_REAL (L"Split factor"),
 		GET_INTEGER (L"Label size"), GET_INTEGER (L"Garnish")))
@@ -4192,7 +4192,7 @@ FORM (TableOfReal_drawVectors, L"Draw vectors", L"TableOfReal: Draw vectors...")
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (TableOfReal_drawVectors (OBJECT, GRAPHICS,
+	EVERY_DRAW (TableOfReal_drawVectors ((structTableOfReal *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"left From columns"), GET_INTEGER (L"right From columns"),
 		GET_INTEGER (L"left To columns"), GET_INTEGER (L"right To columns"),
 		GET_REAL (L"left Horizontal range"), GET_REAL (L"right Horizontal range"),
@@ -4216,7 +4216,7 @@ FORM (TableOfReal_drawRowAsHistogram, L"Draw row as histogram", L"TableOfReal: D
     BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (TableOfReal_drawRowsAsHistogram (OBJECT, GRAPHICS, GET_STRING (L"Row number"),
+	EVERY_DRAW (TableOfReal_drawRowsAsHistogram ((structTableOfReal *)OBJECT, GRAPHICS, GET_STRING (L"Row number"),
 		GET_INTEGER (L"left Column range"), GET_INTEGER (L"right Column range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
 		GET_REAL (L"Horizontal offset"), 0,
@@ -4240,7 +4240,7 @@ FORM (TableOfReal_drawRowsAsHistogram, L"Draw rows as histogram", L"TableOfReal:
     BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (TableOfReal_drawRowsAsHistogram (OBJECT, GRAPHICS,
+	EVERY_DRAW (TableOfReal_drawRowsAsHistogram ((structTableOfReal *)OBJECT, GRAPHICS,
 		GET_STRING (L"Row numbers"),
 		GET_INTEGER (L"left Column range"), GET_INTEGER (L"right Column range"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"),
@@ -4259,7 +4259,7 @@ FORM (TableOfReal_drawBoxPlots, L"TableOfReal: Draw box plots", L"TableOfReal: D
 	BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (TableOfReal_drawBoxPlots (OBJECT, GRAPHICS,
+	EVERY_DRAW (TableOfReal_drawBoxPlots ((structTableOfReal *)OBJECT, GRAPHICS,
 		GET_INTEGER (L"From row"), GET_INTEGER (L"To row"),
 		GET_INTEGER (L"From column"), GET_INTEGER (L"To column"),
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_INTEGER (L"Garnish")))
@@ -4275,7 +4275,7 @@ FORM (TableOfReal_drawColumnAsDistribution, L"TableOfReal: Draw column as distri
     BOOLEAN (L"Garnish", 1)
 	OK
 DO
-	EVERY_DRAW (TableOfReal_drawColumnAsDistribution (OBJECT, GRAPHICS, GET_INTEGER (L"Column number"),
+	EVERY_DRAW (TableOfReal_drawColumnAsDistribution ((structTableOfReal *)OBJECT, GRAPHICS, GET_INTEGER (L"Column number"),
 		GET_REAL (L"left Value range"), GET_REAL (L"right Value range"),GET_INTEGER (L"Number of bins"),
 		GET_REAL (L"left Frequency range"), GET_REAL (L"right frequency range"), 0, GET_INTEGER (L"Garnish")))
 END
@@ -4286,30 +4286,30 @@ FORM (TableOfReal_to_Configuration_lda, L"TableOfReal: To Configuration (lda)", 
 DO
 	long dimension = GET_INTEGER (L"Number of dimensions");
 	REQUIRE (dimension >= 0, L"Number of dimensions must be greater equal zero.")
-	EVERY_TO (TableOfReal_to_Configuration_lda (OBJECT, dimension))
+	EVERY_TO (TableOfReal_to_Configuration_lda ((structTableOfReal *)OBJECT, dimension))
 END
 
 FORM (TableOfReal_to_CCA, L"TableOfReal: To CCA", L"TableOfReal: To CCA...")
 	NATURAL (L"Dimension of dependent variate", L"2")
 	OK
 DO
-	EVERY_TO (TableOfReal_to_CCA (OBJECT, GET_INTEGER (L"Dimension of dependent variate")))
+	EVERY_TO (TableOfReal_to_CCA ((structTableOfReal *)OBJECT, GET_INTEGER (L"Dimension of dependent variate")))
 END
 
 FORM (TableOfReal_to_Configuration_pca, L"TableOfReal: To Configuration (pca)", L"TableOfReal: To Configuration (pca)...")
 	NATURAL (L"Number of dimensions", L"2")
 	OK
 DO
-	EVERY_TO (TableOfReal_to_Configuration_pca (OBJECT,
+	EVERY_TO (TableOfReal_to_Configuration_pca ((structTableOfReal *)OBJECT,
 		GET_INTEGER (L"Number of dimensions")))
 END
 
 DIRECT (TableOfReal_to_Discriminant)
-	EVERY_TO (TableOfReal_to_Discriminant (OBJECT))
+	EVERY_TO (TableOfReal_to_Discriminant ((structTableOfReal *)OBJECT))
 END
 
 DIRECT (TableOfReal_to_PCA)
-	EVERY_TO (TableOfReal_to_PCA (OBJECT))
+	EVERY_TO (TableOfReal_to_PCA ((structTableOfReal *)OBJECT))
 END
 
 FORM (TableOfReal_to_SSCP, L"TableOfReal: To SSCP", L"TableOfReal: To SSCP...")
@@ -4319,36 +4319,36 @@ FORM (TableOfReal_to_SSCP, L"TableOfReal: To SSCP", L"TableOfReal: To SSCP...")
 	INTEGER (L"End column", L"0")
 	OK
 DO
-	EVERY_TO (TableOfReal_to_SSCP (OBJECT, GET_INTEGER (L"Begin row"), GET_INTEGER (L"End row"),
+	EVERY_TO (TableOfReal_to_SSCP ((structTableOfReal *)OBJECT, GET_INTEGER (L"Begin row"), GET_INTEGER (L"End row"),
 		GET_INTEGER (L"Begin column"), GET_INTEGER (L"End column")))
 END
 
 /* For the inheritors */
 DIRECT (TableOfReal_to_TableOfReal)
-	EVERY_TO (TableOfReal_to_TableOfReal (OBJECT))
+	EVERY_TO (TableOfReal_to_TableOfReal ((structTableOfReal *)OBJECT))
 END
 
 DIRECT (TableOfReal_to_Correlation)
-	EVERY_TO (TableOfReal_to_Correlation (OBJECT))
+	EVERY_TO (TableOfReal_to_Correlation ((structTableOfReal *)OBJECT))
 END
 DIRECT (TableOfReal_to_Correlation_rank)
-	EVERY_TO (TableOfReal_to_Correlation_rank (OBJECT))
+	EVERY_TO (TableOfReal_to_Correlation_rank ((structTableOfReal *)OBJECT))
 END
 
 DIRECT (TableOfReal_to_Covariance)
-	EVERY_TO (TableOfReal_to_Covariance (OBJECT))
+	EVERY_TO (TableOfReal_to_Covariance ((structTableOfReal *)OBJECT))
 END
 
 DIRECT (TableOfReal_to_SVD)
-	EVERY_TO (TableOfReal_to_SVD (OBJECT))
+	EVERY_TO (TableOfReal_to_SVD ((structTableOfReal *)OBJECT))
 END
 
 DIRECT (TablesOfReal_to_Eigen_gsvd)
 	TableOfReal me = NULL, thee = NULL;
 	WHERE (SELECTED)
 	{
-		if (me) thee = OBJECT;
-		else me = OBJECT;
+		if (me) thee = (structTableOfReal *)OBJECT;
+		else me = (structTableOfReal *)OBJECT;
 	}
 	NEW (TablesOfReal_to_Eigen_gsvd (me, thee))
 END
@@ -4363,7 +4363,7 @@ FORM (TableOfReal_and_TableOfReal_crossCorrelations, L"TableOfReal & TableOfReal
 DO
 	TableOfReal t1 = NULL, t2 = NULL;
 	int by_columns = GET_INTEGER (L"Correlations between") - 1;
-	WHERE (SELECTED && CLASS == classTableOfReal) { if (t1) t2 = OBJECT; else t1 = OBJECT; }
+	WHERE (SELECTED && CLASS == classTableOfReal) { if (t1) t2 = (structTableOfReal *)OBJECT; else t1 = (structTableOfReal *)OBJECT; }
 	if (! praat_new1 (TableOfReal_and_TableOfReal_crossCorrelations (t1, t2, by_columns,
 		GET_INTEGER (L"Center"), GET_INTEGER (L"Normalize")),
 		(by_columns ? L"by_columns" : L"by_rows"))) return 0;
@@ -4373,8 +4373,8 @@ DIRECT (TablesOfReal_to_GSVD)
 	TableOfReal me = NULL, thee = NULL;
 	WHERE (SELECTED)
 	{
-		if (me) thee = OBJECT;
-		else me = OBJECT;
+		if (me) thee = (structTableOfReal *)OBJECT;
+		else me = (structTableOfReal *)OBJECT;
 	}
 	NEW (TablesOfReal_to_GSVD (me, thee))
 END
@@ -4384,7 +4384,7 @@ FORM (TableOfReal_choleskyDecomposition, L"TableOfReal: Cholesky decomposition",
 	BOOLEAN (L"Inverse", 0)
 	OK
 DO
-	EVERY_TO (TableOfReal_choleskyDecomposition (OBJECT, GET_INTEGER (L"Upper"), GET_INTEGER (L"Inverse")))
+	EVERY_TO (TableOfReal_choleskyDecomposition ((structTableOfReal *)OBJECT, GET_INTEGER (L"Upper"), GET_INTEGER (L"Inverse")))
 END
 
 FORM (TableOfReal_to_Pattern_and_Categories, L"TableOfReal: To Pattern and Categories", L"TableOfReal: To Pattern and Categories...")
@@ -4394,7 +4394,7 @@ FORM (TableOfReal_to_Pattern_and_Categories, L"TableOfReal: To Pattern and Categ
 	INTEGER (L"right Column range", L"0 (=all)")
 	OK
 DO
-	Pattern p; Categories c; TableOfReal t = ONLY_OBJECT;
+	Pattern p; Categories c; TableOfReal t = (structTableOfReal *)ONLY_OBJECT;
 	if (TableOfReal_to_Pattern_and_Categories (t, GET_INTEGER (L"left Row range"),
 		GET_INTEGER (L"right Row range"), GET_INTEGER (L"left Column range"),
 		GET_INTEGER (L"right Column range"), &p, &c))
@@ -4409,25 +4409,25 @@ FORM (TableOfReal_getColumnSum, L"TableOfReal: Get column sum", L"")
 	INTEGER (L"Column", L"1")
 	OK
 DO
-	Melder_information1 (Melder_double (TableOfReal_getColumnSum (ONLY_GENERIC(classTableOfReal), GET_INTEGER (L"Column"))));
+	Melder_information1 (Melder_double (TableOfReal_getColumnSum ((structTableOfReal *)ONLY_GENERIC(classTableOfReal), GET_INTEGER (L"Column"))));
 END
 
 FORM (TableOfReal_getRowSum, L"TableOfReal: Get row sum", L"")
 	INTEGER (L"Row", L"1")
 	OK
 DO
-	Melder_information1 (Melder_double (TableOfReal_getRowSum (ONLY_GENERIC(classTableOfReal), GET_INTEGER (L"Row"))));
+	Melder_information1 (Melder_double (TableOfReal_getRowSum ((structTableOfReal *)ONLY_GENERIC(classTableOfReal), GET_INTEGER (L"Row"))));
 END
 
 DIRECT (TableOfReal_getGrandSum)
-	Melder_information1 (Melder_double (TableOfReal_getGrandSum (ONLY_GENERIC(classTableOfReal))));
+	Melder_information1 (Melder_double (TableOfReal_getGrandSum ((structTableOfReal *)ONLY_GENERIC(classTableOfReal))));
 END
 
 FORM (TableOfReal_meansByRowLabels, L"TableOfReal: Means by row labels", L"TableOfReal: To TableOfReal (means by row labels)...")
     BOOLEAN (L"Expand", 0)
 	OK
 DO
-	EVERY_CHECK(praat_new2 (TableOfReal_meansByRowLabels (OBJECT, GET_INTEGER (L"Expand"), 0), NAME, L"_byrowlabels"))
+	EVERY_CHECK(praat_new2 (TableOfReal_meansByRowLabels ((structTableOfReal *)OBJECT, GET_INTEGER (L"Expand"), 0), NAME, L"_byrowlabels"))
 END
 
 FORM (TableOfReal_mediansByRowLabels, L"TableOfReal: Medians by row labels", L"TableOfReal: To TableOfReal (medians by row labels)...")
@@ -4449,7 +4449,7 @@ FORM (TextGrid_extendTime, L"TextGrid: Extend time", L"TextGrid: Extend time..."
 DO
 	WHERE (SELECTED)
 	{
-		TextGrid_extendTime (OBJECT, GET_REAL (L"Extend domain by"), GET_INTEGER (L"At") - 1);
+		TextGrid_extendTime ((structTextGrid *)OBJECT, GET_REAL (L"Extend domain by"), GET_INTEGER (L"At") - 1);
 		praat_dataChanged (OBJECT);
 	}
 END
@@ -4474,7 +4474,7 @@ DO
 
 	WHERE (SELECTED)
 	{
-		if (! TextGrid_changeLabels (OBJECT, GET_INTEGER (L"Tier number"), from, to, search, GET_STRING (L"Replace"),
+		if (! TextGrid_changeLabels ((structTextGrid *)OBJECT, GET_INTEGER (L"Tier number"), from, to, search, GET_STRING (L"Replace"),
 			regexp, &nmatches, &nstringmatches)) return 0;
 		praat_dataChanged (OBJECT);
 	}
@@ -4498,7 +4498,7 @@ DO
 	long nmatches, nstringmatches;
 	WHERE (SELECTED)
 	{
-		if (! TextGrid_changeLabels (OBJECT, GET_INTEGER (L"Tier number"), from, to, GET_STRING (L"Search"), GET_STRING (L"Replace"),
+		if (! TextGrid_changeLabels ((structTextGrid *)OBJECT, GET_INTEGER (L"Tier number"), from, to, GET_STRING (L"Search"), GET_STRING (L"Replace"),
 			GET_INTEGER (L"Search and replace strings are")-1, &nmatches, &nstringmatches)) return 0;
 		praat_dataChanged (OBJECT);
 	}
@@ -4509,7 +4509,7 @@ FORM (TextGrid_setTierName, L"TextGrid: Set tier name", L"TextGrid: Set tier nam
 	SENTENCE (L"Name", L"");
 	OK
 DO
-	if (! TextGrid_setTierName (ONLY_OBJECT, GET_INTEGER (L"Tier number"),
+	if (! TextGrid_setTierName ((structTextGrid *)ONLY_OBJECT, GET_INTEGER (L"Tier number"),
 		GET_STRING (L"Name"))) return 0;
 		praat_dataChanged (OBJECT);
 END
@@ -4677,7 +4677,7 @@ FORM (SSCP_setValue, L"Covariance: Set value", L"Covariance: Set value...")
 	REAL (L"New value", L"1.0")
 	OK
 DO
-	if (! SSCP_setValue (ONLY_GENERIC (classSSCP), GET_INTEGER (L"Row number"), GET_INTEGER (L"Column number"),
+	if (! SSCP_setValue ((structSSCP *)ONLY_GENERIC (classSSCP), GET_INTEGER (L"Row number"), GET_INTEGER (L"Column number"),
 		GET_REAL (L"New value"))) return 0;
 END
 
@@ -4686,7 +4686,7 @@ FORM (SSCP_setCentroid, L"", 0)
 	REAL (L"New value", L"1.0")
 	OK
 DO
-	if (! SSCP_setCentroid (ONLY_GENERIC (classSSCP), GET_INTEGER (L"Element number"), GET_REAL (L"New value"))) return 0;
+	if (! SSCP_setCentroid ((structSSCP *)ONLY_GENERIC (classSSCP), GET_INTEGER (L"Element number"), GET_REAL (L"New value"))) return 0;
 END
 
 void praat_SSCP_as_TableOfReal_init (void *klas)
@@ -5301,6 +5301,8 @@ void praat_uvafon_David_init (void)
 	praat_KlattGrid_init();
 	praat_HMM_init();
 	praat_BSS_init();
+}
+}
 }
 
 /* End of file praat_David.c */

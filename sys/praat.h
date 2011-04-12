@@ -442,14 +442,7 @@ void praat_picture_close (void);
 
 /* For main.c */
 
-#ifdef __cplusplus
-	#define INCLUDE_LIBRARY(praat_xxx_init) \
-		extern "C" { \
-			void praat_xxx_init (void); \
-		}
-#else
-	#define INCLUDE_LIBRARY(praat_xxx_init) void praat_xxx_init (void);
-#endif
+#define INCLUDE_LIBRARY(praat_xxx_init) extern "C" void praat_xxx_init (void);
 
 /* For text-only applications that do not want to see that irritating Picture window. */
 /* Works only if called before praat_init. */
