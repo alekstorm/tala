@@ -25,16 +25,16 @@
 */
 
 #ifndef _Collection_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 #ifndef _Excitation_h_
-	#include "Excitation.h"
+	#include "fon/Excitation.h"
 #endif
 #ifndef _Pattern_h_
-	#include "Pattern.h"
+	#include "dwtools/Pattern.h"
 #endif
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 
 #ifdef __cplusplus

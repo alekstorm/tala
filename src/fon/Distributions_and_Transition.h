@@ -22,7 +22,7 @@
  */
 
 #ifndef _Distributions_h_
-	#include "Distributions.h"
+	#include "stat/Distributions.h"
 #endif
 #ifndef _Transition_h_
 	#include "Transition.h"

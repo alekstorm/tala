@@ -23,7 +23,7 @@
 */
 
 #include "NUM2.h"
-#include "melder.h"
+#include "sys/melder.h"
 
 /*
 	NUMsort2 uses heapsort to sort the second array in parallel with the first one.

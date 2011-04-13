@@ -21,7 +21,7 @@
  * pb 2011/03/22
  */
 
-#include "praat.h"
+#include "sys/praat.h"
 
 #include "Network.h"
 #include "OTGrammar.h"

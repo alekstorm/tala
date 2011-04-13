@@ -31,10 +31,10 @@
 */
 
 #include <math.h>
-#include "praat.h"
-#include "Discriminant.h"
-#include "PCA.h"
-#include "Minimizers.h"
+#include "sys/praat.h"
+#include "dwtools/Discriminant.h"
+#include "dwtools/PCA.h"
+#include "dwtools/Minimizers.h"
 #include "FFNet_Eigen.h"
 #include "FFNet_Matrix.h"
 #include "FFNet_Pattern.h"

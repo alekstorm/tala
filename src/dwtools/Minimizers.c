@@ -10,8 +10,8 @@
   djmw 20110304 Thing_new
 */
 
-#include "NUM2.h"
-#include "Graphics.h"
+#include "dwsys/NUM2.h"
+#include "sys/Graphics.h"
 #include "Minimizers.h"
 
 #define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))

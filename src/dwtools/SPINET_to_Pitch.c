@@ -25,7 +25,7 @@
 
 #include "SPINET_to_Pitch.h"
 #include "Pitch_extensions.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 /*
 	from Erb-scale to log2-scale

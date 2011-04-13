@@ -23,17 +23,17 @@
  * pb 2011/03/23
  */
 
-#include "Strings.h"
-#include "Graphics.h"
-#include "PairDistribution.h"
-#include "Distributions.h"
-#include "TableOfReal.h"
+#include "sys/Strings.h"
+#include "sys/Graphics.h"
+#include "stat/PairDistribution.h"
+#include "stat/Distributions.h"
+#include "stat/TableOfReal.h"
 
 #ifdef __cplusplus
 	extern "C" {
 #endif
 
-#include "enums.h"
+#include "sys/enums.h"
 #include "OTGrammar_enums.h"
 
 #include "OTGrammar_def.h"

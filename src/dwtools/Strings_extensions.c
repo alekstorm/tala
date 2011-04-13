@@ -32,7 +32,7 @@
 */
 
 #include "Strings_extensions.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 Strings Strings_createFixedLength (long numberOfStrings)
 {

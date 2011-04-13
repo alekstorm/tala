@@ -25,8 +25,8 @@
  * djmw 20110304 Thing_new
  */
 
-#include "Preferences.h"
-#include "EditorM.h"
+#include "sys/Preferences.h"
+#include "sys/EditorM.h"
 
 #include "KlattGridEditors.h"
 

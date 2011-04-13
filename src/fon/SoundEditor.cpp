@@ -42,8 +42,8 @@
 #include "SoundEditor.h"
 #include "Sound_and_Spectrogram.h"
 #include "Pitch.h"
-#include "Preferences.h"
-#include "EditorM.h"
+#include "sys/Preferences.h"
+#include "sys/EditorM.h"
 
 /********** METHODS **********/
 

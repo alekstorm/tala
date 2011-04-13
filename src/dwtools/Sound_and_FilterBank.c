@@ -28,10 +28,10 @@
 
 #include "Sound_and_FilterBank.h"
 #include "Sound_extensions.h"
-#include "Sound_and_Spectrum.h"
-#include "Sound_to_Pitch.h"
-#include "Vector.h"
-#include "NUM2.h"
+#include "fon/Sound_and_Spectrum.h"
+#include "fon/Sound_to_Pitch.h"
+#include "fon/Vector.h"
+#include "dwsys/NUM2.h"
 
 #define MIN(m,n) ((m) < (n) ? (m) : (n))
 

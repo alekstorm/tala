@@ -23,8 +23,8 @@
  * pb 2011/03/08
  */
 
-#include "Editor.h"
-#include "Graphics.h"
+#include "sys/Editor.h"
+#include "sys/Graphics.h"
 #include "Artword.h"
 
 #ifdef __cplusplus

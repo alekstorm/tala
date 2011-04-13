@@ -28,25 +28,25 @@
 #define FITTER_PARAMETER_FIXED 1
 
 #ifndef _SimpleVector_h_
-	#include "SimpleVector.h"
+	#include "dwsys/SimpleVector.h"
 #endif
 #ifndef _Function_h_
-	#include "Function.h"
+	#include "fon/Function.h"
 #endif
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 #ifndef _Minimizers_h_
 	#include "Minimizers.h"
 #endif
 #ifndef _Spectrum_h_
-	#include "Spectrum.h"
+	#include "fon/Spectrum.h"
 #endif
 #ifndef _RealTier_h_
-	#include "RealTier.h"
+	#include "fon/RealTier.h"
 #endif
 #ifndef _SSCP_h_
 	#include "SSCP.h"

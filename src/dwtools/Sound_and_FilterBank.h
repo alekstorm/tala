@@ -29,10 +29,10 @@
 	#include "FilterBank.h"
 #endif
 #ifndef _Pitch_h_
-	#include "Pitch.h"
+	#include "fon/Pitch.h"
 #endif
 #ifndef _Sound_h_
-	#include "Sound.h"
+	#include "fon/Sound.h"
 #endif
 
 #ifdef __cplusplus

@@ -26,10 +26,10 @@
 
 #include "Sound_to_Pitch2.h"
 #include "Pitch_extensions.h"
-#include "Sound_and_Spectrum.h"
+#include "fon/Sound_and_Spectrum.h"
 #include "Sound_to_SPINET.h"
 #include "SPINET_to_Pitch.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 static int spec_enhance_SHS (double a[], long n)
 {

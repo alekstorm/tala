@@ -25,16 +25,16 @@
 */
 
 #ifndef _Collection_extensions_h_
-	#include "Collection_extensions.h"
+	#include "dwsys/Collection_extensions.h"
 #endif
 #ifndef _Simple_extensions_h_
-	#include "Simple_extensions.h"
+	#include "dwsys/Simple_extensions.h"
 #endif
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 
 #ifdef __cplusplus

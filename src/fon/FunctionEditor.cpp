@@ -35,9 +35,9 @@
  */
 
 #include "FunctionEditor.h"
-#include "machine.h"
-#include "Preferences.h"
-#include "EditorM.h"
+#include "sys/machine.h"
+#include "sys/Preferences.h"
+#include "sys/EditorM.h"
 
 #define maximumScrollBarValue  2000000000
 #define RELATIVE_PAGE_INCREMENT  0.8

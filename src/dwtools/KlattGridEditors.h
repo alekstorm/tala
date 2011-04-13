@@ -28,16 +28,16 @@
 	#include "KlattGrid.h"
 #endif
 #ifndef _PitchTier_h_
-	#include "PitchTier.h"
+	#include "fon/PitchTier.h"
 #endif
 #ifndef _IntensityTier_h_
-	#include "IntensityTier.h"
+	#include "fon/IntensityTier.h"
 #endif
 #ifndef _RealTierEditor_h_
-	#include "RealTierEditor.h"
+	#include "fon/RealTierEditor.h"
 #endif
 #ifndef _FormantGridEditor_h_
-	#include "FormantGridEditor.h"
+	#include "fon/FormantGridEditor.h"
 #endif
 
 #ifdef __cplusplus

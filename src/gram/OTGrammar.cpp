@@ -70,26 +70,26 @@
  */
 
 #include "OTGrammar.h"
-#include "NUM.h"
+#include "num/NUM.h"
 
-#include "oo_DESTROY.h"
+#include "sys/oo_DESTROY.h"
 #include "OTGrammar_def.h"
-#include "oo_COPY.h"
+#include "sys/oo_COPY.h"
 #include "OTGrammar_def.h"
-#include "oo_EQUAL.h"
+#include "sys/oo_EQUAL.h"
 #include "OTGrammar_def.h"
-#include "oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo_CAN_WRITE_AS_ENCODING.h"
 #include "OTGrammar_def.h"
-#include "oo_WRITE_BINARY.h"
+#include "sys/oo_WRITE_BINARY.h"
 #include "OTGrammar_def.h"
-#include "oo_READ_BINARY.h"
+#include "sys/oo_READ_BINARY.h"
 #include "OTGrammar_def.h"
-#include "oo_DESCRIPTION.h"
+#include "sys/oo_DESCRIPTION.h"
 #include "OTGrammar_def.h"
 
-#include "enums_getText.h"
+#include "sys/enums_getText.h"
 #include "OTGrammar_enums.h"
-#include "enums_getValue.h"
+#include "sys/enums_getValue.h"
 #include "OTGrammar_enums.h"
 
 static void classOTGrammar_info (I) {

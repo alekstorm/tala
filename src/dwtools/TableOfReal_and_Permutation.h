@@ -25,10 +25,10 @@
 */
 
 #ifndef _Permutation_h_
-	#include "Permutation.h"
+	#include "dwsys/Permutation.h"
 #endif
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 
 #ifdef __cplusplus

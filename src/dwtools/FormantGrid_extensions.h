@@ -25,10 +25,10 @@
 */
 
 #ifndef _FormantGrid_h_
-	#include "FormantGrid.h"
+	#include "fon/FormantGrid.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 
 #ifdef __cplusplus

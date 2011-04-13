@@ -24,7 +24,7 @@
  */
 
 #ifndef _Collection_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 #ifndef _PointProcess_h_
 	#include "PointProcess.h"

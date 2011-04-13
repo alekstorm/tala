@@ -23,7 +23,7 @@
  * pb 2011/03/16
  */
 
-#include "Strings.h"
+#include "sys/Strings.h"
 #include "Table.h"
 #include "Distributions.h"
 

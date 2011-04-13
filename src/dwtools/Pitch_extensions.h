@@ -26,11 +26,11 @@
 */
 
 #ifndef _Pitch_h_
-	#include "Pitch.h"
+	#include "fon/Pitch.h"
 #endif
 
 #ifndef _PitchTier_h_
-	#include "PitchTier.h"
+	#include "fon/PitchTier.h"
 #endif
 
 #ifdef __cplusplus

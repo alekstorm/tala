@@ -27,11 +27,11 @@
 */
 
 #ifndef _Eigen_h_
-	#include "Eigen.h"
+	#include "dwsys/Eigen.h"
 #endif
 
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 
 #ifdef __cplusplus

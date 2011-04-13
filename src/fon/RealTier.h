@@ -24,8 +24,8 @@
  */
 
 #include "AnyTier.h"
-#include "Graphics.h"
-#include "TableOfReal.h"
+#include "sys/Graphics.h"
+#include "stat/TableOfReal.h"
 #include "Vector.h"
 
 #ifdef __cplusplus

@@ -70,12 +70,12 @@
 
 #include <errno.h>
 #include "SoundRecorder.h"
-#include "Editor.h"
-#include "machine.h"
-#include "EditorM.h"
-#include "Preferences.h"
+#include "sys/Editor.h"
+#include "sys/machine.h"
+#include "sys/EditorM.h"
+#include "sys/Preferences.h"
 
-#include "portaudio.h"
+#include "audio/portaudio.h"
 #if defined (macintosh)
 	#include "pa_mac_core.h"
 #endif

@@ -24,7 +24,7 @@
 */
 
 #include "MelFilter_and_MFCC.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 #define MAX(m,n) ((m) > (n) ? (m) : (n))
 #define MIN(m,n) ((m) < (n) ? (m) : (n))

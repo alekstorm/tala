@@ -25,7 +25,7 @@
 */
 
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 
 #ifdef __cplusplus

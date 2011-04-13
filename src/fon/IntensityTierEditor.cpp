@@ -27,7 +27,7 @@
  */
 
 #include "IntensityTierEditor.h"
-#include "EditorM.h"
+#include "sys/EditorM.h"
 
 static int menu_cb_IntensityTierHelp (EDITOR_ARGS) { EDITOR_IAM (IntensityTierEditor); Melder_help (L"IntensityTier"); return 1; }
 

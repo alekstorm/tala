@@ -34,14 +34,14 @@
 */
 
 #include <math.h>
-#include "NUM2.h"
-#include "praat.h"
+#include "dwsys/NUM2.h"
+#include "sys/praat.h"
 #include "MDS.h"
 #include "TableOfReal_extensions.h"
 #include "Configuration_and_Procrustes.h"
 #include "Configuration_AffineTransform.h"
 #include "Confusion.h"
-#include "Formula.h"
+#include "sys/Formula.h"
 
 void praat_TableOfReal_init (void *klas);
 

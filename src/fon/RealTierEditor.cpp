@@ -32,8 +32,8 @@
  */
 
 #include "RealTierEditor.h"
-#include "Preferences.h"
-#include "EditorM.h"
+#include "sys/Preferences.h"
+#include "sys/EditorM.h"
 
 #define SOUND_HEIGHT  0.382
 

@@ -25,8 +25,8 @@
  djmw 20110305 Latest modification.
 */
 
-#include "Command.h"
-#include "Editor.h"
+#include "dwsys/Command.h"
+#include "sys/Editor.h"
 #include "Categories.h"
 
 #ifdef __cplusplus

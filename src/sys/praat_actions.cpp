@@ -33,7 +33,7 @@
 
 #include "praatP.h"
 #include "praat_script.h"
-#include "longchar.h"
+#include "kar/longchar.h"
 #include "machine.h"
 
 #define BUTTON_WIDTH  240

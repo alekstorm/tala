@@ -34,8 +34,8 @@
  */
 
 #include "RunnerMFC.h"
-#include "EditorM.h"
-#include "machine.h"
+#include "sys/EditorM.h"
+#include "sys/machine.h"
 
 #define RunnerMFC__members(Klas) Editor__members(Klas) \
 	GuiObject drawingArea; \

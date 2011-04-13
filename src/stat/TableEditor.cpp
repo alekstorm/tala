@@ -32,8 +32,8 @@
  */
 
 #include "TableEditor.h"
-#include "machine.h"
-#include "EditorM.h"
+#include "sys/machine.h"
+#include "sys/EditorM.h"
 
 #define MAXNUM_VISIBLE_COLUMNS  100
 #define SIZE_INCHES  40

@@ -26,7 +26,7 @@
 */
 
 #ifndef _LongSound_h_
-	#include "LongSound.h"
+	#include "fon/LongSound.h"
 #endif
 
 #ifdef __cplusplus

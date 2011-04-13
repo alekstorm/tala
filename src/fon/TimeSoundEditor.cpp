@@ -29,8 +29,8 @@
  */
 
 #include "TimeSoundEditor.h"
-#include "Preferences.h"
-#include "EditorM.h"
+#include "sys/Preferences.h"
+#include "sys/EditorM.h"
 
 /********** PREFERENCES **********/
 

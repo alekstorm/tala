@@ -28,19 +28,19 @@
  djmw 20110307 Latest modification
 */
 #ifndef _Collection_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 
 #ifndef _Strings_h_
-	#include "Strings.h"
+	#include "sys/Strings.h"
 #endif
 
 #ifndef _Permutation_h_
-	#include "Permutation.h"
+	#include "dwsys/Permutation.h"
 #endif
 
 #ifndef _Index_h_
-	#include "Index.h"
+	#include "dwsys/Index.h"
 #endif
 
 #ifdef __cplusplus

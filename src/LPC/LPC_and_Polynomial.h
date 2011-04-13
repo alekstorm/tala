@@ -29,7 +29,7 @@
 	#include "LPC.h"
 #endif
 #ifndef _Polynomial_h_
-	#include "Polynomial.h"
+	#include "dwtools/Polynomial.h"
 #endif
 
 #ifdef __cplusplus

@@ -32,8 +32,8 @@
 // Praat datatypes                                 //
 /////////////////////////////////////////////////////
 
-#include "Pattern.h"
-#include "Categories.h"
+#include "dwtools/Pattern.h"
+#include "dwtools/Categories.h"
 
 /////////////////////////////////////////////////////
 // Miscs                                           //

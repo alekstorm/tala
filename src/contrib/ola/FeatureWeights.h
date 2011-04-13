@@ -28,10 +28,10 @@
 // Praat datatypes                                 //
 /////////////////////////////////////////////////////
 
-#include "Data.h"
-#include "TableOfReal.h"
-#include "Pattern.h"
-#include "Categories.h"
+#include "sys/Data.h"
+#include "stat/TableOfReal.h"
+#include "dwtools/Pattern.h"
+#include "dwtools/Categories.h"
 
 /////////////////////////////////////////////////////
 // Miscs                                           //

@@ -39,23 +39,23 @@
 
 #include <ctype.h>
 #include "TableOfReal.h"
-#include "NUM2.h"
-#include "Matrix.h"
-#include "Formula.h"
+#include "dwsys/NUM2.h"
+#include "fon/Matrix.h"
+#include "sys/Formula.h"
 
-#include "oo_DESTROY.h"
+#include "sys/oo_DESTROY.h"
 #include "TableOfReal_def.h"
-#include "oo_COPY.h"
+#include "sys/oo_COPY.h"
 #include "TableOfReal_def.h"
-#include "oo_EQUAL.h"
+#include "sys/oo_EQUAL.h"
 #include "TableOfReal_def.h"
-#include "oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo_CAN_WRITE_AS_ENCODING.h"
 #include "TableOfReal_def.h"
-#include "oo_WRITE_BINARY.h"
+#include "sys/oo_WRITE_BINARY.h"
 #include "TableOfReal_def.h"
-#include "oo_READ_BINARY.h"
+#include "sys/oo_READ_BINARY.h"
 #include "TableOfReal_def.h"
-#include "oo_DESCRIPTION.h"
+#include "sys/oo_DESCRIPTION.h"
 #include "TableOfReal_def.h"
 
 static void fprintquotedstring (MelderFile file, const wchar_t *s) {

@@ -51,13 +51,13 @@
 #include <ctype.h>
 #include "SSCP.h"
 #include "Matrix_extensions.h"
-#include "NUMclapack.h"
-#include "NUM2.h"
-#include "SVD.h"
+#include "dwsys/NUMclapack.h"
+#include "dwsys/NUM2.h"
+#include "dwsys/SVD.h"
 #include "TableOfReal_extensions.h"
 #include "TableOfReal_and_Permutation.h"
-#include "regularExp.h"
-#include "Formula.h"
+#include "dwsys/regularExp.h"
+#include "sys/Formula.h"
 #include "Table_extensions.h"
 
 #define EMPTY_STRING(s) ((s) == NULL || s[0] == '\0')

@@ -26,10 +26,10 @@
  */
 
 #ifndef _CCA_h_
-	#include "CCA.h"
+	#include "dwtools/CCA.h"
 #endif
 #ifndef _SSCP_h_
-	#include "SSCP.h"
+	#include "dwtools/SSCP.h"
 #endif
 
 #ifdef __cplusplus

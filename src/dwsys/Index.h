@@ -25,11 +25,11 @@
 */
 
 #ifndef _Data_h_
-	#include "Data.h"
+	#include "sys/Data.h"
 #endif
 
 #ifndef _Distributions_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 
 #ifdef __cplusplus

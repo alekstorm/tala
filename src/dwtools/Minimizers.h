@@ -27,7 +27,7 @@
 
 
 #ifndef _Thing_h_
-	#include "Thing.h"
+	#include "sys/Thing.h"
 #endif
 
 #ifdef __cplusplus

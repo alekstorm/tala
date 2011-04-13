@@ -29,7 +29,7 @@
  */
 
 #include "melder.h"
-#include "longchar.h"
+#include "kar/longchar.h"
 
 static void defaultError (wchar_t *message) {
 	Melder_writeToConsole (wcsstr (message, L"You interrupted ") ? L"User interrupt: " : L"Error: ", true);

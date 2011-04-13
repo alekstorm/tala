@@ -30,8 +30,8 @@
 */
 
 #include "Table_extensions.h"
-#include "GraphicsP.h"
-#include "NUM2.h"
+#include "sys/GraphicsP.h"
+#include "dwsys/NUM2.h"
 
 /* 
 The Peterson & Barney data were once (1991) obtained by me as a compressed tar-file 

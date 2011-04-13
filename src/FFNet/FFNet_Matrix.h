@@ -25,7 +25,7 @@
  djmw 20110307 Latest modification
 */
 
-#include "Matrix.h"
+#include "fon/Matrix.h"
 #include "FFNet.h"
 
 #ifdef __cplusplus

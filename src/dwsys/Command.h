@@ -25,8 +25,8 @@
  djmw 20110306 Latest modification
 */
 
-#include "Thing.h"
-#include "Collection.h"
+#include "sys/Thing.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

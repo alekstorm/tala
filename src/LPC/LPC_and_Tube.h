@@ -31,7 +31,7 @@
 	#include "Tube.h"
 #endif
 #ifndef _VocalTract_h_
-	#include "VocalTract.h"
+	#include "fon/VocalTract.h"
 #endif
 
 #ifdef __cplusplus

@@ -28,12 +28,12 @@
 // Praat datatypes                                 //
 /////////////////////////////////////////////////////
 
-#include "Data.h"
-#include "Pattern.h"
-#include "Categories.h"
-#include "TableOfReal.h"
-#include "Permutation.h"
-#include "MDS.h"
+#include "sys/Data.h"
+#include "dwtools/Pattern.h"
+#include "dwtools/Categories.h"
+#include "stat/TableOfReal.h"
+#include "dwsys/Permutation.h"
+#include "dwtools/MDS.h"
 
 /////////////////////////////////////////////////////
 // KNN miscs                                       //
@@ -41,7 +41,7 @@
 
 #include "OlaP.h"
 #include "FeatureWeights.h"
-#include "gsl_siman.h"
+#include "gsl/gsl_siman.h"
 
 #ifdef __cplusplus
 	extern "C" {

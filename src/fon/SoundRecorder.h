@@ -25,7 +25,7 @@
 
 /* An editor-like object that allows the user to record sounds. */
 
-#include "Editor.h"
+#include "sys/Editor.h"
 #include "Sound.h"
 
 #ifdef __cplusplus

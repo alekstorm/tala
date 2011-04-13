@@ -28,11 +28,11 @@
 
 
 #ifndef _Data_h_
-	#include "Data.h"
+	#include "sys/Data.h"
 #endif
 
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 
 #ifndef _Configuration_h_
@@ -40,7 +40,7 @@
 #endif
 
 #ifndef _Eigen_h_
-	#include "Eigen.h"
+	#include "dwsys/Eigen.h"
 #endif
 
 #ifdef __cplusplus

@@ -25,10 +25,10 @@
 */
 
 #ifndef _TableOfReal_h
-	#include "Table.h"
+	#include "stat/Table.h"
 #endif
 #ifndef _Sound_h
-	#include "Sound.h"
+	#include "fon/Sound.h"
 #endif
 
 #ifdef __cplusplus

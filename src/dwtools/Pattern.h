@@ -25,7 +25,7 @@
 */
 
 #ifndef _Matrix_h_
-	#include "Matrix.h"
+	#include "fon/Matrix.h"
 #endif
 
 #ifdef __cplusplus

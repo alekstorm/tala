@@ -22,7 +22,7 @@
 */
 
 #include "Discriminant_Pattern_Categories.h"
-#include "TableOfReal.h"
+#include "stat/TableOfReal.h"
 #include "Matrix_Categories.h"
 
 Discriminant Pattern_and_Categories_to_Discriminant (Pattern me, Categories thee)

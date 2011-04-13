@@ -23,7 +23,7 @@
  */
 
 #include "DurationTierEditor.h"
-#include "EditorM.h"
+#include "sys/EditorM.h"
 
 static int menu_cb_DurationTierHelp (EDITOR_ARGS) { EDITOR_IAM (DurationTierEditor); Melder_help (L"DurationTier"); return 1; }
 

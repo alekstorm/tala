@@ -26,13 +26,13 @@
 /* Sound inherits from Vector */
 /* A Sound is a sampled signal, not quantized. */
 #include "Vector.h"
-#include "Collection.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {
 #endif
 
-#include "enums.h"
+#include "sys/enums.h"
 #include "Sound_enums.h"
 
 #define Sound_members  Vector_members

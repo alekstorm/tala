@@ -26,13 +26,13 @@
 */
 
 #ifndef _Spectrum_h_
-	#include "Spectrum.h"
+	#include "fon/Spectrum.h"
 #endif
 #ifndef _Sound_h_
-	#include "Sound.h"
+	#include "fon/Sound.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 
 #ifdef __cplusplus

@@ -87,23 +87,23 @@ static Any classProcrustes_invert (I)
 	return thee;	
 }
 
-#include "oo_DESTROY.h"
+#include "sys/oo_DESTROY.h"
 #include "Procrustes_def.h"
-#include "oo_COPY.h"
+#include "sys/oo_COPY.h"
 #include "Procrustes_def.h"
-#include "oo_EQUAL.h"
+#include "sys/oo_EQUAL.h"
 #include "Procrustes_def.h"
-#include "oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo_CAN_WRITE_AS_ENCODING.h"
 #include "Procrustes_def.h"
-#include "oo_WRITE_TEXT.h"
+#include "sys/oo_WRITE_TEXT.h"
 #include "Procrustes_def.h"
-#include "oo_WRITE_BINARY.h"
+#include "sys/oo_WRITE_BINARY.h"
 #include "Procrustes_def.h"
-#include "oo_READ_TEXT.h"
+#include "sys/oo_READ_TEXT.h"
 #include "Procrustes_def.h"
-#include "oo_READ_BINARY.h"
+#include "sys/oo_READ_BINARY.h"
 #include "Procrustes_def.h"
-#include "oo_DESCRIPTION.h"
+#include "sys/oo_DESCRIPTION.h"
 #include "Procrustes_def.h"
 
 class_methods (Procrustes, AffineTransform)

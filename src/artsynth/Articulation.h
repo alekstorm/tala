@@ -27,7 +27,7 @@
 /* Members represent muscle activities for speech production. */
 /* All members have values from 0 (no activity) to 1 (maximum activity). */
 
-#include "Data.h"
+#include "sys/Data.h"
 
 #ifdef __cplusplus
 	extern "C" {

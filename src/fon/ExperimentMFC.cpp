@@ -42,23 +42,23 @@
 
 #include "ExperimentMFC.h"
 
-#include "oo_DESTROY.h"
+#include "sys/oo_DESTROY.h"
 #include "ExperimentMFC_def.h"
-#include "oo_COPY.h"
+#include "sys/oo_COPY.h"
 #include "ExperimentMFC_def.h"
-#include "oo_EQUAL.h"
+#include "sys/oo_EQUAL.h"
 #include "ExperimentMFC_def.h"
-#include "oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo_CAN_WRITE_AS_ENCODING.h"
 #include "ExperimentMFC_def.h"
-#include "oo_READ_TEXT.h"
+#include "sys/oo_READ_TEXT.h"
 #include "ExperimentMFC_def.h"
-#include "oo_WRITE_TEXT.h"
+#include "sys/oo_WRITE_TEXT.h"
 #include "ExperimentMFC_def.h"
-#include "oo_READ_BINARY.h"
+#include "sys/oo_READ_BINARY.h"
 #include "ExperimentMFC_def.h"
-#include "oo_WRITE_BINARY.h"
+#include "sys/oo_WRITE_BINARY.h"
 #include "ExperimentMFC_def.h"
-#include "oo_DESCRIPTION.h"
+#include "sys/oo_DESCRIPTION.h"
 #include "ExperimentMFC_def.h"
 
 class_methods (ExperimentMFC, Data) {
@@ -75,9 +75,9 @@ class_methods (ExperimentMFC, Data) {
 	class_methods_end
 }
 
-#include "enums_getText.h"
+#include "sys/enums_getText.h"
 #include "Experiment_enums.h"
-#include "enums_getValue.h"
+#include "sys/enums_getValue.h"
 #include "Experiment_enums.h"
 
 static int readSound (ExperimentMFC me, const wchar_t *fileNameHead, const wchar_t *fileNameTail,

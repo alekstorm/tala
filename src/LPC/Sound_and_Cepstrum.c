@@ -24,9 +24,9 @@
 */
 
 #include "Sound_and_Cepstrum.h"
-#include "Sound_and_Spectrum.h"
+#include "fon/Sound_and_Spectrum.h"
 #include "Cepstrum_and_Spectrum.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 /*
 	Algorithm:

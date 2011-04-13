@@ -25,7 +25,7 @@
 */
 
 #include "FFNet.h"
-#include "Eigen.h"
+#include "dwsys/Eigen.h"
 
 #ifdef __cplusplus
 	extern "C" {

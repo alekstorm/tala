@@ -25,22 +25,22 @@
 */
 
 #ifndef _Spectrogram_h_
-	#include "Spectrogram.h"
+	#include "fon/Spectrogram.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 #ifndef _Polygon_h
-	#include "Polygon.h"
+	#include "fon/Polygon.h"
 #endif
 #ifndef _Pitch_h
-	#include "Pitch.h"
+	#include "fon/Pitch.h"
 #endif
 #ifndef _DurationTier_h
-	#include "DurationTier.h"
+	#include "fon/DurationTier.h"
 #endif
 #ifndef _Sound_h
-	#include "Sound.h"
+	#include "fon/Sound.h"
 #endif
 
 #ifdef __cplusplus

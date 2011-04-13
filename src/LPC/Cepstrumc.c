@@ -20,31 +20,31 @@
 /*
  djmw 20020812 GPL header
  djmw 20061218 Changed info to Melder_writeLine<x> format.
- djmw 20071017 oo_CAN_WRITE_AS_ENCODING.h
+ djmw 20071017 sys/oo_CAN_WRITE_AS_ENCODING.h
  djmw 20080122 Version 1: float -> double
  djmw 20110304 Thing_new
 */
 
 #include "Cepstrumc.h"
-#include "DTW.h"
+#include "dwtools/DTW.h"
 
-#include "oo_DESTROY.h"
+#include "sys/oo_DESTROY.h"
 #include "Cepstrumc_def.h"
-#include "oo_COPY.h"
+#include "sys/oo_COPY.h"
 #include "Cepstrumc_def.h"
-#include "oo_EQUAL.h"
+#include "sys/oo_EQUAL.h"
 #include "Cepstrumc_def.h"
-#include "oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo_CAN_WRITE_AS_ENCODING.h"
 #include "Cepstrumc_def.h"
-#include "oo_WRITE_TEXT.h"
+#include "sys/oo_WRITE_TEXT.h"
 #include "Cepstrumc_def.h"
-#include "oo_WRITE_BINARY.h"
+#include "sys/oo_WRITE_BINARY.h"
 #include "Cepstrumc_def.h"
-#include "oo_READ_TEXT.h"
+#include "sys/oo_READ_TEXT.h"
 #include "Cepstrumc_def.h"
-#include "oo_READ_BINARY.h"
+#include "sys/oo_READ_BINARY.h"
 #include "Cepstrumc_def.h"
-#include "oo_DESCRIPTION.h"
+#include "sys/oo_DESCRIPTION.h"
 #include "Cepstrumc_def.h"
 
 static void info (I)

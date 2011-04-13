@@ -25,15 +25,15 @@
 */
 
 #ifndef _Matrix_h_
-	#include "Matrix.h"
+	#include "fon/Matrix.h"
 #endif
 
 #ifndef _Categories_h_
-	#include "Categories.h"
+	#include "dwtools/Categories.h"
 #endif
 
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 
 #ifdef __cplusplus

@@ -25,28 +25,28 @@
  */
 
 #ifndef _Collection_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 #ifndef _PointProcess_h_
-	#include "PointProcess.h"
+	#include "fon/PointProcess.h"
 #endif
 #ifndef _Sound_h_
-	#include "Sound.h"
+	#include "fon/Sound.h"
 #endif
 #ifndef _IntensityTier_h_
-	#include "IntensityTier.h"
+	#include "fon/IntensityTier.h"
 #endif
 #ifndef _PitchTier_h_
-	#include "PitchTier.h"
+	#include "fon/PitchTier.h"
 #endif
 #ifndef _FormantGrid_h_
-	#include "FormantGrid.h"
+	#include "fon/FormantGrid.h"
 #endif
 #ifndef _KlattTable_h_
 	#include "KlattTable.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 
 #ifdef __cplusplus

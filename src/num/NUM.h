@@ -73,7 +73,7 @@ void NUMinit (void);
 #include <stdio.h>
 #include <wchar.h>
 #ifndef _abcio_h_
-	#include "abcio.h"
+	#include "sys/abcio.h"
 #endif
 #define NUMlog2(x)  (log (x) * NUMlog2e)
 double NUMpow (double base, double exponent);   /* Zero for non-positive base. */

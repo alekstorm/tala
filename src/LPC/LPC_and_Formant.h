@@ -25,8 +25,8 @@
 */
 
 #include "LPC.h"
-#include "Polynomial.h"
-#include "Formant.h"
+#include "dwtools/Polynomial.h"
+#include "fon/Formant.h"
 
 #ifdef __cplusplus
 	extern "C" {

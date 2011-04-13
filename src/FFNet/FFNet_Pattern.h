@@ -25,7 +25,7 @@
  djmw 20110307 Latest modification
 */
 
-#include "Pattern.h"
+#include "dwtools/Pattern.h"
 #include "FFNet.h"
 
 #ifdef __cplusplus

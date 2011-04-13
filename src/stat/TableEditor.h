@@ -23,7 +23,7 @@
  * pb 2011/03/03
  */
 
-#include "Editor.h"
+#include "sys/Editor.h"
 #include "Table.h"
 
 #ifdef __cplusplus

@@ -22,10 +22,10 @@
 	djmw 20110101 Latest modification
 */
 
-#include "praat.h"
+#include "sys/praat.h"
 #include "ICA.h"
 #include "PCA.h"
-#include "Sound.h"
+#include "fon/Sound.h"
 
 extern "C" void praat_SSCP_as_TableOfReal_init (void *klas);
 extern "C" void praat_TableOfReal_init (void *klas);

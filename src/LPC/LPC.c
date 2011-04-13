@@ -22,32 +22,32 @@
  djmw 20030612 Removed LPC_Frame_free
  djmw 20060510 LPC_drawPoles error cleared if something goes wrong.
  djmw 20061212 Changed info to Melder_writeLine<x> format.
- djmw 20071017 oo_CAN_WRITE_AS_ENCODING.h
+ djmw 20071017 sys/oo_CAN_WRITE_AS_ENCODING.h
  djmw 20080122 float -> double
  djmw 20081223 Corrected a bug in Matrix LPC_to_Matrix (last coefficient was not copied)
  djmw 20110304 Thing_new
 */
 
 #include "LPC_and_Polynomial.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
-#include "oo_DESTROY.h"
+#include "sys/oo_DESTROY.h"
 #include "LPC_def.h"
-#include "oo_COPY.h"
+#include "sys/oo_COPY.h"
 #include "LPC_def.h"
-#include "oo_EQUAL.h"
+#include "sys/oo_EQUAL.h"
 #include "LPC_def.h"
-#include "oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo_CAN_WRITE_AS_ENCODING.h"
 #include "LPC_def.h"
-#include "oo_WRITE_TEXT.h"
+#include "sys/oo_WRITE_TEXT.h"
 #include "LPC_def.h"
-#include "oo_WRITE_BINARY.h"
+#include "sys/oo_WRITE_BINARY.h"
 #include "LPC_def.h"
-#include "oo_READ_TEXT.h"
+#include "sys/oo_READ_TEXT.h"
 #include "LPC_def.h"
-#include "oo_READ_BINARY.h"
+#include "sys/oo_READ_BINARY.h"
 #include "LPC_def.h"
-#include "oo_DESCRIPTION.h"
+#include "sys/oo_DESCRIPTION.h"
 #include "LPC_def.h"
 
 static void info (I)

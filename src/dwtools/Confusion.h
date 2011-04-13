@@ -25,16 +25,16 @@
 */
 
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 #ifndef _Categories_h_
-	#include "Categories.h"
+	#include "dwtools/Categories.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 #ifndef _Matrix_h_
-	#include "Matrix.h"
+	#include "fon/Matrix.h"
 #endif
 
 #ifdef __cplusplus

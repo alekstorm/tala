@@ -26,7 +26,7 @@
 */
 
 #include "Sound_extensions.h"
-#include "Pitch.h"
+#include "fon/Pitch.h"
 
 #ifdef __cplusplus
 	extern "C" {

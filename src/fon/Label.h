@@ -24,7 +24,7 @@
  */
 
 #ifndef _Collection_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 #ifndef _Function_h_
 	#include "Function.h"

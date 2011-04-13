@@ -25,7 +25,7 @@
 */
 
 #include "MFCC.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 class_methods (MFCC, CC)
 class_methods_end

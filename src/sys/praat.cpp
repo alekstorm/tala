@@ -51,7 +51,7 @@
  */
 
 #include "melder.h"
-#include "NUMmachar.h"
+#include "dwsys/NUMmachar.h"
 #include <ctype.h>
 #include <stdarg.h>
 #if defined (UNIX) || defined (macintosh)

@@ -33,7 +33,7 @@
  */
 
 #include "Sound_to_Pitch.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 #define AC_HANNING  0
 #define AC_GAUSS  1

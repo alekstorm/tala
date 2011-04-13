@@ -21,7 +21,7 @@
  * pb 2011/03/23
  */
 
-#include "praat.h"
+#include "sys/praat.h"
 
 #include "ExperimentMFC.h"
 #include "RunnerMFC.h"

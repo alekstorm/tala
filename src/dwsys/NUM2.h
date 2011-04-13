@@ -25,7 +25,7 @@
 */
 
 #ifndef _NUM_h_
-	#include "NUM.h"
+	#include "num/NUM.h"
 #endif
 #include "limits.h"
 

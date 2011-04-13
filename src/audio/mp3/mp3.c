@@ -50,7 +50,7 @@
 
 #include <string.h>
 #include "mp3.h"
-#include "melder.h"
+#include "sys/melder.h"
 
 #include "mad_config.h"
 #include "mad_decoder.h"

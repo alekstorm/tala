@@ -25,13 +25,13 @@
 */
 
 #ifndef _Sound_h_
-	#include "Sound.h"
+	#include "fon/Sound.h"
 #endif
 #ifndef _Intensity_h_
-	#include "Intensity.h"
+	#include "fon/Intensity.h"
 #endif
 #ifndef _TextGrid_h_
-	#include "TextGrid.h"
+	#include "fon/TextGrid.h"
 #endif
 
 #ifdef __cplusplus

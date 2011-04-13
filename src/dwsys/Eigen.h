@@ -25,16 +25,16 @@
 */
 
 #ifndef _Data_h_
-	#include "Data.h"
+	#include "sys/Data.h"
 #endif
 #ifndef _Collection_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 #ifndef _Strings_h_
-	#include "Strings.h"
+	#include "sys/Strings.h"
 #endif
 
 #ifdef __cplusplus

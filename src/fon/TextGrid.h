@@ -25,9 +25,9 @@
 
 #include "AnyTier.h"
 #include "Label.h"
-#include "Graphics.h"
-#include "TableOfReal.h"
-#include "Table.h"
+#include "sys/Graphics.h"
+#include "stat/TableOfReal.h"
+#include "stat/Table.h"
 
 #ifdef __cplusplus
 	extern "C" {

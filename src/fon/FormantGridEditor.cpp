@@ -24,8 +24,8 @@
  */
 
 #include "FormantGridEditor.h"
-#include "Preferences.h"
-#include "EditorM.h"
+#include "sys/Preferences.h"
+#include "sys/EditorM.h"
 #include "PointProcess_and_Sound.h"
 
 /********** PREFERENCES **********/

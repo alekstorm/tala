@@ -25,10 +25,10 @@
  djmw 20110307 Latest modification
 */
 
-#include "Polygon.h"
-#include "Categories.h"
-#include "Graphics.h"
-#include "Sound.h"
+#include "fon/Polygon.h"
+#include "dwtools/Categories.h"
+#include "sys/Graphics.h"
+#include "fon/Sound.h"
 
 #ifdef __cplusplus
 	extern "C" {

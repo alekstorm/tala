@@ -27,10 +27,10 @@
 	#include "Sound.h"
 #endif
 #ifndef _Categories_h_
-	#include "Categories.h"
+	#include "dwtools/Categories.h"
 #endif
 #ifndef _Table_h_
-	#include "Table.h"
+	#include "stat/Table.h"
 #endif
 
 #include "Experiment_enums.h"

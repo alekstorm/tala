@@ -24,7 +24,7 @@
  */
 
 #ifndef _Editor_h_
-	#include "Editor.h"
+	#include "sys/Editor.h"
 #endif
 #ifndef _ExperimentMFC_h_
 	#include "ExperimentMFC.h"

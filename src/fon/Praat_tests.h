@@ -3,7 +3,7 @@
 /* Paul Boersma, 3 March 2011 */
 
 #ifndef _Thing_h_
-	#include "Thing.h"
+	#include "sys/Thing.h"
 #endif
 
 #include "Praat_tests_enums.h"

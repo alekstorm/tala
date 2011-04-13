@@ -26,15 +26,15 @@
 */
 
 #ifndef _Eigen_h_
-	#include "Eigen.h"
+	#include "dwsys/Eigen.h"
 #endif
 
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 
 #ifndef _Strings_h_
-	#include "Strings.h"
+	#include "sys/Strings.h"
 #endif
 
 #ifdef __cplusplus

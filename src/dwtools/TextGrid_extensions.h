@@ -25,7 +25,7 @@
 */
 
 #ifndef _TextGrid_h_
-	#include "TextGrid.h"
+	#include "fon/TextGrid.h"
 #endif
 
 #ifdef __cplusplus

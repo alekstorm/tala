@@ -23,7 +23,7 @@
  */
 
 #include "NUM2.h"
-#include "melder.h"
+#include "sys/melder.h"
 
 #define my me ->
 

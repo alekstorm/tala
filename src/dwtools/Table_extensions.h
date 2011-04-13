@@ -26,7 +26,7 @@
 #define _Table_extensions_h_
 
 #ifndef _Table_h_
-	#include "Table.h"
+	#include "stat/Table.h"
 #endif
 
 #ifdef __cplusplus

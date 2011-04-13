@@ -25,7 +25,7 @@
 */
 
 #include "Cepstrum.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 class_methods (Cepstrum, Matrix)
 	us -> version = 1;

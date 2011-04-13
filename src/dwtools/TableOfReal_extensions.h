@@ -25,10 +25,10 @@
 */
 
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 #ifndef _Collection_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 #ifndef _Pattern_h_
 	#include "Pattern.h"
@@ -37,7 +37,7 @@
 	#include "Categories.h"
 #endif
 #ifndef _Strings_h_
-	#include "Strings.h"
+	#include "sys/Strings.h"
 #endif
 #ifndef _SSCP_h_
 	#include "SSCP.h"

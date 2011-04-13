@@ -24,8 +24,8 @@
  */
 
 /* TableOfReal inherits from Data */
-#include "Collection.h"
-#include "Strings.h"
+#include "sys/Collection.h"
+#include "sys/Strings.h"
 #include "Table.h"
 
 #ifdef __cplusplus

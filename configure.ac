@@ -46,6 +46,10 @@ AC_PROG_CC
 
 AC_PROG_RANLIB
 
+DEFS="-DUNIX -Dlinux `pkg-config --cflags gtk+-2.0` -m64"
+COMMON="$DEFS -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O"
+AC_SUBST([COMMON])
+
 AC_CONFIG_FILES([Makefile
                   src/Makefile
                   src/artsynth/Makefile

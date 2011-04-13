@@ -30,13 +30,13 @@
 	#include "FFNet.h"
 #endif
 #ifndef _Pattern_h_
-	#include "Pattern.h"
+	#include "dwtools/Pattern.h"
 #endif
 #ifndef _Activation_h_	
-	#include "Activation.h"
+	#include "dwtools/Activation.h"
 #endif
 #ifndef _Minimizers_h_	
-	#include "Minimizers.h"
+	#include "dwtools/Minimizers.h"
 #endif
 
 #ifdef __cplusplus

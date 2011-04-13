@@ -23,7 +23,7 @@
 
 #include "Articulation.h"
 #include "Speaker.h"
-#include "VocalTract.h"
+#include "fon/VocalTract.h"
 
 #ifdef __cplusplus
 	extern "C" {

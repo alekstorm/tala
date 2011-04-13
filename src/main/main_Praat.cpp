@@ -21,8 +21,8 @@
  * pb 2011/03/09
  */
 
-#include "praat.h"
-#include "praat_version.h"
+#include "sys/praat.h"
+#include "sys/praat_version.h"
 
 static void logo (Graphics g) {
 	Graphics_setWindow (g, 0, 1, 0.00, 0.80);

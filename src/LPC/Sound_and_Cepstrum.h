@@ -25,7 +25,7 @@
 */
 
 #ifndef _Sound_h_
-	#include "Sound.h"
+	#include "fon/Sound.h"
 #endif
 #ifndef _Cepstrum_h_
 	#include "Cepstrum.h"

@@ -27,22 +27,22 @@
 */
 
 #ifndef _Matrix_h_
-	#include "Matrix.h"
+	#include "fon/Matrix.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 #ifndef _Spectrum_h_
-	#include "Spectrum.h"
+	#include "fon/Spectrum.h"
 #endif
 #ifndef _MFCC_h_
 	#include "MFCC.h"
 #endif
 #ifndef _Intensity_h_
-	#include "Intensity.h"
+	#include "fon/Intensity.h"
 #endif
 #ifndef _PCA_h_
 	#include "PCA.h"

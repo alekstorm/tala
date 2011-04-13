@@ -23,7 +23,7 @@
 
 #include "Artword.h"
 #include "Speaker.h"
-#include "Sound.h"
+#include "fon/Sound.h"
 
 #ifdef __cplusplus
 	extern "C" {

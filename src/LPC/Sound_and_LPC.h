@@ -29,7 +29,7 @@
 	#include "LPC.h"
 #endif
 #ifndef _Sound_h_
-	#include "Sound.h"
+	#include "fon/Sound.h"
 #endif
 
 #ifdef __cplusplus

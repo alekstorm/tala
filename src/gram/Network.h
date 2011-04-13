@@ -23,8 +23,8 @@
  * pb 2011/03/08
  */
 
-#include "Data.h"
-#include "Graphics.h"
+#include "sys/Data.h"
+#include "sys/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {

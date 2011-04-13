@@ -32,17 +32,17 @@
  */
 
 #include "ManipulationEditor.h"
-#include "Preferences.h"
+#include "sys/Preferences.h"
 #include "PitchTier_to_PointProcess.h"
 #include "Sound_to_PointProcess.h"
 #include "Sound_to_Pitch.h"
 #include "Pitch_to_PitchTier.h"
 #include "Pitch_to_PointProcess.h"
-#include "EditorM.h"
+#include "sys/EditorM.h"
 
-#include "enums_getText.h"
+#include "sys/enums_getText.h"
 #include "ManipulationEditor_enums.h"
-#include "enums_getValue.h"
+#include "sys/enums_getValue.h"
 #include "ManipulationEditor_enums.h"
 
 /*

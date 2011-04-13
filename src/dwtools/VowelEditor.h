@@ -25,20 +25,20 @@
 */
 
 #ifndef _FormantTier_h_
-	#include "FormantTier.h"
+	#include "fon/FormantTier.h"
 #endif
 #ifndef _PitchTier_h_
-	#include "PitchTier.h"
+	#include "fon/PitchTier.h"
 #endif
 
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 #ifndef _Editor_h_
-	#include "Editor.h"
+	#include "sys/Editor.h"
 #endif
 
 #ifdef __cplusplus

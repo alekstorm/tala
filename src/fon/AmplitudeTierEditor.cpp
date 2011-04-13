@@ -27,7 +27,7 @@
  */
 
 #include "AmplitudeTierEditor.h"
-#include "EditorM.h"
+#include "sys/EditorM.h"
 
 static int menu_cb_AmplitudeTierHelp (EDITOR_ARGS) { EDITOR_IAM (AmplitudeTierEditor); Melder_help (L"AmplitudeTier"); return 1; }
 

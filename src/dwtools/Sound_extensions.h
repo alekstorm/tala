@@ -25,19 +25,19 @@
 */
 
 #ifndef _Sound_h_
-	#include "Sound.h"
+	#include "fon/Sound.h"
 #endif
 #ifndef _Pitch_h_
-	#include "Pitch.h"
+	#include "fon/Pitch.h"
 #endif
 #ifndef _Collection_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 #ifndef _PointProcess_h_
-	#include "PointProcess.h"
+	#include "fon/PointProcess.h"
 #endif
 #ifndef _TextGrid_h_
-	#include "TextGrid.h"
+	#include "fon/TextGrid.h"
 #endif
 
 #ifdef __cplusplus

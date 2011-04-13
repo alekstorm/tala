@@ -52,20 +52,20 @@ trajectory --> path ????
  Make sound-follows-mouse real time!
 */
 
-#include "FormantGrid.h"
+#include "fon/FormantGrid.h"
 #include "KlattGrid.h"
-#include "portaudio.h"
-#include "praat.h"
-#include "PitchTier_to_PointProcess.h"
-#include "PitchTier_to_Sound.h"
-#include "PointProcess_and_Sound.h"
-#include "Polygon.h"
+#include "audio/portaudio.h"
+#include "sys/praat.h"
+#include "fon/PitchTier_to_PointProcess.h"
+#include "fon/PitchTier_to_Sound.h"
+#include "fon/PointProcess_and_Sound.h"
+#include "fon/Polygon.h"
 #include "TableOfReal_extensions.h"
 #include "Table_extensions.h"
 #include "VowelEditor.h"
-#include "machine.h"
-#include "Preferences.h"
-#include "EditorM.h"
+#include "sys/machine.h"
+#include "sys/Preferences.h"
+#include "sys/EditorM.h"
 #include <time.h>
 
 #if defined (macintosh)
@@ -169,11 +169,11 @@ oo_DEFINE_CLASS (Vowel, Function)\
 	oo_OBJECT (FormantTier, 0, ft)\
 oo_END_CLASS (Vowel)
 
-#include "oo_DESTROY.h"
+#include "sys/oo_DESTROY.h"
 #define ooSTRUCT Vowel
 VOWEL_def_h
 #undef ooSTRUCT
-#include "oo_COPY.h"
+#include "sys/oo_COPY.h"
 #define ooSTRUCT Vowel
 VOWEL_def_h
 #undef ooSTRUCT

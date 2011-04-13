@@ -27,7 +27,7 @@
  */
 
 #include "ArtwordEditor.h"
-#include "machine.h"
+#include "sys/machine.h"
 
 static void destroy (I) {
 	iam (ArtwordEditor);

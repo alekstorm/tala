@@ -33,9 +33,9 @@
  */
 
 #include "NUM.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 #include <stdlib.h>
-#include "melder.h"
+#include "sys/melder.h"
 #define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))
 #define my  me ->
 double NUMpow (double base, double exponent) { return base <= 0.0 ? 0.0 : pow (base, exponent); }
@@ -43,10 +43,10 @@ double NUMpow (double base, double exponent) { return base <= 0.0 ? 0.0 : pow (b
 	GSL is more accurate than the other routines, but makes
 	"Sound: To Intensity..." 10 times slower...
 */
-#include "gsl_errno.h"
-#include "gsl_sf_bessel.h"
-#include "gsl_sf_gamma.h"
-#include "gsl_sf_erf.h"
+#include "gsl/gsl_errno.h"
+#include "gsl/gsl_sf_bessel.h"
+#include "gsl/gsl_sf_gamma.h"
+#include "gsl/gsl_sf_erf.h"
 
 void NUMshift (double *x, double xfrom, double xto) {
 	if (*x == xfrom) *x = xto; else *x += xto - xfrom;

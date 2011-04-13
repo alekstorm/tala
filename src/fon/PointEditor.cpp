@@ -35,7 +35,7 @@
 
 #include "PointEditor.h"
 #include "PointProcess_and_Sound.h"
-#include "EditorM.h"
+#include "sys/EditorM.h"
 #include "VoiceAnalysis.h"
 
 /********** DESTRUCTION **********/

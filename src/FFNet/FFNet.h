@@ -31,16 +31,16 @@
 */
 
 #ifndef _Data_h_
-	#include "Data.h"
+	#include "sys/Data.h"
 #endif
 #ifndef _Categories_h_
-	#include "Categories.h"
+	#include "dwtools/Categories.h"
 #endif
 #ifndef _Minimizers_h_
-	#include "Minimizers.h"
+	#include "dwtools/Minimizers.h"
 #endif
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 
 #ifdef __cplusplus

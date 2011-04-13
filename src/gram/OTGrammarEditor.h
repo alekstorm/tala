@@ -23,7 +23,7 @@
  * pb 2011/03/08
  */
 
-#include "HyperPage.h"
+#include "sys/HyperPage.h"
 #include "OTGrammar.h"
 
 #ifdef __cplusplus

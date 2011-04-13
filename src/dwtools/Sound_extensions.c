@@ -48,22 +48,22 @@
  djmw 20100325 -Cross-correlation, convolution and autocorrelation
 */
 
-#include "Formula.h"
+#include "sys/Formula.h"
 #include "Intensity_extensions.h"
 #include "Sound_extensions.h"
-#include "Sound_and_Spectrum.h"
+#include "fon/Sound_and_Spectrum.h"
 #include "Spectrum_extensions.h"
-#include "Sound_to_Intensity.h"
-#include "Sound_to_Pitch.h"
-#include "Vector.h"
+#include "fon/Sound_to_Intensity.h"
+#include "fon/Sound_to_Pitch.h"
+#include "fon/Vector.h"
 #include "Pitch_extensions.h"
-#include "Pitch_to_PitchTier.h"
-#include "Pitch_to_PointProcess.h"
+#include "fon/Pitch_to_PitchTier.h"
+#include "fon/Pitch_to_PointProcess.h"
 #include "Polygon_extensions.h"
 #include "TextGrid_extensions.h"
-#include "DurationTier.h"
-#include "Manipulation.h"
-#include "NUM2.h"
+#include "fon/DurationTier.h"
+#include "fon/Manipulation.h"
+#include "dwsys/NUM2.h"
 
 #define MAX_T  0.02000000001   /* Maximum interval between two voice pulses (otherwise voiceless). */
 

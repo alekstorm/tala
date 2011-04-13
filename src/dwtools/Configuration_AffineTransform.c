@@ -24,7 +24,7 @@
 #include "Configuration_AffineTransform.h"
 #include "Configuration_and_Procrustes.h"
 #include "Procrustes.h"
-#include "SVD.h"
+#include "dwsys/SVD.h"
 
 static void do_steps45 (double **w, double **t, double **c, long n, double *f)
 {

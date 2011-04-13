@@ -23,9 +23,9 @@
  * pb 2011/03/23
  */
 
-#include "Graphics.h"
-#include "PairDistribution.h"
-#include "Distributions.h"
+#include "sys/Graphics.h"
+#include "stat/PairDistribution.h"
+#include "stat/Distributions.h"
 #include "OTGrammar.h"
 
 #ifdef __cplusplus

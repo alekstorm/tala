@@ -27,7 +27,7 @@
 #include "PointProcess.h"
 #include "PitchTier.h"
 #include "DurationTier.h"
-#include "LPC.h"
+#include "LPC/LPC.h"
 
 /* The following have to be included for compatibility. */
 #include "IntensityTier.h"

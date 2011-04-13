@@ -31,7 +31,7 @@
   djmw 20110304 Thing_new
 */
 
-#include "SVD.h"
+#include "dwsys/SVD.h"
 #include "Matrix_extensions.h"
 #include "TableOfReal_extensions.h"
 #include "MDS.h"

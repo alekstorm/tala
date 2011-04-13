@@ -21,11 +21,11 @@
 	djmw 20101003
 */
 
-#include "praat.h"
+#include "sys/praat.h"
 #include "GaussianMixture.h"
 #include "HMM.h"
 #include "Strings_extensions.h"
-#include "TableOfReal.h"
+#include "stat/TableOfReal.h"
 
 #undef praat_HIDDEN
 #define praat_HIDDEN 0

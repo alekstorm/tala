@@ -28,16 +28,16 @@
  */
 
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 #ifndef _SSCP_h_
-	#include "SSCP.h"
+	#include "dwtools/SSCP.h"
 #endif
 #ifndef _Confusion_h_
-	#include "Confusion.h"
+	#include "dwtools/Confusion.h"
 #endif
 #ifndef _Strings_h_
-	#include "Strings.h"
+	#include "sys/Strings.h"
 #endif
 
 #ifdef __cplusplus

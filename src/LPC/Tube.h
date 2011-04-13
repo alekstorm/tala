@@ -25,7 +25,7 @@
 */
 
 #ifndef _Sampled_h_
-	#include "Sampled.h"
+	#include "fon/Sampled.h"
 #endif
 
 #ifdef __cplusplus

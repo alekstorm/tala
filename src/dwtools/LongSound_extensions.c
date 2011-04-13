@@ -41,7 +41,7 @@
   #include <unistd.h>
 #endif
 
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 #include <errno.h>
 
 /*

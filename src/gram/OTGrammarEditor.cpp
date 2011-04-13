@@ -30,7 +30,7 @@
  */
 
 #include "OTGrammarEditor.h"
-#include "EditorM.h"
+#include "sys/EditorM.h"
 
 #define OTGrammarEditor__members(Klas) HyperPage__members(Klas) \
 	long selected;

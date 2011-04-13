@@ -25,7 +25,7 @@
  */
 
 #include "CCA_and_Correlation.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 TableOfReal CCA_and_Correlation_factorLoadings (CCA me, Correlation thee)
 {

@@ -23,10 +23,10 @@
 */
 
 #include "ICA.h"
-#include "Interpreter.h"
-#include "NUM2.h"
-#include "PCA.h"
-#include "SVD.h"
+#include "sys/Interpreter.h"
+#include "dwsys/NUM2.h"
+#include "dwtools/PCA.h"
+#include "dwsys/SVD.h"
 
 // matrix multiply R = V*C*V', V is nrv x ncv, C is ncv x ncv, R is nrv x nrv
 static void NUMdmatrices_multiply_VCVp (double **r, double **v, long nrv, long ncv, double **c, int csym)

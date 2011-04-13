@@ -29,7 +29,7 @@
 	#include "SPINET.h"
 #endif
 #ifndef _Pitch_h_
-	#include "Pitch.h"
+	#include "fon/Pitch.h"
 #endif
 
 #ifdef __cplusplus

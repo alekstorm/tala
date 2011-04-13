@@ -3,7 +3,7 @@
 /* David Weenink, 20010101 */
 
 #ifndef _Spectrum_h_
-	#include "Spectrum.h"
+	#include "fon/Spectrum.h"
 #endif
 #ifndef _Cepstrum_h_
 	#include "Cepstrum.h"

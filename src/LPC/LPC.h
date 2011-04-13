@@ -25,10 +25,10 @@
 */
 
 #ifndef _Matrix_h_
-	#include "Matrix.h"
+	#include "fon/Matrix.h"
 #endif
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 
 #ifdef __cplusplus

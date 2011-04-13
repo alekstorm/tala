@@ -24,10 +24,10 @@
  djmw 20100418 Polygon_rotate. bug: angle was in degrees now in radians
 */
 
-#include "Matrix.h"
-#include "NUM2.h"
+#include "fon/Matrix.h"
+#include "dwsys/NUM2.h"
 #include "Polygon_extensions.h"
-#include "Vector.h"
+#include "fon/Vector.h"
 
 void Polygon_translate (I, double xt, double yt)
 {

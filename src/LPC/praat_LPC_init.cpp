@@ -29,12 +29,12 @@
 */
 
 #include <math.h>
-#include "praat.h"
+#include "sys/praat.h"
 #include "Cepstrumc.h"
-#include "DTW.h"
+#include "dwtools/DTW.h"
 #include "LPC.h"
-#include "MFCC.h"
-#include "LFCC.h"
+#include "dwtools/MFCC.h"
+#include "dwtools/LFCC.h"
 #include "LPC_and_Cepstrumc.h"
 #include "LPC_and_Formant.h"
 #include "LPC_and_LFCC.h"
@@ -42,11 +42,11 @@
 #include "LPC_and_Tube.h"
 #include "LPC_to_Spectrogram.h"
 #include "LPC_to_Spectrum.h"
-#include "MelFilter_and_MFCC.h"
+#include "dwtools/MelFilter_and_MFCC.h"
 #include "Sound_and_LPC.h"
 #include "Sound_and_LPC_robust.h"
 #include "Sound_and_Cepstrum.h"
-#include "Sound_to_MFCC.h"
+#include "dwtools/Sound_to_MFCC.h"
 #include "Cepstrum_and_Spectrum.h"
 
 static wchar_t *DRAW_BUTTON    = L"Draw -";

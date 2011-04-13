@@ -37,7 +37,7 @@
 
 #include "Pitch_to_Sound.h"
 #include "PitchEditor.h"
-#include "EditorM.h"
+#include "sys/EditorM.h"
 
 #define HEIGHT_UNV  3.0
 #define HEIGHT_INTENS  6.0

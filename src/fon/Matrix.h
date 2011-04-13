@@ -25,9 +25,9 @@
 
 /* Matrix inherits from Sampled */
 #include "Sampled.h"
-#include "Graphics.h"
-#include "Table.h"
-#include "TableOfReal.h"
+#include "sys/Graphics.h"
+#include "stat/Table.h"
+#include "stat/TableOfReal.h"
 
 #ifdef __cplusplus
 	extern "C" {

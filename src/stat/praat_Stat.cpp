@@ -21,15 +21,15 @@
  * pb 2011/03/28
  */
 
-#include "praat.h"
+#include "sys/praat.h"
 
 #include "Distributions_and_Strings.h"
 #include "LogisticRegression.h"
-#include "Matrix.h"
+#include "fon/Matrix.h"
 #include "PairDistribution.h"
-#include "Table.h"
-#include "TableEditor.h"
-#include "UnicodeData.h"
+#include "stat/Table.h"
+#include "stat/TableEditor.h"
+#include "kar/UnicodeData.h"
 
 static wchar_t formatBuffer [32] [40];
 static int formatIndex = 0;

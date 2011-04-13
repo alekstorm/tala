@@ -22,7 +22,7 @@
  */
 
 #include "Distributions.h"
-#include "Strings.h"
+#include "sys/Strings.h"
 
 #ifdef __cplusplus
 	extern "C" {

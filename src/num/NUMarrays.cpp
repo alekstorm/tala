@@ -26,7 +26,7 @@
  */
 
 #include "NUM.h"
-#include "melder.h"
+#include "sys/melder.h"
 
 static long theTotalNumberOfArrays;
 

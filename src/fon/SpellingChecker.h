@@ -24,7 +24,7 @@
  */
 
 #include "WordList.h"
-#include "Collection.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

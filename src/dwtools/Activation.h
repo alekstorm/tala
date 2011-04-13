@@ -24,7 +24,7 @@
  djmw 20110305 Latest modification.
  */
 
-#include "Matrix.h"
+#include "fon/Matrix.h"
 
 #ifdef __cplusplus
 	extern "C" {

@@ -24,9 +24,9 @@
  djmw 20020812 GPL header
 */
 
-#include "Data.h"
-#include "Graphics.h"
-#include "Simple.h"
+#include "sys/Data.h"
+#include "sys/Graphics.h"
+#include "sys/Simple.h"
 
 int SimpleString_init (SimpleString me, const wchar_t *value);
 /* return 0 when value == NULL */

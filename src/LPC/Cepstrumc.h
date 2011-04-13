@@ -25,10 +25,10 @@
  djmw 20110306 Latest modification.
 */
 
-#include "Sampled.h"
-#include "Matrix.h"
-#include "Graphics.h"
-#include "DTW.h"
+#include "fon/Sampled.h"
+#include "fon/Matrix.h"
+#include "sys/Graphics.h"
+#include "dwtools/DTW.h"
 #include "Cepstrumc_def.h"
 
 #ifdef __cplusplus

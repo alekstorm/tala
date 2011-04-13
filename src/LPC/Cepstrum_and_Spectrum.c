@@ -25,8 +25,8 @@
 */
 
 #include "Cepstrum_and_Spectrum.h"
-#include "Spectrum_extensions.h"
-#include "Sound_and_Spectrum.h"
+#include "dwtools/Spectrum_extensions.h"
+#include "fon/Sound_and_Spectrum.h"
 
 Cepstrum Spectrum_to_Cepstrum (Spectrum me)
 {

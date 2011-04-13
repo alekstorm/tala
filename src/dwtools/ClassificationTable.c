@@ -28,8 +28,8 @@
 */
 
 #include "ClassificationTable.h"
-#include "Strings_extensions.h"
-#include "NUM2.h"
+#include "dwtools/Strings_extensions.h"
+#include "dwsys/NUM2.h"
 
 class_methods (ClassificationTable, TableOfReal)
 class_methods_end

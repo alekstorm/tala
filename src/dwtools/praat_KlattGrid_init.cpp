@@ -21,9 +21,9 @@
 	djmw 20090420
 */
 
-#include "praat.h"
+#include "sys/praat.h"
 
-#include "IntensityTierEditor.h"
+#include "fon/IntensityTierEditor.h"
 #include "KlattGridEditors.h"
 #include "KlattTable.h"
 

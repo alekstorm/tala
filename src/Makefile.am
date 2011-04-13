@@ -1,12 +1,13 @@
-LIBS =`pkg-config --libs gtk+-2.0` -lm -lasound
-DEFS = -DUNIX -Dlinux `pkg-config --cflags gtk+-2.0` -m64
-export COMMON = $(DEFS) -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O
+LIBS=`pkg-config --libs gtk+-2.0` -lm -lasound
 
 RANLIB = ls
 ICON = # FIXME icons
 MAIN_ICON =
 
 SUBDIRS = GSL num num/glpk kar audio audio/FLAC audio/mp3 sys stat fon dwsys dwtools LPC gram FFNet artsynth contrib/ola
+
+AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
+AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
 bin_PROGRAMS = praat
 

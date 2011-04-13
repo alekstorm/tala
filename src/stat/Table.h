@@ -23,9 +23,9 @@
  * pb 2011/03/03
  */
 
-#include "Collection.h"
-#include "Graphics.h"
-#include "Interpreter.h"
+#include "sys/Collection.h"
+#include "sys/Graphics.h"
+#include "sys/Interpreter.h"
 
 #ifdef __cplusplus
 	extern "C" {

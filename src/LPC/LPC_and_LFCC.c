@@ -23,7 +23,7 @@
 */
 
 #include "LPC_and_LFCC.h"
-#include "NUM2.h"
+#include "dwsys/NUM2.h"
 
 #define MIN(m,n) ((m) < (n) ? (m) : (n))
 

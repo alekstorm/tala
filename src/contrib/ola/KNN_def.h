@@ -23,7 +23,7 @@
  *                     Thanks to Paul Boersma for spotting this problem.
  */
 
-#include "Pattern.h"
+#include "dwtools/Pattern.h"
 
 #define ooSTRUCT KNN
     oo_DEFINE_CLASS (KNN, Data)

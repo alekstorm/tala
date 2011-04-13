@@ -26,7 +26,7 @@
 */
 
 #include "LPC.h"
-#include "LFCC.h"
+#include "dwtools/LFCC.h"
 
 #ifdef __cplusplus
 	extern "C" {

@@ -30,8 +30,8 @@
  */
 
 #include "OTMultiEditor.h"
-#include "EditorM.h"
-#include "machine.h"
+#include "sys/EditorM.h"
+#include "sys/machine.h"
 
 #define OTMultiEditor__members(Klas) HyperPage__members(Klas) \
 	const wchar_t *form1, *form2; \

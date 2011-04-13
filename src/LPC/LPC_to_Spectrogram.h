@@ -26,7 +26,7 @@
 */
 
 #include "LPC.h"
-#include "Spectrogram.h"
+#include "fon/Spectrogram.h"
 #include "LPC_to_Spectrum.h"
 
 #ifdef __cplusplus

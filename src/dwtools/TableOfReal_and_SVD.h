@@ -25,10 +25,10 @@
 #ifndef TableOfReal_and_SVD_h_
 	#define TableOfReal_and_SVD_h_
 #ifndef _SVD_h_
-	#include "SVD.h"
+	#include "dwsys/SVD.h"
 #endif
 #ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
+	#include "stat/TableOfReal.h"
 #endif
 
 #ifdef __cplusplus

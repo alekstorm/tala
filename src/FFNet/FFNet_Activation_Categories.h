@@ -26,8 +26,8 @@
 */
 
 #include "FFNet.h"
-#include "Activation.h"
-#include "Categories.h"
+#include "dwtools/Activation.h"
+#include "dwtools/Categories.h"
 
 #ifdef __cplusplus
 	extern "C" {

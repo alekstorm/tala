@@ -26,7 +26,7 @@
 */
 
 #include "LPC.h"
-#include "Spectrum.h"
+#include "fon/Spectrum.h"
 
 #ifdef __cplusplus
 	extern "C" {

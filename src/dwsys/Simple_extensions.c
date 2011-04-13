@@ -23,7 +23,7 @@
 */
 
 #include "Simple_extensions.h"
-#include "longchar.h"
+#include "kar/longchar.h"
 
 int SimpleString_init (SimpleString me, const wchar_t *string)
 {

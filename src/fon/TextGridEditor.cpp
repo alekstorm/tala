@@ -47,15 +47,15 @@
 
 #include "TextGridEditor.h"
 #include "SpellingChecker.h"
-#include "Preferences.h"
-#include "EditorM.h"
+#include "sys/Preferences.h"
+#include "sys/EditorM.h"
 #include "SoundEditor.h"
 #include "Sound_and_Spectrogram.h"
 #include "TextGrid_Sound.h"
 
-#include "enums_getText.h"
+#include "sys/enums_getText.h"
 #include "TextGridEditor_enums.h"
-#include "enums_getValue.h"
+#include "sys/enums_getValue.h"
 #include "TextGridEditor_enums.h"
 
 #define TextGridEditor__members(Klas) TimeSoundAnalysisEditor__members(Klas) \

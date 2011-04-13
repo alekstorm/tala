@@ -28,10 +28,10 @@
 
 #include "Sound_and_LPC.h"
 #include "Sound_and_LPC_robust.h"
-#include "Sound_extensions.h"
-#include "SVD.h"
-#include "Vector.h"
-#include "NUM2.h"
+#include "dwtools/Sound_extensions.h"
+#include "dwsys/SVD.h"
+#include "fon/Vector.h"
+#include "dwsys/NUM2.h"
 
 struct huber_struct
 {

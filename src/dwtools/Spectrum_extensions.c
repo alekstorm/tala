@@ -32,8 +32,8 @@
 */
 
 #include "Spectrum_extensions.h"
-#include "Sound_and_Spectrum.h"
-#include "NUM2.h"
+#include "fon/Sound_and_Spectrum.h"
+#include "dwsys/NUM2.h"
 
 #define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))
 

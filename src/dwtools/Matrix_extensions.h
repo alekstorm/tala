@@ -24,8 +24,8 @@
  djmw 20110307 Latest modification
 */
 
-#include "Matrix.h"
-#include "Graphics.h"
+#include "fon/Matrix.h"
+#include "sys/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {

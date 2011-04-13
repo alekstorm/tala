@@ -29,13 +29,13 @@
 	#include "FFNet.h"
 #endif
 #ifndef _Pattern_h_
-	#include "Pattern.h"
+	#include "dwtools/Pattern.h"
 #endif
 #ifndef _Categories_h_	
-	#include "Categories.h"
+	#include "dwtools/Categories.h"
 #endif
 #ifndef _Minimizers_h_	
-	#include "Minimizers.h"
+	#include "dwtools/Minimizers.h"
 #endif
 
 #ifdef __cplusplus

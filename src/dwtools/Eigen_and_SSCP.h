@@ -25,7 +25,7 @@
 */
 
 #ifndef _Eigen_h_
-	#include "Eigen.h"
+	#include "dwsys/Eigen.h"
 #endif
 
 #ifndef _SSCP_h_

@@ -26,7 +26,7 @@
 */
 
 #ifndef _Graphics_h_
-	#include "Graphics.h"
+	#include "sys/Graphics.h"
 #endif
 #ifndef _Configuration_h_
 	#include "Configuration.h"

@@ -27,8 +27,8 @@
 */
 
 #include "Matrix_extensions.h"
-#include "Eigen.h"
-#include "NUM2.h"
+#include "dwsys/Eigen.h"
+#include "dwsys/NUM2.h"
 
 void Matrix_scatterPlot (I, Any g, long icx, long icy,
     double xmin, double xmax, double ymin, double ymax,

@@ -24,7 +24,7 @@
  * djmw 20110307 Latest modification 
  */
  
-#include "Eigen.h"
+#include "dwsys/Eigen.h"
 #include "Procrustes.h"
 
 #ifdef __cplusplus
