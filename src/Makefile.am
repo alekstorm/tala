@@ -1,9 +1,6 @@
+LIBS =`pkg-config --libs gtk+-2.0` -lm -lasound
 DEFS = -DUNIX -Dlinux `pkg-config --cflags gtk+-2.0` -m64
-LIBS = `pkg-config --libs gtk+-2.0` -lm -lasound
-COMMON = $(DEFS) -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O
-
-AM_CFLAGS = $(COMMON) -std=gnu99
-AM_CPPFLAGS = $(COMMON)
+export COMMON = $(DEFS) -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O
 
 RANLIB = ls
 ICON = # FIXME icons
@@ -19,4 +16,3 @@ praat_LDADD = fon/libfon.a contrib/ola/libOla.a \
 		artsynth/libartsynth.a fon/libfon.a stat/libstat.a dwsys/libdwsys.a \
 		sys/libsys.a num/libnum.a GSL/libgsl.a num/glpk/libglpk.a kar/libkar.a \
 		audio/libaudio.a audio/FLAC/libFLAC.a audio/mp3/libmp3.a
-praat_CPPFLAGS = $(AM_CPPFLAGS) -I sys -I num
