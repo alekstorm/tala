@@ -1084,8 +1084,8 @@ END
 // Setting callbacks                                                                   //
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void praat_contrib_Ola_KNN_init (void);
-void praat_contrib_Ola_KNN_init (void)
+void praat_Ola_KNN_init (void);
+void praat_Ola_KNN_init (void)
 {
 
     Thing_recognizeClassesByName (classKNN, NULL);

@@ -49,13 +49,13 @@ static void logo (Graphics g) {
 }
 
 void praat_uvafon_init ();
-void praat_contrib_Ola_KNN_init ();
+void praat_Ola_KNN_init ();
 
 int main (int argc, char *argv []) {
 	praat_setLogo (130, 80, logo);
 	praat_init ("Praat", argc, argv);
 	praat_uvafon_init ();
-	praat_contrib_Ola_KNN_init ();
+	praat_Ola_KNN_init ();
 	praat_run ();
 	return 0;
 }

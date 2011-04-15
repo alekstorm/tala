@@ -61,7 +61,7 @@ AC_SUBST([COMMON])
 AC_CONFIG_FILES([Makefile
                   src/Makefile
                   src/artsynth/Makefile
-                  src/contrib/ola/Makefile
+                  src/ola/Makefile
                   src/FFNet/Makefile
                   src/GSL/Makefile
                   src/LPC/Makefile
