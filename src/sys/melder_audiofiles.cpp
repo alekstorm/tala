@@ -37,9 +37,9 @@
 #include "melder.h"
 #include "abcio.h"
 #include "math.h"
-#include "audio/FLAC/flac_FLAC_metadata.h"
-#include "audio/FLAC/flac_FLAC_stream_decoder.h"
-#include "audio/FLAC/flac_FLAC_stream_encoder.h"
+#include "FLAC/metadata.h"
+#include "FLAC/stream_decoder.h"
+#include "FLAC/stream_encoder.h"
 #include "audio/mp3/mp3.h"
 #if defined (macintosh)
 	#include <Resources.h>

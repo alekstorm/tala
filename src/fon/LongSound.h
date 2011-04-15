@@ -37,8 +37,6 @@
 #define COMPRESSED_MODE_READ_FLOAT 0
 #define COMPRESSED_MODE_READ_SHORT 1
 
-struct FLAC__StreamDecoder;
-struct FLAC__StreamEncoder;
 struct _MP3_FILE;
 
 #define LongSound_members Sampled_members \
@@ -50,7 +48,7 @@ struct _MP3_FILE;
 	double bufferLength; \
 	short *buffer; \
 	long imin, imax, nmax; \
-	struct FLAC__StreamDecoder *flacDecoder; \
+	FLAC__StreamDecoder *flacDecoder; \
 	struct _MP3_FILE *mp3f; \
 	int compressedMode; \
 	long compressedSamplesLeft; \

@@ -39,6 +39,7 @@
 #include <wchar.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <FLAC/stream_encoder.h>
 
 typedef wchar_t wchar;
 
@@ -382,9 +383,6 @@ double Melder_movingReallocationsCount (void);
 	#define Melder_DIRECTORY_SEPARATOR  '/'
 #endif
 
-struct FLAC__StreamDecoder;
-struct FLAC__StreamEncoder;
-
 #define kMelder_MAXPATH 1023   /* excluding the null byte */
 
 typedef struct {
@@ -393,7 +391,7 @@ typedef struct {
 	bool openForReading, openForWriting, verbose, requiresCRLF;
 	unsigned long outputEncoding;
 	int indent;
-	struct FLAC__StreamEncoder *flacEncoder;
+	FLAC__StreamEncoder *flacEncoder;
 } structMelderFile, *MelderFile;
 typedef struct {
 	wchar_t path [kMelder_MAXPATH+1];

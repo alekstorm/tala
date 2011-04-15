@@ -41,7 +41,7 @@
 
 #include "LongSound.h"
 #include "sys/Preferences.h"
-#include "audio/FLAC/flac_FLAC_stream_decoder.h"
+#include "FLAC/stream_decoder.h"
 #include "audio/mp3/mp3.h"
 #define MARGIN  0.01
 #define USE_MEMMOVE  1
