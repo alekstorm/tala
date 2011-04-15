@@ -75,7 +75,7 @@
 #include "sys/EditorM.h"
 #include "sys/Preferences.h"
 
-#include "audio/portaudio.h"
+#include <portaudio.h>
 #if defined (macintosh)
 	#include "pa_mac_core.h"
 #endif

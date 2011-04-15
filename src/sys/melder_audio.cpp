@@ -55,7 +55,7 @@
 	#include <signal.h>
 #endif
 
-#include "audio/portaudio.h"
+#include <portaudio.h>
 
 #if defined (sgi)
 	#include <audio.h>
