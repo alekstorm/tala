@@ -40,7 +40,7 @@
 #include "SoundRecorder.h"
 #include "SpectrumEditor.h"
 #include "TextGrid_Sound.h"
-#include "audio/mp3/mp3.h"
+#include "mp3/mp3.h"
 
 #ifndef LONG_MAX
 	#define LONG_MAX  2147483647

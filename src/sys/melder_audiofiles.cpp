@@ -40,7 +40,7 @@
 #include "FLAC/metadata.h"
 #include "FLAC/stream_decoder.h"
 #include "FLAC/stream_encoder.h"
-#include "audio/mp3/mp3.h"
+#include "mp3/mp3.h"
 #if defined (macintosh)
 	#include <Resources.h>
 #endif

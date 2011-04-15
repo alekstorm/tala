@@ -65,7 +65,7 @@ AC_CONFIG_FILES([Makefile
                   src/FFNet/Makefile
                   src/GSL/Makefile
                   src/LPC/Makefile
-                  src/audio/mp3/Makefile
+                  src/mp3/Makefile
                   src/dwsys/Makefile
                   src/dwtools/Makefile
                   src/fon/Makefile
