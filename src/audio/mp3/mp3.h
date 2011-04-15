@@ -27,6 +27,15 @@
 	extern "C" {
 #endif
 
+/* Compile with Intel implementation for Win32, otherwise 64-bit */
+#if defined (_WIN32) && defined (_MSC_VER) || defined (__GNUC__) && defined (__i386__) && ! defined (macintosh)
+#  define FPM_INTEL
+#else /* !_WIN32 */
+#  define FPM_64BIT
+#endif /* _WIN32 */
+
+#include <mad.h>
+
 /* The following function is used to identify MP3 files */
 int mp3_recognize (int nread, const char *data);
 
@@ -65,6 +74,22 @@ int mp3f_read (MP3_FILE mp3f, MP3F_OFFSET num_samples);
 
 #define mp3f_sample_to_float(s) ((float)((s) / (float)(1L << 28)))
 short mp3f_sample_to_short (MP3F_SAMPLE sample);
+
+struct mad_stream;
+
+struct mad_stream_offset {
+  struct mad_stream stream;
+  unsigned long this_offset;            /* Offset in stream of current frame */
+};
+
+struct mad_header_offset {
+  struct mad_header header;
+  unsigned long offset;                 /* Offset of frame in stream */
+};
+
+void mad_stream_buffer_offset(struct mad_stream_offset *,
+		       unsigned char const *, unsigned long,
+		       unsigned long);
 
 #ifdef __cplusplus
 	}

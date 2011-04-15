@@ -1,4 +1,4 @@
-LIBS = $(GTK_LIBS) $(FLAC_LIBS) -lm -lasound
+LIBS = $(GTK_LIBS) $(FLAC_LIBS) $(MAD_LIBS) -lm -lasound
 
 RANLIB = ls
 ICON = # FIXME icons

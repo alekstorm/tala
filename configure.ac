@@ -49,10 +49,11 @@ AC_PROG_RANLIB
 
 PKG_CHECK_MODULES([GTK], [gtk+-2.0])
 PKG_CHECK_MODULES([FLAC], [flac])
+PKG_CHECK_MODULES([MAD], [mad])
 # fix collision between FLAC and system header files by requiring the former to be qualified with a FLAC/ prefix when #include'd
 FLAC_CFLAGS=`echo $FLAC_CFLAGS | sed "s/\/FLAC$//"` # FIXME use $SED
 
-COMMON="-DUNIX -Dlinux $GTK_CFLAGS $FLAC_CFLAGS -m64 -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O"
+COMMON="-DUNIX -Dlinux $GTK_CFLAGS $FLAC_CFLAGS $MAD_CFLAGS -m64 -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O"
 AC_SUBST([GTK_LIBS])
 AC_SUBST([COMMON])
 

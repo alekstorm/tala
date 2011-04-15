@@ -52,9 +52,6 @@
 #include "mp3.h"
 #include "sys/melder.h"
 
-#include "mad_config.h"
-#include "mad_decoder.h"
-
 #define MP3F_BUFFER_SIZE (8 * 1024)
 #define MP3F_MAX_LOCATIONS 1024
 
@@ -388,7 +385,7 @@ static enum mad_flow mp3f_mad_report_samples (void *context, struct mad_header c
 	
 	if (mp3f -> first_offset) {
 		/* libMAD can decide to skip the first frame */
-		if (header -> offset > mp3f -> first_offset) {
+		if (((struct mad_header_offset *)header) -> offset > mp3f -> first_offset) {
 			MP3_DPRINTF (("Skip %u of %lu\n", length, mp3f -> skip_amount));
 			mp3f -> skip_amount -= length;
 		}
@@ -470,7 +467,7 @@ static enum mad_flow mp3f_mad_input(void *context, struct mad_stream *stream)
 	if (size > 0)
 		nread = fread (buffer, 1, size, f);
 
-	mad_stream_buffer_offset (stream, mp3f -> buffer, nread + ncopied, offset);
+	mad_stream_buffer_offset ((struct mad_stream_offset *)stream, mp3f -> buffer, nread + ncopied, offset);
 	return MAD_FLOW_CONTINUE;
 }
 
@@ -482,7 +479,7 @@ static enum mad_flow mp3f_mad_first_header(void *context, struct mad_header cons
 	mp3f -> frequency = header -> samplerate;
 	mp3f -> samples_per_frame = 32 * MAD_NSBSAMPLES (header);
 	/* Just in case there is no Xing header: */
-	mp3f -> locations [mp3f -> num_locations ++] = header -> offset;
+	mp3f -> locations [mp3f -> num_locations ++] = ((struct mad_header_offset *)header) -> offset;
 
 	return MAD_FLOW_CONTINUE;
 }
@@ -522,7 +519,7 @@ static enum mad_flow mp3f_mad_scan_header(void *context, struct mad_header const
 	/* Check whether to log this offset in the table */
 	if ((mp3f -> frames % mp3f -> frames_per_location) == 0 &&
 			mp3f -> num_locations < MP3F_MAX_LOCATIONS)
-		mp3f -> locations [mp3f -> num_locations ++] = header -> offset;
+		mp3f -> locations [mp3f -> num_locations ++] = ((struct mad_header_offset *)header) -> offset;
 
 	/* Count this frame */
 	++ mp3f -> frames;
@@ -571,3 +568,15 @@ static int mp3f_check_xing (MP3_FILE mp3f, struct mad_stream const *stream)
 	return 1;
 }
 
+/*
+ * NAME:	stream->buffer_offset()
+ * DESCRIPTION:	set stream buffer pointers and offset
+ * Erez Volk
+ */
+void mad_stream_buffer_offset(struct mad_stream_offset *stream,
+		       unsigned char const *buffer, unsigned long length,
+               unsigned long offset)
+{
+  mad_stream_buffer((struct mad_stream *)stream, buffer, length);
+  stream->this_offset = offset;
+}
