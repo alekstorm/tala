@@ -41,7 +41,7 @@
 
 #include "OlaP.h"
 #include "FeatureWeights.h"
-#include "gsl/gsl_siman.h"
+#include <gsl/gsl_siman.h>
 
 #ifdef __cplusplus
 	extern "C" {

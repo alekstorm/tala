@@ -73,13 +73,13 @@
 #include "sys/melder.h"
 #include <ctype.h>
 
-#include "gsl/gsl_errno.h"
-#include "gsl/gsl_sf_bessel.h"
-#include "gsl/gsl_sf_gamma.h"
-#include "gsl/gsl_sf_erf.h"
-#include "gsl/gsl_sf_trig.h"
-#include "gsl/gsl_poly.h"
-#include "gsl/gsl_cdf.h"
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_sf_bessel.h>
+#include <gsl/gsl_sf_gamma.h>
+#include <gsl/gsl_sf_erf.h>
+#include <gsl/gsl_sf_trig.h>
+#include <gsl/gsl_poly.h>
+#include <gsl/gsl_cdf.h>
 
 #define my me ->
 
