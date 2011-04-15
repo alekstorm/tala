@@ -55,7 +55,37 @@ PKG_CHECK_MODULES([GSL], [gsl])
 # fix collision between FLAC and system header files by requiring the former to be qualified with a FLAC/ prefix when #include'd
 FLAC_CFLAGS=`echo $FLAC_CFLAGS | sed "s/\/FLAC$//"` # FIXME use $SED
 
-COMMON="-DUNIX -Dlinux $GTK_CFLAGS $FLAC_CFLAGS $MAD_CFLAGS $PA_CFLAGS $GSL_CFLAGS -m64 -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O"
+AC_ARG_WITH(glpk-include,
+            AC_HELP_STRING([--with-glpk-include=PATH],
+                           [location of glpk headers [[/usr/local/include]]]
+                          ),
+            [GLPK_INCLUDE=$withval],
+            [GLPK_INCLUDE="/usr/local/include"])
+
+AC_ARG_WITH(glpk-lib, 
+            AC_HELP_STRING([--with-glpk-lib=PATH],
+                           [location of glpk library [[/usr/local/lib]]]
+                          ),
+            [GLPK_LIB=$withval],
+            [GLPK_LIB="/usr/local/lib"])
+
+GLPK_CFLAGS="-I${GLPK_INCLUDE}"
+GLPK_LIBS="-L${GLPK_LIB} -lglpk"
+AC_SUBST(GLPK_LIBS)
+
+AC_CHECK_HEADER([${GLPK_INCLUDE}/glpk.h],, 
+    AC_MSG_ERROR([Could not find glpk.h in ${GLPK_INCLUDE}: 
+      use --with-glpk-include or GLPK_INCLUDE to specify the include path.]))
+
+LDFLAGS="$LDFLAGS $GLPK_LIBS"
+AC_CHECK_LIB([glpk], [glp_create_prob], ,
+    AC_MSG_ERROR([Could not link to glpk in ${GLPK_LIB}: 
+      use --with-glpk-lib or GLPK_LIB to specify the lib path.]))
+
+AC_CHECK_FUNC([glp_print_ranges], ,
+    AC_MSG_ERROR([GLPK version must be >= 4.42.]))
+
+COMMON="-DUNIX -Dlinux $GTK_CFLAGS $FLAC_CFLAGS $MAD_CFLAGS $PA_CFLAGS $GSL_CFLAGS $GLPK_CFLAGS -m64 -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O"
 AC_SUBST([COMMON])
 
 AC_CONFIG_FILES([Makefile
@@ -71,7 +101,6 @@ AC_CONFIG_FILES([Makefile
                   src/gram/Makefile
                   src/kar/Makefile
                   src/num/Makefile
-                  src/num/glpk/Makefile
                   src/stat/Makefile
                   src/sys/Makefile])
 AM_INIT_AUTOMAKE(praat, 0.1)

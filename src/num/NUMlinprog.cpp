@@ -23,7 +23,7 @@
  */
 
 #include "NUM.h"
-#include "glpk/glpk.h"
+#include <glpk.h>
 
 #define my  me ->
 
