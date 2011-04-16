@@ -99,10 +99,10 @@ UiOutfile::UiOutfile (GuiObject parent, const wchar_t *title,
 }
 
 static int commonOutfileCallback (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure) {
-	EditorCommand command = (EditorCommand) closure;
+	EditorCommand *command = (EditorCommand *) closure;
 	(void) invokingButtonTitle;
 	(void) modified;
-	return command -> commandCallback (command -> editor, command, sendingForm, sendingString, interpreter);
+	return command -> _commandCallback (command -> _editor, command, sendingForm, sendingString, interpreter);
 }
 
 void UiOutfile::do_ (const wchar_t *defaultName) {
@@ -126,8 +126,8 @@ void UiOutfile::do_ (const wchar_t *defaultName) {
 	Melder_free (outfileName);
 }
 
-UiOutfile *UiOutfile::createE (EditorCommand cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle) {
-	Editor editor = (Editor) cmd -> editor;
+UiOutfile *UiOutfile::createE (EditorCommand *cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle) {
+	Editor editor = (Editor) cmd -> _editor;
 	UiOutfile *dia = new UiOutfile (editor -> dialog, title, commonOutfileCallback, cmd, invokingButtonTitle, helpTitle);
 	dia -> _command = cmd;
 	return dia;   // BUG

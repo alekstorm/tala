@@ -78,9 +78,9 @@ Thing_declare1 (FunctionEditor);
 	void (*key) (Klas me, unsigned char key); \
 	int (*playCallback) (Any me, int phase, double tmin, double tmax, double t); \
 	void (*updateText) (Klas me); \
-	void (*prefs_addFields) (Klas me, EditorCommand cmd); \
-	void (*prefs_setValues) (Klas me, EditorCommand cmd); \
-	void (*prefs_getValues) (Klas me, EditorCommand cmd); \
+	void (*prefs_addFields) (Klas me, EditorCommand *cmd); \
+	void (*prefs_setValues) (Klas me, EditorCommand *cmd); \
+	void (*prefs_getValues) (Klas me, EditorCommand *cmd); \
 	void (*createMenuItems_file_draw) (Klas me, EditorMenu menu); \
 	void (*createMenuItems_file_extract) (Klas me, EditorMenu menu); \
 	void (*createMenuItems_file_write) (Klas me, EditorMenu menu); \
@@ -90,9 +90,9 @@ Thing_declare1 (FunctionEditor);
 	void (*highlightSelection) (Klas me, double left, double right, double bottom, double top); \
 	void (*unhighlightSelection) (Klas me, double left, double right, double bottom, double top); \
 	double (*getBottomOfSoundAndAnalysisArea) (Klas me); \
-	void (*form_pictureSelection) (Klas me, EditorCommand cmd); \
-	void (*ok_pictureSelection) (Klas me, EditorCommand cmd); \
-	void (*do_pictureSelection) (Klas me, EditorCommand cmd);
+	void (*form_pictureSelection) (Klas me, EditorCommand *cmd); \
+	void (*ok_pictureSelection) (Klas me, EditorCommand *cmd); \
+	void (*do_pictureSelection) (Klas me, EditorCommand *cmd);
 Thing_declare2 (FunctionEditor, Editor);
 
 /*

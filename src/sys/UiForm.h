@@ -94,7 +94,7 @@
 
 #ifdef __cplusplus
 class Interpreter;
-struct structEditorCommand;
+class EditorCommand;
 
 class UiForm {
   public:
@@ -138,8 +138,8 @@ class UiForm {
 		int colourToValue (wchar_t *string);
 	};
 
-	static UiForm * createE (structEditorCommand *cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
-	static int parseStringE (structEditorCommand *cmd, const wchar_t *arguments, Interpreter *interpreter);
+	static UiForm * createE (EditorCommand *cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
+	static int parseStringE (EditorCommand *cmd, const wchar_t *arguments, Interpreter *interpreter);
 
 	static UiHistory history;
 	static int (*theAllowExecutionHookHint) (void *closure);
@@ -237,7 +237,7 @@ class UiForm {
 	void okOrApply (GuiObject button, int hide);
 	int Interpreter_addVariables (Interpreter *interpreter);
 
-	structEditorCommand *_command;
+	EditorCommand *_command;
 	GuiObject _parent, _shell, _dialog;
 	int (*_okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure);
 	int (*_applyCallback) (Any dia, void *closure);

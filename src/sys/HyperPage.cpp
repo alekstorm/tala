@@ -1129,7 +1129,7 @@ static long getCurrentPageNumber (HyperPage me) {
 	(void) me;
 	return 0;
 }
-static void defaultHeaders (EditorCommand cmd) {
+static void defaultHeaders (EditorCommand *cmd) {
 	(void) cmd;
 }
 static int goToPage (HyperPage me, const wchar_t *title) {

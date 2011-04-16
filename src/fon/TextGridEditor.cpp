@@ -2198,7 +2198,7 @@ static void updateText (TextGridEditor me) {
 	my suppressRedraw = FALSE;
 }
 
-static void prefs_addFields (TextGridEditor me, EditorCommand cmd) {
+static void prefs_addFields (TextGridEditor me, EditorCommand *cmd) {
 	(void) me;
 	UiForm::UiField *radio;
 	NATURAL (L"Font size (points)", TextGridEditor_DEFAULT_FONT_SIZE_STRING)
@@ -2213,7 +2213,7 @@ static void prefs_addFields (TextGridEditor me, EditorCommand cmd) {
 	OPTIONMENU_ENUM (L"Paint intervals green whose label...", kMelder_string, DEFAULT)
 	SENTENCE (L"...the text", TextGridEditor_DEFAULT_GREEN_STRING)
 }
-static void prefs_setValues (TextGridEditor me, EditorCommand cmd) {
+static void prefs_setValues (TextGridEditor me, EditorCommand *cmd) {
 	SET_INTEGER (L"The symbols %#_^ in labels", my useTextStyles + 1)
 	SET_INTEGER (L"Font size", my fontSize)
 	SET_ENUM (L"Text alignment in intervals", kGraphics_horizontalAlignment, my alignment)
@@ -2222,7 +2222,7 @@ static void prefs_setValues (TextGridEditor me, EditorCommand cmd) {
 	SET_ENUM (L"Paint intervals green whose label...", kMelder_string, my greenMethod)
 	SET_STRING (L"...the text", my greenString)
 }
-static void prefs_getValues (TextGridEditor me, EditorCommand cmd) {
+static void prefs_getValues (TextGridEditor me, EditorCommand *cmd) {
 	preferences.useTextStyles = my useTextStyles = GET_INTEGER (L"The symbols %#_^ in labels") - 1;
 	preferences.fontSize = my fontSize = GET_INTEGER (L"Font size");
 	preferences.alignment = my alignment = GET_ENUM (kGraphics_horizontalAlignment, L"Text alignment in intervals");

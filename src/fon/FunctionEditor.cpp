@@ -416,17 +416,17 @@ static int menu_cb_preferences (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static void form_pictureSelection (FunctionEditor me, EditorCommand cmd) {
+static void form_pictureSelection (FunctionEditor me, EditorCommand *cmd) {
 	(void) me;
 	BOOLEAN (L"Draw selection times", 1);
 	BOOLEAN (L"Draw selection hairs", 1);
 }
-static void ok_pictureSelection (FunctionEditor me, EditorCommand cmd) {
+static void ok_pictureSelection (FunctionEditor me, EditorCommand *cmd) {
 	(void) me;
 	SET_INTEGER (L"Draw selection times", preferences.picture.drawSelectionTimes);
 	SET_INTEGER (L"Draw selection hairs", preferences.picture.drawSelectionHairs);
 }
-static void do_pictureSelection (FunctionEditor me, EditorCommand cmd) {
+static void do_pictureSelection (FunctionEditor me, EditorCommand *cmd) {
 	(void) me;
 	preferences.picture.drawSelectionTimes = GET_INTEGER (L"Draw selection times");
 	preferences.picture.drawSelectionHairs = GET_INTEGER (L"Draw selection hairs");
@@ -1625,15 +1625,15 @@ static int playCallback (Any void_me, int phase, double tmin, double tmax, doubl
 	return 1;
 }
 
-static void prefs_addFields (FunctionEditor me, EditorCommand cmd) {
+static void prefs_addFields (FunctionEditor me, EditorCommand *cmd) {
 	(void) me;
 	(void) cmd;
 }
-static void prefs_setValues (FunctionEditor me, EditorCommand cmd) {
+static void prefs_setValues (FunctionEditor me, EditorCommand *cmd) {
 	(void) me;
 	(void) cmd;
 }
-static void prefs_getValues (FunctionEditor me, EditorCommand cmd) {
+static void prefs_getValues (FunctionEditor me, EditorCommand *cmd) {
 	(void) me;
 	(void) cmd;
 }

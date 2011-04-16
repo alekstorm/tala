@@ -244,16 +244,16 @@ void UiForm::setPauseForm (
 }
 
 static int commonOkCallback (UiForm *dia, const wchar_t *dummy, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure) {
-	EditorCommand cmd = (EditorCommand) closure;
+	EditorCommand *cmd = (EditorCommand *) closure;
 	(void) dia;
 	(void) dummy;
 	(void) invokingButtonTitle;
 	(void) modified;
-	return cmd -> commandCallback (cmd -> editor, cmd, (UiForm *)cmd -> dialog, NULL, interpreter);
+	return cmd -> _commandCallback (cmd -> _editor, cmd, (UiForm *)cmd -> _dialog, NULL, interpreter);
 }
 
-UiForm * UiForm::createE (EditorCommand cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle) {
-	Editor editor = (Editor) cmd -> editor;
+UiForm * UiForm::createE (EditorCommand *cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle) {
+	Editor editor = (Editor) cmd -> _editor;
 	UiForm *dia = new UiForm (editor -> dialog, title, commonOkCallback, cmd, invokingButtonTitle, helpTitle);
 	dia -> _command = cmd;
 	return dia;
@@ -776,8 +776,8 @@ int UiForm::parseString (const wchar_t *arguments, Interpreter *interpreter) {
 	return _okCallback (this, NULL, interpreter, NULL, false, _buttonClosure);
 }
 
-int UiForm::parseStringE (EditorCommand cmd, const wchar_t *arguments, Interpreter *interpreter) {
-	return ((UiForm *)cmd->dialog)->parseString (arguments, interpreter);
+int UiForm::parseStringE (EditorCommand *cmd, const wchar_t *arguments, Interpreter *interpreter) {
+	return ((UiForm *)cmd->_dialog)->parseString (arguments, interpreter);
 }
 
 UiForm::UiField *UiForm::findField (const wchar_t *fieldName) {

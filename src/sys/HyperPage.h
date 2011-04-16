@@ -72,7 +72,7 @@ Thing_declare1 (HyperPage);
 	long (*getCurrentPageNumber) (Klas me); \
 	int (*goToPage) (Klas me, const wchar_t *title); \
 	int (*goToPage_i) (Klas me, long ipage); \
-	void (*defaultHeaders) (EditorCommand cmd); \
+	void (*defaultHeaders) (EditorCommand *cmd); \
 	int hasHistory, isOrdered;
 Thing_declare2 (HyperPage, Editor);
 

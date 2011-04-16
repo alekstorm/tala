@@ -56,7 +56,7 @@ class UiInfile : public UiFile {
 
 class UiOutfile : public UiFile {
   public:
-	static UiOutfile *createE (EditorCommand cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
+	static UiOutfile *createE (EditorCommand *cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
 
 	UiOutfile (GuiObject parent, const wchar_t *title,
 		int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure,

@@ -156,8 +156,8 @@ static int cb_open_ok (UiForm *sendingForm, const wchar_t *sendingString, Interp
 	return 1;
 }
 
-static void cb_showOpen (EditorCommand cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
-	TextEditor me = (TextEditor) cmd -> editor;
+static void cb_showOpen (EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
+	TextEditor me = (TextEditor) cmd -> _editor;
 	(void) sendingForm;
 	(void) sendingString;
 	(void) interpreter;
@@ -189,8 +189,8 @@ static int menu_cb_saveAs (EDITOR_ARGS) {
 
 static void gui_button_cb_saveAndOpen (I, GuiButtonEvent event) {
 	(void) event;
-	EditorCommand cmd = (EditorCommand) void_me;
-	TextEditor me = (TextEditor) cmd -> editor;
+	EditorCommand *cmd = (EditorCommand *) void_me;
+	TextEditor me = (TextEditor) cmd -> _editor;
 	GuiObject_hide (my dirtyOpenDialog);
 	if (my name) {
 		if (! saveDocument (me, & my file)) { Melder_flushError (NULL); return; }
@@ -202,15 +202,15 @@ static void gui_button_cb_saveAndOpen (I, GuiButtonEvent event) {
 
 static void gui_button_cb_cancelOpen (I, GuiButtonEvent event) {
 	(void) event;
-	EditorCommand cmd = (EditorCommand) void_me;
-	TextEditor me = (TextEditor) cmd -> editor;
+	EditorCommand *cmd = (EditorCommand *) void_me;
+	TextEditor me = (TextEditor) cmd -> _editor;
 	GuiObject_hide (my dirtyOpenDialog);
 }
 
 static void gui_button_cb_discardAndOpen (I, GuiButtonEvent event) {
 	(void) event;
-	EditorCommand cmd = (EditorCommand) void_me;
-	TextEditor me = (TextEditor) cmd -> editor;
+	EditorCommand *cmd = (EditorCommand *) void_me;
+	TextEditor me = (TextEditor) cmd -> _editor;
 	GuiObject_hide (my dirtyOpenDialog);
 	cb_showOpen (cmd, NULL, NULL, NULL);
 }
@@ -250,8 +250,8 @@ static int menu_cb_open (EDITOR_ARGS) {
 
 static void gui_button_cb_saveAndNew (I, GuiButtonEvent event) {
 	(void) event;
-	EditorCommand cmd = (EditorCommand) void_me;
-	TextEditor me = (TextEditor) cmd -> editor;
+	EditorCommand *cmd = (EditorCommand *) void_me;
+	TextEditor me = (TextEditor) cmd -> _editor;
 	GuiObject_hide (my dirtyNewDialog);
 	if (my name) {
 		if (! saveDocument (me, & my file)) { Melder_flushError (NULL); return; }
@@ -263,15 +263,15 @@ static void gui_button_cb_saveAndNew (I, GuiButtonEvent event) {
 
 static void gui_button_cb_cancelNew (I, GuiButtonEvent event) {
 	(void) event;
-	EditorCommand cmd = (EditorCommand) void_me;
-	TextEditor me = (TextEditor) cmd -> editor;
+	EditorCommand *cmd = (EditorCommand *) void_me;
+	TextEditor me = (TextEditor) cmd -> _editor;
 	GuiObject_hide (my dirtyNewDialog);
 }
 
 static void gui_button_cb_discardAndNew (I, GuiButtonEvent event) {
 	(void) event;
-	EditorCommand cmd = (EditorCommand) void_me;
-	TextEditor me = (TextEditor) cmd -> editor;
+	EditorCommand *cmd = (EditorCommand *) void_me;
+	TextEditor me = (TextEditor) cmd -> _editor;
 	GuiObject_hide (my dirtyNewDialog);
 	newDocument (me);
 }
@@ -727,8 +727,8 @@ static void gui_text_cb_change (I, GuiTextEvent event) {
 static void classTextEditor_createChildren (TextEditor me) {
 	my textWidget = GuiText_createShown (my dialog, 0, 0, Machine_getMenuBarHeight (), 0, GuiText_SCROLLED);
 	GuiText_setChangeCallback (my textWidget, gui_text_cb_change, me);
-	GuiText_setUndoItem (my textWidget, Editor_getMenuCommand (TextEditor_as_Editor (me), L"Edit", L"Undo") -> itemWidget);
-	GuiText_setRedoItem (my textWidget, Editor_getMenuCommand (TextEditor_as_Editor (me), L"Edit", L"Redo") -> itemWidget);
+	GuiText_setUndoItem (my textWidget, Editor_getMenuCommand (TextEditor_as_Editor (me), L"Edit", L"Undo") -> _itemWidget);
+	GuiText_setRedoItem (my textWidget, Editor_getMenuCommand (TextEditor_as_Editor (me), L"Edit", L"Redo") -> _itemWidget);
 }
 
 static void classTextEditor_clear (TextEditor me) {

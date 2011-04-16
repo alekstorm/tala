@@ -40,7 +40,21 @@
 	class Interpreter;
 	class UiForm;
 
+class EditorCommand {
+  public:
+	~EditorCommand ();
+
+	Any _editor, _menu;
+	const wchar_t *_itemTitle;
+	GuiObject _itemWidget;
+	int (*_commandCallback) (Any editor_me, EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter);
+	const wchar_t *_script;
+	UiForm *_dialog;
+};
+
 	extern "C" {
+#else
+typedef struct EditorCommand EditorCommand;
 #endif
 
 #include "Editor_enums.h"
@@ -48,21 +62,10 @@
 #define Editor__parents(Klas) Thing_inherit (Klas, Thing)
 Thing_declare1 (Editor);
 
-#define EditorCommand_members Thing_members \
-	Any editor, menu; \
-	const wchar_t *itemTitle; \
-	GuiObject itemWidget; \
-	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter); \
-	const wchar_t *script; \
-	UiForm *dialog;
-#define EditorCommand_methods Thing_methods
-class_create (EditorCommand, Thing);
-
 typedef struct structEditorMenu *EditorMenu;
 
 GuiObject EditorMenu_addCommand (EditorMenu menu, const wchar_t *itemTitle, long flags,
-	int (*commandCallback) (Any editor_me, EditorCommand, UiForm *, const wchar_t *, Interpreter *));
-GuiObject EditorCommand_getItemWidget (EditorCommand me);
+	int (*commandCallback) (Any editor_me, EditorCommand *, UiForm *, const wchar_t *, Interpreter *));
 
 EditorMenu Editor_addMenu (Any editor, const wchar_t *menuTitle, long flags);
 GuiObject EditorMenu_getMenuWidget (EditorMenu me);
@@ -95,17 +98,17 @@ GuiObject EditorMenu_getMenuWidget (EditorMenu me);
 	void (*save) (Klas me); \
 	void (*restore) (Klas me); \
 	void (*clipboardChanged) (Klas me, Any data); \
-	void (*form_pictureWindow) (Klas me, EditorCommand cmd); \
-	void (*ok_pictureWindow) (Klas me, EditorCommand cmd); \
-	void (*do_pictureWindow) (Klas me, EditorCommand cmd); \
-	void (*form_pictureMargins) (Klas me, EditorCommand cmd); \
-	void (*ok_pictureMargins) (Klas me, EditorCommand cmd); \
-	void (*do_pictureMargins) (Klas me, EditorCommand cmd);
+	void (*form_pictureWindow) (Klas me, EditorCommand *cmd); \
+	void (*ok_pictureWindow) (Klas me, EditorCommand *cmd); \
+	void (*do_pictureWindow) (Klas me, EditorCommand *cmd); \
+	void (*form_pictureMargins) (Klas me, EditorCommand *cmd); \
+	void (*ok_pictureMargins) (Klas me, EditorCommand *cmd); \
+	void (*do_pictureMargins) (Klas me, EditorCommand *cmd);
 Thing_declare2 (Editor, Thing);
 
 #define Editor_HIDDEN  (1 << 14)
 GuiObject Editor_addCommand (Any editor, const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
-	int (*commandCallback) (Any editor_me, EditorCommand cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter));
+	int (*commandCallback) (Any editor_me, EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter));
 GuiObject Editor_addCommandScript (Any editor, const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
 	const wchar_t *script);
 void Editor_setMenuSensitive (Any editor, const wchar_t *menu, int sensitive);
@@ -190,7 +193,7 @@ int Editor_init (Editor me, GuiObject parent, int x, int y , int width, int heig
 
 void Editor_save (Editor me, const wchar_t *text);   /* For Undo. */
 
-EditorCommand Editor_getMenuCommand (Editor me, const wchar_t *menuTitle, const wchar_t *itemTitle);
+EditorCommand *Editor_getMenuCommand (Editor me, const wchar_t *menuTitle, const wchar_t *itemTitle);
 int Editor_doMenuCommand (Editor me, const wchar_t *command, const wchar_t *arguments, Interpreter *interpreter);
 
 /*
