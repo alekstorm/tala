@@ -1536,7 +1536,7 @@ static void createMenus (SoundRecorder me) {
 	Editor_addCommand (me, L"File", L"-- write --", 0, 0);
 }
 
-static void createHelpMenuItems (SoundRecorder me, EditorMenu menu) {
+static void createHelpMenuItems (SoundRecorder me, EditorMenu *menu) {
 	inherited (SoundRecorder) createHelpMenuItems (SoundRecorder_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"SoundRecorder help", '?', menu_cb_SoundRecorder_help);
 }

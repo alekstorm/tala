@@ -1620,13 +1620,13 @@ DIRECT (TimeSoundAnalysisEditor, cb_getShimmer_apq11) if (! cb_getShimmer_xx (me
 DIRECT (TimeSoundAnalysisEditor, cb_getShimmer_dda) if (! cb_getShimmer_xx (me, PointProcess_Sound_getShimmer_dda)) return 0; END
 */
 
-static void createMenuItems_view_sound (TimeSoundAnalysisEditor me, EditorMenu menu) {
+static void createMenuItems_view_sound (TimeSoundAnalysisEditor me, EditorMenu *menu) {
 	(void) me;
 	inherited (TimeSoundAnalysisEditor) createMenuItems_view_sound (TimeSoundAnalysisEditor_as_parent (me), menu);
 	our createMenuItems_view_sound_analysis (me, menu);
 }
 
-static void createMenuItems_view_sound_analysis (TimeSoundAnalysisEditor me, EditorMenu menu) {
+static void createMenuItems_view_sound_analysis (TimeSoundAnalysisEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"Analysis window:", GuiMenu_INSENSITIVE, menu_cb_showAnalyses);
 	EditorMenu_addCommand (menu, L"Show analyses...", 0, menu_cb_showAnalyses);
@@ -1634,14 +1634,14 @@ static void createMenuItems_view_sound_analysis (TimeSoundAnalysisEditor me, Edi
 	EditorMenu_addCommand (menu, L"-- sound analysis --", 0, 0);
 }
 
-static void createMenuItems_query (TimeSoundAnalysisEditor me, EditorMenu menu) {
+static void createMenuItems_query (TimeSoundAnalysisEditor me, EditorMenu *menu) {
 	inherited (TimeSoundAnalysisEditor) createMenuItems_query (TimeSoundAnalysisEditor_as_parent (me), menu);
 	if (my sound.data || my longSound.data) {
 		our createMenuItems_query_log (me, menu);
 	}
 }
 
-static void createMenuItems_query_log (TimeSoundAnalysisEditor me, EditorMenu menu) {
+static void createMenuItems_query_log (TimeSoundAnalysisEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"-- query log --", 0, NULL);
 	EditorMenu_addCommand (menu, L"Log settings...", 0, menu_cb_logSettings);
@@ -1654,7 +1654,7 @@ static void createMenuItems_query_log (TimeSoundAnalysisEditor me, EditorMenu me
 }
 
 static void createMenus_analysis (TimeSoundAnalysisEditor me) {
-	EditorMenu menu;
+	EditorMenu *menu;
 
 	menu = Editor_addMenu (me, L"Spectrum", 0);
 	my spectrogramToggle = EditorMenu_addCommand (menu, L"Show spectrogram",
@@ -1759,35 +1759,35 @@ static void createMenus_analysis (TimeSoundAnalysisEditor me) {
 	EditorMenu_addCommand (menu, L"Extract visible pulses", 0, menu_cb_extractVisiblePulses);
 }
 
-static void createMenuItems_spectrum_picture (TimeSoundAnalysisEditor me, EditorMenu menu) {
+static void createMenuItems_spectrum_picture (TimeSoundAnalysisEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"-- spectrum draw --", 0, NULL);
 	EditorMenu_addCommand (menu, L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_paintVisibleSpectrogram /* dummy */);
 	EditorMenu_addCommand (menu, L"Paint visible spectrogram...", 0, menu_cb_paintVisibleSpectrogram);
 }
 
-static void createMenuItems_pitch_picture (TimeSoundAnalysisEditor me, EditorMenu menu) {
+static void createMenuItems_pitch_picture (TimeSoundAnalysisEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"-- pitch draw --", 0, NULL);
 	EditorMenu_addCommand (menu, L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisiblePitchContour /* dummy */);
 	EditorMenu_addCommand (menu, L"Draw visible pitch contour...", 0, menu_cb_drawVisiblePitchContour);
 }
 
-static void createMenuItems_intensity_picture (TimeSoundAnalysisEditor me, EditorMenu menu) {
+static void createMenuItems_intensity_picture (TimeSoundAnalysisEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"-- intensity draw --", 0, NULL);
 	EditorMenu_addCommand (menu, L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisibleIntensityContour /* dummy */);
 	EditorMenu_addCommand (menu, L"Draw visible intensity contour...", 0, menu_cb_drawVisibleIntensityContour);
 }
 
-static void createMenuItems_formant_picture (TimeSoundAnalysisEditor me, EditorMenu menu) {
+static void createMenuItems_formant_picture (TimeSoundAnalysisEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"-- formant draw --", 0, NULL);
 	EditorMenu_addCommand (menu, L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisibleFormantContour /* dummy */);
 	EditorMenu_addCommand (menu, L"Draw visible formant contour...", 0, menu_cb_drawVisibleFormantContour);
 }
 
-static void createMenuItems_pulses_picture (TimeSoundAnalysisEditor me, EditorMenu menu) {
+static void createMenuItems_pulses_picture (TimeSoundAnalysisEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"-- pulses draw --", 0, NULL);
 	EditorMenu_addCommand (menu, L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisiblePulses /* dummy */);

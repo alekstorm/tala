@@ -198,7 +198,7 @@ static void createMenus (OTGrammarEditor me) {
 	Editor_addCommand (me, L"Edit", L"Remove constraint", 0, menu_cb_removeConstraint);
 }
 
-static void createHelpMenuItems (OTGrammarEditor me, EditorMenu menu) {
+static void createHelpMenuItems (OTGrammarEditor me, EditorMenu *menu) {
 	inherited (OTGrammarEditor) createHelpMenuItems (OTGrammarEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"OTGrammarEditor help", '?', menu_cb_OTGrammarEditor_help);
 	EditorMenu_addCommand (menu, L"OTGrammar help", 0, menu_cb_OTGrammar_help);

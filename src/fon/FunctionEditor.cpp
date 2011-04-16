@@ -996,13 +996,13 @@ static int menu_cb_intro (EDITOR_ARGS) {
 	return 1;
 }
 
-static void createMenuItems_file (FunctionEditor me, EditorMenu menu) {
+static void createMenuItems_file (FunctionEditor me, EditorMenu *menu) {
 	inherited (FunctionEditor) createMenuItems_file (FunctionEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"Preferences...", 0, menu_cb_preferences);
 	EditorMenu_addCommand (menu, L"-- after preferences --", 0, 0);
 }
 
-static void createMenuItems_view_timeDomain (FunctionEditor me, EditorMenu menu) {
+static void createMenuItems_view_timeDomain (FunctionEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, our format_domain, GuiMenu_INSENSITIVE, menu_cb_zoom /* dummy */);
 	EditorMenu_addCommand (menu, L"Zoom...", 0, menu_cb_zoom);
@@ -1015,7 +1015,7 @@ static void createMenuItems_view_timeDomain (FunctionEditor me, EditorMenu menu)
 	EditorMenu_addCommand (menu, L"Scroll page forward", GuiMenu_PAGE_DOWN, menu_cb_pageDown);
 }
 
-static void createMenuItems_view_audio (FunctionEditor me, EditorMenu menu) {
+static void createMenuItems_view_audio (FunctionEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"-- play --", 0, 0);
 	EditorMenu_addCommand (menu, L"Audio:", GuiMenu_INSENSITIVE, menu_cb_play /* dummy */);
@@ -1025,12 +1025,12 @@ static void createMenuItems_view_audio (FunctionEditor me, EditorMenu menu) {
 	EditorMenu_addCommand (menu, L"Interrupt playing", GuiMenu_ESCAPE, menu_cb_interruptPlaying);
 }
 
-static void createMenuItems_view (FunctionEditor me, EditorMenu menu) {
+static void createMenuItems_view (FunctionEditor me, EditorMenu *menu) {
 	our createMenuItems_view_timeDomain (me, menu);
 	our createMenuItems_view_audio (me, menu);
 }
 
-static void createMenuItems_query (FunctionEditor me, EditorMenu menu) {
+static void createMenuItems_query (FunctionEditor me, EditorMenu *menu) {
 	inherited (FunctionEditor) createMenuItems_query (FunctionEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"-- query selection --", 0, 0);
 	EditorMenu_addCommand (menu, L"Get start of selection", 0, menu_cb_getB);
@@ -1042,7 +1042,7 @@ static void createMenuItems_query (FunctionEditor me, EditorMenu menu) {
 
 static void createMenus (FunctionEditor me) {
 	inherited (FunctionEditor) createMenus (FunctionEditor_as_parent (me));
-	EditorMenu menu;
+	EditorMenu *menu;
 
 	menu = Editor_addMenu (me, L"View", 0);
 	our createMenuItems_view (me, menu);
@@ -1068,7 +1068,7 @@ static void createMenus (FunctionEditor me) {
 	Editor_addCommand (me, L"Select", L"Move end of selection right", GuiMenu_COMMAND + GuiMenu_DOWN_ARROW, menu_cb_moveEright);
 }
 
-static void createHelpMenuItems (FunctionEditor me, EditorMenu menu) {
+static void createHelpMenuItems (FunctionEditor me, EditorMenu *menu) {
 	inherited (FunctionEditor) createHelpMenuItems (FunctionEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"Intro", 0, menu_cb_intro);
 }

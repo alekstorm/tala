@@ -34,7 +34,7 @@
 static int menu_cb_PitchTierEditorHelp (EDITOR_ARGS) { EDITOR_IAM (PitchTierEditor); Melder_help (L"PitchTierEditor"); return 1; }
 static int menu_cb_PitchTierHelp (EDITOR_ARGS) { EDITOR_IAM (PitchTierEditor); Melder_help (L"PitchTier"); return 1; }
 
-static void createHelpMenuItems (PitchTierEditor me, EditorMenu menu) {
+static void createHelpMenuItems (PitchTierEditor me, EditorMenu *menu) {
 	inherited (PitchTierEditor) createHelpMenuItems (PitchTierEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"PitchTierEditor help", 0, menu_cb_PitchTierEditorHelp);
 	EditorMenu_addCommand (menu, L"PitchTier help", 0, menu_cb_PitchTierHelp);

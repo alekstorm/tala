@@ -48,7 +48,7 @@ Thing_declare1 (TimeSoundEditor);
 	GuiObject drawButton, publishButton, publishPreserveButton, publishWindowButton; \
 	GuiObject writeAiffButton, writeAifcButton, writeWavButton, writeNextSunButton, writeNistButton, writeFlacButton;
 #define TimeSoundEditor__methods(Klas) FunctionEditor__methods(Klas) \
-	void (*createMenuItems_view_sound) (Klas me, EditorMenu menu); \
+	void (*createMenuItems_view_sound) (Klas me, EditorMenu *menu); \
 	void (*updateMenuItems_file) (Klas me);
 Thing_declare2 (TimeSoundEditor, FunctionEditor);
 

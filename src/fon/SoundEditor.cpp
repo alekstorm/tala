@@ -319,7 +319,7 @@ static void createMenus (SoundEditor me) {
 	our createMenus_analysis (me);
 }
 
-static void createHelpMenuItems (SoundEditor me, EditorMenu menu) {
+static void createHelpMenuItems (SoundEditor me, EditorMenu *menu) {
 	inherited (SoundEditor) createHelpMenuItems (SoundEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"SoundEditor help", '?', menu_cb_SoundEditorHelp);
 	EditorMenu_addCommand (menu, L"LongSoundEditor help", 0, menu_cb_LongSoundEditorHelp);

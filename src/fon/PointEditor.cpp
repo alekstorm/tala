@@ -188,7 +188,7 @@ static void createMenus (PointEditor me) {
 	Editor_addCommand (PointEditor_as_Editor (me), L"Point", L"Remove point(s)", GuiMenu_OPTION + 'P', menu_cb_removePoints);
 }
 
-static void createHelpMenuItems (PointEditor me, EditorMenu menu) {
+static void createHelpMenuItems (PointEditor me, EditorMenu *menu) {
 	inherited (PointEditor) createHelpMenuItems (PointEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"PointEditor help", '?', menu_cb_PointEditorHelp);
 }

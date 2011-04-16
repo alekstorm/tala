@@ -313,7 +313,7 @@ static void createMenus (ScriptEditor me) {
 	Editor_addCommand (me, L"Run", L"Run selection", 'T', menu_cb_runSelection);
 }
 
-static void createHelpMenuItems (ScriptEditor me, EditorMenu menu) {
+static void createHelpMenuItems (ScriptEditor me, EditorMenu *menu) {
 	inherited (ScriptEditor) createHelpMenuItems (ScriptEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"About ScriptEditor", '?', menu_cb_AboutScriptEditor);
 	EditorMenu_addCommand (menu, L"Scripting tutorial", 0, menu_cb_ScriptingTutorial);

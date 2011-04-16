@@ -69,25 +69,11 @@ EditorCommand::~EditorCommand () {
 	forget (_dialog);
 }
 
-/********** class EditorMenu **********/
+/********** class EditorMenu ***********/
 
-#define EditorMenu_members Thing_members \
-	Any editor; \
-	const wchar_t *menuTitle; \
-	GuiObject menuWidget; \
-	Ordered commands;
-#define EditorMenu_methods Thing_methods
-class_create_opaque (EditorMenu, Thing);
-
-static void classEditorMenu_destroy (I) {
-	iam (EditorMenu);
-	Melder_free (my menuTitle);
-	forget (my commands);
-}
-
-class_methods (EditorMenu, Thing) {
-	class_method_local (EditorMenu, destroy)
-	class_methods_end
+EditorMenu::~EditorMenu () {
+	Melder_free (_menuTitle);
+	forget (_commands);
 }
 
 /********** functions **********/
@@ -106,30 +92,30 @@ static void commonCallback (GUI_ARGS) {
 	if (! cmd->_commandCallback (cmd->_editor, cmd, NULL, NULL, NULL)) Melder_flushError (NULL);
 }
 
-GuiObject EditorMenu_addCommand (EditorMenu menu, const wchar_t *itemTitle, long flags,
+GuiObject EditorMenu_addCommand (EditorMenu *menu, const wchar_t *itemTitle, long flags,
 	int (*commandCallback) (Any editor_me, EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter))
 {
 	EditorCommand *cmd = new EditorCommand();
-	cmd->_editor = menu -> editor;
+	cmd->_editor = menu -> _editor;
 	cmd->_menu = menu;
 	if ((cmd->_itemTitle = Melder_wcsdup_e (itemTitle)) == NULL) { delete cmd; return NULL; }
 	cmd->_itemWidget =
-		commandCallback == NULL ? GuiMenu_addSeparator (menu -> menuWidget) :
+		commandCallback == NULL ? GuiMenu_addSeparator (menu -> _menuWidget) :
 		flags & Editor_HIDDEN ? NULL :
-		GuiMenu_addItem (menu -> menuWidget, itemTitle, flags, commonCallback, cmd);
-	Collection_addItem (menu -> commands, cmd);
+		GuiMenu_addItem (menu -> _menuWidget, itemTitle, flags, commonCallback, cmd);
+	Collection_addItem (menu -> _commands, cmd);
 	cmd->_commandCallback = commandCallback;
 	return cmd->_itemWidget;
 }
 
-EditorMenu Editor_addMenu (Any editor, const wchar_t *menuTitle, long flags) {
-	EditorMenu me = Thing_new (EditorMenu);
-	my editor = editor;
-	if (! (my menuTitle = Melder_wcsdup_e (menuTitle))) { forget (me); return NULL; }
-	my menuWidget = GuiMenuBar_addMenu (((Editor) editor) -> menuBar, menuTitle, flags);
-	Collection_addItem (((Editor) editor) -> menus, me);
-	my commands = Ordered_create ();
-	return me;
+EditorMenu *Editor_addMenu (Any editor, const wchar_t *menuTitle, long flags) {
+	EditorMenu *menu = new EditorMenu ();
+	menu->_editor = editor;
+	if (! (menu->_menuTitle = Melder_wcsdup_e (menuTitle))) { delete menu; return NULL; }
+	menu->_menuWidget = GuiMenuBar_addMenu (((Editor) editor) -> menuBar, menuTitle, flags);
+	Collection_addItem (((Editor) editor) -> menus, menu);
+	menu->_commands = Ordered_create ();
+	return menu;
 }
 
 GuiObject Editor_addCommand (Any editor, const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
@@ -138,8 +124,8 @@ GuiObject Editor_addCommand (Any editor, const wchar_t *menuTitle, const wchar_t
 	Editor me = (Editor) editor;
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
-		if (wcsequ (menuTitle, menu -> menuTitle))
+		EditorMenu *menu = (EditorMenu*)my menus -> item [imenu];
+		if (wcsequ (menuTitle, menu -> _menuTitle))
 			return EditorMenu_addCommand (menu, itemTitle, flags, commandCallback);
 	}
 	Melder_error3 (L"(Editor_addCommand:) No menu \"", menuTitle, L"\". Cannot insert command.");
@@ -160,15 +146,15 @@ GuiObject Editor_addCommandScript (Any editor, const wchar_t *menuTitle, const w
 	Editor me = (Editor) editor;
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
-		if (wcsequ (menuTitle, menu -> menuTitle)) {
+		EditorMenu *menu = (EditorMenu *)my menus -> item [imenu];
+		if (wcsequ (menuTitle, menu -> _menuTitle)) {
 			EditorCommand *cmd = new EditorCommand();
 			cmd -> _editor = me;
 			cmd -> _menu = menu;
 			cmd -> _itemTitle = Melder_wcsdup_f (itemTitle);
-			cmd -> _itemWidget = script == NULL ? GuiMenu_addSeparator (menu -> menuWidget) :
-				GuiMenu_addItem (menu -> menuWidget, itemTitle, flags, commonCallback, cmd);
-			Collection_addItem (menu -> commands, cmd);
+			cmd -> _itemWidget = script == NULL ? GuiMenu_addSeparator (menu -> _menuWidget) :
+				GuiMenu_addItem (menu -> _menuWidget, itemTitle, flags, commonCallback, cmd);
+			Collection_addItem (menu -> _commands, cmd);
 			cmd -> _commandCallback = Editor_scriptCallback;
 			if (wcslen (script) == 0) {
 				cmd -> _script = Melder_wcsdup_f (L"");
@@ -188,9 +174,9 @@ void Editor_setMenuSensitive (Any editor, const wchar_t *menuTitle, int sensitiv
 	Editor me = (Editor) editor;
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
-		if (wcsequ (menuTitle, menu -> menuTitle)) {
-			GuiObject_setSensitive (menu -> menuWidget, sensitive);
+		EditorMenu *menu = (EditorMenu *)my menus -> item [imenu];
+		if (wcsequ (menuTitle, menu -> _menuTitle)) {
+			GuiObject_setSensitive (menu -> _menuWidget, sensitive);
 			return;
 		}
 	}
@@ -199,11 +185,11 @@ void Editor_setMenuSensitive (Any editor, const wchar_t *menuTitle, int sensitiv
 EditorCommand *Editor_getMenuCommand (Editor me, const wchar_t *menuTitle, const wchar_t *itemTitle) {
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
-		if (wcsequ (menuTitle, menu -> menuTitle)) {
-			int numberOfCommands = menu -> commands -> size, icommand;
+		EditorMenu *menu = (EditorMenu *)my menus -> item [imenu];
+		if (wcsequ (menuTitle, menu -> _menuTitle)) {
+			int numberOfCommands = menu -> _commands -> size, icommand;
 			for (icommand = 1; icommand <= numberOfCommands; icommand ++) {
-				EditorCommand *command = (EditorCommand *)menu -> commands -> item [icommand];
+				EditorCommand *command = (EditorCommand *)menu -> _commands -> item [icommand];
 				if (wcsequ (itemTitle, command -> _itemTitle))
 					return command;
 			}
@@ -216,10 +202,10 @@ EditorCommand *Editor_getMenuCommand (Editor me, const wchar_t *menuTitle, const
 int Editor_doMenuCommand (Editor me, const wchar_t *commandTitle, const wchar_t *arguments, Interpreter *interpreter) {
 	int numberOfMenus = my menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu menu = (structEditorMenu*)my menus -> item [imenu];
-		int numberOfCommands = menu -> commands -> size, icommand;
+		EditorMenu *menu = (EditorMenu *)my menus -> item [imenu];
+		int numberOfCommands = menu -> _commands -> size, icommand;
 		for (icommand = 1; icommand <= numberOfCommands; icommand ++) {
-			EditorCommand *command = (EditorCommand *)menu -> commands -> item [icommand];
+			EditorCommand *command = (EditorCommand *)menu -> _commands -> item [icommand];
 			if (wcsequ (commandTitle, command -> _itemTitle)) {
 				if (! command -> _commandCallback (me, command, NULL, arguments, interpreter))
 					return 0;
@@ -330,12 +316,12 @@ end:
 	return 1;
 }
 
-static void classEditor_createMenuItems_file (Editor me, EditorMenu menu) {
+static void classEditor_createMenuItems_file (Editor me, EditorMenu *menu) {
 	(void) me;
 	(void) menu;
 }
 
-static void classEditor_createMenuItems_edit (Editor me, EditorMenu menu) {
+static void classEditor_createMenuItems_edit (Editor me, EditorMenu *menu) {
 	(void) me;
 	if (my data)
 		my undoButton = EditorMenu_addCommand (menu, L"Cannot undo", GuiMenu_INSENSITIVE + 'Z', menu_cb_undo);
@@ -353,11 +339,11 @@ static int menu_cb_info (EDITOR_ARGS) {
 	return 1;
 }
 
-static void classEditor_createMenuItems_query (Editor me, EditorMenu menu) {
+static void classEditor_createMenuItems_query (Editor me, EditorMenu *menu) {
 	our createMenuItems_query_info (me, menu);
 }
 
-static void classEditor_createMenuItems_query_info (Editor me, EditorMenu menu) {
+static void classEditor_createMenuItems_query_info (Editor me, EditorMenu *menu) {
 	EditorMenu_addCommand (menu, L"Editor info", 0, menu_cb_settingsReport);
 	EditorMenu_addCommand (menu, L"Settings report", Editor_HIDDEN, menu_cb_settingsReport);
 	if (my data) {
@@ -369,7 +355,7 @@ static void classEditor_createMenuItems_query_info (Editor me, EditorMenu menu) 
 }
 
 static void classEditor_createMenus (Editor me) {
-	EditorMenu menu = Editor_addMenu (me, L"File", 0);
+	EditorMenu *menu = Editor_addMenu (me, L"File", 0);
 	our createMenuItems_file (me, menu);
 	if (our editable) {
 		menu = Editor_addMenu (me, L"Edit", 0);
@@ -381,7 +367,7 @@ static void classEditor_createMenus (Editor me) {
 	}
 }
 
-static void classEditor_createHelpMenuItems (Editor me, EditorMenu menu) {
+static void classEditor_createHelpMenuItems (Editor me, EditorMenu *menu) {
 	(void) me;
 	(void) menu;
 }
@@ -516,7 +502,7 @@ int Editor_init (Editor me, GuiObject parent, int x, int y, int width, int heigh
 		my menuBar = Gui_addMenuBar (my dialog);
 		our createMenus (me);
 		Melder_clearError ();   /* FIXME: to protect against CategoriesEditor */
-		EditorMenu helpMenu = Editor_addMenu (me, L"Help", 0);
+		EditorMenu *helpMenu = Editor_addMenu (me, L"Help", 0);
 		our createHelpMenuItems (me, helpMenu);
 		if (our scriptable) {
 			Editor_addCommand (me, L"File", L"New editor script", 0, menu_cb_newScript);

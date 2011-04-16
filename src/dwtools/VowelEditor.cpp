@@ -1433,7 +1433,7 @@ static void createMenus (VowelEditor me)
 	Editor_addCommand (me, L"Edit", L"Show trajectory time markers every...", 0, menu_cb_showTrajectoryTimeMarkersEvery);
 }
 
-static void createHelpMenuItems (VowelEditor me, EditorMenu menu) {
+static void createHelpMenuItems (VowelEditor me, EditorMenu *menu) {
 	inherited (VowelEditor) createHelpMenuItems (VowelEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"VowelEditor help", '?', menu_cb_help);
 }

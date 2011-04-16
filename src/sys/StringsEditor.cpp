@@ -39,7 +39,7 @@ static int menu_cb_help (EDITOR_ARGS) {
 	return 1;
 }
 
-static void createHelpMenuItems (StringsEditor me, EditorMenu menu) {
+static void createHelpMenuItems (StringsEditor me, EditorMenu *menu) {
 	inherited (StringsEditor) createHelpMenuItems (StringsEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"StringsEditor help", '?', menu_cb_help);
 }

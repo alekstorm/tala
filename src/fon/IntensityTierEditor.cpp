@@ -31,7 +31,7 @@
 
 static int menu_cb_IntensityTierHelp (EDITOR_ARGS) { EDITOR_IAM (IntensityTierEditor); Melder_help (L"IntensityTier"); return 1; }
 
-static void createHelpMenuItems (IntensityTierEditor me, EditorMenu menu) {
+static void createHelpMenuItems (IntensityTierEditor me, EditorMenu *menu) {
 	inherited (IntensityTierEditor) createHelpMenuItems (IntensityTierEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"IntensityTier help", 0, menu_cb_IntensityTierHelp);
 }

@@ -135,17 +135,17 @@ Thing_declare1 (TimeSoundAnalysisEditor);
 		struct { bool garnish; } formant; \
 		struct { bool garnish; } pulses; \
 	} picture; } preferences; \
-	void (*createMenuItems_spectrum_picture) (Klas me, EditorMenu menu); \
-	void (*createMenuItems_pitch_picture) (Klas me, EditorMenu menu); \
-	void (*createMenuItems_intensity_picture) (Klas me, EditorMenu menu); \
-	void (*createMenuItems_formant_picture) (Klas me, EditorMenu menu); \
-	void (*createMenuItems_pulses_picture) (Klas me, EditorMenu menu); \
+	void (*createMenuItems_spectrum_picture) (Klas me, EditorMenu *menu); \
+	void (*createMenuItems_pitch_picture) (Klas me, EditorMenu *menu); \
+	void (*createMenuItems_intensity_picture) (Klas me, EditorMenu *menu); \
+	void (*createMenuItems_formant_picture) (Klas me, EditorMenu *menu); \
+	void (*createMenuItems_pulses_picture) (Klas me, EditorMenu *menu); \
 	void (*destroy_analysis) (Klas me); \
 	void (*draw_analysis) (Klas me); \
 	void (*draw_analysis_pulses) (Klas me); \
-	void (*createMenuItems_query_log) (Klas me, EditorMenu menu); \
+	void (*createMenuItems_query_log) (Klas me, EditorMenu *menu); \
 	void (*createMenus_analysis) (Klas me); \
-	void (*createMenuItems_view_sound_analysis) (Klas me, EditorMenu menu);
+	void (*createMenuItems_view_sound_analysis) (Klas me, EditorMenu *menu);
 Thing_declare2 (TimeSoundAnalysisEditor, TimeSoundEditor);
 
 int TimeSoundAnalysisEditor_init (TimeSoundAnalysisEditor me, GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound);

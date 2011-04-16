@@ -217,7 +217,7 @@ static void createMenus (OTMultiEditor me) {
 	Editor_addCommand (me, L"Edit", L"Remove constraint", 0, menu_cb_removeConstraint);
 }
 
-static void createHelpMenuItems (OTMultiEditor me, EditorMenu menu) {
+static void createHelpMenuItems (OTMultiEditor me, EditorMenu *menu) {
 	inherited (OTMultiEditor) createHelpMenuItems (OTMultiEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"OT learning tutorial", 0, menu_cb_OTLearningTutorial);
 }

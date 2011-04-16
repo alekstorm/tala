@@ -362,7 +362,7 @@ static void createMenus (TableEditor me) {
 	#endif
 }
 
-static void createHelpMenuItems (TableEditor me, EditorMenu menu) {
+static void createHelpMenuItems (TableEditor me, EditorMenu *menu) {
 	inherited (TableEditor) createHelpMenuItems (TableEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"TableEditor help", '?', menu_cb_TableEditorHelp);
 }

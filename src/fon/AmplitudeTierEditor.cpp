@@ -31,7 +31,7 @@
 
 static int menu_cb_AmplitudeTierHelp (EDITOR_ARGS) { EDITOR_IAM (AmplitudeTierEditor); Melder_help (L"AmplitudeTier"); return 1; }
 
-static void createHelpMenuItems (AmplitudeTierEditor me, EditorMenu menu) {
+static void createHelpMenuItems (AmplitudeTierEditor me, EditorMenu *menu) {
 	inherited (AmplitudeTierEditor) createHelpMenuItems (AmplitudeTierEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"AmplitudeTier help", 0, menu_cb_AmplitudeTierHelp);
 }

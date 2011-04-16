@@ -210,7 +210,7 @@ static int menu_cb_pitchSettings (EDITOR_ARGS) {
 
 static void createMenus (FormantGridEditor me) {
 	inherited (FormantGridEditor) createMenus (FormantGridEditor_as_FunctionEditor (me));
-	EditorMenu menu = Editor_addMenu (me, L"Formant", 0);
+	EditorMenu *menu = Editor_addMenu (me, L"Formant", 0);
 	EditorMenu_addCommand (menu, L"Show bandwidths", GuiMenu_CHECKBUTTON + 'B', menu_cb_showBandwidths);
 	EditorMenu_addCommand (menu, L"Set formant range...", 0, menu_cb_setFormantRange);
 	EditorMenu_addCommand (menu, L"Set bandwidth range...", 0, menu_cb_setBandwidthRange);

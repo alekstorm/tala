@@ -189,14 +189,14 @@ static void createMenus (SpectrumEditor me) {
 	Editor_addCommand (me, L"Edit", L"Stop band...", 0, menu_cb_stopBand);
 }
 
-static void createMenuItems_view (SpectrumEditor me, EditorMenu menu) {
+static void createMenuItems_view (SpectrumEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"Set dynamic range...", 0, menu_cb_setDynamicRange);
 	EditorMenu_addCommand (menu, L"-- view settings --", 0, 0);
 	inherited (SpectrumEditor) createMenuItems_view (SpectrumEditor_as_parent (me), menu);
 }
 
-static void createHelpMenuItems (SpectrumEditor me, EditorMenu menu) {
+static void createHelpMenuItems (SpectrumEditor me, EditorMenu *menu) {
 	inherited (SpectrumEditor) createHelpMenuItems (SpectrumEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"SpectrumEditor help", '?', menu_cb_help_SpectrumEditor);
 	EditorMenu_addCommand (menu, L"Spectrum help", 0, menu_cb_help_Spectrum);

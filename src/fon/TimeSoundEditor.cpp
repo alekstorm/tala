@@ -297,7 +297,7 @@ static int menu_cb_WriteFlac (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static void createMenuItems_file_draw (TimeSoundEditor me, EditorMenu menu) {
+static void createMenuItems_file_draw (TimeSoundEditor me, EditorMenu *menu) {
 	EditorMenu_addCommand (menu, L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_DrawVisibleSound /* dummy */);
 	if (my sound.data || my longSound.data) {
 		EditorMenu_addCommand (menu, L"Draw visible sound...", 0, menu_cb_DrawVisibleSound);
@@ -305,7 +305,7 @@ static void createMenuItems_file_draw (TimeSoundEditor me, EditorMenu menu) {
 	}
 }
 
-static void createMenuItems_file_extract (TimeSoundEditor me, EditorMenu menu) {
+static void createMenuItems_file_extract (TimeSoundEditor me, EditorMenu *menu) {
 	EditorMenu_addCommand (menu, L"Extract to objects window:", GuiMenu_INSENSITIVE, menu_cb_ExtractSelectedSound_preserveTimes /* dummy */);
 	if (my sound.data || my longSound.data) {
 		my publishPreserveButton = EditorMenu_addCommand (menu, L"Extract selected sound (preserve times)", 0, menu_cb_ExtractSelectedSound_preserveTimes);
@@ -323,7 +323,7 @@ static void createMenuItems_file_extract (TimeSoundEditor me, EditorMenu menu) {
 	}
 }
 
-static void createMenuItems_file_write (TimeSoundEditor me, EditorMenu menu) {
+static void createMenuItems_file_write (TimeSoundEditor me, EditorMenu *menu) {
 	EditorMenu_addCommand (menu, L"Save to disk:", GuiMenu_INSENSITIVE, menu_cb_WriteWav /* dummy */);
 	if (my sound.data || my longSound.data) {
 		my writeWavButton = EditorMenu_addCommand (menu, L"Save selected sound as WAV file...", 0, menu_cb_WriteWav);
@@ -352,7 +352,7 @@ static void createMenuItems_file_write (TimeSoundEditor me, EditorMenu menu) {
 	}
 }
 
-static void createMenuItems_file (TimeSoundEditor me, EditorMenu menu) {
+static void createMenuItems_file (TimeSoundEditor me, EditorMenu *menu) {
 	inherited (TimeSoundEditor) createMenuItems_file (TimeSoundEditor_as_parent (me), menu);
 	our createMenuItems_file_draw (me, menu);
 	EditorMenu_addCommand (menu, L"-- after file draw --", 0, NULL);
@@ -376,7 +376,7 @@ static int menu_cb_LongSoundInfo (EDITOR_ARGS) {
 	return 1;
 }
 
-static void createMenuItems_query_info (TimeSoundEditor me, EditorMenu menu) {
+static void createMenuItems_query_info (TimeSoundEditor me, EditorMenu *menu) {
 	inherited (TimeSoundEditor) createMenuItems_query_info (TimeSoundEditor_as_parent (me), menu);
 	if (my sound.data != NULL && my sound.data != my data) {
 		EditorMenu_addCommand (menu, L"Sound info", 0, menu_cb_SoundInfo);
@@ -394,12 +394,12 @@ static int menu_cb_autoscaling (EDITOR_ARGS) {
 	return 1;
 }
 
-static void createMenuItems_view (TimeSoundEditor me, EditorMenu menu) {
+static void createMenuItems_view (TimeSoundEditor me, EditorMenu *menu) {
 	if (my sound.data || my longSound.data) our createMenuItems_view_sound (me, menu);
 	inherited (TimeSoundEditor) createMenuItems_view (TimeSoundEditor_as_parent (me), menu);
 }
 
-static void createMenuItems_view_sound (TimeSoundEditor me, EditorMenu menu) {
+static void createMenuItems_view_sound (TimeSoundEditor me, EditorMenu *menu) {
 	(void) me;
 	EditorMenu_addCommand (menu, L"Sound autoscaling", GuiMenu_CHECKBUTTON | (preferences.sound.autoscaling ? GuiMenu_TOGGLE_ON : 0), menu_cb_autoscaling);
 	EditorMenu_addCommand (menu, L"-- sound view --", 0, 0);

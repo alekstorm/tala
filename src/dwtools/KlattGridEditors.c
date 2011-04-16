@@ -40,7 +40,7 @@ static int KlattGrid_Editor_defaultPlay (KlattGrid me, double tmin, double tmax)
 
 static int menu_cb_KlattGridHelp (EDITOR_ARGS) { EDITOR_IAM (KlattGrid_realTierEditor); Melder_help (L"KlattGrid"); return 1; }
 
-static void classKlattGrid_realTierEditor_createHelpMenuItems (KlattGrid_realTierEditor me, EditorMenu menu)
+static void classKlattGrid_realTierEditor_createHelpMenuItems (KlattGrid_realTierEditor me, EditorMenu *menu)
 {
 	inherited (KlattGrid_realTierEditor) createHelpMenuItems (KlattGrid_realTierEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"KlattGrid help", 0, menu_cb_KlattGridHelp);
@@ -76,7 +76,7 @@ static int menu_cb_PitchTierHelp (EDITOR_ARGS)
 	EDITOR_IAM (KlattGrid_pitchTierEditor); Melder_help (L"PitchTier"); return 1;
 }
 
-static void classKlattGrid_pitchTierEditor_createHelpMenuItems (KlattGrid_pitchTierEditor me, EditorMenu menu)
+static void classKlattGrid_pitchTierEditor_createHelpMenuItems (KlattGrid_pitchTierEditor me, EditorMenu *menu)
 {
 	inherited (KlattGrid_pitchTierEditor) createHelpMenuItems (KlattGrid_pitchTierEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"PitchTierEditor help", 0, menu_cb_KlattGrid_pitchTierEditorHelp);
@@ -110,7 +110,7 @@ KlattGrid_pitchTierEditor KlattGrid_pitchTierEditor_create (GuiObject parent, co
 
 static int menu_cb_IntensityTierHelp (EDITOR_ARGS) { EDITOR_IAM (KlattGrid_intensityTierEditor); Melder_help (L"IntensityTier"); return 1; }
 
-static void classKlattGrid_intensityTierEditor_createHelpMenuItems (KlattGrid_intensityTierEditor me, EditorMenu menu)
+static void classKlattGrid_intensityTierEditor_createHelpMenuItems (KlattGrid_intensityTierEditor me, EditorMenu *menu)
 {
 	inherited (KlattGrid_intensityTierEditor) createHelpMenuItems (KlattGrid_intensityTierEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"IntensityTier help", 0, menu_cb_IntensityTierHelp);

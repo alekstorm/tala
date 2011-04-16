@@ -655,7 +655,7 @@ static void createMenus (ManipulationEditor me) {
 	my synthPitchLpcButton = Editor_addCommand (me, L"Synth", L"LPC -- Pitch  (\"LPC pitch manipulation\")", GuiMenu_RADIO_NEXT, menu_cb_Synth_Pitch_Lpc);
 }
 
-static void createHelpMenuItems (ManipulationEditor me, EditorMenu menu) {
+static void createHelpMenuItems (ManipulationEditor me, EditorMenu *menu) {
 	inherited (ManipulationEditor) createHelpMenuItems (ManipulationEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"ManipulationEditor help", '?', menu_cb_ManipulationEditorHelp);
 	EditorMenu_addCommand (menu, L"Manipulation help", 0, menu_cb_ManipulationHelp);

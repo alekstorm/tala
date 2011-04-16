@@ -52,9 +52,20 @@ class EditorCommand {
 	UiForm *_dialog;
 };
 
+class EditorMenu {
+  public:
+	~EditorMenu ();
+
+	Any _editor;
+	const wchar_t *_menuTitle;
+	GuiObject _menuWidget;
+	Ordered _commands;
+};
+
 	extern "C" {
 #else
 typedef struct EditorCommand EditorCommand;
+typedef struct EditorMenu EditorMenu;
 #endif
 
 #include "Editor_enums.h"
@@ -62,13 +73,11 @@ typedef struct EditorCommand EditorCommand;
 #define Editor__parents(Klas) Thing_inherit (Klas, Thing)
 Thing_declare1 (Editor);
 
-typedef struct structEditorMenu *EditorMenu;
-
-GuiObject EditorMenu_addCommand (EditorMenu menu, const wchar_t *itemTitle, long flags,
+GuiObject EditorMenu_addCommand (EditorMenu *menu, const wchar_t *itemTitle, long flags,
 	int (*commandCallback) (Any editor_me, EditorCommand *, UiForm *, const wchar_t *, Interpreter *));
 
-EditorMenu Editor_addMenu (Any editor, const wchar_t *menuTitle, long flags);
-GuiObject EditorMenu_getMenuWidget (EditorMenu me);
+EditorMenu *Editor_addMenu (Any editor, const wchar_t *menuTitle, long flags);
+GuiObject EditorMenu_getMenuWidget (EditorMenu *me);
 
 #define Editor__members(Klas) Thing_members \
 	GuiObject parent, shell, dialog, menuBar, undoButton, searchButton; \
@@ -87,12 +96,12 @@ GuiObject EditorMenu_getMenuWidget (EditorMenu me);
 #define Editor__methods(Klas) Thing_methods \
 	void (*goAway) (Klas me); \
 	bool hasMenuBar, canFullScreen, editable, scriptable; \
-	void (*createMenuItems_file) (Klas me, EditorMenu menu); \
-	void (*createMenuItems_edit) (Klas me, EditorMenu menu); \
-	void (*createMenuItems_query) (Klas me, EditorMenu menu); \
-	void (*createMenuItems_query_info) (Klas me, EditorMenu menu); \
+	void (*createMenuItems_file) (Klas me, EditorMenu *menu); \
+	void (*createMenuItems_edit) (Klas me, EditorMenu *menu); \
+	void (*createMenuItems_query) (Klas me, EditorMenu *menu); \
+	void (*createMenuItems_query_info) (Klas me, EditorMenu *menu); \
 	void (*createMenus) (Klas me); \
-	void (*createHelpMenuItems) (Klas me, EditorMenu menu); \
+	void (*createHelpMenuItems) (Klas me, EditorMenu *menu); \
 	void (*createChildren) (Klas me); \
 	void (*dataChanged) (Klas me); \
 	void (*save) (Klas me); \

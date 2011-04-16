@@ -104,7 +104,7 @@ static int menu_cb_setRange (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static void createMenuItems_view (RealTierEditor me, EditorMenu menu) {
+static void createMenuItems_view (RealTierEditor me, EditorMenu *menu) {
 	inherited (RealTierEditor) createMenuItems_view (RealTierEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"-- view/realtier --", 0, 0);
 	EditorMenu_addCommand (menu, our setRangeTitle, 0, menu_cb_setRange);
@@ -112,7 +112,7 @@ static void createMenuItems_view (RealTierEditor me, EditorMenu menu) {
 
 static void createMenus (RealTierEditor me) {
 	inherited (RealTierEditor) createMenus (RealTierEditor_as_parent (me));
-	EditorMenu menu = Editor_addMenu (me, L"Point", 0);
+	EditorMenu *menu = Editor_addMenu (me, L"Point", 0);
 	EditorMenu_addCommand (menu, L"Add point at cursor", 'T', menu_cb_addPointAtCursor);
 	EditorMenu_addCommand (menu, L"Add point at...", 0, menu_cb_addPointAt);
 	EditorMenu_addCommand (menu, L"-- remove point --", 0, NULL);

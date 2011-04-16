@@ -433,7 +433,7 @@ static void classDataSubEditor_createChildren (DataSubEditor me) {
 
 static int menu_cb_help (EDITOR_ARGS) { EDITOR_IAM (DataSubEditor); Melder_help (L"Inspect"); return 1; }
 
-static void classDataSubEditor_createHelpMenuItems (DataSubEditor me, EditorMenu menu) {
+static void classDataSubEditor_createHelpMenuItems (DataSubEditor me, EditorMenu *menu) {
 	inherited (DataSubEditor) createHelpMenuItems (DataSubEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"DataEditor help", '?', menu_cb_help);
 }

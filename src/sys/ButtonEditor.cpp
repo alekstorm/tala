@@ -296,7 +296,7 @@ static void createChildren (ButtonEditor me) {
 
 static int menu_cb_ButtonEditorHelp (EDITOR_ARGS) { EDITOR_IAM (ButtonEditor); Melder_help (L"ButtonEditor"); return 1; }
 
-static void createHelpMenuItems (ButtonEditor me, EditorMenu menu) {
+static void createHelpMenuItems (ButtonEditor me, EditorMenu *menu) {
 	inherited (ButtonEditor) createHelpMenuItems (ButtonEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"ButtonEditor help", '?', menu_cb_ButtonEditorHelp);
 }

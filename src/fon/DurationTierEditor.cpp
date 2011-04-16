@@ -27,7 +27,7 @@
 
 static int menu_cb_DurationTierHelp (EDITOR_ARGS) { EDITOR_IAM (DurationTierEditor); Melder_help (L"DurationTier"); return 1; }
 
-static void createHelpMenuItems (DurationTierEditor me, EditorMenu menu) {
+static void createHelpMenuItems (DurationTierEditor me, EditorMenu *menu) {
 	inherited (DurationTierEditor) createHelpMenuItems (DurationTierEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"DurationTier help", 0, menu_cb_DurationTierHelp);
 }

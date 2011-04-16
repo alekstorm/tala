@@ -841,7 +841,7 @@ static void destroy (I)
 	inherited (CategoriesEditor) destroy (me);
 }
 
-static void createHelpMenuItems (CategoriesEditor me, EditorMenu menu)
+static void createHelpMenuItems (CategoriesEditor me, EditorMenu *menu)
 {
 	inherited (CategoriesEditor) createHelpMenuItems (CategoriesEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"CategoriesEditor help", '?', menu_cb_help);

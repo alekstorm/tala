@@ -180,7 +180,7 @@ static void createMenus (PitchEditor me) {
 	Editor_addCommand (me, L"Selection", L"Octave down", 0, menu_cb_octaveDown);
 }
 
-static void createHelpMenuItems (PitchEditor me, EditorMenu menu) {
+static void createHelpMenuItems (PitchEditor me, EditorMenu *menu) {
 	inherited (PitchEditor) createHelpMenuItems (PitchEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"PitchEditor help", '?', menu_cb_PitchEditorHelp);
 	EditorMenu_addCommand (menu, L"Pitch help", 0, menu_cb_PitchHelp);

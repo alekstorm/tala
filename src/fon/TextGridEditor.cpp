@@ -262,7 +262,7 @@ static int menu_cb_ExtractSelectedTextGrid_timeFromZero (EDITOR_ARGS) {
 	return 1;
 }
 
-static void createMenuItems_file_extract (TextGridEditor me, EditorMenu menu) {
+static void createMenuItems_file_extract (TextGridEditor me, EditorMenu *menu) {
 	inherited (TextGridEditor) createMenuItems_file_extract (TextGridEditor_as_parent (me), menu);
 	my extractSelectedTextGridPreserveTimesButton =
 		EditorMenu_addCommand (menu, L"Extract selected TextGrid (preserve times)", 0, menu_cb_ExtractSelectedTextGrid_preserveTimes);
@@ -291,7 +291,7 @@ static int menu_cb_WriteToTextFile (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static void createMenuItems_file_write (TextGridEditor me, EditorMenu menu) {
+static void createMenuItems_file_write (TextGridEditor me, EditorMenu *menu) {
 	inherited (TextGridEditor) createMenuItems_file_write (TextGridEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"Save TextGrid as text file...", 'S', menu_cb_WriteToTextFile);
 	my writeSelectedTextGridButton = EditorMenu_addCommand (menu, L"Save selected TextGrid to text file...", 0, menu_cb_WriteSelectionToTextFile);
@@ -351,7 +351,7 @@ static int menu_cb_DrawVisibleSoundAndTextGrid (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static void createMenuItems_file_draw (TextGridEditor me, EditorMenu menu) {
+static void createMenuItems_file_draw (TextGridEditor me, EditorMenu *menu) {
 	inherited (TextGridEditor) createMenuItems_file_draw (TextGridEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"Draw visible TextGrid...", 0, menu_cb_DrawVisibleTextGrid);
 	if (my sound.data || my longSound.data)
@@ -1295,7 +1295,7 @@ static int menu_cb_PhoneticSymbols (EDITOR_ARGS) { EDITOR_IAM (TextGridEditor); 
 static int menu_cb_AboutTextStyles (EDITOR_ARGS) { EDITOR_IAM (TextGridEditor); Melder_help (L"Text styles"); return 1; }
 
 static void createMenus (TextGridEditor me) {
-	EditorMenu menu;
+	EditorMenu *menu;
 	inherited (TextGridEditor) createMenus (TextGridEditor_as_parent (me));
 
 	#ifndef macintosh
@@ -1387,7 +1387,7 @@ static void createMenus (TextGridEditor me) {
 	}
 }
 
-static void createHelpMenuItems (TextGridEditor me, EditorMenu menu) {
+static void createHelpMenuItems (TextGridEditor me, EditorMenu *menu) {
 	inherited (TextGridEditor) createHelpMenuItems (TextGridEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"TextGridEditor help", '?', menu_cb_TextGridEditorHelp);
 	EditorMenu_addCommand (menu, L"About special symbols", 0, menu_cb_AboutSpecialSymbols);
@@ -2235,7 +2235,7 @@ static void prefs_getValues (TextGridEditor me, EditorCommand *cmd) {
 	FunctionEditor_redraw (TextGridEditor_as_FunctionEditor (me));
 }
 
-static void createMenuItems_view_timeDomain (TextGridEditor me, EditorMenu menu) {
+static void createMenuItems_view_timeDomain (TextGridEditor me, EditorMenu *menu) {
 	inherited (TextGridEditor) createMenuItems_view_timeDomain (TextGridEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"Select previous tier", GuiMenu_OPTION | GuiMenu_UP_ARROW, menu_cb_SelectPreviousTier);
 	EditorMenu_addCommand (menu, L"Select next tier", GuiMenu_OPTION | GuiMenu_DOWN_ARROW, menu_cb_SelectNextTier);
@@ -2271,7 +2271,7 @@ static double getBottomOfSoundAndAnalysisArea (TextGridEditor me) {
 	return _TextGridEditor_computeSoundY (me);
 }
 
-static void createMenuItems_pitch_picture (TextGridEditor me, EditorMenu menu) {
+static void createMenuItems_pitch_picture (TextGridEditor me, EditorMenu *menu) {
 	inherited (TextGridEditor) createMenuItems_pitch_picture (TextGridEditor_as_parent (me), menu);
 	EditorMenu_addCommand (menu, L"Draw visible pitch contour and TextGrid...", 0, menu_cb_DrawTextGridAndPitch);
 }
