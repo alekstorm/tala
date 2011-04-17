@@ -27,14 +27,32 @@ void *UiForm::theAllowExecutionClosureHint;
 
 UiForm::UiForm (GuiObject parent, const wchar_t *title,
 		int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *buttonClosure,
-		const wchar_t *invokingButtonTitle, const wchar_t *helpTitle) {
-	_parent = parent;
-	_name = Melder_wcsdup_f (title);
-	_okCallback = okCallback;
-	_buttonClosure = buttonClosure;
-	_invokingButtonTitle = Melder_wcsdup_f (invokingButtonTitle);
-	_helpTitle = Melder_wcsdup_f (helpTitle);
-}
+		const wchar_t *invokingButtonTitle, const wchar_t *helpTitle)
+	: _command(NULL),
+	  _parent(parent),
+	  _shell(NULL),
+	  _dialog(NULL),
+	  _okCallback(okCallback),
+	  _applyCallback(NULL),
+	  _cancelCallback(NULL),
+	  _buttonClosure(buttonClosure),
+	  _invokingButtonTitle(Melder_wcsdup_f (invokingButtonTitle)),
+	  _helpTitle(Melder_wcsdup_f (helpTitle)),
+	  _numberOfContinueButtons(0),
+	  _defaultContinueButton(0),
+	  _cancelContinueButton(0),
+	  _clickedContinueButton(0),
+	  _numberOfFields(0),
+	  _okButton(NULL),
+	  _cancelButton(NULL),
+	  _revertButton(NULL),
+	  _helpButton(NULL),
+	  _applyButton(NULL),
+	  _destroyWhenUnmanaged(false),
+	  _isPauseForm(false),
+	  _allowExecutionHook(NULL),
+	  _allowExecutionClosure(NULL),
+	  _name(Melder_wcsdup_f (title)) {}
 
 UiForm::~UiForm () {
 	Melder_free (_name);

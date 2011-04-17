@@ -100,9 +100,7 @@ class UiForm {
   public:
 	class UiOption {
 	  public:
-		UiOption (const wchar_t *label) {
-			_name = Melder_wcsdup_f (label);
-		}
+		UiOption (const wchar_t *label) : _name(Melder_wcsdup_f (label)) {}
 
 		GuiObject _toggle;
 		wchar_t *_name;

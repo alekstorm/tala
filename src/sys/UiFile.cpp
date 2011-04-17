@@ -36,10 +36,16 @@
 #include "Editor.h"
 #include "UiFile.h"
 
+	structMelderFile _file;
+	void *_okClosure;
+	int _shiftKeyPressed;
+
 UiFile::UiFile (GuiObject parent, const wchar_t *title,
 	int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure,
 	const wchar_t *invokingButtonTitle, const wchar_t *helpTitle)
-	: UiForm (parent, title, okCallback, okClosure, invokingButtonTitle, helpTitle) {
+	: UiForm (parent, title, okCallback, okClosure, invokingButtonTitle, helpTitle),
+	  _okClosure(NULL),
+	  _shiftKeyPressed(0) {
 	_parent = parent;
 	_name = Melder_wcsdup_f (title);
 }
@@ -53,13 +59,8 @@ MelderFile UiFile::getFile () {
 UiInfile::UiInfile (GuiObject parent, const wchar_t *title,
 	int (*okCallback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *), void *okClosure,
 	const wchar_t *invokingButtonTitle, const wchar_t *helpTitle, bool allowMultipleFiles)
-	: UiFile (parent, title, okCallback, okClosure, invokingButtonTitle, helpTitle) {
-	_okCallback = okCallback;
-	_okClosure = okClosure;
-	_invokingButtonTitle = invokingButtonTitle;
-	_helpTitle = helpTitle;
-	_allowMultipleFiles = allowMultipleFiles;
-}
+	: UiFile (parent, title, okCallback, okClosure, invokingButtonTitle, helpTitle),
+	  _allowMultipleFiles(allowMultipleFiles) {}
 
 void UiInfile::do_ () {
 	SortedSetOfString infileNames = GuiFileSelect_getInfileNames (_parent, _name, _allowMultipleFiles);
@@ -89,14 +90,9 @@ void UiInfile::do_ () {
 UiOutfile::UiOutfile (GuiObject parent, const wchar_t *title,
 	int (*okCallback) (UiForm *, const wchar_t *, Interpreter *, const wchar_t *, bool, void *), void *okClosure,
 	const wchar_t *invokingButtonTitle, const wchar_t *helpTitle)
-	: UiFile (parent, title, okCallback, okClosure, invokingButtonTitle, helpTitle) {
-	_okCallback = okCallback;
-	_okClosure = okClosure;
-	_invokingButtonTitle = invokingButtonTitle;
-	_helpTitle = helpTitle;
-	_allowExecutionHook = UiForm::theAllowExecutionHookHint;
-	_allowExecutionClosure = UiForm::theAllowExecutionClosureHint;
-}
+	: UiFile (parent, title, okCallback, okClosure, invokingButtonTitle, helpTitle),
+	  _allowExecutionHook(UiForm::theAllowExecutionHookHint),
+	  _allowExecutionClosure(UiForm::theAllowExecutionClosureHint) {}
 
 static int commonOutfileCallback (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure) {
 	EditorCommand *command = (EditorCommand *) closure;

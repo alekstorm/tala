@@ -20,10 +20,26 @@
 #include <ctype.h>
 #include "UiForm.h"
 
-UiForm::UiField::UiField (int type, const wchar_t *name) {
+UiForm::UiField::UiField (int type, const wchar_t *name)
+	: _type(type),
+	  _formLabel(Melder_wcsdup_f (name)),
+	  _realValue(0.0),
+	  _realDefaultValue(0.0),
+	  _integerValue(0L),
+	  _integerDefaultValue(0L),
+	  _stringValue(NULL),
+	  _stringDefaultValue(NULL),
+	  _colourValue(Graphics_BLACK),
+	  _stringValueA(NULL),
+	  _numberOfStrings(0L),
+	  _strings(NULL),
+	  _text(NULL),
+	  _toggle(NULL),
+	  _list(NULL),
+	  _cascadeButton(NULL),
+	  _y(0),
+	  _name(NULL) {
 	wchar_t shortName [101], *p;
-	_type = type;
-	_formLabel = Melder_wcsdup_f (name);
 	wcscpy (shortName, name);
 	/*
 	 * Strip parentheses and colon off parameter name.

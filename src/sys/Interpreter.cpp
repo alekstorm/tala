@@ -75,7 +75,9 @@ extern structMelderDir praatDir;
 #define Interpreter_OPTION 12
 #define Interpreter_COMMENT 13
 
-InterpreterVariable::InterpreterVariable (const wchar_t *key) {
+InterpreterVariable::InterpreterVariable (const wchar_t *key)
+	: _stringValue(NULL),
+	  _numericValue(0.0) {
 	if (key [0] == 'e' && key [1] == '\0')
 		throw Exception ("You cannot use 'e' as the name of a variable (e is the constant 2.71...).");
 	if (key [0] == 'p' && key [1] == 'i' && key [2] == '\0')
@@ -168,11 +170,15 @@ end:
 	return 1;
 }
 
-Interpreter::Interpreter (wchar_t *environmentName, Any editorClass) {
-	_variables = SortedSetOfString_create ();
-	_environmentName = Melder_wcsdup_f (environmentName);
-	_editorClass = editorClass;
-}
+Interpreter::Interpreter (wchar_t *environmentName, Any editorClass)
+	: _environmentName(Melder_wcsdup_f (environmentName)),
+	  _editorClass(editorClass),
+	  _numberOfParameters(0),
+	  _numberOfLabels(0),
+	  _callDepth(0),
+	  _running(false),
+	  _stopped(false),
+	  _variables(SortedSetOfString_create ()) {}
 
 Interpreter::~Interpreter () {
 	Melder_free (_environmentName);
