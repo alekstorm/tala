@@ -257,7 +257,10 @@ static void classEditor_nameChanged (I) {
 		GuiWindow_setTitle (my shell, my name);
 }
 
-static void classEditor_goAway (Editor me) { forget (me); }
+static void classEditor_goAway (Editor me) {
+	forget (me);
+	classEditor_destroy(me); // FIXME remove when memory management is turned back on, which uses RAII
+}
 
 static void classEditor_save (Editor me) {
 	if (! my data) return;

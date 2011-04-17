@@ -74,7 +74,10 @@ typedef void *Any;   /* Prevent compile-time type checking. */
 #define our  my methods ->
 #define your  thy methods ->
 
-#define forget(thing)  _Thing_forget ((Thing *) & (thing))
+/* FIXME disables most memory management. Necessary because it assumes all
+   types inherit polymorphically (in Praat's unique way) from Thing, and
+   there's no way to test for objects that don't. */
+#define forget(thing)  /*_Thing_forget ((Thing *) & (thing))*/
 /*
 	Function:
 		free all memory associated with 'thing'.
