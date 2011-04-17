@@ -7,6 +7,54 @@ AC_PROG_CXX
 AC_PROG_CC
 
 # Checks for libraries.
+PKG_CHECK_MODULES([GTK], [gtk+-2.0])
+PKG_CHECK_MODULES([FLAC], [flac])
+PKG_CHECK_MODULES([MAD], [mad])
+PKG_CHECK_MODULES([PA], [portaudio-2.0])
+PKG_CHECK_MODULES([GSL], [gsl])
+# fix collision between FLAC and system header files by requiring the former to be qualified with a FLAC/ prefix when #include'd
+FLAC_CFLAGS=`echo $FLAC_CFLAGS | sed "s/\/FLAC$//"` # FIXME use $SED
+
+AC_ARG_WITH(glpk-include,
+            AC_HELP_STRING([--with-glpk-include=PATH],
+                           [location of glpk headers [[/usr/local/include]]]
+                          ),
+            [GLPK_INCLUDE=$withval],
+            [GLPK_INCLUDE="/usr/local/include"])
+
+AC_ARG_WITH(glpk-lib, 
+            AC_HELP_STRING([--with-glpk-lib=PATH],
+                           [location of glpk library [[/usr/local/lib]]]
+                          ),
+            [GLPK_LIB=$withval],
+            [GLPK_LIB="/usr/local/lib"])
+
+GLPK_CFLAGS="-I${GLPK_INCLUDE}"
+GLPK_LIBS="-L${GLPK_LIB} -lglpk"
+AC_SUBST(GLPK_LIBS)
+
+AC_CHECK_HEADER([${GLPK_INCLUDE}/glpk.h],, 
+    AC_MSG_ERROR([Could not find glpk.h in ${GLPK_INCLUDE}: 
+      use --with-glpk-include or GLPK_INCLUDE to specify the include path.]))
+
+LDFLAGS="$LDFLAGS $GLPK_LIBS"
+AC_CHECK_LIB([glpk], [glp_create_prob], ,
+    AC_MSG_ERROR([Could not link to glpk in ${GLPK_LIB}: 
+      use --with-glpk-lib or GLPK_LIB to specify the lib path.]))
+
+AC_CHECK_FUNC([glp_print_ranges], ,
+    AC_MSG_ERROR([GLPK version must be >= 4.42.]))
+
+AC_ARG_ENABLE([debug],
+[  --enable-debug    Turn on debugging],
+[case "${enableval}" in
+  yes) DEBUG="-g" ;;
+  no)  DEBUG="" ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+esac],[debug=false])
+
+COMMON="-DUNIX -Dlinux $DEBUG $GTK_CFLAGS $FLAC_CFLAGS $MAD_CFLAGS $PA_CFLAGS $GSL_CFLAGS $GLPK_CFLAGS -m64 -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O"
+AC_SUBST([COMMON])
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -46,47 +94,6 @@ AC_CHECK_FUNCS([alarm bzero clock_gettime fesetround floor getcwd gethostbyname 
 
 AC_PROG_RANLIB
 #AC_PROG_SED # FIXME use this when upgraded to 2.60
-
-PKG_CHECK_MODULES([GTK], [gtk+-2.0])
-PKG_CHECK_MODULES([FLAC], [flac])
-PKG_CHECK_MODULES([MAD], [mad])
-PKG_CHECK_MODULES([PA], [portaudio-2.0])
-PKG_CHECK_MODULES([GSL], [gsl])
-# fix collision between FLAC and system header files by requiring the former to be qualified with a FLAC/ prefix when #include'd
-FLAC_CFLAGS=`echo $FLAC_CFLAGS | sed "s/\/FLAC$//"` # FIXME use $SED
-
-AC_ARG_WITH(glpk-include,
-            AC_HELP_STRING([--with-glpk-include=PATH],
-                           [location of glpk headers [[/usr/local/include]]]
-                          ),
-            [GLPK_INCLUDE=$withval],
-            [GLPK_INCLUDE="/usr/local/include"])
-
-AC_ARG_WITH(glpk-lib, 
-            AC_HELP_STRING([--with-glpk-lib=PATH],
-                           [location of glpk library [[/usr/local/lib]]]
-                          ),
-            [GLPK_LIB=$withval],
-            [GLPK_LIB="/usr/local/lib"])
-
-GLPK_CFLAGS="-I${GLPK_INCLUDE}"
-GLPK_LIBS="-L${GLPK_LIB} -lglpk"
-AC_SUBST(GLPK_LIBS)
-
-AC_CHECK_HEADER([${GLPK_INCLUDE}/glpk.h],, 
-    AC_MSG_ERROR([Could not find glpk.h in ${GLPK_INCLUDE}: 
-      use --with-glpk-include or GLPK_INCLUDE to specify the include path.]))
-
-LDFLAGS="$LDFLAGS $GLPK_LIBS"
-AC_CHECK_LIB([glpk], [glp_create_prob], ,
-    AC_MSG_ERROR([Could not link to glpk in ${GLPK_LIB}: 
-      use --with-glpk-lib or GLPK_LIB to specify the lib path.]))
-
-AC_CHECK_FUNC([glp_print_ranges], ,
-    AC_MSG_ERROR([GLPK version must be >= 4.42.]))
-
-COMMON="-DUNIX -Dlinux $GTK_CFLAGS $FLAC_CFLAGS $MAD_CFLAGS $PA_CFLAGS $GSL_CFLAGS $GLPK_CFLAGS -m64 -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -O"
-AC_SUBST([COMMON])
 
 AC_CONFIG_FILES([Makefile
                   src/Makefile
