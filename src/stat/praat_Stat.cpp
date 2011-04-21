@@ -385,8 +385,8 @@ DIRECT (Table_edit)
 	if (theCurrentPraatApplication -> batch) Melder_throw ("Cannot edit a Table from batch.");
 	WHERE (SELECTED) {
 		iam_LOOP (Table);
-		autoTableEditor editor = TableEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, me);
-		praat_installEditor (editor.transfer(), IOBJECT); therror
+		TableEditor *editor = new TableEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, me);
+		praat_installEditor (editor, IOBJECT); therror
 	}
 END
 

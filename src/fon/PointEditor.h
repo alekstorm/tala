@@ -26,28 +26,22 @@
 #include "TimeSoundEditor.h"
 #include "PointProcess.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class PointEditor : public TimeSoundEditor {
+  public:
+	// 'sound' may be NULL.
+	PointEditor (GuiObject parent, const wchar_t *title, PointProcess point, Sound sound);
+	~PointEditor ();
 
-#define PointEditor__parents(Klas) TimeSoundEditor__parents(Klas) Thing_inherit (Klas, TimeSoundEditor)
-Thing_declare1 (PointEditor);
+	const wchar_t * type () { return L"PointEditor"; }
 
-#define PointEditor__members(Klas) TimeSoundEditor__members(Klas) \
-	Sound monoSound; \
-	GuiObject addPointAtDialog;
-#define PointEditor__methods(Klas) TimeSoundEditor__methods(Klas)
-Thing_declare2 (PointEditor, TimeSoundEditor);
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+	void draw ();
+	void play (double tmin, double tmax);
 
-PointEditor PointEditor_create (GuiObject parent, const wchar_t *title,
-	PointProcess point, Sound sound);
-/*
-	'sound' may be NULL.
-*/
-
-#ifdef __cplusplus
-	}
-#endif
+	Sound _monoSound;
+	GuiObject _addPointAtDialog;
+};
 
 /* End of file PointEditor.h */
 #endif

@@ -26,18 +26,30 @@
 #include "sys/Editor.h"
 #include "Table.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+#define MAXNUM_VISIBLE_COLUMNS  100
+#define SIZE_INCHES  40
 
-#define TableEditor__parents(Klas) Editor__parents(Klas) Thing_inherit (TableEditor, Editor)
-Thing_declare1 (TableEditor);
+class TableEditor : public Editor {
+  public:
+	TableEditor (GuiObject parent, const wchar_t *title, Table table);
+	~TableEditor ();
 
-TableEditor TableEditor_create (GuiObject parent, const wchar_t *title, Table table);
+	wchar_t * type () { return L"TableEditor"; }
 
-#ifdef __cplusplus
-	}
-#endif
+	void draw ();
+	int click (double xWC, double yWC, int shiftKeyPressed);
+	void updateVerticalScrollBar ();
+	void updateHorizontalScrollBar ();
+	void dataChanged ();
+	void createChildren ();
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+
+	long _topRow, _leftColumn, _selectedRow, _selectedColumn;
+	GuiObject _text, _drawingArea, _horizontalScrollBar, _verticalScrollBar;
+	double _columnLeft [MAXNUM_VISIBLE_COLUMNS], _columnRight [MAXNUM_VISIBLE_COLUMNS];
+	Graphics _graphics;
+};
 
 /* End of file TableEditor.h */
 #endif

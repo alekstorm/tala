@@ -32,154 +32,110 @@
 #include "praatP.h"
 #include "kar/UnicodeData.h"
 
-#define DemoEditor__members(Klas) Editor__members(Klas) \
-	GuiObject drawingArea; \
-	Graphics graphics; \
-	void *praatPicture; \
-	bool clicked, keyPressed, shiftKeyPressed, commandKeyPressed, optionKeyPressed, extraControlKeyPressed; \
-	long x, y; \
-	wchar_t key; \
-	bool waitingForInput, userWantsToClose, fullScreen;
-#define DemoEditor__methods(Klas) Editor__methods(Klas)
-Thing_declare2 (DemoEditor, Editor);
-
-static DemoEditor theDemoEditor;
+DemoEditor *DemoEditor::theDemoEditor = NULL;
 
 /***** DemoEditor methods *****/
 
-static void destroy (I) {
-	iam (DemoEditor);
-	Melder_free (my praatPicture);
-	forget (my graphics);
-	theDemoEditor = NULL;
-	inherited (DemoEditor) destroy (me);
+static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
+	DemoEditor *demoEditor = (DemoEditor *)void_me;
+	if (demoEditor->_graphics == NULL) return;   // Could be the case in the very beginning.
+	Dimension marginWidth = 0, marginHeight = 0;
+	Graphics_setWsViewport (demoEditor->_graphics, marginWidth, event -> width - marginWidth, marginHeight, event -> height - marginHeight);
+	Graphics_setWsWindow (demoEditor->_graphics, 0, 100, 0, 100);
+	Graphics_setViewport (demoEditor->_graphics, 0, 100, 0, 100);
+	Graphics_updateWs (demoEditor->_graphics);
 }
 
-static void info (I) {
-	iam (DemoEditor);
-	inherited (DemoEditor) info (me);
-	MelderInfo_writeLine2 (L"Colour: ", Graphics_Colour_name (((PraatPicture) my praatPicture) -> colour));
-	MelderInfo_writeLine2 (L"Font: ", kGraphics_font_getText (((PraatPicture) my praatPicture) -> font));
-	MelderInfo_writeLine2 (L"Font size: ", Melder_integer (((PraatPicture) my praatPicture) -> fontSize));
+DemoEditor::DemoEditor (GuiObject parent)
+	: Editor (parent, 0, 0, 1024, 768, L"", NULL) {
+	_graphics = Graphics_create_xmdrawingarea (_drawingArea);
+	Graphics_setColour (_graphics, Graphics_WHITE);
+	Graphics_setWindow (_graphics, 0, 1, 0, 1);
+	Graphics_fillRectangle (_graphics, 0, 1, 0, 1);
+	Graphics_setColour (_graphics, Graphics_BLACK);
+	Graphics_startRecording (_graphics);
+	//Graphics_setViewport (_graphics, 0, 100, 0, 100);
+	//Graphics_setWindow (_graphics, 0, 100, 0, 100);
+	//Graphics_line (_graphics, 0, 100, 100, 0);
+
+	struct structGuiDrawingAreaResizeEvent event = { _drawingArea, 0 };
+	event. width = GuiObject_getWidth (_drawingArea);
+	event. height = GuiObject_getHeight (_drawingArea);
+	gui_drawingarea_cb_resize (this, & event);
 }
 
-static void goAway (DemoEditor me) {
-	if (my waitingForInput) {
-		my userWantsToClose = true;
-	} else {
-		forget (me);
-	}
+DemoEditor::~DemoEditor () {
+	Melder_free (_praatPicture);
+	forget (_graphics);
 }
 
-static void createMenus (DemoEditor me) {
-	inherited (DemoEditor) createMenus (DemoEditor_as_Editor (me));
+void DemoEditor::info () {
+	Editor::info ();
+	MelderInfo_writeLine2 (L"Colour: ", Graphics_Colour_name (((PraatPicture) _praatPicture) -> colour));
+	MelderInfo_writeLine2 (L"Font: ", kGraphics_font_getText (((PraatPicture) _praatPicture) -> font));
+	MelderInfo_writeLine2 (L"Font size: ", Melder_integer (((PraatPicture) _praatPicture) -> fontSize));
+}
+
+void DemoEditor::goAway () {
+	if (_waitingForInput)
+		_userWantsToClose = true;
+	// FIXME
 }
 
 static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
-	iam (DemoEditor);
+	DemoEditor *demoEditor = (DemoEditor *)void_me;
 	(void) event;
-	if (my graphics == NULL) return;   // Could be the case in the very beginning.
+	if (demoEditor->_graphics == NULL) return;   // Could be the case in the very beginning.
 	/*
 	 * Erase the background. Don't record this erasure!
 	 */
-	Graphics_stopRecording (my graphics);   // the only place in Praat (the Picture window has a separate Graphics for erasing)?
-	Graphics_setColour (my graphics, Graphics_WHITE);
-	Graphics_setWindow (my graphics, 0, 1, 0, 1);
-	Graphics_fillRectangle (my graphics, 0, 1, 0, 1);
-	Graphics_setColour (my graphics, Graphics_BLACK);
-	Graphics_startRecording (my graphics);
-	Graphics_play (my graphics, my graphics);
+	Graphics_stopRecording (demoEditor->_graphics);   // the only place in Praat (the Picture window has a separate Graphics for erasing)?
+	Graphics_setColour (demoEditor->_graphics, Graphics_WHITE);
+	Graphics_setWindow (demoEditor->_graphics, 0, 1, 0, 1);
+	Graphics_fillRectangle (demoEditor->_graphics, 0, 1, 0, 1);
+	Graphics_setColour (demoEditor->_graphics, Graphics_BLACK);
+	Graphics_startRecording (demoEditor->_graphics);
+	Graphics_play (demoEditor->_graphics, demoEditor->_graphics);
 }
 
 static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
-	iam (DemoEditor);
-	if (my graphics == NULL) return;   // Could be the case in the very beginning.
-if (gtk && event -> type != BUTTON_PRESS) return;
-	my clicked = true;
-	my keyPressed = false;
-	my x = event -> x;
-	my y = event -> y;
-	my key = UNICODE_BULLET;
-	my shiftKeyPressed = event -> shiftKeyPressed;
-	my commandKeyPressed = event -> commandKeyPressed;
-	my optionKeyPressed = event -> optionKeyPressed;
-	my extraControlKeyPressed = event -> extraControlKeyPressed;
+	DemoEditor *demoEditor = (DemoEditor *)void_me;
+	if (demoEditor->_graphics == NULL) return;   // Could be the case in the very beginning.
+	if (gtk && event -> type != BUTTON_PRESS) return;
+	demoEditor->_clicked = true;
+	demoEditor->_keyPressed = false;
+	demoEditor->_x = event -> x;
+	demoEditor->_y = event -> y;
+	demoEditor->_key = UNICODE_BULLET;
+	demoEditor->_shiftKeyPressed = event -> shiftKeyPressed;
+	demoEditor->_commandKeyPressed = event -> commandKeyPressed;
+	demoEditor->_optionKeyPressed = event -> optionKeyPressed;
+	demoEditor->_extraControlKeyPressed = event -> extraControlKeyPressed;
 }
 
 static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {
-	iam (DemoEditor);
-	if (my graphics == NULL) return;   // Could be the case in the very beginning.
-	my clicked = false;
-	my keyPressed = true;
-	my x = 0;
-	my y = 0;
-	my key = event -> key;
-	my shiftKeyPressed = event -> shiftKeyPressed;
-	my commandKeyPressed = event -> commandKeyPressed;
-	my optionKeyPressed = event -> optionKeyPressed;
-	my extraControlKeyPressed = event -> extraControlKeyPressed;
+	DemoEditor *demoEditor = (DemoEditor *)void_me;
+	if (demoEditor->_graphics == NULL) return;   // Could be the case in the very beginning.
+	demoEditor->_clicked = false;
+	demoEditor->_keyPressed = true;
+	demoEditor->_x = 0;
+	demoEditor->_y = 0;
+	demoEditor->_key = event -> key;
+	demoEditor->_shiftKeyPressed = event -> shiftKeyPressed;
+	demoEditor->_commandKeyPressed = event -> commandKeyPressed;
+	demoEditor->_optionKeyPressed = event -> optionKeyPressed;
+	demoEditor->_extraControlKeyPressed = event -> extraControlKeyPressed;
 }
 
-static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
-	iam (DemoEditor);
-	if (my graphics == NULL) return;   // Could be the case in the very beginning.
-	Dimension marginWidth = 0, marginHeight = 0;
-	Graphics_setWsViewport (my graphics, marginWidth, event -> width - marginWidth, marginHeight, event -> height - marginHeight);
-	Graphics_setWsWindow (my graphics, 0, 100, 0, 100);
-	Graphics_setViewport (my graphics, 0, 100, 0, 100);
-	Graphics_updateWs (my graphics);
-}
-
-static void createChildren (DemoEditor me) {
-	my drawingArea = GuiDrawingArea_createShown (my dialog, 0, 0, 0, 0,
-		gui_drawingarea_cb_expose, gui_drawingarea_cb_click, gui_drawingarea_cb_key, gui_drawingarea_cb_resize, me, 0);
+void DemoEditor::createChildren () {
+	_drawingArea = GuiDrawingArea_createShown (_dialog, 0, 0, 0, 0,
+		gui_drawingarea_cb_expose, gui_drawingarea_cb_click, gui_drawingarea_cb_key, gui_drawingarea_cb_resize, this, 0);
 	#if gtk
-		gtk_widget_set_double_buffered (my drawingArea, FALSE);
+		gtk_widget_set_double_buffered (_drawingArea, FALSE);
 	#endif
 }
 
-class_methods (DemoEditor, Editor) {
-	class_method (destroy)
-	class_method (info)
-	class_method (goAway)
-	class_method (createChildren)
-	class_method (createMenus)
-	us -> hasMenuBar = false;
-	us -> canFullScreen = true;
-	us -> scriptable = false;
-	class_methods_end
-}
-
-int DemoEditor_init (DemoEditor me, GuiObject parent) {
-	Editor_init (DemoEditor_as_parent (me), parent, 0, 0, 1024, 768, L"", NULL); cherror
-	{
-		my graphics = Graphics_create_xmdrawingarea (my drawingArea);
-		Graphics_setColour (my graphics, Graphics_WHITE);
-		Graphics_setWindow (my graphics, 0, 1, 0, 1);
-		Graphics_fillRectangle (my graphics, 0, 1, 0, 1);
-		Graphics_setColour (my graphics, Graphics_BLACK);
-		Graphics_startRecording (my graphics);
-		//Graphics_setViewport (my graphics, 0, 100, 0, 100);
-		//Graphics_setWindow (my graphics, 0, 100, 0, 100);
-		//Graphics_line (my graphics, 0, 100, 100, 0);
-
-		struct structGuiDrawingAreaResizeEvent event = { my drawingArea, 0 };
-		event. width = GuiObject_getWidth (my drawingArea);
-		event. height = GuiObject_getHeight (my drawingArea);
-		gui_drawingarea_cb_resize (me, & event);
-	}
-end:
-	iferror return 0;
-	return 1;
-}
-
-DemoEditor DemoEditor_create (GuiObject parent) {
-	DemoEditor me = Thing_new (DemoEditor);
-	if (! me || ! DemoEditor_init (me, parent)) { forget (me); return NULL; }
-	return me;
-}
-
-int Demo_open (void) {
+int DemoEditor::open (void) {
 	#ifndef CONSOLE_APPLICATION
 		if (Melder_batch) {
 			/*
@@ -188,12 +144,12 @@ int Demo_open (void) {
 			//Melder_batch = 0;
 		}
 		if (theDemoEditor == NULL) {
-			theDemoEditor = DemoEditor_create ((GtkWidget*)Melder_topShell);
+			theDemoEditor = new DemoEditor ((GtkWidget*)Melder_topShell);
 			Melder_assert (theDemoEditor != NULL);
 			//GuiObject_show (theDemoEditor -> dialog);
-			theDemoEditor -> praatPicture = Melder_calloc_f (structPraatPicture, 1);
-			theCurrentPraatPicture = (structPraatPicture*)theDemoEditor -> praatPicture;
-			theCurrentPraatPicture -> graphics = theDemoEditor -> graphics;
+			theDemoEditor -> _praatPicture = Melder_calloc_f (structPraatPicture, 1);
+			theCurrentPraatPicture = (structPraatPicture*)theDemoEditor -> _praatPicture;
+			theCurrentPraatPicture -> graphics = theDemoEditor -> _graphics;
 			theCurrentPraatPicture -> font = kGraphics_font_HELVETICA;
 			theCurrentPraatPicture -> fontSize = 10;
 			theCurrentPraatPicture -> lineType = Graphics_DRAWN;
@@ -205,45 +161,39 @@ int Demo_open (void) {
 			theCurrentPraatPicture -> y1NDC = 0;
 			theCurrentPraatPicture -> y2NDC = 100;
 		}
-		if (theDemoEditor -> waitingForInput)
+		if (theDemoEditor -> _waitingForInput)
 			return Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 				"Please click or type into the Demo window or close it.");
-		theCurrentPraatPicture = (structPraatPicture*)theDemoEditor -> praatPicture;
+		theCurrentPraatPicture = (structPraatPicture*)theDemoEditor -> _praatPicture;
 	#endif
 	return 1;
 }
 
-void Demo_close (void) {
+void DemoEditor::close (void) {
 	theCurrentPraatPicture = & theForegroundPraatPicture;
 }
 
-int Demo_windowTitle (const wchar_t *title) {
-	if (! Demo_open ()) return 0;
-	Thing_setName (theDemoEditor, title);
-	Demo_close ();
+int DemoEditor::windowTitle (const wchar_t *title) {
+	_name = Melder_wcsdup_f (title);
 	return 1;
 }
 
-int Demo_show (void) {
-	if (theDemoEditor == NULL) return 0;
-	if (! Demo_open ()) return 0;
-	GuiObject_show (theDemoEditor -> dialog);
-	GuiWindow_drain (theDemoEditor -> shell);
-	Demo_close ();
+int DemoEditor::show (void) {
+	GuiObject_show (_dialog);
+	GuiWindow_drain (_shell);
 	return 1;
 }
 
-bool Demo_waitForInput (Interpreter *interpreter) {
-	if (theDemoEditor == NULL) return false;
-	if (theDemoEditor -> waitingForInput) {
+bool DemoEditor::waitForInput (Interpreter *interpreter) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return false;
 	}
-	//GuiObject_show (theDemoEditor -> dialog);
-	theDemoEditor -> clicked = false;
-	theDemoEditor -> keyPressed = false;
-	theDemoEditor -> waitingForInput = true;
+	//GuiObject_show (_dialog);
+	_clicked = false;
+	_keyPressed = false;
+	_waitingForInput = true;
 	#if ! defined (CONSOLE_APPLICATION)
 		int wasBackgrounding = Melder_backgrounding;
 		structMelderDir dir = { { 0 } };
@@ -252,19 +202,19 @@ bool Demo_waitForInput (Interpreter *interpreter) {
 		#if gtk
 			do {
 				gtk_main_iteration ();
-			} while (! theDemoEditor -> clicked && ! theDemoEditor -> keyPressed && ! theDemoEditor -> userWantsToClose);
+			} while (! _clicked && ! _keyPressed && ! _userWantsToClose);
 		#else
 			do {
 				XEvent event;
 				XtAppNextEvent (Melder_appContext, & event);
 				XtDispatchEvent (& event);
-			} while (! theDemoEditor -> clicked && ! theDemoEditor -> keyPressed && ! theDemoEditor -> userWantsToClose);
+			} while (! _clicked && ! _keyPressed && ! _userWantsToClose);
 		#endif
 		if (wasBackgrounding) praat_background ();
 		Melder_setDefaultDir (& dir);
 	#endif
-	theDemoEditor -> waitingForInput = false;
-	if (theDemoEditor -> userWantsToClose) {
+	_waitingForInput = false;
+	if (_userWantsToClose) {
 		interpreter->stop ();
 		Melder_error1 (L"You interrupted the script.");
 		forget (theDemoEditor);
@@ -273,122 +223,112 @@ bool Demo_waitForInput (Interpreter *interpreter) {
 	return true;
 }
 
-bool Demo_clicked (void) {
-	if (theDemoEditor == NULL) return false;
-	if (theDemoEditor -> waitingForInput) {
+bool DemoEditor::clicked (void) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return false;
 	}
-	return theDemoEditor -> clicked;
+	return _clicked;
 }
 
-double Demo_x (void) {
-	if (theDemoEditor == NULL) return NUMundefined;
-	if (theDemoEditor -> waitingForInput) {
+double DemoEditor::x (void) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return NUMundefined;
 	}
-	Graphics_setInner (theDemoEditor -> graphics);
+	Graphics_setInner (_graphics);
 	double xWC, yWC;
-	Graphics_DCtoWC (theDemoEditor -> graphics, theDemoEditor -> x, theDemoEditor -> y, & xWC, & yWC);
-	Graphics_unsetInner (theDemoEditor -> graphics);
+	Graphics_DCtoWC (_graphics, _x, _y, & xWC, & yWC);
+	Graphics_unsetInner (_graphics);
 	return xWC;
 }
 
-double Demo_y (void) {
-	if (theDemoEditor == NULL) return NUMundefined;
-	if (theDemoEditor -> waitingForInput) {
+double DemoEditor::y (void) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return NUMundefined;
 	}
-	Graphics_setInner (theDemoEditor -> graphics);
+	Graphics_setInner (_graphics);
 	double xWC, yWC;
-	Graphics_DCtoWC (theDemoEditor -> graphics, theDemoEditor -> x, theDemoEditor -> y, & xWC, & yWC);
-	Graphics_unsetInner (theDemoEditor -> graphics);
+	Graphics_DCtoWC (_graphics, _x, _y, & xWC, & yWC);
+	Graphics_unsetInner (_graphics);
 	return yWC;
 }
 
-bool Demo_keyPressed (void) {
-	if (theDemoEditor == NULL) return false;
-	if (theDemoEditor -> waitingForInput) {
+bool DemoEditor::keyPressed (void) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return false;
 	}
-	return theDemoEditor -> keyPressed;
+	return _keyPressed;
 }
 
-wchar_t Demo_key (void) {
-	if (theDemoEditor == NULL) return 0;
-	if (theDemoEditor -> waitingForInput) {
+wchar_t DemoEditor::key (void) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return 0;
 	}
-	return theDemoEditor -> key;
+	return _key;
 }
 
-bool Demo_shiftKeyPressed (void) {
-	if (theDemoEditor == NULL) return false;
-	if (theDemoEditor -> waitingForInput) {
+bool DemoEditor::shiftKeyPressed (void) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return false;
 	}
-	return theDemoEditor -> shiftKeyPressed;
+	return _shiftKeyPressed;
 }
 
-bool Demo_commandKeyPressed (void) {
-	if (theDemoEditor == NULL) return false;
-	if (theDemoEditor -> waitingForInput) {
+bool DemoEditor::commandKeyPressed (void) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return false;
 	}
-	return theDemoEditor -> commandKeyPressed;
+	return _commandKeyPressed;
 }
 
-bool Demo_optionKeyPressed (void) {
-	if (theDemoEditor == NULL) return false;
-	if (theDemoEditor -> waitingForInput) {
+bool DemoEditor::optionKeyPressed (void) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return false;
 	}
-	return theDemoEditor -> optionKeyPressed;
+	return _optionKeyPressed;
 }
 
-bool Demo_extraControlKeyPressed (void) {
-	if (theDemoEditor == NULL) return false;
-	if (theDemoEditor -> waitingForInput) {
+bool DemoEditor::extraControlKeyPressed (void) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return false;
 	}
-	return theDemoEditor -> extraControlKeyPressed;
+	return _extraControlKeyPressed;
 }
 
-bool Demo_input (const wchar_t *keys) {
-	if (theDemoEditor == NULL) return false;
-	if (theDemoEditor -> waitingForInput) {
+bool DemoEditor::input (const wchar_t *keys) {
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return false;
 	}
-	return wcschr (keys, theDemoEditor -> key) != NULL;
+	return wcschr (keys, _key) != NULL;
 }
 
-bool Demo_clickedIn (double left, double right, double bottom, double top) {
-	if (theDemoEditor == NULL || ! theDemoEditor -> clicked) return false;
-	if (theDemoEditor -> waitingForInput) {
+bool DemoEditor::clickedIn (double left, double right, double bottom, double top) {
+	if (! _clicked) return false;
+	if (_waitingForInput) {
 		Melder_error1 (L"You cannot work with the Demo window while it is waiting for input. "
 			"Please click or type into the Demo window or close it.");
 		return false;
 	}
-	double xWC = Demo_x (), yWC = Demo_y ();
+	double xWC = x (), yWC = y ();
 	return xWC >= left && xWC < right && yWC >= bottom && yWC < top;
 }
 

@@ -27,38 +27,49 @@
 	#include "Editor.h"
 #endif
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class DemoEditor : public Editor {
+  public:
+	static int open (void);
+	static void close (void);
 
-#define DemoEditor__parents(Klas) Editor__parents(Klas) Thing_inherit (Klas, Editor)
-Thing_declare1 (DemoEditor);
+	static DemoEditor *theDemoEditor;
 
-int DemoEditor_init (DemoEditor me, GuiObject parent);
-DemoEditor DemoEditor_create (GuiObject parent);
+	DemoEditor (GuiObject parent);
+	~DemoEditor ();
 
-int Demo_open (void);
-void Demo_close (void);
+	wchar_t * type () { return L"DemoEditor"; }
+	bool hasMenuBar () { return false; }
+	bool canFullScreen () { return true; }
+	bool isScriptable () { return false; }
 
-int Demo_windowTitle (const wchar_t *title);
-int Demo_show (void);
-bool Demo_waitForInput (Interpreter *interpreter);
-bool Demo_clicked (void);
-double Demo_x (void);
-double Demo_y (void);
-bool Demo_keyPressed (void);
-wchar_t Demo_key (void);
-bool Demo_shiftKeyPressed (void);
-bool Demo_commandKeyPressed (void);
-bool Demo_optionKeyPressed (void);
-bool Demo_extraControlKeyPressed (void);
-/* Shortcuts: */
-bool Demo_input (const wchar_t *keys);
-bool Demo_clickedIn (double left, double right, double bottom, double top);
+	int windowTitle (const wchar_t *title);
+	int show (void);
+	bool waitForInput (Interpreter *interpreter);
+	bool clicked (void);
+	double x (void);
+	double y (void);
+	bool keyPressed (void);
+	wchar_t key (void);
+	bool shiftKeyPressed (void);
+	bool commandKeyPressed (void);
+	bool optionKeyPressed (void);
+	bool extraControlKeyPressed (void);
+	void info ();
+	void goAway ();
+	void createChildren ();
 
-#ifdef __cplusplus
-	}
-#endif
+	/* Shortcuts: */
+	bool input (const wchar_t *keys);
+	bool clickedIn (double left, double right, double bottom, double top);
+
+	GuiObject _drawingArea;
+	Graphics _graphics;
+	void *_praatPicture;
+	bool _clicked, _keyPressed, _shiftKeyPressed, _commandKeyPressed, _optionKeyPressed, _extraControlKeyPressed;
+	long _x, _y;
+	wchar_t _key;
+	bool _waitingForInput, _userWantsToClose, _fullScreen;
+};
 
 /* End of file DemoEditor.h */
 #endif

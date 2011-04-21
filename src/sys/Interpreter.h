@@ -52,7 +52,7 @@ class UiForm;
 
 class Interpreter { // : protected Thing
   public:
-	Interpreter (wchar_t *environmentName, Any editorClass);
+	Interpreter (wchar_t *environmentName);
 	~Interpreter();
 
 	int readParameters (wchar_t *text);
@@ -75,7 +75,6 @@ class Interpreter { // : protected Thing
 	InterpreterVariable* lookUpVariable (const wchar_t *key);
 
 	wchar_t *_environmentName;
-	Any _editorClass;
 	int _numberOfParameters, _numberOfLabels, _callDepth;
 	wchar_t _parameters [1+Interpreter_MAXNUM_PARAMETERS] [100];
 	unsigned char _types [1+Interpreter_MAXNUM_PARAMETERS];

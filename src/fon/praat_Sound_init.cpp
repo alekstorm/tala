@@ -156,7 +156,7 @@ DIRECT (LongSound_view)
 		return Melder_error1 (L"Cannot view a LongSound from batch.");
 	else
 		WHERE (SELECTED)
-			if (! praat_installEditor (SoundEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT))
+			if (! praat_installEditor (new SoundEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT))
 				return 0;
 END
 
@@ -610,7 +610,7 @@ DO_ALTERNATIVE (old_Sound_draw)
 		GET_REAL (L"left Vertical range"), GET_REAL (L"right Vertical range"), GET_INTEGER (L"Garnish"), GET_STRING (L"Drawing method")))
 END
 
-static void cb_SoundEditor_publish (Any editor, void *closure, Any publish) {
+static void cb_SoundEditor_publish (Editor *editor, void *closure, Any publish) {
 	(void) editor;
 	(void) closure;
 	if (! praat_new1 (publish, NULL)) { Melder_flushError (NULL); return; }
@@ -618,7 +618,7 @@ static void cb_SoundEditor_publish (Any editor, void *closure, Any publish) {
 	if (Thing_member (publish, classSpectrum)) {
 		int IOBJECT;
 		WHERE (SELECTED) {
-			SpectrumEditor editor2 = SpectrumEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT);
+			SpectrumEditor *editor2 = new SpectrumEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT);
 			if (! editor2) return;
 			if (! praat_installEditor (editor2, IOBJECT)) Melder_flushError (NULL);
 		}
@@ -629,10 +629,10 @@ DIRECT (Sound_edit)
 		return Melder_error1 (L"Cannot edit a Sound from batch.");
 	} else {
 		WHERE (SELECTED) {
-			SoundEditor editor = SoundEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT);
+			SoundEditor *editor = new SoundEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT);
 			if (! editor) return 0;
 			if (! praat_installEditor (editor, IOBJECT)) return 0;
-			Editor_setPublishCallback (SoundEditor_as_Editor (editor), cb_SoundEditor_publish, NULL);
+			editor->setPublishCallback (cb_SoundEditor_publish, NULL);
 		}
 	}
 END
@@ -1154,14 +1154,14 @@ FORM_READ (Sound_readFromRawAlawFile, L"Read Sound from raw Alaw file", 0, true)
 	if (! praat_new1 (Sound_readFromRawAlawFile (file), MelderFile_name (file))) return 0;
 END
 
-static SoundRecorder soundRecorder;   /* Only one at a time. */
-static void cb_SoundRecorder_destroy (Any editor, void *closure) {
+static SoundRecorder *soundRecorder;   /* Only one at a time. */
+static void cb_SoundRecorder_destroy (Editor *editor, void *closure) {
 	(void) editor;
 	(void) closure;
 	soundRecorder = NULL;
 }
 static int previousNumberOfChannels;
-static void cb_SoundRecorder_publish (Any editor, void *closure, Any publish) {
+static void cb_SoundRecorder_publish (Editor *editor, void *closure, Any publish) {
 	(void) editor;
 	(void) closure;
 	if (! praat_new1 (publish, NULL)) Melder_flushError (NULL);
@@ -1171,20 +1171,20 @@ DIRECT (Sound_record_mono)
 	if (theCurrentPraatApplication -> batch) return Melder_error1 (L"Cannot record a Sound from batch.");
 	if (soundRecorder) {
 		if (previousNumberOfChannels == 1) {
-			Editor_raise (SoundRecorder_as_Editor (soundRecorder));
+			soundRecorder->raise ();
 		} else {
 			forget (soundRecorder);
 		}
 	}
 	if (! soundRecorder) {
-		soundRecorder = SoundRecorder_create (theCurrentPraatApplication -> topShell, 1, theCurrentPraatApplication -> context);
+		soundRecorder = new SoundRecorder (theCurrentPraatApplication -> topShell, 1, theCurrentPraatApplication -> context);
 		if (soundRecorder == NULL) return 0;
-		Editor_setDestroyCallback (SoundRecorder_as_Editor (soundRecorder), cb_SoundRecorder_destroy, NULL);
-		Editor_setPublishCallback (SoundRecorder_as_Editor (soundRecorder), cb_SoundRecorder_publish, NULL);
+		soundRecorder->setDestroyCallback (cb_SoundRecorder_destroy, NULL);
+		soundRecorder->setPublishCallback (cb_SoundRecorder_publish, NULL);
 	}
 	previousNumberOfChannels = 1;
 END
-static void cb_SoundRecorder_publish2 (Any editor, Any closure, Any publish1, Any publish2) {
+static void cb_SoundRecorder_publish2 (Editor *editor, Any closure, Any publish1, Any publish2) {
 	(void) editor;
 	(void) closure;
 	if (! praat_new1 (publish1, L"left") || ! praat_new1 (publish2, L"right")) Melder_flushError (NULL);
@@ -1194,17 +1194,17 @@ DIRECT (Sound_record_stereo)
 	if (theCurrentPraatApplication -> batch) return Melder_error1 (L"Cannot record a Sound from batch.");
 	if (soundRecorder) {
 		if (previousNumberOfChannels == 2) {
-			Editor_raise (SoundRecorder_as_Editor (soundRecorder));
+			soundRecorder->raise ();
 		} else {
 			forget (soundRecorder);
 		}
 	}
 	if (! soundRecorder) {
-		soundRecorder = SoundRecorder_create (theCurrentPraatApplication -> topShell, 2, theCurrentPraatApplication -> context);
+		soundRecorder = new SoundRecorder (theCurrentPraatApplication -> topShell, 2, theCurrentPraatApplication -> context);
 		if (soundRecorder == NULL) return 0;
-		Editor_setDestroyCallback (SoundRecorder_as_Editor (soundRecorder), cb_SoundRecorder_destroy, NULL);
-		Editor_setPublishCallback (SoundRecorder_as_Editor (soundRecorder), cb_SoundRecorder_publish, NULL);
-		Editor_setPublish2Callback (SoundRecorder_as_Editor (soundRecorder), cb_SoundRecorder_publish2, NULL);
+		soundRecorder->setDestroyCallback (cb_SoundRecorder_destroy, NULL);
+		soundRecorder->setPublishCallback (cb_SoundRecorder_publish, NULL);
+		soundRecorder->setPublish2Callback (cb_SoundRecorder_publish2, NULL);
 	}
 	previousNumberOfChannels = 2;
 END
@@ -1687,12 +1687,12 @@ FORM (SoundInputPrefs, L"Sound recording preferences", L"SoundRecorder")
 	NATURAL (L"Buffer size (MB)", L"20")
 	BOOLEAN (L"Input uses PortAudio", kMelderAudio_inputUsesPortAudio_DEFAULT)
 	OK
-SET_INTEGER (L"Buffer size", SoundRecorder_getBufferSizePref_MB ())
+SET_INTEGER (L"Buffer size", SoundRecorder::getBufferSizePref_MB ())
 SET_INTEGER (L"Input uses PortAudio", MelderAudio_getInputUsesPortAudio ())
 DO
 	long size = GET_INTEGER (L"Buffer size");
 	REQUIRE (size <= 1000, L"Buffer size cannot exceed 1000 megabytes.")
-	SoundRecorder_setBufferSizePref_MB (size);
+	SoundRecorder::setBufferSizePref_MB (size);
 	MelderAudio_setInputUsesPortAudio (GET_INTEGER (L"Input uses PortAudio"));
 END
 
@@ -1992,11 +1992,11 @@ void praat_uvafon_Sound_init (void) {
 	Data_recognizeFileType (kayFileRecognizer);
 	Data_recognizeFileType (bdfFileRecognizer);
 
-	SoundRecorder_prefs ();
-	FunctionEditor_prefs ();
+	SoundRecorder::prefs ();
+	FunctionEditor::prefs ();
 	LongSound_prefs ();
-	TimeSoundEditor_prefs ();
-	TimeSoundAnalysisEditor_prefs ();
+	TimeSoundEditor::prefs ();
+	TimeSoundAnalysisEditor::prefs ();
 
 	Melder_setRecordProc (recordProc);
 	Melder_setRecordFromFileProc (recordFromFileProc);

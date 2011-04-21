@@ -27,73 +27,65 @@
 
 #include "SpectrogramEditor.h"
 
-static void draw (SpectrogramEditor me) {
-	Spectrogram spectrogram = (Spectrogram) my data;
+SpectrogramEditor::SpectrogramEditor (GuiObject parent, const wchar_t *title, Any data)
+	: FunctionEditor (parent, title, data) {
+	//try { // FIXME exception
+		_maximum = 10000;
+	/*} catch (...) {
+		rethrowmzero ("Spectrogram window not created.");
+	}*/
+}
+
+void SpectrogramEditor::draw () {
+	Spectrogram spectrogram = (Spectrogram) _data;
 	long itmin, itmax;
 
-	Graphics_setWindow (my graphics, 0, 1, 0, 1);
-	Graphics_setColour (my graphics, Graphics_WHITE);
-	Graphics_fillRectangle (my graphics, 0, 1, 0, 1);
-	Graphics_setColour (my graphics, Graphics_BLACK);
-	Graphics_rectangle (my graphics, 0, 1, 0, 1);
+	Graphics_setWindow (_graphics, 0, 1, 0, 1);
+	Graphics_setColour (_graphics, Graphics_WHITE);
+	Graphics_fillRectangle (_graphics, 0, 1, 0, 1);
+	Graphics_setColour (_graphics, Graphics_BLACK);
+	Graphics_rectangle (_graphics, 0, 1, 0, 1);
 
 	Sampled_getWindowSamples (spectrogram,
-		my startWindow, my endWindow, & itmin, & itmax);
+		_startWindow, _endWindow, & itmin, & itmax);
 
 	/* Autoscale frequency axis. */
-	my maximum = spectrogram -> ymax;
+	_maximum = spectrogram -> ymax;
 
-	Graphics_setWindow (my graphics, my startWindow, my endWindow, 0, my maximum);
-	Spectrogram_paintInside (spectrogram, my graphics, my startWindow, my endWindow, 0, 0, 0.0, TRUE,
+	Graphics_setWindow (_graphics, _startWindow, _endWindow, 0, _maximum);
+	Spectrogram_paintInside (spectrogram, _graphics, _startWindow, _endWindow, 0, 0, 0.0, TRUE,
 		 60, 6.0, 0);
 
 	/* Horizontal scaling lines. */
 	{
 		long f, df = 1000;
-		Graphics_setWindow (my graphics, 0, 1, 0, my maximum);
-		Graphics_setTextAlignment (my graphics, Graphics_RIGHT, Graphics_HALF);
-		Graphics_setColour (my graphics, Graphics_RED);
-		for (f = df; f <= my maximum; f += df) {
-			Graphics_line (my graphics, 0, f, 1, f);
-			Graphics_text2 (my graphics, -0.01, f, Melder_integer (f), L" Hz");
+		Graphics_setWindow (_graphics, 0, 1, 0, _maximum);
+		Graphics_setTextAlignment (_graphics, Graphics_RIGHT, Graphics_HALF);
+		Graphics_setColour (_graphics, Graphics_RED);
+		for (f = df; f <= _maximum; f += df) {
+			Graphics_line (_graphics, 0, f, 1, f);
+			Graphics_text2 (_graphics, -0.01, f, Melder_integer (f), L" Hz");
 		}
 	}
 	/* Vertical cursor lines. */
-	Graphics_setWindow (my graphics, my startWindow, my endWindow, 0, my maximum);
-	if (my startSelection > my startWindow && my startSelection < my endWindow)
-		Graphics_line (my graphics, my startSelection, 0, my startSelection, my maximum);
-	if (my endSelection > my startWindow && my endSelection < my endWindow)
-		Graphics_line (my graphics, my endSelection, 0, my endSelection, my maximum);
-	Graphics_setColour (my graphics, Graphics_BLACK);
+	Graphics_setWindow (_graphics, _startWindow, _endWindow, 0, _maximum);
+	if (_startSelection > _startWindow && _startSelection < _endWindow)
+		Graphics_line (_graphics, _startSelection, 0, _startSelection, _maximum);
+	if (_endSelection > _startWindow && _endSelection < _endWindow)
+		Graphics_line (_graphics, _endSelection, 0, _endSelection, _maximum);
+	Graphics_setColour (_graphics, Graphics_BLACK);
 }
 
-static int click (SpectrogramEditor me, double xWC, double yWC, int shiftKeyPressed) {
-	Spectrogram spectrogram = (Spectrogram) my data;
-	/*double frequency = yWC * my maximum;*/
+int SpectrogramEditor::click (double xWC, double yWC, int shiftKeyPressed) {
+	Spectrogram spectrogram = (Spectrogram) _data;
+	/*double frequency = yWC * _maximum;*/
 	long bestFrame;
 	bestFrame = Sampled_xToNearestIndex (spectrogram, xWC);
 	if (bestFrame < 1)
 		bestFrame = 1;
 	else if (bestFrame > spectrogram -> nx)
 		bestFrame = spectrogram -> nx;
-	return inherited (SpectrogramEditor) click (SpectrogramEditor_as_parent (me), xWC, yWC, shiftKeyPressed);
-}
-
-class_methods (SpectrogramEditor, FunctionEditor) {
-	class_method (draw)
-	class_method (click)
-	class_methods_end
-}
-
-SpectrogramEditor SpectrogramEditor_create (GuiObject parent, const wchar_t *title, Any data) {
-	try {
-		autoSpectrogramEditor me = Thing_new (SpectrogramEditor);
-		FunctionEditor_init (SpectrogramEditor_as_parent (me.peek()), parent, title, data); therror
-		my maximum = 10000;
-		return me.transfer();
-	} catch (...) {
-		rethrowmzero ("Spectrogram window not created.");
-	}
+	return FunctionEditor::click (xWC, yWC, shiftKeyPressed);
 }
 
 /* End of file SpectrogramEditor.cpp */

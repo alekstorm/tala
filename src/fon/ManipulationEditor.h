@@ -25,41 +25,52 @@
 
 #include "FunctionEditor.h"
 #include "Manipulation.h"
-
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
 #include "ManipulationEditor_enums.h"
 
-#define ManipulationEditor__parents(Klas) FunctionEditor__parents(Klas) Thing_inherit (Klas, FunctionEditor)
-Thing_declare1 (ManipulationEditor);
+class ManipulationEditor : public FunctionEditor {
+  public:
+	static void prefs (void);
 
-#define ManipulationEditor__members(Klas) FunctionEditor__members(Klas) \
-	PointProcess previousPulses; \
-	PitchTier previousPitch; \
-	DurationTier previousDuration; \
-	double soundmin, soundmax; \
-	int synthesisMethod; \
-	GuiObject synthPulsesButton, synthPulsesHumButton; \
-	GuiObject synthPulsesLpcButton; \
-	GuiObject synthPitchButton, synthPitchHumButton; \
-	GuiObject synthPulsesPitchButton, synthPulsesPitchHumButton; \
-	GuiObject synthOverlapAddNodurButton, synthOverlapAddButton; \
-	GuiObject synthPitchLpcButton; \
-	struct { enum kManipulationEditor_pitchUnits units; enum kManipulationEditor_draggingStrategy draggingStrategy; double minimum, minPeriodic, maximum, cursor; } pitchTier; \
-	struct { double minimum, maximum, cursor;  } duration; \
-	Graphics_Viewport inset;
-#define ManipulationEditor__methods(Klas) FunctionEditor__methods(Klas)
-Thing_declare2 (ManipulationEditor, FunctionEditor);
+	ManipulationEditor (GuiObject parent, const wchar_t *title, Manipulation ana);
+	~ManipulationEditor ();
 
-ManipulationEditor ManipulationEditor_create (GuiObject parent, const wchar_t *title, Manipulation ana);
+	const wchar_t * type () { return L"ManipulationEditor"; }
 
-void ManipulationEditor_prefs (void);
+	void updateMenus ();
+	int getSoundArea (double *ymin, double *ymax);
+	int getPitchArea (double *ymin, double *ymax);
+	int getDurationArea (double *ymin, double *ymax);
+	void save (const wchar_t *text);
+	void save ();
+	void restore ();
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+	void drawSoundArea (double ymin, double ymax);
+	void drawPitchArea (double ymin, double ymax);
+	void drawDurationArea (double ymin, double ymax);
+	void draw ();
+	void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
+	int clickPitch (double xWC, double yWC, int shiftKeyPressed);
+	void drawDurationWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
+	int clickDuration (double xWC, double yWC, int shiftKeyPressed);
+	int click (double xWC, double yWC, int shiftKeyPressed);
+	void play (double tmin, double tmax);
 
-#ifdef __cplusplus
-	}
-#endif
+	PointProcess _previousPulses;
+	PitchTier _previousPitch;
+	DurationTier _previousDuration;
+	double _soundmin, _soundmax;
+	int _synthesisMethod;
+	GuiObject _synthPulsesButton, _synthPulsesHumButton;
+	GuiObject _synthPulsesLpcButton;
+	GuiObject _synthPitchButton, _synthPitchHumButton;
+	GuiObject _synthPulsesPitchButton, _synthPulsesPitchHumButton;
+	GuiObject _synthOverlapAddNodurButton, _synthOverlapAddButton;
+	GuiObject _synthPitchLpcButton;
+	struct { enum kManipulationEditor_pitchUnits units; enum kManipulationEditor_draggingStrategy draggingStrategy; double minimum, minPeriodic, maximum, cursor; } _pitchTier;
+	struct { double minimum, maximum, cursor;  } _duration;
+	Graphics_Viewport _inset;
+};
 
 /* End of file ManipulationEditor.h */
 #endif

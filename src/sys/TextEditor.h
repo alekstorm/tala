@@ -28,37 +28,44 @@
 #endif
 #include "UiFile.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class TextEditor : public Editor {
+  public:
+	static void prefs (void);
 
-#define TextEditor__parents(Klas) Editor__parents(Klas) Thing_inherit (Klas, Editor)
-Thing_declare1 (TextEditor);
+	TextEditor (GuiObject parent, const wchar_t *initialText);
+	~TextEditor ();
 
-#define TextEditor__members(Klas) Editor__members(Klas) \
-	structMelderFile file; \
-	GuiObject textWidget; \
-	UiInfile *openDialog; \
-	UiOutfile *saveDialog; \
-	UiForm *printDialog, *findDialog; \
-	int dirty, fontSize; \
-	GuiObject dirtyNewDialog, dirtyOpenDialog, dirtyCloseDialog; \
-	GuiObject fontSizeButton_10, fontSizeButton_12, fontSizeButton_14, fontSizeButton_18, fontSizeButton_24;
-#define TextEditor__methods(Klas) Editor__methods(Klas) \
-	bool fileBased; \
-	void (*clear) (Klas me);
-Thing_declare2 (TextEditor, Editor);
+	const wchar_t * type () { return L"TextEditor"; }
+	bool isFileBased () { return true; }
 
-int TextEditor_init (TextEditor me, GuiObject parent, const wchar_t *initialText);
-TextEditor TextEditor_create (GuiObject parent, const wchar_t *initialText);
-	/* 'initalText' may be NULL. */
-void TextEditor_showOpen (TextEditor me);
+	void showOpen ();
+	void clear ();
+	void setFontSize (int fontSize);
+	void nameChanged ();
+	int openDocument (MelderFile file);
+	void newDocument ();
+	int saveDocument (MelderFile file);
+	void closeDocument ();
+	bool getSelectedLines (long *firstLine, long *lastLine);
+	void do_find ();
+	void do_replace ();
+	void createMenuItems_query (EditorMenu *menu);
 
-void TextEditor_prefs (void);
+	structMelderFile _file;
+	GuiObject _textWidget;
+	UiInfile *_openDialog;
+	UiOutfile *_saveDialog;
+	UiForm *_printDialog, *_findDialog;
+	int _dirty, _fontSize;
+	GuiObject _dirtyNewDialog, _dirtyOpenDialog, _dirtyCloseDialog;
+	GuiObject _fontSizeButton_10, _fontSizeButton_12, _fontSizeButton_14, _fontSizeButton_18, _fontSizeButton_24;
 
-#ifdef __cplusplus
-	}
-#endif
+  protected:
+	void goAway ();
+	void updateSizeMenu ();
+	void createMenus ();
+	void createChildren ();
+};
 
 /* End of file TextEditor.h */
 #endif

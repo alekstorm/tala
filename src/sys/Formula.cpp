@@ -1870,7 +1870,7 @@ static void Formula_print (FormulaInstruction* f) {
 int Formula_compile (Interpreter *interpreter, Any data, const wchar_t *expression, int expressionType, int optimize) {
 	theInterpreter = interpreter;
 	if (theInterpreter == NULL) {
-		theInterpreter = new Interpreter (NULL, NULL);
+		theInterpreter = new Interpreter (NULL);
 		Collection_removeAllItems (theInterpreter -> _variables);
 	}
 	theSource = (structData*)data;
@@ -3614,7 +3614,7 @@ static void do_demoWindowTitle (void) {
 	if (n->content.number == 1) {
 		Stackel* title = pop;
 		if (title->which == Stackel_STRING) {
-			Demo_windowTitle (title->content.string); cherror
+			DemoEditor::theDemoEditor->windowTitle (title->content.string); cherror
 		} else {
 			error3 (L"The argument of \"demoWindowTitle\" must be a string (the title), not ", Stackel_whichText (title), L".")
 		}
@@ -3628,7 +3628,7 @@ static void do_demoShow (void) {
 	Stackel* n = pop;
 	if (n->content.number != 0)
 		error3 (L"The function \"demoShow\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
-	Demo_show (); cherror
+	DemoEditor::theDemoEditor->show (); cherror
 	pushNumber (1);
 end: return;
 }
@@ -3636,7 +3636,7 @@ static void do_demoWaitForInput (void) {
 	Stackel* n = pop;
 	if (n->content.number != 0)
 		error3 (L"The function \"demoWaitForInput\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
-	Demo_waitForInput (theInterpreter); cherror
+	DemoEditor::theDemoEditor->waitForInput (theInterpreter); cherror
 	pushNumber (1);
 end: return;
 }
@@ -3645,7 +3645,7 @@ static void do_demoInput (void) {
 	if (n->content.number == 1) {
 		Stackel* keys = pop;
 		if (keys->which == Stackel_STRING) {
-			bool result = Demo_input (keys->content.string); cherror
+			bool result = DemoEditor::theDemoEditor->input (keys->content.string); cherror
 			pushNumber (result);
 		} else {
 			error3 (L"The argument of \"demoInput\" must be a string (the keys), not ", Stackel_whichText (keys), L".")
@@ -3660,7 +3660,7 @@ static void do_demoClickedIn (void) {
 	if (n->content.number == 4) {
 		Stackel* top = pop, *bottom = pop, *right = pop, *left = pop;
 		if (left->which == Stackel_NUMBER && right->which == Stackel_NUMBER && bottom->which == Stackel_NUMBER && top->which == Stackel_NUMBER) {
-			bool result = Demo_clickedIn (left->content.number, right->content.number, bottom->content.number, top->content.number); cherror
+			bool result = DemoEditor::theDemoEditor->clickedIn (left->content.number, right->content.number, bottom->content.number, top->content.number); cherror
 			pushNumber (result);
 		} else {
 			error1 (L"All arguments of \"demoClickedIn\" must be numbers (the x and y ranges).")
@@ -3675,7 +3675,7 @@ static void do_demoClicked (void) {
 	if (n->content.number != 0)
 		error3 (L"The function \"demoClicked\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
 	{
-		bool result = Demo_clicked (); cherror
+		bool result = DemoEditor::theDemoEditor->clicked (); cherror
 		pushNumber (result);
 	}
 end: return;
@@ -3685,7 +3685,7 @@ static void do_demoX (void) {
 	if (n->content.number != 0)
 		error3 (L"The function \"demoX\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
 	{
-		double result = Demo_x (); cherror
+		double result = DemoEditor::theDemoEditor->x (); cherror
 		pushNumber (result);
 	}
 end: return;
@@ -3695,7 +3695,7 @@ static void do_demoY (void) {
 	if (n->content.number != 0)
 		error3 (L"The function \"demoY\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
 	{
-		double result = Demo_y (); cherror
+		double result = DemoEditor::theDemoEditor->y (); cherror
 		pushNumber (result);
 	}
 end: return;
@@ -3705,7 +3705,7 @@ static void do_demoKeyPressed (void) {
 	if (n->content.number != 0)
 		error3 (L"The function \"demoKeyPressed\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
 	{
-		bool result = Demo_keyPressed (); cherror
+		bool result = DemoEditor::theDemoEditor->keyPressed (); cherror
 		pushNumber (result);
 	}
 end: return;
@@ -3716,7 +3716,7 @@ static void do_demoKey (void) {
 		error3 (L"The function \"demoKey\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
 	{
 		wchar_t *key = Melder_malloc_e (wchar_t, 2); cherror
-		key [0] = Demo_key (); cherror
+		key [0] = DemoEditor::theDemoEditor->key (); cherror
 		key [1] = '\0';
 		pushString (key);
 	}
@@ -3727,7 +3727,7 @@ static void do_demoShiftKeyPressed (void) {
 	if (n->content.number != 0)
 		error3 (L"The function \"demoShiftKeyPressed\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
 	{
-		bool result = Demo_shiftKeyPressed (); cherror
+		bool result = DemoEditor::theDemoEditor->shiftKeyPressed (); cherror
 		pushNumber (result);
 	}
 end: return;
@@ -3737,7 +3737,7 @@ static void do_demoCommandKeyPressed (void) {
 	if (n->content.number != 0)
 		error3 (L"The function \"demoCommandKeyPressed\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
 	{
-		bool result = Demo_commandKeyPressed (); cherror
+		bool result = DemoEditor::theDemoEditor->commandKeyPressed (); cherror
 		pushNumber (result);
 	}
 end: return;
@@ -3747,7 +3747,7 @@ static void do_demoOptionKeyPressed (void) {
 	if (n->content.number != 0)
 		error3 (L"The function \"demoOptionKeyPressed\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
 	{
-		bool result = Demo_optionKeyPressed (); cherror
+		bool result = DemoEditor::theDemoEditor->optionKeyPressed (); cherror
 		pushNumber (result);
 	}
 end: return;
@@ -3757,7 +3757,7 @@ static void do_demoExtraControlKeyPressed (void) {
 	if (n->content.number != 0)
 		error3 (L"The function \"demoControlKeyPressed\" requires 0 arguments, not ", Melder_integer (n->content.number), L".")
 	{
-		bool result = Demo_extraControlKeyPressed (); cherror
+		bool result = DemoEditor::theDemoEditor->extraControlKeyPressed (); cherror
 		pushNumber (result);
 	}
 end: return;

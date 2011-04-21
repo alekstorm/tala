@@ -27,10 +27,6 @@
 #include "Sound.h"
 #include "LongSound.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
 struct TimeSoundEditor_sound {
 	/* KEEP IN SYNC WITH PREFS. */
 	Sound data;
@@ -38,29 +34,34 @@ struct TimeSoundEditor_sound {
 	double minimum, maximum;
 };
 
-#define TimeSoundEditor__parents(Klas) FunctionEditor__parents(Klas) Thing_inherit (Klas, FunctionEditor)
-Thing_declare1 (TimeSoundEditor);
+class TimeSoundEditor : public FunctionEditor {
+  public:
+	static void prefs (void);
 
-#define TimeSoundEditor__members(Klas) FunctionEditor__members(Klas) \
-	bool ownSound; \
-	struct TimeSoundEditor_sound sound; \
-	struct { LongSound data; } longSound; \
-	GuiObject drawButton, publishButton, publishPreserveButton, publishWindowButton; \
-	GuiObject writeAiffButton, writeAifcButton, writeWavButton, writeNextSunButton, writeNistButton, writeFlacButton;
-#define TimeSoundEditor__methods(Klas) FunctionEditor__methods(Klas) \
-	void (*createMenuItems_view_sound) (Klas me, EditorMenu *menu); \
-	void (*updateMenuItems_file) (Klas me);
-Thing_declare2 (TimeSoundEditor, FunctionEditor);
+	TimeSoundEditor (GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound);
+	~TimeSoundEditor ();
 
-void TimeSoundEditor_prefs (void);
+	const wchar_t * type () { return L"TimeSoundEditor"; }
+	void info ();
 
-int TimeSoundEditor_init (TimeSoundEditor me, GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound);
+	void createMenuItems_view (EditorMenu *menu);
+	void createMenuItems_view_sound (EditorMenu *menu);
+	void updateMenuItems_file ();
+	void draw_sound (double globalMinimum, double globalMaximum);
+	void createMenuItems_file_draw (EditorMenu *menu);
+	void createMenuItems_file_extract (EditorMenu *menu);
+	void createMenuItems_file_write (EditorMenu *menu);
+	void createMenuItems_file (EditorMenu *menu);
+	void createMenuItems_query_info (EditorMenu *menu);
+	int do_ExtractSelectedSound (bool preserveTimes);
+	int do_write (MelderFile file, int format);
 
-void TimeSoundEditor_draw_sound (TimeSoundEditor me, double globalMinimum, double globalMaximum);
-
-#ifdef __cplusplus
-	}
-#endif
+	bool _ownSound;
+	struct TimeSoundEditor_sound _sound;
+	struct { LongSound data; } _longSound;
+	GuiObject _drawButton, _publishButton, _publishPreserveButton, _publishWindowButton;
+	GuiObject _writeAiffButton, _writeAifcButton, _writeWavButton, _writeNextSunButton, _writeNistButton, _writeFlacButton;
+};
 
 /* End of file TimeSoundEditor.h */
 #endif

@@ -271,8 +271,8 @@ static int commonOkCallback (UiForm *dia, const wchar_t *dummy, Interpreter *int
 }
 
 UiForm * UiForm::createE (EditorCommand *cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle) {
-	Editor editor = (Editor) cmd -> _editor;
-	UiForm *dia = new UiForm (editor -> dialog, title, commonOkCallback, cmd, invokingButtonTitle, helpTitle);
+	Editor *editor = cmd -> _editor;
+	UiForm *dia = new UiForm (editor -> _dialog, title, commonOkCallback, cmd, invokingButtonTitle, helpTitle);
 	dia -> _command = cmd;
 	return dia;
 }

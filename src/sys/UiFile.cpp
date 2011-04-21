@@ -123,8 +123,8 @@ void UiOutfile::do_ (const wchar_t *defaultName) {
 }
 
 UiOutfile *UiOutfile::createE (EditorCommand *cmd, const wchar_t *title, const wchar_t *invokingButtonTitle, const wchar_t *helpTitle) {
-	Editor editor = (Editor) cmd -> _editor;
-	UiOutfile *dia = new UiOutfile (editor -> dialog, title, commonOutfileCallback, cmd, invokingButtonTitle, helpTitle);
+	Editor *editor = cmd -> _editor;
+	UiOutfile *dia = new UiOutfile (editor -> _dialog, title, commonOutfileCallback, cmd, invokingButtonTitle, helpTitle);
 	dia -> _command = cmd;
 	return dia;   // BUG
 }

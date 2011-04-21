@@ -147,7 +147,7 @@ class UiForm {
 	UiForm (GuiObject parent, const wchar_t *title,
 		int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *buttonClosure,
 		const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
-	~UiForm();
+	virtual ~UiForm();
 
 	UiField * addReal (const wchar_t *label, const wchar_t *defaultValue);
 	UiField * addRealOrUndefined (const wchar_t *label, const wchar_t *defaultValue);

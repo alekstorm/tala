@@ -49,7 +49,7 @@ static struct {
 }
 	preferences;
 
-void TimeSoundEditor_prefs (void) {
+void TimeSoundEditor::prefs (void) {
 	Preferences_addBool (L"TimeSoundEditor.sound.autoscaling", & preferences.sound.autoscaling, true);
 	Preferences_addBool (L"TimeSoundEditor.picture.preserveTimes", & preferences.picture.preserveTimes, true);
 	Preferences_addDouble (L"TimeSoundEditor.picture.bottom", & preferences.picture.bottom, 0.0);
@@ -60,132 +60,150 @@ void TimeSoundEditor_prefs (void) {
 	Preferences_addBool (L"TimeSoundEditor.extract.preserveTimes", & preferences.extract.preserveTimes, true);
 }
 
-/********** Thing methods **********/
+/********** TimeSoundEditor methods **********/
 
-static void destroy (I) {
-	iam (TimeSoundEditor);
-	if (my ownSound) forget (my sound.data);
-	inherited (TimeSoundEditor) destroy (me);
+TimeSoundEditor::TimeSoundEditor (GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound)
+	: FunctionEditor (parent, title, data) {
+	_ownSound = ownSound;
+	if (sound != NULL) {
+		if (ownSound) {
+			Melder_assert (Thing_member (sound, classSound));
+			_sound.data = (Sound) Data_copy (sound);   // Deep copy; ownership transferred.
+			Matrix_getWindowExtrema (sound, 1, _sound.data -> nx, 1, _sound.data -> ny, & _sound.minimum, & _sound.maximum);
+		} else if (Thing_member (sound, classSound)) {
+			_sound.data = (Sound) sound;   // Reference copy; ownership not transferred.
+			Matrix_getWindowExtrema (sound, 1, _sound.data -> nx, 1, _sound.data -> ny, & _sound.minimum, & _sound.maximum);
+		} else if (Thing_member (sound, classLongSound)) {
+			_longSound.data = (LongSound) sound;
+			_sound.minimum = -1.0, _sound.maximum = 1.0;
+		} else {
+			Melder_fatal ("Invalid sound class in TimeSoundEditor_init.");
+		}
+	}
+	_sound.autoscaling = preferences.sound.autoscaling;
 }
 
-static void info (I) {
-	iam (TimeSoundEditor);
-	inherited (TimeSoundEditor) info (me);
+TimeSoundEditor::~TimeSoundEditor () {
+	if (_ownSound) forget (_sound.data);
+}
+
+void TimeSoundEditor::info () {
+	FunctionEditor::info ();
 	/* Sound flag: */
-	MelderInfo_writeLine2 (L"Sound autoscaling: ", Melder_boolean (my sound.autoscaling));
+	MelderInfo_writeLine2 (L"Sound autoscaling: ", Melder_boolean (_sound.autoscaling));
 }
 
 /***** FILE MENU *****/
 
 static int menu_cb_DrawVisibleSound (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM (L"Draw visible sound", 0)
-		our form_pictureWindow (me, cmd);
+		editor->form_pictureWindow (cmd);
 		LABEL (L"", L"Sound:")
 		BOOLEAN (L"Preserve times", 1);
 		REAL (L"left Vertical range", L"0.0")
 		REAL (L"right Vertical range", L"0.0 (= auto)")
-		our form_pictureMargins (me, cmd);
-		our form_pictureSelection (me, cmd);
+		editor->form_pictureMargins (cmd);
+		editor->form_pictureSelection (cmd);
 		BOOLEAN (L"Garnish", 1);
 	EDITOR_OK
-		our ok_pictureWindow (me, cmd);
+		editor->ok_pictureWindow (cmd);
 		SET_INTEGER (L"Preserve times", preferences.picture.preserveTimes);
 		SET_REAL (L"left Vertical range", preferences.picture.bottom);
 		SET_REAL (L"right Vertical range", preferences.picture.top);
-		our ok_pictureMargins (me, cmd);
-		our ok_pictureSelection (me, cmd);
+		editor->ok_pictureMargins (cmd);
+		editor->ok_pictureSelection (cmd);
 		SET_INTEGER (L"Garnish", preferences.picture.garnish);
 	EDITOR_DO
-		our do_pictureWindow (me, cmd);
+		editor->do_pictureWindow (cmd);
 		preferences.picture.preserveTimes = GET_INTEGER (L"Preserve times");
 		preferences.picture.bottom = GET_REAL (L"left Vertical range");
 		preferences.picture.top = GET_REAL (L"right Vertical range");
-		our do_pictureMargins (me, cmd);
-		our do_pictureSelection (me, cmd);
+		editor->do_pictureMargins (cmd);
+		editor->do_pictureSelection (cmd);
 		preferences.picture.garnish = GET_INTEGER (L"Garnish");
-		if (my longSound.data == NULL && my sound.data == NULL)
+		if (editor->_longSound.data == NULL && editor->_sound.data == NULL)
 			return Melder_error1 (L"There is no sound to draw.");
-		Sound publish = my longSound.data ?
-			LongSound_extractPart (my longSound.data, my startWindow, my endWindow, preferences.picture.preserveTimes) :
-			Sound_extractPart (my sound.data, my startWindow, my endWindow, kSound_windowShape_RECTANGULAR, 1.0, preferences.picture.preserveTimes);
+		Sound publish = editor->_longSound.data ?
+			LongSound_extractPart (editor->_longSound.data, editor->_startWindow, editor->_endWindow, preferences.picture.preserveTimes) :
+			Sound_extractPart (editor->_sound.data, editor->_startWindow, editor->_endWindow, kSound_windowShape_RECTANGULAR, 1.0, preferences.picture.preserveTimes);
 		if (! publish) return 0;
-		Editor_openPraatPicture (TimeSoundEditor_as_Editor (me));
-		Sound_draw (publish, my pictureGraphics, 0.0, 0.0, preferences.picture.bottom, preferences.picture.top,
+		editor->openPraatPicture ();
+		Sound_draw (publish, editor->_pictureGraphics, 0.0, 0.0, preferences.picture.bottom, preferences.picture.top,
 			preferences.picture.garnish, L"Curve");
 		forget (publish);
-		FunctionEditor_garnish (TimeSoundEditor_as_FunctionEditor (me));
-		Editor_closePraatPicture (TimeSoundEditor_as_Editor (me));
+		editor->garnish ();
+		editor->closePraatPicture ();
 	EDITOR_END
 }
 
 static int menu_cb_DrawSelectedSound (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM (L"Draw selected sound", 0)
-		our form_pictureWindow (me, cmd);
+		editor->form_pictureWindow (cmd);
 		LABEL (L"", L"Sound:")
 		BOOLEAN (L"Preserve times", 1);
 		REAL (L"left Vertical range", L"0.0")
 		REAL (L"right Vertical range", L"0.0 (= auto)")
-		our form_pictureMargins (me, cmd);
+		editor->form_pictureMargins (cmd);
 		BOOLEAN (L"Garnish", 1);
 	EDITOR_OK
-		our ok_pictureWindow (me, cmd);
+		editor->ok_pictureWindow (cmd);
 		SET_INTEGER (L"Preserve times", preferences.picture.preserveTimes);
 		SET_REAL (L"left Vertical range", preferences.picture.bottom);
 		SET_REAL (L"right Vertical range", preferences.picture.top);
-		our ok_pictureMargins (me, cmd);
+		editor->ok_pictureMargins (cmd);
 		SET_INTEGER (L"Garnish", preferences.picture.garnish);
 	EDITOR_DO
-		our do_pictureWindow (me, cmd);
+		editor->do_pictureWindow (cmd);
 		preferences.picture.preserveTimes = GET_INTEGER (L"Preserve times");
 		preferences.picture.bottom = GET_REAL (L"left Vertical range");
 		preferences.picture.top = GET_REAL (L"right Vertical range");
-		our do_pictureMargins (me, cmd);
+		editor->do_pictureMargins (cmd);
 		preferences.picture.garnish = GET_INTEGER (L"Garnish");
-		if (my longSound.data == NULL && my sound.data == NULL)
+		if (editor->_longSound.data == NULL && editor->_sound.data == NULL)
 			return Melder_error1 (L"There is no sound to draw.");
-		Sound publish = my longSound.data ?
-			LongSound_extractPart (my longSound.data, my startSelection, my endSelection, preferences.picture.preserveTimes) :
-			Sound_extractPart (my sound.data, my startSelection, my endSelection, kSound_windowShape_RECTANGULAR, 1.0, preferences.picture.preserveTimes);
+		Sound publish = editor->_longSound.data ?
+			LongSound_extractPart (editor->_longSound.data, editor->_startSelection, editor->_endSelection, preferences.picture.preserveTimes) :
+			Sound_extractPart (editor->_sound.data, editor->_startSelection, editor->_endSelection, kSound_windowShape_RECTANGULAR, 1.0, preferences.picture.preserveTimes);
 		if (! publish) return 0;
-		Editor_openPraatPicture (TimeSoundEditor_as_Editor (me));
-		Sound_draw (publish, my pictureGraphics, 0.0, 0.0, preferences.picture.bottom, preferences.picture.top,
+		editor->openPraatPicture ();
+		Sound_draw (publish, editor->_pictureGraphics, 0.0, 0.0, preferences.picture.bottom, preferences.picture.top,
 			preferences.picture.garnish, L"Curve");
 		forget (publish);
-		Editor_closePraatPicture (TimeSoundEditor_as_Editor (me));
+		editor->closePraatPicture ();
 	EDITOR_END
 }
 
-static int do_ExtractSelectedSound (TimeSoundEditor me, bool preserveTimes) {
+int TimeSoundEditor::do_ExtractSelectedSound (bool preserveTimes) {
 	Sound extract = NULL;
-	if (my endSelection <= my startSelection) return Melder_error1 (L"No selection.");
-	if (my longSound.data) {
-		extract = LongSound_extractPart (my longSound.data, my startSelection, my endSelection, preserveTimes);
+	if (_endSelection <= _startSelection) return Melder_error1 (L"No selection.");
+	if (_longSound.data) {
+		extract = LongSound_extractPart (_longSound.data, _startSelection, _endSelection, preserveTimes);
 		iferror return 0;
-	} else if (my sound.data) {
-		extract = Sound_extractPart (my sound.data, my startSelection, my endSelection,
+	} else if (_sound.data) {
+		extract = Sound_extractPart (_sound.data, _startSelection, _endSelection,
 			kSound_windowShape_RECTANGULAR, 1.0, preserveTimes);
 		iferror return 0;
 	}
 	Melder_assert (extract != NULL);
-	if (my publishCallback)
-		my publishCallback (me, my publishClosure, extract);
+	if (_publishCallback)
+		_publishCallback (this, _publishClosure, extract);
 	return 1;
 }
 
 static int menu_cb_ExtractSelectedSound_timeFromZero (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
-	return do_ExtractSelectedSound (me, FALSE);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
+	return editor->do_ExtractSelectedSound (FALSE);
 }
 
 static int menu_cb_ExtractSelectedSound_preserveTimes (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
-	return do_ExtractSelectedSound (me, TRUE);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
+	return editor->do_ExtractSelectedSound (TRUE);
 }
 
 static int menu_cb_ExtractSelectedSound_windowed (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM (L"Extract selected sound (windowed)", 0)
 		WORD (L"Name", L"slice")
 		OPTIONMENU_ENUM (L"Window shape", kSound_windowShape, HANNING)
@@ -196,31 +214,31 @@ static int menu_cb_ExtractSelectedSound_windowed (EDITOR_ARGS) {
 		SET_REAL (L"Relative width", preferences.extract.relativeWidth)
 		SET_INTEGER (L"Preserve times", preferences.extract.preserveTimes)
 	EDITOR_DO
-		Sound sound = my sound.data;
+		Sound sound = editor->_sound.data;
 		Melder_assert (sound != NULL);
 		preferences.extract.windowShape = GET_ENUM (kSound_windowShape, L"Window shape");
 		preferences.extract.relativeWidth = GET_REAL (L"Relative width");
 		preferences.extract.preserveTimes = GET_INTEGER (L"Preserve times");
-		Sound extract = Sound_extractPart (sound, my startSelection, my endSelection, preferences.extract.windowShape,
+		Sound extract = Sound_extractPart (sound, editor->_startSelection, editor->_endSelection, preferences.extract.windowShape,
 			preferences.extract.relativeWidth, preferences.extract.preserveTimes);
 		if (! extract) return 0;
 		Thing_setName (extract, GET_STRING (L"Name"));
-		if (my publishCallback)
-			my publishCallback (me, my publishClosure, extract);
+		if (editor->_publishCallback)
+			editor->_publishCallback (editor, editor->_publishClosure, extract);
 	EDITOR_END
 }
 
-static int do_write (TimeSoundEditor me, MelderFile file, int format) {
-	if (my startSelection >= my endSelection)
+int TimeSoundEditor::do_write (MelderFile file, int format) {
+	if (_startSelection >= _endSelection)
 		return Melder_error1 (L"No samples selected.");
-	if (my longSound.data) {
-		return LongSound_writePartToAudioFile16 (my longSound.data, format, my startSelection, my endSelection, file);
-	} else if (my sound.data) {
-		Sound sound = my sound.data;
+	if (_longSound.data) {
+		return LongSound_writePartToAudioFile16 (_longSound.data, format, _startSelection, _endSelection, file);
+	} else if (_sound.data) {
+		Sound sound = _sound.data;
 		double margin = 0.0;
 		long nmargin = margin / sound -> dx;
 		long first, last, numberOfSamples = Sampled_getWindowSamples (sound,
-			my startSelection, my endSelection, & first, & last) + nmargin * 2;
+			_startSelection, _endSelection, & first, & last) + nmargin * 2;
 		first -= nmargin;
 		last += nmargin;
 		if (numberOfSamples) {
@@ -244,331 +262,292 @@ static int do_write (TimeSoundEditor me, MelderFile file, int format) {
 }
 
 static int menu_cb_WriteWav (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as WAV file", 0)
-		swprintf (defaultName, 300, L"%ls.wav", my longSound.data ? my longSound.data -> name : my sound.data -> name);
+		swprintf (defaultName, 300, L"%ls.wav", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
 	EDITOR_DO_WRITE
-		if (! do_write (me, file, Melder_WAV)) return 0;
+		if (! editor->do_write (file, Melder_WAV)) return 0;
 	EDITOR_END
 }
 
 static int menu_cb_WriteAiff (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as AIFF file", 0)
-		swprintf (defaultName, 300, L"%ls.aiff", my longSound.data ? my longSound.data -> name : my sound.data -> name);
+		swprintf (defaultName, 300, L"%ls.aiff", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
 	EDITOR_DO_WRITE
-		if (! do_write (me, file, Melder_AIFF)) return 0;
+		if (! editor->do_write (file, Melder_AIFF)) return 0;
 	EDITOR_END
 }
 
 static int menu_cb_WriteAifc (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as AIFC file", 0)
-		swprintf (defaultName, 300, L"%ls.aifc", my longSound.data ? my longSound.data -> name : my sound.data -> name);
+		swprintf (defaultName, 300, L"%ls.aifc", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
 	EDITOR_DO_WRITE
-		if (! do_write (me, file, Melder_AIFC)) return 0;
+		if (! editor->do_write (file, Melder_AIFC)) return 0;
 	EDITOR_END
 }
 
 static int menu_cb_WriteNextSun (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as NeXT/Sun file", 0)
-		swprintf (defaultName, 300, L"%ls.au", my longSound.data ? my longSound.data -> name : my sound.data -> name);
+		swprintf (defaultName, 300, L"%ls.au", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
 	EDITOR_DO_WRITE
-		if (! do_write (me, file, Melder_NEXT_SUN)) return 0;
+		if (! editor->do_write (file, Melder_NEXT_SUN)) return 0;
 	EDITOR_END
 }
 
 static int menu_cb_WriteNist (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as NIST file", 0)
-		swprintf (defaultName, 300, L"%ls.nist", my longSound.data ? my longSound.data -> name : my sound.data -> name);
+		swprintf (defaultName, 300, L"%ls.nist", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
 	EDITOR_DO_WRITE
-		if (! do_write (me, file, Melder_NIST)) return 0;
+		if (! editor->do_write (file, Melder_NIST)) return 0;
 	EDITOR_END
 }
 
 static int menu_cb_WriteFlac (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as FLAC file", 0)
-		swprintf (defaultName, 300, L"%ls.flac", my longSound.data ? my longSound.data -> name : my sound.data -> name);
+		swprintf (defaultName, 300, L"%ls.flac", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
 	EDITOR_DO_WRITE
-		if (! do_write (me, file, Melder_FLAC)) return 0;
+		if (! editor->do_write (file, Melder_FLAC)) return 0;
 	EDITOR_END
 }
 
-static void createMenuItems_file_draw (TimeSoundEditor me, EditorMenu *menu) {
-	EditorMenu_addCommand (menu, L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_DrawVisibleSound /* dummy */);
-	if (my sound.data || my longSound.data) {
-		EditorMenu_addCommand (menu, L"Draw visible sound...", 0, menu_cb_DrawVisibleSound);
-		my drawButton = EditorMenu_addCommand (menu, L"Draw selected sound...", 0, menu_cb_DrawSelectedSound);
+void TimeSoundEditor::createMenuItems_file_draw (EditorMenu *menu) {
+	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_DrawVisibleSound /* dum_*/);
+	if (_sound.data || _longSound.data) {
+		menu->addCommand (L"Draw visible sound...", 0, menu_cb_DrawVisibleSound);
+		_drawButton = menu->addCommand (L"Draw selected sound...", 0, menu_cb_DrawSelectedSound);
 	}
 }
 
-static void createMenuItems_file_extract (TimeSoundEditor me, EditorMenu *menu) {
-	EditorMenu_addCommand (menu, L"Extract to objects window:", GuiMenu_INSENSITIVE, menu_cb_ExtractSelectedSound_preserveTimes /* dummy */);
-	if (my sound.data || my longSound.data) {
-		my publishPreserveButton = EditorMenu_addCommand (menu, L"Extract selected sound (preserve times)", 0, menu_cb_ExtractSelectedSound_preserveTimes);
-			EditorMenu_addCommand (menu, L"Extract sound selection (preserve times)", Editor_HIDDEN, menu_cb_ExtractSelectedSound_preserveTimes);
-			EditorMenu_addCommand (menu, L"Extract selection (preserve times)", Editor_HIDDEN, menu_cb_ExtractSelectedSound_preserveTimes);
-		my publishButton = EditorMenu_addCommand (menu, L"Extract selected sound (time from 0)", 0, menu_cb_ExtractSelectedSound_timeFromZero);
-			EditorMenu_addCommand (menu, L"Extract sound selection (time from 0)", Editor_HIDDEN, menu_cb_ExtractSelectedSound_timeFromZero);
-			EditorMenu_addCommand (menu, L"Extract selection (time from 0)", Editor_HIDDEN, menu_cb_ExtractSelectedSound_timeFromZero);
-			EditorMenu_addCommand (menu, L"Extract selection", Editor_HIDDEN, menu_cb_ExtractSelectedSound_timeFromZero);
-		if (my sound.data) {
-			my publishWindowButton = EditorMenu_addCommand (menu, L"Extract selected sound (windowed)...", 0, menu_cb_ExtractSelectedSound_windowed);
-				EditorMenu_addCommand (menu, L"Extract windowed sound selection...", Editor_HIDDEN, menu_cb_ExtractSelectedSound_windowed);
-				EditorMenu_addCommand (menu, L"Extract windowed selection...", Editor_HIDDEN, menu_cb_ExtractSelectedSound_windowed);
+void TimeSoundEditor::createMenuItems_file_extract (EditorMenu *menu) {
+	menu->addCommand (L"Extract to objects window:", GuiMenu_INSENSITIVE, menu_cb_ExtractSelectedSound_preserveTimes /* dum_*/);
+	if (_sound.data || _longSound.data) {
+		_publishPreserveButton = menu->addCommand (L"Extract selected sound (preserve times)", 0, menu_cb_ExtractSelectedSound_preserveTimes);
+			menu->addCommand (L"Extract sound selection (preserve times)", Editor_HIDDEN, menu_cb_ExtractSelectedSound_preserveTimes);
+			menu->addCommand (L"Extract selection (preserve times)", Editor_HIDDEN, menu_cb_ExtractSelectedSound_preserveTimes);
+		_publishButton = menu->addCommand (L"Extract selected sound (time from 0)", 0, menu_cb_ExtractSelectedSound_timeFromZero);
+			menu->addCommand (L"Extract sound selection (time from 0)", Editor_HIDDEN, menu_cb_ExtractSelectedSound_timeFromZero);
+			menu->addCommand (L"Extract selection (time from 0)", Editor_HIDDEN, menu_cb_ExtractSelectedSound_timeFromZero);
+			menu->addCommand (L"Extract selection", Editor_HIDDEN, menu_cb_ExtractSelectedSound_timeFromZero);
+		if (_sound.data) {
+			_publishWindowButton = menu->addCommand (L"Extract selected sound (windowed)...", 0, menu_cb_ExtractSelectedSound_windowed);
+				menu->addCommand (L"Extract windowed sound selection...", Editor_HIDDEN, menu_cb_ExtractSelectedSound_windowed);
+				menu->addCommand (L"Extract windowed selection...", Editor_HIDDEN, menu_cb_ExtractSelectedSound_windowed);
 		}
 	}
 }
 
-static void createMenuItems_file_write (TimeSoundEditor me, EditorMenu *menu) {
-	EditorMenu_addCommand (menu, L"Save to disk:", GuiMenu_INSENSITIVE, menu_cb_WriteWav /* dummy */);
-	if (my sound.data || my longSound.data) {
-		my writeWavButton = EditorMenu_addCommand (menu, L"Save selected sound as WAV file...", 0, menu_cb_WriteWav);
-			EditorMenu_addCommand (menu, L"Write selected sound to WAV file...", Editor_HIDDEN, menu_cb_WriteWav);
-			EditorMenu_addCommand (menu, L"Write sound selection to WAV file...", Editor_HIDDEN, menu_cb_WriteWav);
-			EditorMenu_addCommand (menu, L"Write selection to WAV file...", Editor_HIDDEN, menu_cb_WriteWav);
-		my writeAiffButton = EditorMenu_addCommand (menu, L"Save selected sound as AIFF file...", 0, menu_cb_WriteAiff);
-			EditorMenu_addCommand (menu, L"Write selected sound to AIFF file...", Editor_HIDDEN, menu_cb_WriteAiff);
-			EditorMenu_addCommand (menu, L"Write sound selection to AIFF file...", Editor_HIDDEN, menu_cb_WriteAiff);
-			EditorMenu_addCommand (menu, L"Write selection to AIFF file...", Editor_HIDDEN, menu_cb_WriteAiff);
-		my writeAifcButton = EditorMenu_addCommand (menu, L"Save selected sound as AIFC file...", 0, menu_cb_WriteAifc);
-			EditorMenu_addCommand (menu, L"Write selected sound to AIFC file...", Editor_HIDDEN, menu_cb_WriteAifc);
-			EditorMenu_addCommand (menu, L"Write sound selection to AIFC file...", Editor_HIDDEN, menu_cb_WriteAifc);
-			EditorMenu_addCommand (menu, L"Write selection to AIFC file...", Editor_HIDDEN, menu_cb_WriteAifc);
-		my writeNextSunButton = EditorMenu_addCommand (menu, L"Save selected sound as Next/Sun file...", 0, menu_cb_WriteNextSun);
-			EditorMenu_addCommand (menu, L"Write selected sound to Next/Sun file...", Editor_HIDDEN, menu_cb_WriteNextSun);
-			EditorMenu_addCommand (menu, L"Write sound selection to Next/Sun file...", Editor_HIDDEN, menu_cb_WriteNextSun);
-			EditorMenu_addCommand (menu, L"Write selection to Next/Sun file...", Editor_HIDDEN, menu_cb_WriteNextSun);
-		my writeNistButton = EditorMenu_addCommand (menu, L"Save selected sound as NIST file...", 0, menu_cb_WriteNist);
-			EditorMenu_addCommand (menu, L"Write selected sound to NIST file...", Editor_HIDDEN, menu_cb_WriteNist);
-			EditorMenu_addCommand (menu, L"Write sound selection to NIST file...", Editor_HIDDEN, menu_cb_WriteNist);
-			EditorMenu_addCommand (menu, L"Write selection to NIST file...", Editor_HIDDEN, menu_cb_WriteNist);
-		my writeFlacButton = EditorMenu_addCommand (menu, L"Save selected sound as FLAC file...", 0, menu_cb_WriteFlac);
-			EditorMenu_addCommand (menu, L"Write selected sound to FLAC file...", Editor_HIDDEN, menu_cb_WriteFlac);
-			EditorMenu_addCommand (menu, L"Write sound selection to FLAC file...", Editor_HIDDEN, menu_cb_WriteFlac);
+void TimeSoundEditor::createMenuItems_file_write (EditorMenu *menu) {
+	menu->addCommand (L"Save to disk:", GuiMenu_INSENSITIVE, menu_cb_WriteWav /* dum_*/);
+	if (_sound.data || _longSound.data) {
+		_writeWavButton = menu->addCommand (L"Save selected sound as WAV file...", 0, menu_cb_WriteWav);
+			menu->addCommand (L"Write selected sound to WAV file...", Editor_HIDDEN, menu_cb_WriteWav);
+			menu->addCommand (L"Write sound selection to WAV file...", Editor_HIDDEN, menu_cb_WriteWav);
+			menu->addCommand (L"Write selection to WAV file...", Editor_HIDDEN, menu_cb_WriteWav);
+		_writeAiffButton = menu->addCommand (L"Save selected sound as AIFF file...", 0, menu_cb_WriteAiff);
+			menu->addCommand (L"Write selected sound to AIFF file...", Editor_HIDDEN, menu_cb_WriteAiff);
+			menu->addCommand (L"Write sound selection to AIFF file...", Editor_HIDDEN, menu_cb_WriteAiff);
+			menu->addCommand (L"Write selection to AIFF file...", Editor_HIDDEN, menu_cb_WriteAiff);
+		_writeAifcButton = menu->addCommand (L"Save selected sound as AIFC file...", 0, menu_cb_WriteAifc);
+			menu->addCommand (L"Write selected sound to AIFC file...", Editor_HIDDEN, menu_cb_WriteAifc);
+			menu->addCommand (L"Write sound selection to AIFC file...", Editor_HIDDEN, menu_cb_WriteAifc);
+			menu->addCommand (L"Write selection to AIFC file...", Editor_HIDDEN, menu_cb_WriteAifc);
+		_writeNextSunButton = menu->addCommand (L"Save selected sound as Next/Sun file...", 0, menu_cb_WriteNextSun);
+			menu->addCommand (L"Write selected sound to Next/Sun file...", Editor_HIDDEN, menu_cb_WriteNextSun);
+			menu->addCommand (L"Write sound selection to Next/Sun file...", Editor_HIDDEN, menu_cb_WriteNextSun);
+			menu->addCommand (L"Write selection to Next/Sun file...", Editor_HIDDEN, menu_cb_WriteNextSun);
+		_writeNistButton = menu->addCommand (L"Save selected sound as NIST file...", 0, menu_cb_WriteNist);
+			menu->addCommand (L"Write selected sound to NIST file...", Editor_HIDDEN, menu_cb_WriteNist);
+			menu->addCommand (L"Write sound selection to NIST file...", Editor_HIDDEN, menu_cb_WriteNist);
+			menu->addCommand (L"Write selection to NIST file...", Editor_HIDDEN, menu_cb_WriteNist);
+		_writeFlacButton = menu->addCommand (L"Save selected sound as FLAC file...", 0, menu_cb_WriteFlac);
+			menu->addCommand (L"Write selected sound to FLAC file...", Editor_HIDDEN, menu_cb_WriteFlac);
+			menu->addCommand (L"Write sound selection to FLAC file...", Editor_HIDDEN, menu_cb_WriteFlac);
 	}
 }
 
-static void createMenuItems_file (TimeSoundEditor me, EditorMenu *menu) {
-	inherited (TimeSoundEditor) createMenuItems_file (TimeSoundEditor_as_parent (me), menu);
-	our createMenuItems_file_draw (me, menu);
-	EditorMenu_addCommand (menu, L"-- after file draw --", 0, NULL);
-	our createMenuItems_file_extract (me, menu);
-	EditorMenu_addCommand (menu, L"-- after file extract --", 0, NULL);
-	our createMenuItems_file_write (me, menu);
-	EditorMenu_addCommand (menu, L"-- after file write --", 0, NULL);
+void TimeSoundEditor::createMenuItems_file (EditorMenu *menu) {
+	FunctionEditor::createMenuItems_file (menu);
+	createMenuItems_file_draw (menu);
+	menu->addCommand (L"-- after file draw --", 0, NULL);
+	createMenuItems_file_extract (menu);
+	menu->addCommand (L"-- after file extract --", 0, NULL);
+	createMenuItems_file_write (menu);
+	menu->addCommand (L"-- after file write --", 0, NULL);
 }
 
 /********** QUERY MENU **********/
 
 static int menu_cb_SoundInfo (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
-	Thing_info (my sound.data);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
+	Thing_info (editor->_sound.data);
 	return 1;
 }
 
 static int menu_cb_LongSoundInfo (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
-	Thing_info (my longSound.data);
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
+	Thing_info (editor->_longSound.data);
 	return 1;
 }
 
-static void createMenuItems_query_info (TimeSoundEditor me, EditorMenu *menu) {
-	inherited (TimeSoundEditor) createMenuItems_query_info (TimeSoundEditor_as_parent (me), menu);
-	if (my sound.data != NULL && my sound.data != my data) {
-		EditorMenu_addCommand (menu, L"Sound info", 0, menu_cb_SoundInfo);
-	} else if (my longSound.data != NULL && my longSound.data != my data) {
-		EditorMenu_addCommand (menu, L"LongSound info", 0, menu_cb_LongSoundInfo);
+void TimeSoundEditor::createMenuItems_query_info (EditorMenu *menu) {
+	FunctionEditor::createMenuItems_query_info (menu);
+	if (_sound.data != NULL && _sound.data != _data) {
+		menu->addCommand (L"Sound info", 0, menu_cb_SoundInfo);
+	} else if (_longSound.data != NULL && _longSound.data != _data) {
+		menu->addCommand (L"LongSound info", 0, menu_cb_LongSoundInfo);
 	}
 }
 
 /********** VIEW MENU **********/
 
 static int menu_cb_autoscaling (EDITOR_ARGS) {
-	EDITOR_IAM (TimeSoundEditor);
-	preferences.sound.autoscaling = my sound.autoscaling = ! my sound.autoscaling;
-	FunctionEditor_redraw (TimeSoundEditor_as_FunctionEditor (me));
+	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
+	preferences.sound.autoscaling = editor->_sound.autoscaling = ! editor->_sound.autoscaling;
+	editor->redraw ();
 	return 1;
 }
 
-static void createMenuItems_view (TimeSoundEditor me, EditorMenu *menu) {
-	if (my sound.data || my longSound.data) our createMenuItems_view_sound (me, menu);
-	inherited (TimeSoundEditor) createMenuItems_view (TimeSoundEditor_as_parent (me), menu);
+void TimeSoundEditor::createMenuItems_view (EditorMenu *menu) {
+	if (_sound.data || _longSound.data) createMenuItems_view_sound (menu);
+	FunctionEditor::createMenuItems_view (menu);
 }
 
-static void createMenuItems_view_sound (TimeSoundEditor me, EditorMenu *menu) {
-	(void) me;
-	EditorMenu_addCommand (menu, L"Sound autoscaling", GuiMenu_CHECKBUTTON | (preferences.sound.autoscaling ? GuiMenu_TOGGLE_ON : 0), menu_cb_autoscaling);
-	EditorMenu_addCommand (menu, L"-- sound view --", 0, 0);
+void TimeSoundEditor::createMenuItems_view_sound (EditorMenu *menu) {
+	menu->addCommand (L"Sound autoscaling", GuiMenu_CHECKBUTTON | (preferences.sound.autoscaling ? GuiMenu_TOGGLE_ON : 0), menu_cb_autoscaling);
+	menu->addCommand (L"-- sound view --", 0, 0);
 }
 
-static void updateMenuItems_file (TimeSoundEditor me) {
-	Any sound = my sound.data != NULL ? (Sampled) my sound.data : (Sampled) my longSound.data;
+void TimeSoundEditor::updateMenuItems_file () {
+	Any sound = _sound.data != NULL ? (Sampled) _sound.data : (Sampled) _longSound.data;
 	if (sound == NULL) return;
-	long first, last, selectedSamples = Sampled_getWindowSamples (sound, my startSelection, my endSelection, & first, & last);
-	if (my drawButton) {
-		GuiObject_setSensitive (my drawButton, selectedSamples != 0);
-		GuiObject_setSensitive (my publishButton, selectedSamples != 0);
-		GuiObject_setSensitive (my publishPreserveButton, selectedSamples != 0);
-		if (my publishWindowButton) GuiObject_setSensitive (my publishWindowButton, selectedSamples != 0);
+	long first, last, selectedSamples = Sampled_getWindowSamples (sound, _startSelection, _endSelection, & first, & last);
+	if (_drawButton) {
+		GuiObject_setSensitive (_drawButton, selectedSamples != 0);
+		GuiObject_setSensitive (_publishButton, selectedSamples != 0);
+		GuiObject_setSensitive (_publishPreserveButton, selectedSamples != 0);
+		if (_publishWindowButton) GuiObject_setSensitive (_publishWindowButton, selectedSamples != 0);
 	}
-	GuiObject_setSensitive (my writeWavButton, selectedSamples != 0);
-	GuiObject_setSensitive (my writeAiffButton, selectedSamples != 0);
-	GuiObject_setSensitive (my writeAifcButton, selectedSamples != 0);
-	GuiObject_setSensitive (my writeNextSunButton, selectedSamples != 0);
-	GuiObject_setSensitive (my writeNistButton, selectedSamples != 0);
-	GuiObject_setSensitive (my writeFlacButton, selectedSamples != 0);
+	GuiObject_setSensitive (_writeWavButton, selectedSamples != 0);
+	GuiObject_setSensitive (_writeAiffButton, selectedSamples != 0);
+	GuiObject_setSensitive (_writeAifcButton, selectedSamples != 0);
+	GuiObject_setSensitive (_writeNextSunButton, selectedSamples != 0);
+	GuiObject_setSensitive (_writeNistButton, selectedSamples != 0);
+	GuiObject_setSensitive (_writeFlacButton, selectedSamples != 0);
 }
 
-void TimeSoundEditor_draw_sound (TimeSoundEditor me, double globalMinimum, double globalMaximum) {
-	Sound sound = my sound.data;
-	LongSound longSound = my longSound.data;
+void TimeSoundEditor::draw_sound (double globalMinimum, double globalMaximum) {
+	Sound sound = _sound.data;
+	LongSound longSound = _longSound.data;
 	Melder_assert ((sound == NULL) != (longSound == NULL));
-	int fits = sound ? TRUE : LongSound_haveWindow (longSound, my startWindow, my endWindow);
+	int fits = sound ? TRUE : LongSound_haveWindow (longSound, _startWindow, _endWindow);
 	int nchan = sound ? sound -> ny : longSound -> numberOfChannels;
-	int cursorVisible = my startSelection == my endSelection && my startSelection >= my startWindow && my startSelection <= my endWindow;
-	Graphics_setColour (my graphics, Graphics_BLACK);
+	int cursorVisible = _startSelection == _endSelection && _startSelection >= _startWindow && _startSelection <= _endWindow;
+	Graphics_setColour (_graphics, Graphics_BLACK);
 	iferror {
 		int outOfMemory = wcsstr (Melder_getError (), L"memory") != NULL;
 		if (Melder_debug == 9) Melder_flushError (NULL); else Melder_clearError ();
-		Graphics_setWindow (my graphics, 0, 1, 0, 1);
-		Graphics_setTextAlignment (my graphics, Graphics_CENTRE, Graphics_HALF);
-		Graphics_text (my graphics, 0.5, 0.5, outOfMemory ? L"(out of memory)" : L"(cannot read sound file)");
+		Graphics_setWindow (_graphics, 0, 1, 0, 1);
+		Graphics_setTextAlignment (_graphics, Graphics_CENTRE, Graphics_HALF);
+		Graphics_text (_graphics, 0.5, 0.5, outOfMemory ? L"(out of memory)" : L"(cannot read sound file)");
 		return;
 	}
 	if (! fits) {
-		Graphics_setWindow (my graphics, 0, 1, 0, 1);
-		Graphics_setTextAlignment (my graphics, Graphics_CENTRE, Graphics_HALF);
-		Graphics_text (my graphics, 0.5, 0.5, L"(window too large; zoom in to see the data)");
+		Graphics_setWindow (_graphics, 0, 1, 0, 1);
+		Graphics_setTextAlignment (_graphics, Graphics_CENTRE, Graphics_HALF);
+		Graphics_text (_graphics, 0.5, 0.5, L"(window too large; zoom in to see the data)");
 		return;
 	}
 	long first, last;
-	if (Sampled_getWindowSamples (sound ? (Sampled) sound : (Sampled) longSound, my startWindow, my endWindow, & first, & last) <= 1) {
-		Graphics_setWindow (my graphics, 0, 1, 0, 1);
-		Graphics_setTextAlignment (my graphics, Graphics_CENTRE, Graphics_HALF);
-		Graphics_text (my graphics, 0.5, 0.5, L"(zoom out to see the data)");
+	if (Sampled_getWindowSamples (sound ? (Sampled) sound : (Sampled) longSound, _startWindow, _endWindow, & first, & last) <= 1) {
+		Graphics_setWindow (_graphics, 0, 1, 0, 1);
+		Graphics_setTextAlignment (_graphics, Graphics_CENTRE, Graphics_HALF);
+		Graphics_text (_graphics, 0.5, 0.5, L"(zoom out to see the data)");
 		return;
 	}
 	for (int ichan = 1; ichan <= nchan; ichan ++) {
 		double cursorFunctionValue = longSound ? 0.0 :
-			Vector_getValueAtX (sound, 0.5 * (my startSelection + my endSelection), ichan, 70);
+			Vector_getValueAtX (sound, 0.5 * (_startSelection + _endSelection), ichan, 70);
 		/*
 		 * BUG: this will only work for mono or stereo, until Graphics_function16 handles quadro.
 		 */
 		double ymin = (double) (nchan - ichan) / nchan;
 		double ymax = (double) (nchan + 1 - ichan) / nchan;
-		Graphics_Viewport vp = Graphics_insetViewport (my graphics, 0, 1, ymin, ymax);
+		Graphics_Viewport vp = Graphics_insetViewport (_graphics, 0, 1, ymin, ymax);
 		bool horizontal = false;
 		double minimum = sound ? globalMinimum : -1.0, maximum = sound ? globalMaximum : 1.0;
-		if (my sound.autoscaling) {
+		if (_sound.autoscaling) {
 			if (longSound)
-				LongSound_getWindowExtrema (longSound, my startWindow, my endWindow, ichan, & minimum, & maximum);
+				LongSound_getWindowExtrema (longSound, _startWindow, _endWindow, ichan, & minimum, & maximum);
 			else
 				Matrix_getWindowExtrema (sound, first, last, ichan, ichan, & minimum, & maximum);
 		}
 		if (minimum == maximum) { horizontal = true; minimum -= 1; maximum += 1;}
-		Graphics_setWindow (my graphics, my startWindow, my endWindow, minimum, maximum);
+		Graphics_setWindow (_graphics, _startWindow, _endWindow, minimum, maximum);
 		if (horizontal) {
-			Graphics_setTextAlignment (my graphics, Graphics_RIGHT, Graphics_HALF);
+			Graphics_setTextAlignment (_graphics, Graphics_RIGHT, Graphics_HALF);
 			double mid = 0.5 * (minimum + maximum);
-			Graphics_text1 (my graphics, my startWindow, mid, Melder_half (mid));
+			Graphics_text1 (_graphics, _startWindow, mid, Melder_half (mid));
 		} else {
-			if (! cursorVisible || Graphics_dyWCtoMM (my graphics, cursorFunctionValue - minimum) > 5.0) {
-				Graphics_setTextAlignment (my graphics, Graphics_RIGHT, Graphics_BOTTOM);
-				Graphics_text1 (my graphics, my startWindow, minimum, Melder_half (minimum));
+			if (! cursorVisible || Graphics_dyWCtoMM (_graphics, cursorFunctionValue - minimum) > 5.0) {
+				Graphics_setTextAlignment (_graphics, Graphics_RIGHT, Graphics_BOTTOM);
+				Graphics_text1 (_graphics, _startWindow, minimum, Melder_half (minimum));
 			}
-			if (! cursorVisible || Graphics_dyWCtoMM (my graphics, maximum - cursorFunctionValue) > 5.0) {
-				Graphics_setTextAlignment (my graphics, Graphics_RIGHT, Graphics_TOP);
-				Graphics_text1 (my graphics, my startWindow, maximum, Melder_half (maximum));
+			if (! cursorVisible || Graphics_dyWCtoMM (_graphics, maximum - cursorFunctionValue) > 5.0) {
+				Graphics_setTextAlignment (_graphics, Graphics_RIGHT, Graphics_TOP);
+				Graphics_text1 (_graphics, _startWindow, maximum, Melder_half (maximum));
 			}
 		}
 		if (minimum < 0 && maximum > 0 && ! horizontal) {
-			Graphics_setWindow (my graphics, 0, 1, minimum, maximum);
-			if (! cursorVisible || fabs (Graphics_dyWCtoMM (my graphics, cursorFunctionValue - 0.0)) > 3.0) {
-				Graphics_setTextAlignment (my graphics, Graphics_RIGHT, Graphics_HALF);
-				Graphics_text (my graphics, 0, 0, L"0");
+			Graphics_setWindow (_graphics, 0, 1, minimum, maximum);
+			if (! cursorVisible || fabs (Graphics_dyWCtoMM (_graphics, cursorFunctionValue - 0.0)) > 3.0) {
+				Graphics_setTextAlignment (_graphics, Graphics_RIGHT, Graphics_HALF);
+				Graphics_text (_graphics, 0, 0, L"0");
 			}
-			Graphics_setColour (my graphics, Graphics_CYAN);
-			Graphics_setLineType (my graphics, Graphics_DOTTED);
-			Graphics_line (my graphics, 0, 0, 1, 0);
-			Graphics_setLineType (my graphics, Graphics_DRAWN);
+			Graphics_setColour (_graphics, Graphics_CYAN);
+			Graphics_setLineType (_graphics, Graphics_DOTTED);
+			Graphics_line (_graphics, 0, 0, 1, 0);
+			Graphics_setLineType (_graphics, Graphics_DRAWN);
 		}
 		/*
 		 * Garnish the drawing area of each channel.
 		 */
-		Graphics_setWindow (my graphics, 0, 1, 0, 1);
-		Graphics_setColour (my graphics, Graphics_CYAN);
-		Graphics_innerRectangle (my graphics, 0, 1, 0, 1);
-		Graphics_setColour (my graphics, Graphics_BLACK);
+		Graphics_setWindow (_graphics, 0, 1, 0, 1);
+		Graphics_setColour (_graphics, Graphics_CYAN);
+		Graphics_innerRectangle (_graphics, 0, 1, 0, 1);
+		Graphics_setColour (_graphics, Graphics_BLACK);
 		/*
 		 * Draw a very thin separator line underneath.
 		 */
 		if (ichan < nchan) {
-			/*Graphics_setColour (my graphics, Graphics_BLACK);*/
-			Graphics_line (my graphics, 0, 0, 1, 0);
+			/*Graphics_setColour (_graphics, Graphics_BLACK);*/
+			Graphics_line (_graphics, 0, 0, 1, 0);
 		}
 		/*
 		 * Draw the samples.
 		 */
-		/*if (ichan == 1) FunctionEditor_SoundAnalysis_drawPulses (me);*/
+		/*if (ichan == 1) FunctionEditor_SoundAnalysis_drawPulses ();*/
 		if (sound) {
-			Graphics_setWindow (my graphics, my startWindow, my endWindow, minimum, maximum);
+			Graphics_setWindow (_graphics, _startWindow, _endWindow, minimum, maximum);
 			if (cursorVisible)
-				FunctionEditor_drawCursorFunctionValue (TimeSoundEditor_as_FunctionEditor (me), cursorFunctionValue, Melder_float (Melder_half (cursorFunctionValue)), L"");
-			Graphics_setColour (my graphics, Graphics_BLACK);
-			Graphics_function (my graphics, sound -> z [ichan], first, last,
+				drawCursorFunctionValue (cursorFunctionValue, Melder_float (Melder_half (cursorFunctionValue)), L"");
+			Graphics_setColour (_graphics, Graphics_BLACK);
+			Graphics_function (_graphics, sound -> z [ichan], first, last,
 				Sampled_indexToX (sound, first), Sampled_indexToX (sound, last));
 		} else {
-			Graphics_setWindow (my graphics, my startWindow, my endWindow, minimum * 32768, maximum * 32768);
-			Graphics_function16 (my graphics,
+			Graphics_setWindow (_graphics, _startWindow, _endWindow, minimum * 32768, maximum * 32768);
+			Graphics_function16 (_graphics,
 				longSound -> buffer - longSound -> imin * nchan + (ichan - 1), nchan - 1, first, last,
 				Sampled_indexToX (longSound, first), Sampled_indexToX (longSound, last));
 		}
-		Graphics_resetViewport (my graphics, vp);
+		Graphics_resetViewport (_graphics, vp);
 	}
-	Graphics_setWindow (my graphics, 0, 1, 0, 1);
-	Graphics_rectangle (my graphics, 0, 1, 0, 1);
-}
-
-class_methods (TimeSoundEditor, FunctionEditor) {
-	class_method (destroy)
-	class_method (info)
-	class_method (createMenuItems_file)
-	class_method (createMenuItems_file_draw)
-	class_method (createMenuItems_file_extract)
-	class_method (createMenuItems_file_write)
-	class_method (createMenuItems_query_info)
-	class_method (createMenuItems_view)
-	class_method (createMenuItems_view_sound)
-	class_method (updateMenuItems_file)
-	class_methods_end
-}
-
-int TimeSoundEditor_init (TimeSoundEditor me, GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound) {
-	my ownSound = ownSound;
-	if (sound != NULL) {
-		if (ownSound) {
-			Melder_assert (Thing_member (sound, classSound));
-			my sound.data = (Sound) Data_copy (sound); cherror   // Deep copy; ownership transferred.
-			Matrix_getWindowExtrema (sound, 1, my sound.data -> nx, 1, my sound.data -> ny, & my sound.minimum, & my sound.maximum);
-		} else if (Thing_member (sound, classSound)) {
-			my sound.data = (Sound) sound;   // Reference copy; ownership not transferred.
-			Matrix_getWindowExtrema (sound, 1, my sound.data -> nx, 1, my sound.data -> ny, & my sound.minimum, & my sound.maximum);
-		} else if (Thing_member (sound, classLongSound)) {
-			my longSound.data = (LongSound) sound;
-			my sound.minimum = -1.0, my sound.maximum = 1.0;
-		} else {
-			Melder_fatal ("Invalid sound class in TimeSoundEditor_init.");
-		}
-	}
-	FunctionEditor_init (TimeSoundEditor_as_parent (me), parent, title, data); cherror
-	my sound.autoscaling = preferences.sound.autoscaling;
-end:
-	iferror return 0;
-	return 1;
+	Graphics_setWindow (_graphics, 0, 1, 0, 1);
+	Graphics_rectangle (_graphics, 0, 1, 0, 1);
 }
 
 /* End of file FunctionEditor.cpp */

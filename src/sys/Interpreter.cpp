@@ -139,7 +139,7 @@ end:
 }
 
 int Interpreter_numericExpression_FIXME (const wchar_t *expression, double *value) {
-	return Interpreter (NULL, NULL).numericExpression(expression, value);
+	return Interpreter (NULL).numericExpression(expression, value);
 }
 
 int Interpreter::stringExpression (const wchar_t *expression, wchar_t **value) {
@@ -170,9 +170,8 @@ end:
 	return 1;
 }
 
-Interpreter::Interpreter (wchar_t *environmentName, Any editorClass)
+Interpreter::Interpreter (wchar_t *environmentName)
 	: _environmentName(Melder_wcsdup_f (environmentName)),
-	  _editorClass(editorClass),
 	  _numberOfParameters(0),
 	  _numberOfLabels(0),
 	  _callDepth(0),
@@ -611,7 +610,7 @@ int Interpreter::run (wchar_t *text) {
 	/*
 	 * The "environment" is NULL if we are in the Praat shell, or an editor otherwise.
 	 */
-	if (_editorClass) {
+	if (_environmentName) {
 		praatP. editor = praat_findEditorFromString (_environmentName);
 		if (praatP. editor == NULL)
 			return Melder_error3 (L"Editor \"", _environmentName, L"\" does not exist.");

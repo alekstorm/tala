@@ -29,7 +29,6 @@
  */
 
 #include "ButtonEditor.h"
-#include "praatP.h"
 #include "praat_script.h"
 #include "EditorM.h"
 #include "machine.h"
@@ -42,13 +41,12 @@
 	#define BUTTON_WIDTH  96
 #endif
 
-#define ButtonEditor__members(Klas) HyperPage__members(Klas) \
-	int show; \
-	GuiObject button1, button2, button3, button4, button5;
-#define ButtonEditor__methods(Klas) HyperPage__methods(Klas)
-Thing_declare2 (ButtonEditor, HyperPage);
+ButtonEditor::ButtonEditor (GuiObject parent)
+	: HyperPage (parent, L"Buttons", NULL) {
+	which (1);
+}
 
-static void drawMenuCommand (ButtonEditor me, praat_Command cmd, long i) {
+void ButtonEditor::drawMenuCommand (praat_Command cmd, long i) {
 	static MelderString text = { 0 };
 	int isAdded = cmd -> uniqueID != 0 || cmd -> script != NULL;
 	int isHidden = cmd -> hidden;
@@ -80,11 +78,11 @@ static void drawMenuCommand (ButtonEditor me, praat_Command cmd, long i) {
 	if (cmd -> script) {
 		MelderString_append3 (& text, L", script \"", Melder_peekExpandBackslashes (cmd -> script), L"\"");
 	}
-	HyperPage_any (me, text.string, my font, my fontSize, cmd -> callback ? 0 : Graphics_ITALIC, 0.0,
+	any (text.string, _font, _fontSize, cmd -> callback ? 0 : Graphics_ITALIC, 0.0,
 		cmd -> depth * 0.3, 0.4, 0.0, 0.0, 0);
 }
 
-static void drawAction (ButtonEditor me, praat_Command cmd, long i) {
+void ButtonEditor::drawAction (praat_Command cmd, long i) {
 	static MelderString text = { 0 };
 	int isAdded = cmd -> uniqueID != 0 || cmd -> script != NULL;
 	int isHidden = cmd -> hidden, isToggled = cmd -> toggled;
@@ -138,32 +136,32 @@ static void drawAction (ButtonEditor me, praat_Command cmd, long i) {
 	if (cmd -> script) {
 		MelderString_append3 (& text, L", script \"", Melder_peekExpandBackslashes (cmd -> script), L"\"");
 	}
-	HyperPage_any (me, text.string, my font, my fontSize, cmd -> callback ? 0 : Graphics_ITALIC, 0.0,
+	any (text.string, _font, _fontSize, cmd -> callback ? 0 : Graphics_ITALIC, 0.0,
 		cmd -> depth * 0.3, 0.4, 0.0, 0.0, 0);
 }
 
-static void draw (ButtonEditor me) {
-	Graphics_clearWs (my g);
-	switch (my show) {
+void ButtonEditor::draw () {
+	Graphics_clearWs (_g);
+	switch (_show) {
 		case 1:
 			for (long i = 1, n = praat_getNumberOfMenuCommands (); i <= n; i ++) {
 				praat_Command cmd = praat_getMenuCommand (i);
 				if (wcsequ (cmd -> window, L"Objects"))
-					drawMenuCommand (me, praat_getMenuCommand (i), i);
+					drawMenuCommand (praat_getMenuCommand (i), i);
 			}
 			break;
 		case 2:
 			for (long i = 1, n = praat_getNumberOfMenuCommands (); i <= n; i ++) {
 				praat_Command cmd = praat_getMenuCommand (i);
 				if (wcsequ (cmd -> window, L"Picture"))
-					drawMenuCommand (me, praat_getMenuCommand (i), i);
+					drawMenuCommand (praat_getMenuCommand (i), i);
 			}
 			break;
 		case 3:
 			for (long i = 1, n = praat_getNumberOfMenuCommands (); i <= n; i ++) {
 				praat_Command cmd = praat_getMenuCommand (i);
 				if (! wcsequ (cmd -> window, L"Objects") && ! wcsequ (cmd -> window, L"Picture"))
-					drawMenuCommand (me, praat_getMenuCommand (i), i);
+					drawMenuCommand (praat_getMenuCommand (i), i);
 			}
 			break;
 		case 4:
@@ -171,7 +169,7 @@ static void draw (ButtonEditor me) {
 				praat_Command cmd = praat_getAction (i);
 				const wchar_t *klas = ((Data_Table) cmd -> class1) -> _className;
 				if (wcscmp (klas, L"N") < 0)
-					drawAction (me, praat_getAction (i), i);
+					drawAction (praat_getAction (i), i);
 			}
 			break;
 		case 5:
@@ -179,14 +177,13 @@ static void draw (ButtonEditor me) {
 				praat_Command cmd = praat_getAction (i);
 				const wchar_t *klas = ((Data_Table) cmd -> class1) -> _className;
 				if (wcscmp (klas, L"N") >= 0)
-					drawAction (me, praat_getAction (i), i);
+					drawAction (praat_getAction (i), i);
 			}
 			break;
 	}
 }
 
-static int goToPage (ButtonEditor me, const wchar_t *title) {
-	(void) me;
+int ButtonEditor::goToPage (const wchar_t *title) {
 	if (! title || ! title [0]) return 0;
 	if (wcsequ (title, L"Buttons")) return 1;
 	switch (title [0]) {
@@ -243,80 +240,62 @@ static int goToPage (ButtonEditor me, const wchar_t *title) {
 	return 0;
 }
 
-static void which (ButtonEditor me, int show) {
-	my show = show;
+void ButtonEditor::which (int show) {
+	_show = show;
 	#if motif
-	GuiRadioButton_setValue (my button1, show == 1);
-	GuiRadioButton_setValue (my button2, show == 2);
-	GuiRadioButton_setValue (my button3, show == 3);
-	GuiRadioButton_setValue (my button4, show == 4);
-	GuiRadioButton_setValue (my button5, show == 5);
+	GuiRadioButton_setValue (_button1, show == 1);
+	GuiRadioButton_setValue (_button2, show == 2);
+	GuiRadioButton_setValue (_button3, show == 3);
+	GuiRadioButton_setValue (_button4, show == 4);
+	GuiRadioButton_setValue (_button5, show == 5);
 	#endif
-	HyperPage_goToPage (me, L"Buttons");
+	goToPage (L"Buttons");
 }
 
-static void gui_radiobutton_cb_objects (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 1); }
-static void gui_radiobutton_cb_picture (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 2); }
-static void gui_radiobutton_cb_editors (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 3); }
-static void gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 4); }
-static void gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event) { (void) event; which ((structButtonEditor*)void_me, 5); }
+static void gui_radiobutton_cb_objects (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (1); }
+static void gui_radiobutton_cb_picture (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (2); }
+static void gui_radiobutton_cb_editors (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (3); }
+static void gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (4); }
+static void gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (5); }
 
-static void createChildren (ButtonEditor me) {
+void ButtonEditor::createChildren () {
+	HyperPage::createChildren ();
 	#if gtk
 		void *group = NULL;
 	#endif
 	int x = 3, y = Machine_getMenuBarHeight () + 4;
-	inherited (ButtonEditor) createChildren (ButtonEditor_as_parent (me));
-	my button1 = GuiRadioButton_createShown (my holder, x, x + BUTTON_WIDTH, y, Gui_AUTOMATIC,
-		L"Objects", gui_radiobutton_cb_objects, me, GuiRadioButton_SET);
+	_button1 = GuiRadioButton_createShown (_holder, x, x + BUTTON_WIDTH, y, Gui_AUTOMATIC,
+		L"Objects", gui_radiobutton_cb_objects, this, GuiRadioButton_SET);
 	x += BUTTON_WIDTH + 5;
-	my button2 = GuiRadioButton_createShown (my holder, x, x + BUTTON_WIDTH, y, Gui_AUTOMATIC,
-		L"Picture", gui_radiobutton_cb_picture, me, 0);
+	_button2 = GuiRadioButton_createShown (_holder, x, x + BUTTON_WIDTH, y, Gui_AUTOMATIC,
+		L"Picture", gui_radiobutton_cb_picture, this, 0);
 	x += BUTTON_WIDTH + 5;
-	my button3 = GuiRadioButton_createShown (my holder, x, x + BUTTON_WIDTH, y, Gui_AUTOMATIC,
-		L"Editors", gui_radiobutton_cb_editors, me, 0);
+	_button3 = GuiRadioButton_createShown (_holder, x, x + BUTTON_WIDTH, y, Gui_AUTOMATIC,
+		L"Editors", gui_radiobutton_cb_editors, this, 0);
 	x += BUTTON_WIDTH + 5;
-	my button4 = GuiRadioButton_createShown (my holder, x, x + BUTTON_WIDTH + 30, y, Gui_AUTOMATIC,
-		L"Actions A-M", gui_radiobutton_cb_actionsAM, me, 0);
+	_button4 = GuiRadioButton_createShown (_holder, x, x + BUTTON_WIDTH + 30, y, Gui_AUTOMATIC,
+		L"Actions A-M", gui_radiobutton_cb_actionsAM, this, 0);
 	x += BUTTON_WIDTH + 35;
-	my button5 = GuiRadioButton_createShown (my holder, x, x + BUTTON_WIDTH + 30, y, Gui_AUTOMATIC,
-		L"Actions N-Z", gui_radiobutton_cb_actionsNZ, me, 0);
+	_button5 = GuiRadioButton_createShown (_holder, x, x + BUTTON_WIDTH + 30, y, Gui_AUTOMATIC,
+		L"Actions N-Z", gui_radiobutton_cb_actionsNZ, this, 0);
 	
 	#if gtk
-		group = GuiRadioButton_getGroup(my button1);
-		GuiRadioButton_setGroup(my button2, group);
-		group = GuiRadioButton_getGroup(my button2);
-		GuiRadioButton_setGroup(my button3, group);
-		group = GuiRadioButton_getGroup(my button3);
-		GuiRadioButton_setGroup(my button4, group);
-		group = GuiRadioButton_getGroup(my button4);
-		GuiRadioButton_setGroup(my button5, group);
+		group = GuiRadioButton_getGroup(_button1);
+		GuiRadioButton_setGroup(_button2, group);
+		group = GuiRadioButton_getGroup(_button2);
+		GuiRadioButton_setGroup(_button3, group);
+		group = GuiRadioButton_getGroup(_button3);
+		GuiRadioButton_setGroup(_button4, group);
+		group = GuiRadioButton_getGroup(_button4);
+		GuiRadioButton_setGroup(_button5, group);
 	#endif
 }
 
-static int menu_cb_ButtonEditorHelp (EDITOR_ARGS) { EDITOR_IAM (ButtonEditor); Melder_help (L"ButtonEditor"); return 1; }
+static int menu_cb_ButtonEditorHelp (EDITOR_ARGS) { Melder_help (L"ButtonEditor"); return 1; }
 
-static void createHelpMenuItems (ButtonEditor me, EditorMenu *menu) {
-	inherited (ButtonEditor) createHelpMenuItems (ButtonEditor_as_parent (me), menu);
-	EditorMenu_addCommand (menu, L"ButtonEditor help", '?', menu_cb_ButtonEditorHelp);
-}
-
-class_methods (ButtonEditor, HyperPage) {
-	us -> scriptable = false;
-	class_method (createChildren)
-	class_method (createHelpMenuItems)
-	class_method (draw)
-	class_method (goToPage)
-	class_methods_end
-}
-
-ButtonEditor ButtonEditor_create (GuiObject parent) {
-	ButtonEditor me = Thing_new (ButtonEditor); cherror
-	HyperPage_init (ButtonEditor_as_parent (me), parent, L"Buttons", NULL); cherror
-	which (me, 1);
-end:
-	iferror forget (me);
-	return me;
+void ButtonEditor::createHelpMenuItems (EditorMenu *menu) {
+	HyperPage::createHelpMenuItems (menu);
+	menu->addCommand (L"ButtonEditor help", '?', menu_cb_ButtonEditorHelp);
 }
 
 /* End of file ButtonEditor.c */

@@ -83,8 +83,8 @@ DIRECT (Artword_edit)
 	if (theCurrentPraatApplication -> batch) Melder_throw ("Cannot view or edit an Artword from batch.");
 	WHERE (SELECTED) {
 		iam_LOOP (Artword);
-		autoArtwordEditor editor = ArtwordEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, me);
-		praat_installEditor (editor.transfer(), IOBJECT); therror
+		ArtwordEditor *editor = new ArtwordEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, me);
+		praat_installEditor (editor, IOBJECT); therror
 	}
 END
 

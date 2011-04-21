@@ -27,26 +27,29 @@
 #include "PitchTier.h"
 #include "Sound.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class PitchTierEditor : public RealTierEditor {
+  public:
+	PitchTierEditor (GuiObject parent, const wchar_t *title, PitchTier pitch, Sound sound, int ownSound);
+	//'sound' may be NULL.
 
-#define PitchTierEditor__parents(Klas) RealTierEditor__parents(Klas) Thing_inherit (Klas, RealTierEditor)
-Thing_declare1 (PitchTierEditor);
+	const wchar_t * type () { return L"PitchTierEditor"; }
+	double minimumLegalValue () { return 0.0; }
+	const wchar_t * quantityText () { return L"Frequency (Hz)"; }
+	const wchar_t * quantityKey () { return L"Frequency"; }
+	const wchar_t * rightTickUnits () { return L" Hz"; }
+	double defaultYmin () { return 50.0; }
+	double defaultYmax () { return 600.0; }
+	const wchar_t * setRangeTitle () { return L"Set frequency range..."; }
+	const wchar_t * defaultYminText () { return L"50.0"; }
+	const wchar_t * defaultYmaxText () { return L"600.0"; }
+	const wchar_t * yminText () { return L"Minimum frequency (Hz)"; }
+	const wchar_t * ymaxText () { return L"Maximum frequency (Hz)"; }
+	const wchar_t * yminKey () { return L"Minimum frequency"; }
+	const wchar_t * ymaxKey () { return L"Maximum frequency"; }
 
-#define PitchTierEditor__members(Klas) RealTierEditor__members(Klas)
-#define PitchTierEditor__methods(Klas) RealTierEditor__methods(Klas)
-Thing_declare2 (PitchTierEditor, RealTierEditor);
-
-PitchTierEditor PitchTierEditor_create (GuiObject parent, const wchar_t *title,
-	PitchTier pitch, Sound sound, int ownSound);
-/*
-	'sound' may be NULL.
-*/
-
-#ifdef __cplusplus
-	}
-#endif
+	void createHelpMenuItems (EditorMenu *menu);
+	void play (double tmin, double tmax);
+};
 
 /* End of file PitchTierEditor.h */
 #endif

@@ -137,7 +137,7 @@ int UiForm::UiField::widgetToValue () {
 	switch (_type) {
 		case UI_REAL: case UI_REAL_OR_UNDEFINED: case UI_POSITIVE: {
 			wchar_t *dirty = GuiText_getString (_text);   /* The text as typed by the user. */
-			if (! Interpreter(NULL, NULL).numericExpression (dirty, & _realValue)) { Melder_free (dirty); return 0; }
+			if (! Interpreter(NULL).numericExpression (dirty, & _realValue)) { Melder_free (dirty); return 0; }
 			Melder_free (dirty);
 			/*
 			 * Put a clean version of the new value in the form.
@@ -170,7 +170,7 @@ int UiForm::UiField::widgetToValue () {
 				_integerValue = 2;
 			} else {
 				double realValue;
-				if (! Interpreter(NULL, NULL).numericExpression (dirty, & realValue)) { Melder_free (dirty); return 0; }
+				if (! Interpreter(NULL).numericExpression (dirty, & realValue)) { Melder_free (dirty); return 0; }
 				_integerValue = floor (realValue + 0.5);
 			}
 			Melder_free (dirty);
@@ -229,7 +229,7 @@ int UiForm::UiField::widgetToValue () {
 			wchar_t *string = GuiText_getString (_text);
 			if (colourToValue (string)) {
 				Melder_free (string);
-			} else if (Interpreter(NULL, NULL).numericExpression (string, & _colourValue. red)) {
+			} else if (Interpreter(NULL).numericExpression (string, & _colourValue. red)) {
 				_colourValue. green = _colourValue. blue = _colourValue. red;
 				Melder_free (string);
 			} else {

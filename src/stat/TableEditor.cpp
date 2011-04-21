@@ -35,56 +35,132 @@
 #include "sys/machine.h"
 #include "sys/EditorM.h"
 
-#define MAXNUM_VISIBLE_COLUMNS  100
-#define SIZE_INCHES  40
-
-#define TableEditor__members(Klas) Editor__members(Klas) \
-	long topRow, leftColumn, selectedRow, selectedColumn; \
-	GuiObject text, drawingArea, horizontalScrollBar, verticalScrollBar; \
-	double columnLeft [MAXNUM_VISIBLE_COLUMNS], columnRight [MAXNUM_VISIBLE_COLUMNS]; \
-	Graphics graphics;
-#define TableEditor__methods(Klas) Editor__methods(Klas) \
-	void (*draw) (Klas me); \
-	int (*click) (Klas me, double xWC, double yWC, int shiftKeyPressed);
-Thing_declare2 (TableEditor, Editor);
-
 /********** EDITOR METHODS **********/
 
-static void destroy (I) {
-	iam (TableEditor);
-	forget (my graphics);
-	inherited (TableEditor) destroy (me);
+#if gtk
+	#define gui_cb_scroll(name, var) \
+		void gui_cb_ ## name ## Scroll(GtkRange *rng, gpointer void_me) { \
+			TableEditor *editor = (TableEditor *)void_me; \
+			double var = gtk_range_get_value(rng); \
+			do
+#elif motif
+	#define gui_cb_scroll(name, var) \
+		void gui_cb_ ## name ## Scroll(GUI_ARGS) { \
+			TableEditor *editor = (TableEditor *)void_me; \
+			int var; \
+			{ int slider, incr, pincr; \
+			  XmScrollBarGetValues(w, &var, &slider, &incr, &pincr); } \
+			do
+#endif
+#define gui_cb_scroll_end while (0); }
+
+static gui_cb_scroll(horizontal, value) {
+	if ((int)value != editor->_leftColumn) {
+		editor->_leftColumn = value;
+		editor->draw ();
+	}
+} gui_cb_scroll_end
+
+static gui_cb_scroll(vertical, value) {
+	if ((int)value != editor->_topRow) {
+		editor->_topRow = value;
+		editor->draw ();
+	}
+} gui_cb_scroll_end
+
+#if gtk
+static gboolean gui_cb_drawing_area_scroll(GuiObject w, GdkEventScroll *event, gpointer void_me) {
+	TableEditor *editor = (TableEditor *)void_me;
+	double hv = gtk_range_get_value(GTK_RANGE(editor->_horizontalScrollBar));
+	double hi = gtk_range_get_adjustment(GTK_RANGE(editor->_horizontalScrollBar))->step_increment;
+	double vv = gtk_range_get_value(GTK_RANGE(editor->_verticalScrollBar));
+	double vi = gtk_range_get_adjustment(GTK_RANGE(editor->_verticalScrollBar))->step_increment;
+	switch (event->direction) {
+		case GDK_SCROLL_UP:
+			gtk_range_set_value(GTK_RANGE(editor->_verticalScrollBar), vv - vi);
+			break;
+		case GDK_SCROLL_DOWN:
+			gtk_range_set_value(GTK_RANGE(editor->_verticalScrollBar), vv + vi);
+			break;
+		case GDK_SCROLL_LEFT:
+			gtk_range_set_value(GTK_RANGE(editor->_horizontalScrollBar), hv - hi);
+			break;
+		case GDK_SCROLL_RIGHT:
+			gtk_range_set_value(GTK_RANGE(editor->_horizontalScrollBar), hv + hi);
+			break;
+	}
+	return TRUE;
+}
+#endif
+
+TableEditor::TableEditor (GuiObject parent, const wchar_t *title, Table table)
+	: Editor (parent, 0, 0, 700, 500, title, table) {
+	//try { // FIXME exception
+		#if motif
+		Melder_assert (XtWindow (_drawingArea));
+		#endif
+		_topRow = 1;
+		_leftColumn = 1;
+		_selectedColumn = 1;
+		_selectedRow = 1;
+		_graphics = Graphics_create_xmdrawingarea (_drawingArea);
+		double size_pixels = SIZE_INCHES * Graphics_getResolution (_graphics);
+		Graphics_setWsViewport (_graphics, 0, size_pixels, 0, size_pixels);
+		Graphics_setWsWindow (_graphics, 0, size_pixels, 0, size_pixels);
+		Graphics_setViewport (_graphics, 0, size_pixels, 0, size_pixels);
+		Graphics_setFont (_graphics, kGraphics_font_COURIER);
+		Graphics_setFontSize (_graphics, 12);
+		Graphics_setUnderscoreIsSubscript (_graphics, FALSE);
+		Graphics_setAtSignIsLink (_graphics, TRUE);
+
+		#if gtk
+		g_signal_connect(G_OBJECT(_drawingArea), "scroll-event", G_CALLBACK(gui_cb_drawing_area_scroll), this);
+		g_signal_connect(G_OBJECT(_horizontalScrollBar), "value-changed", G_CALLBACK(gui_cb_horizontalScroll), this);
+		g_signal_connect(G_OBJECT(_verticalScrollBar), "value-changed", G_CALLBACK(gui_cb_verticalScroll), this);
+		#elif motif
+		XtAddCallback (_horizontalScrollBar, XmNvalueChangedCallback, gui_cb_horizontalScroll, (XtPointer) this);
+		XtAddCallback (_horizontalScrollBar, XmNdragCallback, gui_cb_horizontalScroll, (XtPointer) this);
+		XtAddCallback (_verticalScrollBar, XmNvalueChangedCallback, gui_cb_verticalScroll, (XtPointer) this);
+		XtAddCallback (_verticalScrollBar, XmNdragCallback, gui_cb_verticalScroll, (XtPointer) this);
+		#endif
+	/*} catch (...) {
+		rethrowmzero ("TableEditor not created.");
+	}*/
 }
 
-static void updateVerticalScrollBar (TableEditor me) {
-	Table table = static_cast<Table> (my data);
+TableEditor::~TableEditor () {
+	forget (_graphics);
+}
+
+void TableEditor::updateVerticalScrollBar () {
+	Table table = static_cast<Table> (_data);
 	#if motif
 	/*int value, slider, incr, pincr;
-	XmScrollBarGetValues (my verticalScrollBar, & value, & slider, & incr, & pincr);
-	XmScrollBarSetValues (my verticalScrollBar, my topRow, slider, incr, pincr, False);*/
-	XtVaSetValues (my verticalScrollBar,
-		XmNvalue, my topRow, XmNmaximum, table -> rows -> size + 1, NULL);
+	XmScrollBarGetValues (_verticalScrollBar, & value, & slider, & incr, & pincr);
+	XmScrollBarSetValues (_verticalScrollBar, _topRow, slider, incr, pincr, False);*/
+	XtVaSetValues (_verticalScrollBar,
+		XmNvalue, _topRow, XmNmaximum, table -> rows -> size + 1, NULL);
 	#endif
 }
 
-static void updateHorizontalScrollBar (TableEditor me) {
-	Table table = static_cast<Table> (my data);
+void TableEditor::updateHorizontalScrollBar () {
+	Table table = static_cast<Table> (_data);
 	#if motif
 	/*int value, slider, incr, pincr;
-	XmScrollBarGetValues (my horizontalScrollBar, & value, & slider, & incr, & pincr);
-	XmScrollBarSetValues (my horizontalScrollBar, my topRow, slider, incr, pincr, False);*/
-	XtVaSetValues (my horizontalScrollBar,
-		XmNvalue, my leftColumn, XmNmaximum, table -> numberOfColumns + 1, NULL);
+	XmScrollBarGetValues (_horizontalScrollBar, & value, & slider, & incr, & pincr);
+	XmScrollBarSetValues (_horizontalScrollBar, _topRow, slider, incr, pincr, False);*/
+	XtVaSetValues (_horizontalScrollBar,
+		XmNvalue, _leftColumn, XmNmaximum, table -> numberOfColumns + 1, NULL);
 	#endif
 }
 
-static void dataChanged (TableEditor me) {
-	Table table = static_cast<Table> (my data);
-	if (my topRow > table -> rows -> size) my topRow = table -> rows -> size;
-	if (my leftColumn > table -> numberOfColumns) my leftColumn = table -> numberOfColumns;
-	updateVerticalScrollBar (me);
-	updateHorizontalScrollBar (me);
-	Graphics_updateWs (my graphics);
+void TableEditor::dataChanged () {
+	Table table = static_cast<Table> (_data);
+	if (_topRow > table -> rows -> size) _topRow = table -> rows -> size;
+	if (_leftColumn > table -> numberOfColumns) _leftColumn = table -> numberOfColumns;
+	updateVerticalScrollBar ();
+	updateHorizontalScrollBar ();
+	Graphics_updateWs (_graphics);
 }
 
 /********** FILE MENU **********/
@@ -94,23 +170,23 @@ static void dataChanged (TableEditor me) {
 
 #ifndef macintosh
 static int menu_cb_Cut (EDITOR_ARGS) {
-	EDITOR_IAM (TableEditor);
-	GuiText_cut (my text);
+	TableEditor *editor = (TableEditor *)editor;
+	GuiText_cut (editor->_text);
 	return 1;
 }
 static int menu_cb_Copy (EDITOR_ARGS) {
-	EDITOR_IAM (TableEditor);
-	GuiText_copy (my text);
+	TableEditor *editor = (TableEditor *)editor;
+	GuiText_copy (editor->_text);
 	return 1;
 }
 static int menu_cb_Paste (EDITOR_ARGS) {
-	EDITOR_IAM (TableEditor);
-	GuiText_paste (my text);
+	TableEditor *editor = (TableEditor *)editor;
+	GuiText_paste (editor->_text);
 	return 1;
 }
 static int menu_cb_Erase (EDITOR_ARGS) {
-	EDITOR_IAM (TableEditor);
-	GuiText_remove (my text);
+	TableEditor *editor = (TableEditor *)editor;
+	GuiText_remove (editor->_text);
 	return 1;
 }
 #endif
@@ -120,137 +196,136 @@ static int menu_cb_Erase (EDITOR_ARGS) {
 /********** HELP MENU **********/
 
 static int menu_cb_TableEditorHelp (EDITOR_ARGS) {
-	EDITOR_IAM (TableEditor);
 	Melder_help (L"TableEditor");
 	return 1;
 }
 
 /********** DRAWING AREA **********/
 
-static void draw (TableEditor me) {
-	Table table = static_cast<Table> (my data);
+void TableEditor::draw () {
+	Table table = static_cast<Table> (_data);
 	double spacing = 2.0;   /* millimetres at both edges */
 	double columnWidth, cellWidth;
 	/*
 	 * We fit 200 rows in 40 inches, which is 14.4 points per row.
 	 */
-	long rowmin = my topRow, rowmax = rowmin + 197;
-	long colmin = my leftColumn, colmax = colmin + (MAXNUM_VISIBLE_COLUMNS - 1);
+	long rowmin = _topRow, rowmax = rowmin + 197;
+	long colmin = _leftColumn, colmax = colmin + (MAXNUM_VISIBLE_COLUMNS - 1);
 	if (rowmax > table -> rows -> size) rowmax = table -> rows -> size;
 	if (colmax > table -> numberOfColumns) colmax = table -> numberOfColumns;
-	Graphics_clearWs (my graphics);
-	Graphics_setTextAlignment (my graphics, Graphics_CENTRE, Graphics_HALF);
-	Graphics_setWindow (my graphics, 0.0, 1.0, rowmin + 197.5, rowmin - 2.5);
-	Graphics_setColour (my graphics, Graphics_SILVER);
-	Graphics_fillRectangle (my graphics, 0.0, 1.0, rowmin - 2.5, rowmin - 0.5);
-	Graphics_setColour (my graphics, Graphics_BLACK);
-	Graphics_line (my graphics, 0.0, rowmin - 0.5, 1.0, rowmin - 0.5);
-	Graphics_setWindow (my graphics, 0.0, Graphics_dxWCtoMM (my graphics, 1.0), rowmin + 197.5, rowmin - 2.5);
+	Graphics_clearWs (_graphics);
+	Graphics_setTextAlignment (_graphics, Graphics_CENTRE, Graphics_HALF);
+	Graphics_setWindow (_graphics, 0.0, 1.0, rowmin + 197.5, rowmin - 2.5);
+	Graphics_setColour (_graphics, Graphics_SILVER);
+	Graphics_fillRectangle (_graphics, 0.0, 1.0, rowmin - 2.5, rowmin - 0.5);
+	Graphics_setColour (_graphics, Graphics_BLACK);
+	Graphics_line (_graphics, 0.0, rowmin - 0.5, 1.0, rowmin - 0.5);
+	Graphics_setWindow (_graphics, 0.0, Graphics_dxWCtoMM (_graphics, 1.0), rowmin + 197.5, rowmin - 2.5);
 	/*
 	 * Determine the width of the column with the row numbers.
 	 */
-	columnWidth = Graphics_textWidth (my graphics, L"row");
+	columnWidth = Graphics_textWidth (_graphics, L"row");
 	for (long irow = rowmin; irow <= rowmax; irow ++) {
-		cellWidth = Graphics_textWidth (my graphics, Melder_integer (irow));
+		cellWidth = Graphics_textWidth (_graphics, Melder_integer (irow));
 		if (cellWidth > columnWidth) columnWidth = cellWidth;
 	}
-	my columnLeft [0] = columnWidth + 2 * spacing;
-	Graphics_setColour (my graphics, Graphics_SILVER);
-	Graphics_fillRectangle (my graphics, 0.0, my columnLeft [0], rowmin - 0.5, rowmin + 197.5);
-	Graphics_setColour (my graphics, Graphics_BLACK);
-	Graphics_line (my graphics, my columnLeft [0], rowmin - 0.5, my columnLeft [0], rowmin + 197.5);
+	_columnLeft [0] = columnWidth + 2 * spacing;
+	Graphics_setColour (_graphics, Graphics_SILVER);
+	Graphics_fillRectangle (_graphics, 0.0, _columnLeft [0], rowmin - 0.5, rowmin + 197.5);
+	Graphics_setColour (_graphics, Graphics_BLACK);
+	Graphics_line (_graphics, _columnLeft [0], rowmin - 0.5, _columnLeft [0], rowmin + 197.5);
 	/*
 	 * Determine the width of the columns.
 	 */
 	for (long icol = colmin; icol <= colmax; icol ++) {
 		const wchar_t *columnLabel = table -> columnHeaders [icol]. label;
-		columnWidth = Graphics_textWidth (my graphics, Melder_integer (icol));
+		columnWidth = Graphics_textWidth (_graphics, Melder_integer (icol));
 		if (columnLabel == NULL) columnLabel = L"";
-		cellWidth = Graphics_textWidth (my graphics, columnLabel);
+		cellWidth = Graphics_textWidth (_graphics, columnLabel);
 		if (cellWidth > columnWidth) columnWidth = cellWidth;
 		for (long irow = rowmin; irow <= rowmax; irow ++) {
 			const wchar_t *cell = Table_getStringValue_Assert (table, irow, icol);
 			Melder_assert (cell != NULL);
 			if (cell [0] == '\0') cell = L"?";
-			cellWidth = Graphics_textWidth (my graphics, cell);
+			cellWidth = Graphics_textWidth (_graphics, cell);
 			if (cellWidth > columnWidth) columnWidth = cellWidth;
 		}
-		my columnRight [icol - colmin] = my columnLeft [icol - colmin] + columnWidth + 2 * spacing;
-		if (icol < colmax) my columnLeft [icol - colmin + 1] = my columnRight [icol - colmin];
+		_columnRight [icol - colmin] = _columnLeft [icol - colmin] + columnWidth + 2 * spacing;
+		if (icol < colmax) _columnLeft [icol - colmin + 1] = _columnRight [icol - colmin];
 	}
 	/*
 	 * Show the row numbers.
 	 */
-	Graphics_text (my graphics, my columnLeft [0] / 2, rowmin - 1, L"row");
+	Graphics_text (_graphics, _columnLeft [0] / 2, rowmin - 1, L"row");
 	for (long irow = rowmin; irow <= rowmax; irow ++) {
-		Graphics_text1 (my graphics, my columnLeft [0] / 2, irow, Melder_integer (irow));
+		Graphics_text1 (_graphics, _columnLeft [0] / 2, irow, Melder_integer (irow));
 	}
 	/*
 	 * Show the column labels.
 	 */
 	for (long icol = colmin; icol <= colmax; icol ++) {
-		double mid = (my columnLeft [icol - colmin] + my columnRight [icol - colmin]) / 2;
+		double mid = (_columnLeft [icol - colmin] + _columnRight [icol - colmin]) / 2;
 		const wchar_t *columnLabel = table -> columnHeaders [icol]. label;
 		if (columnLabel == NULL || columnLabel [0] == '\0') columnLabel = L"?";
-		Graphics_text1 (my graphics, mid, rowmin - 2, Melder_integer (icol));
-		Graphics_text (my graphics, mid, rowmin - 1, columnLabel);
+		Graphics_text1 (_graphics, mid, rowmin - 2, Melder_integer (icol));
+		Graphics_text (_graphics, mid, rowmin - 1, columnLabel);
 	}
 	/*
 	 * Show the cell contents.
 	 */
 	for (long irow = rowmin; irow <= rowmax; irow ++) {
 		for (long icol = colmin; icol <= colmax; icol ++) {
-			double mid = (my columnLeft [icol - colmin] + my columnRight [icol - colmin]) / 2;
+			double mid = (_columnLeft [icol - colmin] + _columnRight [icol - colmin]) / 2;
 			const wchar_t *cell = Table_getStringValue_Assert (table, irow, icol);
 			Melder_assert (cell != NULL);
 			if (cell [0] == '\0') cell = L"?";
-			Graphics_text (my graphics, mid, irow, cell);
+			Graphics_text (_graphics, mid, irow, cell);
 		}
 	}
 }
 
-static int click (TableEditor me, double xclick, double yWC, int shiftKeyPressed) {
-	Table table = static_cast<Table> (my data);
+int TableEditor::click (double xclick, double yWC, int shiftKeyPressed) {
+	Table table = static_cast<Table> (_data);
 	return 1;
 }
 
 static void gui_text_cb_change (I, GuiTextEvent event) {
-	iam (TableEditor);
+	TableEditor *editor = (TableEditor *)void_me;
 	(void) event;
-	Table table = static_cast<Table> (my data);
-	Editor_broadcastChange (TableEditor_as_Editor (me));
+	Table table = static_cast<Table> (editor->_data);
+	editor->broadcastChange ();
 }
 
 static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
-	iam (TableEditor);
+	TableEditor *editor = (TableEditor *)void_me;
 	(void) event;
-	if (my graphics == NULL) return;
-	draw (me);
+	if (editor->_graphics == NULL) return;
+	editor->draw ();
 }
 
 static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
-	iam (TableEditor);
-	if (my graphics == NULL) return;
-if (gtk && event -> type != BUTTON_PRESS) return;
+	TableEditor *editor = (TableEditor *)void_me;
+	if (editor->_graphics == NULL) return;
+	if (gtk && event -> type != BUTTON_PRESS) return;
 	double xWC, yWC;
-	Graphics_DCtoWC (my graphics, event -> x, event -> y, & xWC, & yWC);
+	Graphics_DCtoWC (editor->_graphics, event -> x, event -> y, & xWC, & yWC);
 	// TODO: implement selection
 }
 
 static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
-	iam (TableEditor);
-	if (my graphics == NULL) return;
-	Graphics_updateWs (my graphics);
+	TableEditor *editor = (TableEditor *)void_me;
+	if (editor->_graphics == NULL) return;
+	Graphics_updateWs (editor->_graphics);
 }
 
-static void createChildren (TableEditor me) {
-	Table table = static_cast<Table> (my data);
+void TableEditor::createChildren () {
+	Table table = static_cast<Table> (_data);
 	GuiObject form;   /* A form inside a form; needed to keep key presses away from the drawing area. */
 
 	#if gtk
-		form = my dialog;
+		form = _dialog;
 	#elif motif
-		form = XmCreateForm (my dialog, "buttons", NULL, 0);
+		form = XmCreateForm (_dialog, "buttons", NULL, 0);
 		XtVaSetValues (form,
 			XmNleftAttachment, XmATTACH_FORM, XmNrightAttachment, XmATTACH_FORM,
 			XmNtopAttachment, XmATTACH_FORM, XmNtopOffset, Machine_getMenuBarHeight (),
@@ -262,13 +337,13 @@ static void createChildren (TableEditor me) {
 	/***** Create text field. *****/
 
 	#if gtk
-		my text = GuiText_create(NULL, 0, 0, 0, Machine_getTextHeight(), 0);
-		gtk_box_pack_start(GTK_BOX(form), my text, FALSE, FALSE, 3);
-		GuiObject_show(my text);
+		_text = GuiText_create(NULL, 0, 0, 0, Machine_getTextHeight(), 0);
+		gtk_box_pack_start(GTK_BOX(form), _text, FALSE, FALSE, 3);
+		GuiObject_show(_text);
 	#else
-		my text = GuiText_createShown (form, 0, 0, 0, Machine_getTextHeight (), 0);
+		_text = GuiText_createShown (form, 0, 0, 0, Machine_getTextHeight (), 0);
 	#endif
-	GuiText_setChangeCallback (my text, gui_text_cb_change, me);
+	GuiText_setChangeCallback (_text, gui_text_cb_change, this);
 
 	/***** Create drawing area. *****/
 	
@@ -277,18 +352,18 @@ static void createChildren (TableEditor me) {
 		gtk_box_pack_start (GTK_BOX (form), table_container, TRUE, TRUE, 3);
 		GuiObject_show (table_container);
 		
-		my drawingArea = GuiDrawingArea_create (NULL, 0, 0, 0, 0,
-			gui_drawingarea_cb_expose, gui_drawingarea_cb_click, NULL, gui_drawingarea_cb_resize, me, 0);
+		_drawingArea = GuiDrawingArea_create (NULL, 0, 0, 0, 0,
+			gui_drawingarea_cb_expose, gui_drawingarea_cb_click, NULL, gui_drawingarea_cb_resize, this, 0);
 		
 		// need to turn off double buffering, otherwise we receive the expose events
 		// delayed by one event, see also FunctionEditor.c
-		gtk_widget_set_double_buffered (my drawingArea, FALSE);
+		gtk_widget_set_double_buffered (_drawingArea, FALSE);
 		
-		gtk_table_attach (GTK_TABLE (table_container), my drawingArea, 0, 1, 0, 1,
+		gtk_table_attach (GTK_TABLE (table_container), _drawingArea, 0, 1, 0, 1,
 			(GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-		GuiObject_show (my drawingArea);
+		GuiObject_show (_drawingArea);
 	#else
-		my drawingArea = GuiDrawingArea_createShown (form, 0, - Machine_getScrollBarWidth (),
+		_drawingArea = GuiDrawingArea_createShown (form, 0, - Machine_getScrollBarWidth (),
 			Machine_getTextHeight (), - Machine_getScrollBarWidth (),
 			gui_drawingarea_cb_expose, gui_drawingarea_cb_click, NULL, NULL, me, 0);
 	#endif
@@ -297,12 +372,12 @@ static void createChildren (TableEditor me) {
 
 	#if gtk
 		GtkAdjustment *hadj = GTK_ADJUSTMENT (gtk_adjustment_new (1, 1, table->numberOfColumns + 1, 1, 3, 1));
-		my horizontalScrollBar = gtk_hscrollbar_new (hadj);
-		gtk_table_attach (GTK_TABLE(table_container), my horizontalScrollBar, 0, 1, 1, 2,
+		_horizontalScrollBar = gtk_hscrollbar_new (hadj);
+		gtk_table_attach (GTK_TABLE(table_container), _horizontalScrollBar, 0, 1, 1, 2,
 			(GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) 0, 0, 0);
-		GuiObject_show (my horizontalScrollBar);
+		GuiObject_show (_horizontalScrollBar);
 	#elif motif
-	my horizontalScrollBar = XtVaCreateManagedWidget ("horizontalScrollBar",
+	_horizontalScrollBar = XtVaCreateManagedWidget ("horizontalScrollBar",
 		xmScrollBarWidgetClass, form,
 		XmNorientation, XmHORIZONTAL,
 		XmNleftAttachment, XmATTACH_FORM, XmNleftOffset, 0,
@@ -322,12 +397,12 @@ static void createChildren (TableEditor me) {
 
 	#if gtk
 		GtkAdjustment *vadj = GTK_ADJUSTMENT (gtk_adjustment_new (1, 1, table->rows->size + 1, 1, 10, 1));
-		my verticalScrollBar = gtk_vscrollbar_new (vadj);
-		gtk_table_attach (GTK_TABLE (table_container), my verticalScrollBar, 1, 2, 0, 1,
+		_verticalScrollBar = gtk_vscrollbar_new (vadj);
+		gtk_table_attach (GTK_TABLE (table_container), _verticalScrollBar, 1, 2, 0, 1,
 			(GtkAttachOptions) 0, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-		GuiObject_show (my verticalScrollBar);
+		GuiObject_show (_verticalScrollBar);
 	#elif motif
-	my verticalScrollBar = XtVaCreateManagedWidget ("verticalScrollBar",
+	_verticalScrollBar = XtVaCreateManagedWidget ("verticalScrollBar",
 		xmScrollBarWidgetClass, form,
 		XmNorientation, XmVERTICAL,
 		XmNtopAttachment, XmATTACH_FORM, XmNtopOffset, Machine_getTextHeight (),
@@ -346,129 +421,25 @@ static void createChildren (TableEditor me) {
 	GuiObject_show (form);
 }
 
-static void createMenus (TableEditor me) {
-	inherited (TableEditor) createMenus (TableEditor_as_parent (me));
+void TableEditor::createMenus () {
+	Editor::createMenus ();
 
 	#ifndef macintosh
-	Editor_addCommand (me, L"Edit", L"-- cut copy paste --", 0, NULL);
-	Editor_addCommand (me, L"Edit", L"Cut text", 'X', menu_cb_Cut);
-	Editor_addCommand (me, L"Edit", L"Cut", Editor_HIDDEN, menu_cb_Cut);
-	Editor_addCommand (me, L"Edit", L"Copy text", 'C', menu_cb_Copy);
-	Editor_addCommand (me, L"Edit", L"Copy", Editor_HIDDEN, menu_cb_Copy);
-	Editor_addCommand (me, L"Edit", L"Paste text", 'V', menu_cb_Paste);
-	Editor_addCommand (me, L"Edit", L"Paste", Editor_HIDDEN, menu_cb_Paste);
-	Editor_addCommand (me, L"Edit", L"Erase text", 0, menu_cb_Erase);
-	Editor_addCommand (me, L"Edit", L"Erase", Editor_HIDDEN, menu_cb_Erase);
+	addCommand (L"Edit", L"-- cut copy paste --", 0, NULL);
+	addCommand (L"Edit", L"Cut text", 'X', menu_cb_Cut);
+	addCommand (L"Edit", L"Cut", Editor_HIDDEN, menu_cb_Cut);
+	addCommand (L"Edit", L"Copy text", 'C', menu_cb_Copy);
+	addCommand (L"Edit", L"Copy", Editor_HIDDEN, menu_cb_Copy);
+	addCommand (L"Edit", L"Paste text", 'V', menu_cb_Paste);
+	addCommand (L"Edit", L"Paste", Editor_HIDDEN, menu_cb_Paste);
+	addCommand (L"Edit", L"Erase text", 0, menu_cb_Erase);
+	addCommand (L"Edit", L"Erase", Editor_HIDDEN, menu_cb_Erase);
 	#endif
 }
 
-static void createHelpMenuItems (TableEditor me, EditorMenu *menu) {
-	inherited (TableEditor) createHelpMenuItems (TableEditor_as_parent (me), menu);
-	EditorMenu_addCommand (menu, L"TableEditor help", '?', menu_cb_TableEditorHelp);
-}
-
-class_methods (TableEditor, Editor) {
-	class_method (destroy)
-	class_method (dataChanged)
-	class_method (createChildren)
-	class_method (createMenus)
-	class_method (createHelpMenuItems)
-	class_method (draw)
-	class_method (click)
-	class_methods_end
-}
-
-#if gtk
-	#define gui_cb_scroll(name, var) \
-		void gui_cb_ ## name ## Scroll(GtkRange *rng, gpointer void_me) { \
-			iam(TableEditor); \
-			double var = gtk_range_get_value(rng); \
-			do
-#elif motif
-	#define gui_cb_scroll(name, var) \
-		void gui_cb_ ## name ## Scroll(GUI_ARGS) { \
-			GUI_IAM(TableEditor); \
-			int var; \
-			{ int slider, incr, pincr; \
-			  XmScrollBarGetValues(w, &var, &slider, &incr, &pincr); } \
-			do
-#endif
-#define gui_cb_scroll_end while (0); }
-
-static gui_cb_scroll(horizontal, value) {
-	if ((int)value != my leftColumn) {
-		my leftColumn = value;
-		our draw(me);
-	}
-} gui_cb_scroll_end
-
-static gui_cb_scroll(vertical, value) {
-	if ((int)value != my topRow) {
-		my topRow = value;
-		our draw (me);
-	}
-} gui_cb_scroll_end
-
-#if gtk
-static gboolean gui_cb_drawing_area_scroll(GuiObject w, GdkEventScroll *event, gpointer void_me) {
-	iam(TableEditor);
-	double hv = gtk_range_get_value(GTK_RANGE(my horizontalScrollBar));
-	double hi = gtk_range_get_adjustment(GTK_RANGE(my horizontalScrollBar))->step_increment;
-	double vv = gtk_range_get_value(GTK_RANGE(my verticalScrollBar));
-	double vi = gtk_range_get_adjustment(GTK_RANGE(my verticalScrollBar))->step_increment;
-	switch (event->direction) {
-		case GDK_SCROLL_UP:
-			gtk_range_set_value(GTK_RANGE(my verticalScrollBar), vv - vi);
-			break;
-		case GDK_SCROLL_DOWN:
-			gtk_range_set_value(GTK_RANGE(my verticalScrollBar), vv + vi);
-			break;
-		case GDK_SCROLL_LEFT:
-			gtk_range_set_value(GTK_RANGE(my horizontalScrollBar), hv - hi);
-			break;
-		case GDK_SCROLL_RIGHT:
-			gtk_range_set_value(GTK_RANGE(my horizontalScrollBar), hv + hi);
-			break;
-	}
-	return TRUE;
-}
-#endif
-
-TableEditor TableEditor_create (GuiObject parent, const wchar_t *title, Table table) {
-	try {
-		autoTableEditor me = Thing_new (TableEditor);
-		Editor_init (TableEditor_as_parent (me.peek()), parent, 0, 0, 700, 500, title, table); therror
-		#if motif
-		Melder_assert (XtWindow (my drawingArea));
-		#endif
-		my topRow = 1;
-		my leftColumn = 1;
-		my selectedColumn = 1;
-		my selectedRow = 1;
-		my graphics = Graphics_create_xmdrawingarea (my drawingArea);
-		double size_pixels = SIZE_INCHES * Graphics_getResolution (my graphics);
-		Graphics_setWsViewport (my graphics, 0, size_pixels, 0, size_pixels);
-		Graphics_setWsWindow (my graphics, 0, size_pixels, 0, size_pixels);
-		Graphics_setViewport (my graphics, 0, size_pixels, 0, size_pixels);
-		Graphics_setFont (my graphics, kGraphics_font_COURIER);
-		Graphics_setFontSize (my graphics, 12);
-		Graphics_setUnderscoreIsSubscript (my graphics, FALSE);
-		Graphics_setAtSignIsLink (my graphics, TRUE);
-
-		#if gtk
-		g_signal_connect(G_OBJECT(my drawingArea), "scroll-event", G_CALLBACK(gui_cb_drawing_area_scroll), me.peek());
-		g_signal_connect(G_OBJECT(my horizontalScrollBar), "value-changed", G_CALLBACK(gui_cb_horizontalScroll), me.peek());
-		g_signal_connect(G_OBJECT(my verticalScrollBar), "value-changed", G_CALLBACK(gui_cb_verticalScroll), me.peek());
-		#elif motif
-		XtAddCallback (my horizontalScrollBar, XmNvalueChangedCallback, gui_cb_horizontalScroll, (XtPointer) me.peek());
-		XtAddCallback (my horizontalScrollBar, XmNdragCallback, gui_cb_horizontalScroll, (XtPointer) me.peek());
-		XtAddCallback (my verticalScrollBar, XmNvalueChangedCallback, gui_cb_verticalScroll, (XtPointer) me.peek());
-		XtAddCallback (my verticalScrollBar, XmNdragCallback, gui_cb_verticalScroll, (XtPointer) me.peek());
-		#endif
-		return me.transfer();
-	} catch (...) {
-		rethrowmzero ("TableEditor not created.");
-	}
+void TableEditor::createHelpMenuItems (EditorMenu *menu) {
+	Editor::createHelpMenuItems (menu);
+	menu->addCommand (L"TableEditor help", '?', menu_cb_TableEditorHelp);
 }
 
 /* End of file TableEditor.cpp */

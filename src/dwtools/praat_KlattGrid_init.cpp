@@ -212,7 +212,7 @@ DIRECT (KlattGrid_edit##Name##Tier) \
 	WHERE (SELECTED && CLASS == classKlattGrid) \
 	{\
 		const wchar_t *id_and_name = Melder_wcscat2 (Melder_integer (ID), L". " #name  " tier"); \
-		if (! praat_installEditor (KlattGrid_##name##TierEditor_create (theCurrentPraatApplication -> topShell, id_and_name, \
+		if (! praat_installEditor (new KlattGrid_##name##TierEditor (theCurrentPraatApplication -> topShell, id_and_name, \
 			(structKlattGrid *)OBJECT), IOBJECT)) return 0; \
 		Melder_free (id_and_name); \
 	}\
@@ -241,7 +241,7 @@ DIRECT (KlattGrid_edit##Name##FormantGrid) \
 	WHERE (SELECTED && CLASS == classKlattGrid) \
 	{ \
 		const wchar_t *id_and_name = Melder_wcscat4 (Melder_integer (ID), L". ", formant_names[formantType], L"formant grid"); \
-		if (! praat_installEditor (KlattGrid_formantGridEditor_create (theCurrentPraatApplication -> topShell, id_and_name, (structKlattGrid *)OBJECT, formantType), IOBJECT)) return 0; \
+		if (! praat_installEditor (new KlattGrid_formantGridEditor (theCurrentPraatApplication -> topShell, id_and_name, (structKlattGrid *)OBJECT, formantType), IOBJECT)) return 0; \
 		Melder_free (id_and_name); \
 	} \
 END
@@ -270,7 +270,7 @@ DO \
 		if (amp == NULL) return Melder_error1 (L"Unknown formant type"); \
 		if (formantNumber > (*amp) -> size) return Melder_error1 (L"Formant number does not exist."); \
 		const wchar_t *id_and_name = Melder_wcscat4 (Melder_integer (ID), L". ", formant_names[formantType], L"formant amplitude tier"); \
-		if (! praat_installEditor (KlattGrid_decibelTierEditor_create (theCurrentPraatApplication -> topShell, id_and_name, kg, (structRealTier *)(*amp)->item[formantNumber]), IOBJECT)) return 0; \
+		if (! praat_installEditor (new KlattGrid_decibelTierEditor (theCurrentPraatApplication -> topShell, id_and_name, kg, (structRealTier *)(*amp)->item[formantNumber]), IOBJECT)) return 0; \
 		Melder_free (id_and_name); \
 	} \
 END

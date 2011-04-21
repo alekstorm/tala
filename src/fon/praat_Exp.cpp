@@ -53,8 +53,8 @@ DIRECT (ExperimentMFC_run)
 		Collection_addItem (experiments.peek(), me);   // reference copy of me
 	}
 	autoOrdered experimentsCopy = experiments.clone();   // we need a copy, because we do a transfer, then a peek
-	autoRunnerMFC runner = RunnerMFC_create (theCurrentPraatApplication -> topShell, L"listening experiments", experimentsCopy.transfer());
-	praat_installEditorN (runner.transfer(), experiments.peek()); therror
+	RunnerMFC *runner = new RunnerMFC (theCurrentPraatApplication -> topShell, L"listening experiments", experimentsCopy.transfer());
+	praat_installEditorN (runner, experiments.peek()); therror
 END
 
 DIRECT (ExperimentMFC_extractResults)

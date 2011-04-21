@@ -27,32 +27,123 @@
 	#include "Editor.h"
 #endif
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+#include "Data.h"
 
-#define DataSubEditor__parents(Klas) Editor__parents(Klas) Thing_inherit (Klas, Editor)
-Thing_declare1 (DataSubEditor);
-
-#define VectorEditor__parents(Klas) DataSubEditor__parents(Klas) Thing_inherit (Klas, DataSubEditor)
-Thing_declare1 (VectorEditor);
-
-#define MatrixEditor__parents(Klas) DataSubEditor__parents(Klas) Thing_inherit (Klas, DataSubEditor)
-Thing_declare1 (MatrixEditor);
-
-#define StructEditor__parents(Klas) DataSubEditor__parents(Klas) Thing_inherit (Klas, DataSubEditor)
-Thing_declare1 (StructEditor);
-
-#define ClassEditor__parents(Klas) StructEditor__parents(Klas) Thing_inherit (Klas, StructEditor)
-Thing_declare1 (ClassEditor);
-
-#define DataEditor__parents(Klas) ClassEditor__parents(Klas) Thing_inherit (Klas, ClassEditor)
-Thing_declare1 (DataEditor);
-
-DataEditor DataEditor_create (GuiObject parent, const wchar_t *title, Any data);
+#define MAXNUM_ROWS  12
 
 #ifdef __cplusplus
-	}
+class DataEditor;
+
+class DataSubEditor : public Editor {
+  public:
+	struct FieldData {
+		GuiObject _label, _button, _text;
+		void *_address;
+		Data_Description _description;
+		long _minimum, _maximum, _min2, _max2;
+		wchar_t *_history;   /* The full prefix of the members. */
+		int _rank;   /* Should the button open a StructEditor (0) or VectorEditor (1) or MatrixEditor (2) ? */
+	};
+
+	DataSubEditor (DataEditor *root, const wchar_t *title, void *address, Data_Description description);
+	~DataSubEditor ();
+
+	wchar_t * type () { return L"DataSubEditor"; }
+	bool isScriptable() { return false; }
+	void createHelpMenuItems (EditorMenu *menu);
+	void update ();
+	long countFields ();
+	Data_Description findNumberUse (const wchar_t *number);
+	void createChildren ();
+
+	DataEditor *_root;
+	void *_address;
+	Data_Description _description;
+	GuiObject _scrollBar;
+	int _irow, _topField, _numberOfFields;
+	FieldData _fieldData [1 + MAXNUM_ROWS];
+
+  protected:
+	static wchar_t * singleTypeToText (void *address, int type, void *tagType, MelderString *buffer);
+
+	Data_Description getDescription () { return _description; }
+	void showStructMember (void *structAddress, Data_Description structDescription, Data_Description memberDescription, FieldData *fieldData, wchar_t *history);
+	void showStructMembers (void *structAddress, Data_Description structDescription, int fromMember, wchar_t *history);
+	void showMembers ();
+};
+
+class VectorEditor : public DataSubEditor {
+  public:
+	VectorEditor (DataEditor *root, const wchar_t *title, void *address,
+		Data_Description description, long minimum, long maximum);
+
+	wchar_t * type () { return L"VectorEditor"; }
+
+	long _minimum, _maximum;
+
+  protected:
+	/* No structs inside. */
+	Data_Description getDescription () { return _description -> type != structwa ? NULL : (Data_Description) _description -> tagType; }
+
+	long countFields ();
+	void showMembers ();
+};
+
+class MatrixEditor : public DataSubEditor {
+  public:
+	MatrixEditor (DataEditor *root, const wchar_t *title, void *address,
+		Data_Description description, long min1, long max1, long min2, long max2);
+
+	wchar_t * type () { return L"MatrixEditor"; }
+
+	long _minimum, _maximum, _min2, _max2;
+
+  protected:
+	/* No structs inside. */
+	Data_Description getDescription () { return NULL; }
+	long countFields ();
+	void showMembers ();
+};
+
+class StructEditor : public DataSubEditor {
+  public:
+	StructEditor (DataEditor *root, const wchar_t *title, void *address, Data_Description description);
+
+	wchar_t * type () { return L"StructEditor"; }
+
+  protected:
+	long countFields ();
+	void showMembers ();
+};
+
+class ClassEditor : public StructEditor {
+  public:
+	ClassEditor (DataEditor *root, const wchar_t *title, void *address, Data_Description description);
+
+	wchar_t * type () { return L"ClassEditor"; }
+
+  protected:
+	long countFields ();
+	void showMembers ();
+	void showMembers_recursive (void *klas);
+};
+
+class DataEditor : public ClassEditor {
+  public:
+	DataEditor (GuiObject parent, const wchar_t *title, Any data);
+	~DataEditor ();
+
+	void dataChanged ();
+
+	Collection _children;
+};
+#else
+typedef struct DataSubEditor DataSubEditor;
+typedef struct VectorEditor VectorEditor;
+typedef struct MatrixEditor MatrixEditor;
+typedef struct StructEditor StructEditor;
+typedef struct ClassEditor ClassEditor;
+typedef struct DataEditor *DataEditor;
 #endif
 
 /* End of file DataEditor.h */

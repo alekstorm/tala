@@ -27,76 +27,102 @@
 #include "sys/Graphics.h"
 #include "Function.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+#define FunctionEditor_UPDATE_NEEDED  1
+#define FunctionEditor_NO_UPDATE_NEEDED  0
 
 struct FunctionEditor_picture {
 	/* KEEP IN SYNC WITH PREFS. */
 	bool garnish;
 };
 
-#define FunctionEditor__parents(Klas) Editor__parents(Klas) Thing_inherit (Klas, Editor)
-Thing_declare1 (FunctionEditor);
+class FunctionEditor : public Editor {
+  public:
+	static void prefs (void);
+	static int playCallback (Any me, int phase, double tmin, double tmax, double t);
 
-#define FunctionEditor__members(Klas) Editor__members(Klas) \
-	/* Subclass may change the following attributes, */ \
-	/* but has to respect the invariants, */ \
-	/* and has to call FunctionEditor_marksChanged () */ \
-	/* immediately after making the changes. */ \
-	double tmin, tmax, startWindow, endWindow; \
-	double startSelection, endSelection; /* Markers. */ \
-		/* These attributes are all expressed in seconds. Invariants: */ \
-		/*    tmin <= startWindow < endWindow <= tmax; */	 \
-		/*    tmin <= (startSelection, endSelection) <= tmax; */ \
-	double arrowScrollStep; \
-	\
-	Graphics graphics;   /* Used in the 'draw' method. */ \
-	short width, height;   /* Size of drawing area in pixels. */ \
-	GuiObject text;   /* Optional text at top. */ \
-	int shiftKeyPressed;   /* Information for the 'play' method. */ \
-	int playingCursor, playingSelection;   /* Information for end of play. */ \
-	struct FunctionEditor_picture picture; \
-	\
-	/* Private attributes: */ \
-	GuiObject drawingArea, scrollBar, groupButton, bottomArea; \
-	bool group, enableUpdates; \
-	int nrect; \
-	struct { double left, right, bottom, top; } rect [8]; \
-	double marker [1 + 3], playCursor, startZoomHistory, endZoomHistory; \
-	int numberOfMarkers;
-#define FunctionEditor__methods(Klas) Editor__methods(Klas) \
-	void (*draw) (Klas me); \
-	void (*prepareDraw) (Klas me);   /* For less flashing. */ \
-	const wchar_t *format_domain, *format_short, *format_long, *format_units, *format_totalDuration, *format_window, *format_selection; \
-	int fixedPrecision_long; \
-	int hasText; \
-	void (*play) (Klas me, double tmin, double tmax); \
-	int (*click) (Klas me, double xWC, double yWC, int shiftKeyPressed); \
-	int (*clickB) (Klas me, double xWC, double yWC); \
-	int (*clickE) (Klas me, double xWC, double yWC); \
-	void (*key) (Klas me, unsigned char key); \
-	int (*playCallback) (Any me, int phase, double tmin, double tmax, double t); \
-	void (*updateText) (Klas me); \
-	void (*prefs_addFields) (Klas me, EditorCommand *cmd); \
-	void (*prefs_setValues) (Klas me, EditorCommand *cmd); \
-	void (*prefs_getValues) (Klas me, EditorCommand *cmd); \
-	void (*createMenuItems_file_draw) (Klas me, EditorMenu *menu); \
-	void (*createMenuItems_file_extract) (Klas me, EditorMenu *menu); \
-	void (*createMenuItems_file_write) (Klas me, EditorMenu *menu); \
-	void (*createMenuItems_view) (Klas me, EditorMenu *menu); \
-	void (*createMenuItems_view_timeDomain) (Klas me, EditorMenu *menu); \
-	void (*createMenuItems_view_audio) (Klas me, EditorMenu *menu); \
-	void (*highlightSelection) (Klas me, double left, double right, double bottom, double top); \
-	void (*unhighlightSelection) (Klas me, double left, double right, double bottom, double top); \
-	double (*getBottomOfSoundAndAnalysisArea) (Klas me); \
-	void (*form_pictureSelection) (Klas me, EditorCommand *cmd); \
-	void (*ok_pictureSelection) (Klas me, EditorCommand *cmd); \
-	void (*do_pictureSelection) (Klas me, EditorCommand *cmd);
-Thing_declare2 (FunctionEditor, Editor);
+	FunctionEditor (GuiObject parent, const wchar_t *title, Any data);
+/*	Function:
+		creates an Editor with a drawing area, a scroll bar and some buttons.
+	Preconditions:
+		parent != NULL;
+		Thing_member (data, classFunction);
+	Postconditions:
+		my cursorMenu contains the following entries:
+			Move cursor to B
+			Move cursor to E
+			Move cursor to...
+			Move cursor by...
+		my beginMenu contains:
+			Move B to cursor
+			Move B to E
+			Move B to...
+			Move B by...
+		my endMenu contains:
+			Move E to cursor
+			Move E to B
+			Move E to...
+			Move E by...
+		my drawingArea is attached to the form at all sides,
+		my scrollBar only to the bottom, left and right sides.
+		The other members are 0.0 or NULL.
+		The inheritor should call
+			'GuiObject_show (my dialog); GuiObject_show (my shell);'
+			before calling FunctionEditor_open (me).
+*/
+	~FunctionEditor ();
 
-/*
-	Attributes:
+	const wchar_t * type () { return L"FunctionEditor"; }
+	int hasText () { return FALSE; }
+	int fixedPrecision_long () { return 6; }
+	const wchar_t * format_domain () { return L"Time domain:"; }
+	const wchar_t * format_short () { return L"%.3f"; }
+	const wchar_t * format_long () { return L"%f"; }
+	const wchar_t * format_units () { return L"seconds"; }
+	const wchar_t * format_totalDuration () { return L"Total duration %f seconds"; }
+	const wchar_t * format_window () { return L"Visible part %f seconds"; }
+	const wchar_t * format_selection () { return L"%f (%.3f / s)"; }
+
+	void info ();
+	void draw ();
+	void prepareDraw ();   /* For less flashing. */
+	void play (double tmin, double tmax);
+	int click (double xWC, double yWC, int shiftKeyPressed);
+	int clickB (double xWC, double yWC);
+	int clickE (double xWC, double yWC);
+	void key (unsigned char key);
+	void prefs_addFields (EditorCommand *cmd);
+	void prefs_setValues (EditorCommand *cmd);
+	void prefs_getValues (EditorCommand *cmd);
+	void createMenuItems_file_draw (EditorMenu *menu);
+	void createMenuItems_file_extract (EditorMenu *menu);
+	void createMenuItems_file_write (EditorMenu *menu);
+	void createMenuItems_view (EditorMenu *menu);
+	void createMenuItems_view_timeDomain (EditorMenu *menu);
+	void createMenuItems_view_audio (EditorMenu *menu);
+	void createMenuItems_file (EditorMenu *menu);
+	void createMenuItems_query (EditorMenu *menu);
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+	void createChildren ();
+	void highlightSelection (double left, double right, double bottom, double top);
+	void unhighlightSelection (double left, double right, double bottom, double top);
+	double getBottomOfSoundAndAnalysisArea ();
+	void form_pictureSelection (EditorCommand *cmd);
+	void ok_pictureSelection (EditorCommand *cmd);
+	void do_pictureSelection (EditorCommand *cmd);
+	void updateScrollBar ();
+	void updateGroup ();
+	void drawNow ();
+	void do_showAll ();
+	void do_zoomIn ();
+	void do_zoomOut ();
+	void do_zoomToSelection ();
+	void do_zoomBack ();
+	void scrollToView (double t);
+	void dataChanged ();
+	void drawWhileDragging (double x1, double x2);
+
+/*	Attributes:
 		data: must be a Function.
 
 	Methods:
@@ -138,43 +164,9 @@ Thing_declare2 (FunctionEditor, Editor);
 		"user typed a key to the data window."
 		FunctionEditor::key ignores this message.
 */
-#define FunctionEditor_UPDATE_NEEDED  1
-#define FunctionEditor_NO_UPDATE_NEEDED  0
 
-int FunctionEditor_init (FunctionEditor me, GuiObject parent, const wchar_t *title, Any data);
-/*
-	Function:
-		creates an Editor with a drawing area, a scroll bar and some buttons.
-	Preconditions:
-		parent != NULL;
-		Thing_member (data, classFunction);
-	Postconditions:
-		my cursorMenu contains the following entries:
-			Move cursor to B
-			Move cursor to E
-			Move cursor to...
-			Move cursor by...
-		my beginMenu contains:
-			Move B to cursor
-			Move B to E
-			Move B to...
-			Move B by...
-		my endMenu contains:
-			Move E to cursor
-			Move E to B
-			Move E to...
-			Move E by...
-		my drawingArea is attached to the form at all sides,
-		my scrollBar only to the bottom, left and right sides.
-		The other members are 0.0 or NULL.
-		The inheritor should call
-			'GuiObject_show (my dialog); GuiObject_show (my shell);'
-			before calling FunctionEditor_open (me).
-*/ 
-
-void FunctionEditor_marksChanged (FunctionEditor me);
-/*
-	Function:
+	void marksChanged ();
+/*	Function:
 		update optional text field, the scroll bar, the drawing area and the buttons,
 		from the current total time, window, cursor, and selection,
 		and redraw the contents. This will be done for all the editors in the group.
@@ -182,17 +174,15 @@ void FunctionEditor_marksChanged (FunctionEditor me);
 		call this after a change in any of the markers or in the duration of the data.
 */
 
-void FunctionEditor_shift (FunctionEditor me, double shift);
-/*
-	Function:
+	void shift (double shift);
+/*	Function:
 		shift (scroll) the window through time, keeping the window length constant.
 	Usage:
 		call this after a search.
 */
 
-void FunctionEditor_updateText (FunctionEditor me);
-/*
-	Function:
+	void updateText ();
+/*	Function:
 		update the optional text widget.
 	Usage:
 		call this after moving the cursor, if that would have to change the text.
@@ -202,7 +192,7 @@ void FunctionEditor_updateText (FunctionEditor me);
 		since FunctionEditor::updateText does nothing.
 */
 
-void FunctionEditor_redraw (FunctionEditor me);
+	void redraw ();
 /*
 	Function:
 		update the drawing area of a single editor.
@@ -213,9 +203,8 @@ void FunctionEditor_redraw (FunctionEditor me);
 		we just call Graphics_updateWs (my graphics).
 */
 
-void FunctionEditor_enableUpdates (FunctionEditor me, bool enable);
-/*
-	Function:
+	void enableUpdates (bool enable);
+/*	Function:
 		temporarily disable update event to cause 'draw' messages.
 	Usage:
 		If you call from your 'draw' method routines that may trigger expose events,
@@ -226,9 +215,8 @@ void FunctionEditor_enableUpdates (FunctionEditor me, bool enable);
 		This may happen if you call an analysis routine which calls Melder_progress.
 */
 
-void FunctionEditor_ungroup (FunctionEditor me);
-/*
-	Function:
+	void ungroup ();
+/*	Function:
 		force me out of the group.
 	Usage:
 		Start cut or paste methods by calling this routine,
@@ -237,25 +225,44 @@ void FunctionEditor_ungroup (FunctionEditor me);
 		may get outside the common interval of the editors.
 */
 
-void FunctionEditor_prefs (void);
+	/* Some routines to enforce common look to all function editors. */
+	/* The x axis of the window is supposed to have been set to [my startWindow, my endWindow]. */
+	/* Preconditions: default line type, default line width. */
+	/* Postconditions: default line type, default line width, undefined colour, undefined text alignment. */
+	void drawRangeMark (double yWC, const wchar_t *yWC_string, const wchar_t *units, int verticalAlignment);
+	void drawCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units);
+	void insertCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units, double minimum, double maximum);
+	void drawHorizontalHair (double yWC, const wchar_t *yWC_string, const wchar_t *units);
+	void drawGridLine (double yWC);
+	void insetViewport ();
+	void garnish ();   // Optionally selection times and selection hairs.
 
-/* Some routines to enforce common look to all function editors. */
-/* The x axis of the window is supposed to have been set to [my startWindow, my endWindow]. */
-/* Preconditions: default line type, default line width. */
-/* Postconditions: default line type, default line width, undefined colour, undefined text alignment. */
-void FunctionEditor_drawRangeMark (FunctionEditor me, double yWC, const wchar_t *yWC_string, const wchar_t *units, int verticalAlignment);
-void FunctionEditor_drawCursorFunctionValue (FunctionEditor me, double yWC, const wchar_t *yWC_string, const wchar_t *units);
-void FunctionEditor_insertCursorFunctionValue (FunctionEditor me, double yWC, const wchar_t *yWC_string, const wchar_t *units, double minimum, double maximum);
-void FunctionEditor_drawHorizontalHair (FunctionEditor me, double yWC, const wchar_t *yWC_string, const wchar_t *units);
-void FunctionEditor_drawGridLine (FunctionEditor me, double yWC);
+	/* Subclass may change the following attributes, */
+	/* but has to respect the invariants, */
+	/* and has to call marksChanged () */
+	/* immediately after making the changes. */
+	double _tmin, _tmax, _startWindow, _endWindow;
+	double _startSelection, _endSelection; /* Markers. */
+	/* These attributes are all expressed in seconds. Invariants: */
+	/*    tmin <= startWindow < endWindow <= tmax; */
+	/*    tmin <= (startSelection, endSelection) <= tmax; */
+	double _arrowScrollStep;
 
-void FunctionEditor_insetViewport (FunctionEditor me);
+	Graphics _graphics;   /* Used in the 'draw' method. */
+	short _width, _height;   /* Size of drawing area in pixels. */
+	GuiObject _text;   /* Optional text at top. */
+	int _shiftKeyPressed;   /* Information for the 'play' method. */
+	int _playingCursor, _playingSelection;   /* Information for end of play. */
+	struct FunctionEditor_picture _picture;
+	bool _group, _enableUpdates;
+	int _nrect;
+	struct { double left, right, bottom, top; } _rect [8];
+	double _marker [1 + 3], _playCursor, _startZoomHistory, _endZoomHistory;
 
-void FunctionEditor_garnish (FunctionEditor me);   // Optionally selection times and selection hairs.
-
-#ifdef __cplusplus
-	}
-#endif
+  protected:
+	GuiObject _drawingArea, _scrollBar, _groupButton, _bottomArea;
+	int _numberOfMarkers;
+};
 
 /* End of file FunctionEditor.h */
 #endif

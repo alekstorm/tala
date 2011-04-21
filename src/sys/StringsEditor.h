@@ -30,23 +30,19 @@
 	#include "Strings.h"
 #endif
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class StringsEditor : public Editor {
+  public:
+	StringsEditor (GuiObject parent, const wchar_t *title, Any data);
 
-#define StringsEditor__parents(Klas) Editor__parents(Klas) Thing_inherit (Klas, Editor)
-Thing_declare1 (StringsEditor);
+	const wchar_t * type () { return L"StringsEditor"; }
 
-#define StringsEditor__members(Klas) Editor__members(Klas) \
-	GuiObject list, text;
-#define StringsEditor__methods(Klas) Editor__methods(Klas)
-Thing_declare2 (StringsEditor, Editor);
+	void updateList ();
+	void createHelpMenuItems (EditorMenu *menu);
+	void createChildren ();
+	void dataChanged ();
 
-StringsEditor StringsEditor_create (GuiObject parent, const wchar_t *title, Any data);
-
-#ifdef __cplusplus
-	}
-#endif
+	GuiObject _list, _text;
+};
 
 /* End of file StringsEditor.h */
 #endif

@@ -27,26 +27,28 @@
 #include "AmplitudeTier.h"
 #include "Sound.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class AmplitudeTierEditor : public RealTierEditor {
+  public:
+	AmplitudeTierEditor (GuiObject parent, const wchar_t *title, AmplitudeTier amplitude, Sound sound, int ownSound);
+	// 'sound' may be NULL.
 
-#define AmplitudeTierEditor__parents(Klas) RealTierEditor__parents(Klas) Thing_inherit (Klas, RealTierEditor)
-Thing_declare1 (AmplitudeTierEditor);
+	const wchar_t * type () { return L"AmplitudeTierEditor"; }
+	const wchar_t * quantityText () { return L"Sound pressure (Pa)"; }
+	const wchar_t * quantityKey () { return L"Sound pressure"; }
+	const wchar_t * rightTickUnits () { return L" Pa"; }
+	double defaultYmin () { return -1.0; }
+	double defaultYmax () { return +1.0; }
+	const wchar_t * setRangeTitle () { return L"Set amplitude range..."; }
+	const wchar_t * defaultYminText () { return L"-1.0"; }
+	const wchar_t * defaultYmaxText () { return L"+1.0"; }
+	const wchar_t * yminText () { return L"Minimum amplitude (Pa)"; }
+	const wchar_t * ymaxText () { return L"Maximum amplitude (Pa)"; }
+	const wchar_t * yminKey () { return L"Minimum amplitude"; }
+	const wchar_t * ymaxKey () { return L"Maximum amplitude"; }
 
-#define AmplitudeTierEditor__members(Klas) RealTierEditor__members(Klas)
-#define AmplitudeTierEditor__methods(Klas) RealTierEditor__methods(Klas)
-Thing_declare2 (AmplitudeTierEditor, RealTierEditor);
-
-AmplitudeTierEditor AmplitudeTierEditor_create (GuiObject parent, const wchar_t *title,
-	AmplitudeTier amplitude, Sound sound, int ownSound);
-/*
-	'sound' may be NULL.
-*/
-
-#ifdef __cplusplus
-	}
-#endif
+	void createHelpMenuItems (EditorMenu *menu);
+	void play (double tmin, double tmax);
+};
 
 /* End of file AmplitudeTierEditor.h */
 #endif

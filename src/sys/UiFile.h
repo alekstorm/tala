@@ -19,6 +19,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "UiForm.h"
+
 #ifdef __cplusplus
 class UiFile : public UiForm {
   public:

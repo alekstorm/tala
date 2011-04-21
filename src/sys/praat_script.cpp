@@ -73,15 +73,15 @@ end:
 	return Melder_error3 (L"Object \"", string, L"\" does not exist.");
 }
 
-Editor praat_findEditorFromString (const wchar_t *string) {
+Editor *praat_findEditorFromString (const wchar_t *string) {
 	int IOBJECT;
 	while (*string == ' ') string ++;
 	if (*string >= 'A' && *string <= 'Z') {
 		WHERE_DOWN (1) {
 			for (int ieditor = 0; ieditor < praat_MAXNUM_EDITORS; ieditor ++) {
-				Editor editor = (Editor) theCurrentPraatObjects -> list [IOBJECT]. editors [ieditor];
+				Editor *editor = (Editor *) theCurrentPraatObjects -> list [IOBJECT]. editors [ieditor];
 				if (editor != NULL) {
-					const wchar_t *name = wcschr (editor -> name, ' ') + 1;
+					const wchar_t *name = wcschr (editor -> _name, ' ') + 1;
 					if (wcsequ (name, string)) return editor;
 				}
 			}
@@ -89,8 +89,8 @@ Editor praat_findEditorFromString (const wchar_t *string) {
 	} else {
 		WHERE_DOWN (1) {
 			for (int ieditor = 0; ieditor < praat_MAXNUM_EDITORS; ieditor ++) {
-				Editor editor = (Editor) theCurrentPraatObjects -> list [IOBJECT]. editors [ieditor];
-				if (editor && wcsequ (editor -> name, string)) return editor;
+				Editor *editor = (Editor *) theCurrentPraatObjects -> list [IOBJECT]. editors [ieditor];
+				if (editor && wcsequ (editor -> _name, string)) return editor;
 			}
 		}
 	}
@@ -184,9 +184,9 @@ int praat_executeCommand (Interpreter *interpreter, wchar_t *command) {
 			(void) praat_executeCommand (interpreter, command + 8);
 			Melder_clearError ();
 		} else if (wcsnequ (command, L"demo ", 5)) {
-			if (! Demo_open ()) return 0;
+			if (! DemoEditor::open ()) return 0;
 			(void) praat_executeCommand (interpreter, command + 5);
-			Demo_close ();
+			DemoEditor::close ();
 		} else if (wcsnequ (command, L"pause ", 6) || wcsequ (command, L"pause")) {
 			if (theCurrentPraatApplication -> batch) return 1;
 			UiPause::begin (theCurrentPraatApplication -> topShell, L"stop or continue", interpreter); iferror return 0;
@@ -200,11 +200,11 @@ int praat_executeCommand (Interpreter *interpreter, wchar_t *command) {
 			if (command [6] == ' ' && isalpha (command [7])) {
 				praatP. editor = praat_findEditorFromString (command + 7);
 				if (praatP. editor == NULL)
-					return Melder_error3 (L"Editor \"", command + 7, L"\" does not exist.");
-			} else if (interpreter && interpreter -> _editorClass) {
+					return Melder_error3 (L"Editor *\"", command + 7, L"\" does not exist.");
+			} else if (interpreter && interpreter -> _environmentName) {
 				praatP. editor = praat_findEditorFromString (interpreter -> _environmentName);
 				if (praatP. editor == NULL)
-					return Melder_error3 (L"Editor \"", interpreter -> _environmentName, L"\" does not exist.");
+					return Melder_error3 (L"Editor *\"", interpreter -> _environmentName, L"\" does not exist.");
 			} else {
 				return Melder_error1 (L"No editor specified.");
 			}
@@ -320,7 +320,7 @@ int praat_executeCommand (Interpreter *interpreter, wchar_t *command) {
 		/* First try loose commands, then fixed commands. */
 
 		if (theCurrentPraatObjects == & theForegroundPraatObjects && praatP. editor != NULL) {
-			if (! Editor_doMenuCommand ((Editor) praatP. editor, command, arguments, interpreter)) {
+			if (! ((Editor *) praatP. editor)->doMenuCommand (command, arguments, interpreter)) {
 				return 0;
 			}
 		} else if (theCurrentPraatObjects != & theForegroundPraatObjects &&
@@ -390,8 +390,8 @@ int praat_executeScriptFromFile (MelderFile file, const wchar_t *arguments) {
 	MelderFile_setDefaultDir (file);   /* So that relative file names can be used inside the script. */
 	Melder_includeIncludeFiles (& text); cherror
 	{
-		Editor editor = (Editor)praatP.editor;
-		interpreter = new Interpreter (editor->name, editor->methods); cherror
+		Editor *editor = (Editor *)praatP.editor;
+		interpreter = new Interpreter (editor->_name); cherror
 		if (arguments) {
 			interpreter->readParameters (text); cherror
 			interpreter->getArgumentsFromString (arguments); cherror
@@ -435,7 +435,7 @@ int praat_executeScriptFromFileNameWithArguments (const wchar_t *nameAndArgument
 }
 
 int praat_executeScriptFromText (wchar_t *text) {
-	Interpreter *interpreter = new Interpreter (NULL, NULL);
+	Interpreter *interpreter = new Interpreter (NULL);
 	interpreter->run (text);
 	forget (interpreter);
 	iferror return Melder_error1 (L"Script not completed.");
@@ -455,8 +455,8 @@ int praat_executeScriptFromDialog (UiForm *dia) {
 	MelderFile_setDefaultDir (& file);
 	Melder_includeIncludeFiles (& text); cherror
 	{
-		Editor editor = (Editor)praatP.editor;
-		interpreter = new Interpreter (editor->name, editor->methods); cherror
+		Editor *editor = (Editor *)praatP.editor;
+		interpreter = new Interpreter (editor->_name); cherror
 		interpreter->readParameters (text); cherror
 		interpreter->getArgumentsFromDialog (dia); cherror
 		praat_background ();
@@ -491,11 +491,11 @@ static int firstPassThroughScript (MelderFile file) {
 	Melder_includeIncludeFiles (& text); cherror
 	{
 		Melder_setDefaultDir (& saveDir);
-		Editor editor = (Editor)praatP.editor;
-		interpreter = new Interpreter (editor->name, editor->methods); cherror
+		Editor *editor = (Editor *)praatP.editor;
+		interpreter = new Interpreter (editor->_name); cherror
 		if (interpreter->readParameters (text) > 0) {
 			UiForm *form = interpreter->createForm (
-				praatP.editor ? ((Editor) praatP.editor) -> dialog : theCurrentPraatApplication -> topShell,
+				praatP.editor ? ((Editor *) praatP.editor) -> _dialog : theCurrentPraatApplication -> topShell,
 				Melder_fileToPath (file), secondPassThroughScript, NULL);
 			form->do_ (false);
 		} else {

@@ -26,22 +26,18 @@
 #include "FunctionEditor.h"
 #include "Pitch.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class PitchEditor : public FunctionEditor {
+  public:
+	PitchEditor (GuiObject parent, const wchar_t *title, Pitch pitch);
 
-#define PitchEditor__parents(Klas) FunctionEditor__parents(Klas) Thing_inherit (Klas, FunctionEditor)
-Thing_declare1 (PitchEditor);
+	const wchar_t * type () { return L"PitchEditor"; }
 
-#define PitchEditor__members(Klas) FunctionEditor__members(Klas)
-#define PitchEditor__methods(Klas) FunctionEditor__methods(Klas)
-Thing_declare2 (PitchEditor, FunctionEditor);
-
-PitchEditor PitchEditor_create (GuiObject parent, const wchar_t *title, Pitch pitch);
-
-#ifdef __cplusplus
-	}
-#endif
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+	void draw ();
+	void play (double tmin, double tmax);
+	int click (double xWC, double yWC, int dummy);
+};
 
 /* End of file PitchEditor.h */
 #endif

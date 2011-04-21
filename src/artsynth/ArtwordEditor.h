@@ -27,26 +27,21 @@
 #include "sys/Graphics.h"
 #include "Artword.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class ArtwordEditor : public Editor {
+  public:
+	ArtwordEditor (GuiObject parent, const wchar_t *title, Artword data);
+	~ArtwordEditor ();
 
-#define ArtwordEditor__parents(Klas) Editor__parents(Klas) Thing_inherit (Klas, Editor)
-Thing_declare1 (ArtwordEditor);
+	const wchar_t * type () { return L"ArtwordEditor"; }
+	void updateList ();
+	void dataChanged ();
+	void createChildren ();
 
-#define ArtwordEditor__members(Klas) Editor__members(Klas) \
-	Graphics graphics; \
-	int feature; \
-	GuiObject list, drawingArea, radio, time, value; \
-	GuiObject button [1 + kArt_muscle_MAX];
-#define ArtwordEditor__methods(Klas) Editor__methods(Klas)
-Thing_declare2 (ArtwordEditor, Editor);
-
-ArtwordEditor ArtwordEditor_create (GuiObject parent, const wchar_t *title, Artword data);
-
-#ifdef __cplusplus
-	}
-#endif
+	Graphics _graphics;
+	int _feature;
+	GuiObject _list, _drawingArea, _radio, _time, _value;
+	GuiObject _button [1 + kArt_muscle_MAX];
+};
 
 /* End of file ArtwordEditor.h */
 #endif

@@ -3,7 +3,7 @@ AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
 noinst_LIBRARIES = libdwtools.a
 libdwtools_a_SOURCES = Activation.c AffineTransform.c \
-	Categories.c CategoriesEditor.c \
+	Categories.c CategoriesEditor.cpp \
 	Categories_and_Strings.c CCA.c CCA_and_Correlation.c \
 	CC.c CCs_to_DTW.c \
 	ClassificationTable.c Confusion.c \
@@ -19,7 +19,7 @@ libdwtools_a_SOURCES = Activation.c AffineTransform.c \
 	HMM.c \
 	ICA.c Intensity_extensions.c \
 	LFCC.c LongSound_extensions.c \
-	KlattGrid.c KlattGridEditors.c KlattTable.c \
+	KlattGrid.c KlattGridEditors.cpp KlattTable.c \
 	MelFilter_and_MFCC.c MFCC.c \
 	Minimizers.c \
 	Matrix_extensions.c \

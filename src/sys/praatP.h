@@ -1,3 +1,5 @@
+#ifndef _praatP_h_
+#define _praatP_h_
 /* praatP.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -22,9 +24,18 @@
  */
 
 #include "praat.h"
+#include "Gui.h"
 
 #ifdef __cplusplus
-	extern "C" {
+class Editor;
+class UiForm;
+class Interpreter;
+
+extern "C" {
+#else
+typedef struct Editor Editor;
+typedef struct UiForm UiForm;
+typedef struct Interpreter Interpreter;
 #endif
 
 int praat_addActionScript (const wchar_t *className1, int n1, const wchar_t *className2, int n2, const wchar_t *className3, int n3,
@@ -128,7 +139,7 @@ void praat_list_background (void);
 void praat_list_foreground (void);   /* Updates the list of objects after backgrounding. */
 void praat_background (void);
 void praat_foreground (void);
-Editor praat_findEditorFromString (const wchar_t *string);
+Editor *praat_findEditorFromString (const wchar_t *string);
 
 void praat_showLogo (int autoPopDown);
 
@@ -173,6 +184,7 @@ extern struct PraatP {
 
 #ifdef __cplusplus
 	}
+#endif
 #endif
 
 /* End of file praatP.h */

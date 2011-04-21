@@ -26,18 +26,19 @@
 #include "sys/HyperPage.h"
 #include "OTGrammar.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class OTGrammarEditor : public HyperPage {
+  public:
+	OTGrammarEditor (GuiObject parent, const wchar_t *title, OTGrammar ot);
 
-#define OTGrammarEditor__parents(Klas) HyperPage__parents(Klas) Thing_inherit (Klas, HyperPage)
-Thing_declare1 (OTGrammarEditor);
+	const wchar_t * type () { return L"OTGrammarEditor"; }
+	bool isEditable () { return true; }
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+	void draw ();
+	int goToPage (const wchar_t *title);
 
-OTGrammarEditor OTGrammarEditor_create (GuiObject parent, const wchar_t *title, OTGrammar ot);
-
-#ifdef __cplusplus
-	}
-#endif
+	long _selected;
+};
 
 /* End of file OTGrammarEditor.h */
 #endif

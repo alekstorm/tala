@@ -1,3 +1,5 @@
+#ifndef _praat_h_
+#define _praat_h_
 /* praat.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -373,14 +375,14 @@ static int DO_##proc (UiForm *sendingForm, const wchar_t *sendingString, Interpr
 #define EVERY_DRAW(proc) \
 	praat_picture_open (); WHERE (SELECTED) proc; praat_picture_close (); return 1;
 
-/* Used by praat_Sybil.c, if you put an Editor on the screen: */
-int praat_installEditor (Any editor, int iobject);
-/* This routine adds a reference to a new editor (unless it is NULL) to the screen object
+/* Used by praat_Sybil.c, if you put an Editor *on the screen: */
+int praat_installEditor (Editor *editor, int iobject);
+/* This routine adds a reference to a new Editor (unless it is NULL) to the screen object
    which is in the list at position 'iobject'.
    It sets the destroyCallback and dataChangedCallback as appropriate for Praat:
    the destroyCallback will set the now dangling reference to NULL,
    so that a subsequent click on the "Edit" button will create a new editor;
-   the dataChangedCallback will notify an open DataEditor with the same data,
+   the dataChangedCallback will notify an open DataEditor *with the same data,
    after that data will have changed.
       Return value: normally 1, but 0 if 'editor' is NULL.
    A typical calling sequence is:
@@ -391,9 +393,9 @@ int praat_installEditor (Any editor, int iobject);
 				(SpectrogramEditor_create (praat.topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT)) return 0;
 	END
 */
-int praat_installEditor2 (Any editor, int iobject1, int iobject2);
-int praat_installEditor3 (Any editor, int iobject1, int iobject2, int iobject3);
-int praat_installEditorN (Any editor, Ordered objects);
+int praat_installEditor2 (Editor *editor, int iobject1, int iobject2);
+int praat_installEditor3 (Editor *editor, int iobject1, int iobject2, int iobject3);
+int praat_installEditorN (Editor *editor, Ordered objects);
 
 void praat_dataChanged (Any object);
 /* Call this after changing a screen object. */
@@ -408,6 +410,10 @@ void praat_clipboardChanged (void *closure, Any clipboard);
 */
 void praat_picture_open (void);
 void praat_picture_close (void);
+
+Graphics praat_picture_editor_open (bool eraseFirst);
+void praat_picture_editor_close (void);
+
 /* These two routines should bracket drawing commands. */
 /* See also the EVERY_DRAW macro. */
 
@@ -436,7 +442,7 @@ void praat_show (void);   /* Forces an update of the dynamic menu. */
 void praat_updateSelection (void);
 	/* If you require the correct selection immediately after calling praat_new. */
 
-void praat_addCommandsToEditor (Editor me);
+void praat_addCommandsToEditor (Editor *me);
 
 #ifdef __cplusplus
 	}
@@ -472,6 +478,7 @@ static inline void praat_newWithFile (void *newData, const wchar *s1, const wcha
 	{ praat_newWithFile4 (newData, s1, s2, s3, s4, file); therror }
 static inline void praat_newWithFile (void *newData, const wchar *s1, const wchar *s2, const wchar *s3, const wchar *s4, const wchar *s5,
 	MelderFile file) { praat_newWithFile5 (newData, s1, s2, s3, s4, s5, file); therror }
+#endif
 #endif
 
 /* End of file praat.h */

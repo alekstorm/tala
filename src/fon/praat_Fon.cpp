@@ -201,7 +201,7 @@ DIRECT (AmplitudeTier_edit)
 		WHERE (SELECTED)
 			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classAmplitudeTier)
-			if (! praat_installEditor (AmplitudeTierEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			if (! praat_installEditor (new AmplitudeTierEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				(structAmplitudeTier *)OBJECT, sound, TRUE), IOBJECT)) return 0;
 	}
 END
@@ -454,7 +454,7 @@ DIRECT (DurationTier_edit)
 		WHERE (SELECTED)
 			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classDurationTier)
-			if (! praat_installEditor (DurationTierEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			if (! praat_installEditor (new DurationTierEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				(structDurationTier *)OBJECT, sound, TRUE), IOBJECT)) return 0;
 	}
 END
@@ -927,7 +927,7 @@ DO
 		GET_REAL (L"Initial first bandwidth"), GET_REAL (L"Initial bandwidth spacing")), GET_STRING (L"Name"))) return 0;
 END
 
-static void cb_FormantGridEditor_publish (Any editor, void *closure, Any publish) {
+static void cb_FormantGridEditor_publish (Editor *editor, void *closure, Any publish) {
 	(void) editor;
 	(void) closure;
 	if (! praat_new1 (publish, L"fromFormantGridEditor")) { Melder_flushError (NULL); return; }
@@ -938,9 +938,9 @@ DIRECT (FormantGrid_edit)
 		return Melder_error1 (L"Cannot edit a FormantGrid from batch.");
 	} else {
 		WHERE (SELECTED) {
-			FormantGridEditor editor = FormantGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structFormantGrid *)OBJECT);
+			FormantGridEditor *editor = new FormantGridEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structFormantGrid *)OBJECT);
 			if (! praat_installEditor (editor, IOBJECT)) return 0;
-			Editor_setPublishCallback (FormantGridEditor_as_Editor (editor), cb_FormantGridEditor_publish, NULL);
+			editor->setPublishCallback (cb_FormantGridEditor_publish, NULL);
 		}
 	}
 END
@@ -1400,7 +1400,7 @@ DIRECT (IntensityTier_edit)
 		WHERE (SELECTED)
 			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classIntensityTier)
-			if (! praat_installEditor (IntensityTierEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			if (! praat_installEditor (new IntensityTierEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				(structIntensityTier *)OBJECT, sound, TRUE), IOBJECT)) return 0;
 	}
 END
@@ -1757,7 +1757,7 @@ END
 
 /***** MANIPULATION *****/
 
-static void cb_ManipulationEditor_publish (Any editor, void *closure, Any publish) {
+static void cb_ManipulationEditor_publish (Editor *editor, void *closure, Any publish) {
 	(void) editor;
 	(void) closure;
 	if (! praat_new1 (publish, L"fromManipulationEditor")) { Melder_flushError (NULL); return; }
@@ -1768,9 +1768,9 @@ DIRECT (Manipulation_edit)
 		return Melder_error1 (L"Cannot edit a Manipulation from batch.");
 	} else {
 		WHERE (SELECTED) {
-			ManipulationEditor editor = ManipulationEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structManipulation *)OBJECT);
+			ManipulationEditor *editor = new ManipulationEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structManipulation *)OBJECT);
 			if (! praat_installEditor (editor, IOBJECT)) return 0;
-			Editor_setPublishCallback (ManipulationEditor_as_Editor (editor), cb_ManipulationEditor_publish, NULL);
+			editor->setPublishCallback (cb_ManipulationEditor_publish, NULL);
 		}
 	}
 END
@@ -2347,7 +2347,7 @@ DIRECT (Pitch_edit)
 		return Melder_error1 (L"Cannot edit a Pitch from batch.");
 	else
 		WHERE (SELECTED)
-			if (! praat_installEditor (PitchEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structPitch *)OBJECT), IOBJECT))
+			if (! praat_installEditor (new PitchEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structPitch *)OBJECT), IOBJECT))
 				return 0;
 END
 
@@ -2837,7 +2837,7 @@ DIRECT (PitchTier_edit)
 		WHERE (SELECTED)
 			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classPitchTier)
-			if (! praat_installEditor (PitchTierEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			if (! praat_installEditor (new PitchTierEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				(structPitchTier *)OBJECT, sound, TRUE), IOBJECT)) return 0;
 	}
 END
@@ -3100,7 +3100,7 @@ DIRECT (PointProcess_edit)
 		WHERE (SELECTED)
 			if (CLASS == classSound) sound = (structSound *)OBJECT;
 		WHERE (SELECTED && CLASS == classPointProcess)
-			if (! praat_installEditor (PointEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			if (! praat_installEditor (new PointEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				(structPointProcess *)OBJECT, sound), IOBJECT)) return 0;
 	}
 END
@@ -3740,7 +3740,7 @@ DIRECT (Spectrogram_view)
 	else
 		WHERE (SELECTED)
 			if (! praat_installEditor
-				(SpectrogramEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT))
+				(new SpectrogramEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT))
 					return 0;
 END
 
@@ -3782,7 +3782,7 @@ END
 DIRECT (Spectrum_edit)
 	if (theCurrentPraatApplication -> batch) return Melder_error1 (L"Cannot edit a Spectrum from batch.");
 	else WHERE (SELECTED)
-		if (! praat_installEditor (SpectrumEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT)) return 0;
+		if (! praat_installEditor (new SpectrumEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT)) return 0;
 END
 
 FORM (Spectrum_formula, L"Spectrum: Formula", L"Spectrum: Formula...")
@@ -4065,7 +4065,7 @@ DIRECT (Strings_edit)
 		return Melder_error1 (L"Cannot edit a Strings from batch.");
 	} else {
 		WHERE (SELECTED && CLASS == classStrings)
-			if (! praat_installEditor (StringsEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			if (! praat_installEditor (new StringsEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				OBJECT), IOBJECT)) return 0;
 	}
 END
@@ -4526,9 +4526,9 @@ void praat_uvafon_init (void) {
 	Data_recognizeFileType (cgnSyntaxFileRecognizer);
 	Data_recognizeFileType (chronologicalTextGridTextFileRecognizer);
 
-	ManipulationEditor_prefs ();
-	SpectrumEditor_prefs ();
-	FormantGridEditor_prefs ();
+	ManipulationEditor::prefs ();
+	SpectrumEditor::prefs ();
+	FormantGridEditor::prefs ();
 
 	praat_uvafon_Sound_init();
 	praat_uvafon_TextGrid_init();

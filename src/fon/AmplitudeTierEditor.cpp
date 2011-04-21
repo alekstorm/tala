@@ -29,39 +29,22 @@
 #include "AmplitudeTierEditor.h"
 #include "sys/EditorM.h"
 
-static int menu_cb_AmplitudeTierHelp (EDITOR_ARGS) { EDITOR_IAM (AmplitudeTierEditor); Melder_help (L"AmplitudeTier"); return 1; }
+AmplitudeTierEditor::AmplitudeTierEditor (GuiObject parent, const wchar_t *title, AmplitudeTier amplitude, Sound sound, int ownSound)
+	: RealTierEditor (parent, title, (RealTier) amplitude, sound, ownSound) {}
 
-static void createHelpMenuItems (AmplitudeTierEditor me, EditorMenu *menu) {
-	inherited (AmplitudeTierEditor) createHelpMenuItems (AmplitudeTierEditor_as_parent (me), menu);
-	EditorMenu_addCommand (menu, L"AmplitudeTier help", 0, menu_cb_AmplitudeTierHelp);
+static int menu_cb_AmplitudeTierHelp (EDITOR_ARGS) { Melder_help (L"AmplitudeTier"); return 1; }
+
+void AmplitudeTierEditor::createHelpMenuItems (EditorMenu *menu) {
+	RealTierEditor::createHelpMenuItems (menu);
+	menu->addCommand (L"AmplitudeTier help", 0, menu_cb_AmplitudeTierHelp);
 }
 
-static void play (AmplitudeTierEditor me, double tmin, double tmax) {
-	if (my sound.data) {
-		Sound_playPart (my sound.data, tmin, tmax, our playCallback, me);
+void AmplitudeTierEditor::play (double tmin, double tmax) {
+	if (_sound.data) {
+		Sound_playPart (_sound.data, tmin, tmax, playCallback, this);
 	} else {
-		/*if (! AmplitudeTier_playPart (my data, tmin, tmax, FALSE)) Melder_flushError (NULL);*/
+		/*if (! AmplitudeTier_playPart (_data, tmin, tmax, FALSE)) Melder_flushError (NULL);*/
 	}
-}
-
-class_methods (AmplitudeTierEditor, RealTierEditor) {
-	class_method (createHelpMenuItems)
-	class_method (play)
-	us -> quantityText = L"Sound pressure (Pa)", us -> quantityKey = L"Sound pressure";
-	us -> rightTickUnits = L" Pa";
-	us -> defaultYmin = -1.0, us -> defaultYmax = +1.0;
-	us -> setRangeTitle = L"Set amplitude range...";
-	us -> defaultYminText = L"-1.0", us -> defaultYmaxText = L"+1.0";
-	us -> yminText = L"Minimum amplitude (Pa)", us -> ymaxText = L"Maximum amplitude (Pa)";
-	us -> yminKey = L"Minimum amplitude", us -> ymaxKey = L"Maximum amplitude";
-	class_methods_end
-}
-
-AmplitudeTierEditor AmplitudeTierEditor_create (GuiObject parent, const wchar_t *title, AmplitudeTier amplitude, Sound sound, int ownSound) {
-	AmplitudeTierEditor me = Thing_new (AmplitudeTierEditor);
-	if (! me || ! RealTierEditor_init (AmplitudeTierEditor_as_parent (me), parent, title, (RealTier) amplitude, sound, ownSound))
-		{ forget (me); return NULL; }
-	return me;
 }
 
 /* End of file AmplitudeTierEditor.c */

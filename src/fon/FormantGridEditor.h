@@ -26,10 +26,6 @@
 #include "FunctionEditor.h"
 #include "FormantGrid.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
 struct FormantGridEditor_Play {
 	double samplingFrequency;
 };
@@ -38,28 +34,29 @@ struct FormantGridEditor_Source {
 	struct { double adaptFactor, maximumPeriod, openPhase, collisionPhase, power1, power2; } phonation;
 };
 
-#define FormantGridEditor__parents(Klas) FunctionEditor__parents(Klas) Thing_inherit (Klas, FunctionEditor)
-Thing_declare1 (FormantGridEditor);
+class FormantGridEditor : public FunctionEditor {
+  public:
+	static void prefs (void);
 
-#define FormantGridEditor__members(Klas) FunctionEditor__members(Klas) \
-	bool editingBandwidths; \
-	long selectedFormant; \
-	double formantFloor, formantCeiling, bandwidthFloor, bandwidthCeiling, ycursor; \
-	struct FormantGridEditor_Play play; \
-	struct FormantGridEditor_Source source;
-#define FormantGridEditor__methods(Klas) FunctionEditor__methods(Klas) \
-	bool hasSourceMenu;
-Thing_declare2 (FormantGridEditor, FunctionEditor);
+	FormantGridEditor (GuiObject parent, const wchar_t *title, FormantGrid data);
 
-int FormantGridEditor_init (FormantGridEditor me, GuiObject parent, const wchar_t *title, FormantGrid data);
+	const wchar_t * type () { return L"FormantGridEditor"; }
+	bool hasSourceMenu () { return true; }
 
-FormantGridEditor FormantGridEditor_create (GuiObject parent, const wchar_t *title, FormantGrid data);
+	int selectFormantOrBandwidth (long iformant);
+	void createMenus ();
+	void dataChanged ();
+	void draw ();
+	void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
+	int click (double xWC, double yWC, int shiftKeyPressed);
+	void play (double tmin, double tmax);
 
-void FormantGridEditor_prefs (void);
-
-#ifdef __cplusplus
-	}
-#endif
+	bool _editingBandwidths;
+	long _selectedFormant;
+	double _formantFloor, _formantCeiling, _bandwidthFloor, _bandwidthCeiling, _ycursor;
+	struct FormantGridEditor_Play _play;
+	struct FormantGridEditor_Source _source;
+};
 
 /* End of file FormantGridEditor.h */
 #endif

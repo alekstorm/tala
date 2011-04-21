@@ -27,26 +27,29 @@
 #include "DurationTier.h"
 #include "Sound.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class DurationTierEditor : public RealTierEditor {
+  public:
+	DurationTierEditor (GuiObject parent, const wchar_t *title, DurationTier duration, Sound sound, int ownSound);
+	// 'sound' may be NULL.
 
-#define DurationTierEditor__parents(Klas) RealTierEditor__parents(Klas) Thing_inherit (Klas, RealTierEditor)
-Thing_declare1 (DurationTierEditor);
+	const wchar_t * type () { return L"DurationTierEditor"; }
+	double minimumLegalValue () { return 0.0; }
+	const wchar_t * quantityText () { return L"Relative duration"; }
+	const wchar_t * quantityKey () { return L"Relative duration"; }
+	const wchar_t * rightTickUnits () { return L""; }
+	double defaultYmin () { return 0.25; }
+	double defaultYmax () { return 3.0; }
+	const wchar_t * setRangeTitle () { return L"Set duration range..."; }
+	const wchar_t * defaultYminText () { return L"0.25"; }
+	const wchar_t * defaultYmaxText () { return L"3.0"; }
+	const wchar_t * yminText () { return L"Minimum duration"; }
+	const wchar_t * ymaxText () { return L"Maximum duration"; }
+	const wchar_t * yminKey () { return L"Minimum duration"; }
+	const wchar_t * ymaxKey () { return L"Maximum duration"; }
 
-#define DurationTierEditor__members(Klas) RealTierEditor__members(Klas)
-#define DurationTierEditor__methods(Klas) RealTierEditor__methods(Klas)
-Thing_declare2 (DurationTierEditor, RealTierEditor);
-
-DurationTierEditor DurationTierEditor_create (GuiObject parent, const wchar_t *title,
-	DurationTier duration, Sound sound, int ownSound);
-/*
-	'sound' may be NULL.
-*/
-
-#ifdef __cplusplus
-	}
-#endif
+	void createHelpMenuItems (EditorMenu *menu);
+	void play (double tmin, double tmax);
+};
 
 /* End of file DurationTierEditor.h */
 #endif

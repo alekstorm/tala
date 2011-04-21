@@ -239,7 +239,7 @@ DIRECT (Categories_edit)
 	if (theCurrentPraatApplication -> batch)
 		return Melder_error1 (L"Cannot edit a Categories from batch.");
 	else
-		WHERE (SELECTED) if (! praat_installEditor (CategoriesEditor_create (theCurrentPraatApplication -> topShell,
+		WHERE (SELECTED) if (! praat_installEditor (new CategoriesEditor (theCurrentPraatApplication -> topShell,
 			FULL_NAME, OBJECT), IOBJECT)) return 0;
 END
 
@@ -4514,10 +4514,10 @@ DO
 		praat_dataChanged (OBJECT);
 END
 
-static VowelEditor vowelEditor = NULL;
+static VowelEditor *vowelEditor = NULL;
 DIRECT (VowelEditor_create)
 	if (theCurrentPraatApplication -> batch) return Melder_error1 (L"Cannot edit from batch.");
-	vowelEditor = VowelEditor_create (theCurrentPraatApplication -> topShell, L"VowelEditor", NULL);
+	vowelEditor = new VowelEditor (theCurrentPraatApplication -> topShell, L"VowelEditor", NULL);
 	if (vowelEditor == NULL) return 0;
 END
 

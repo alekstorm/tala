@@ -26,27 +26,36 @@
 #include "FunctionEditor.h"
 #include "Spectrum.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class SpectrumEditor : public FunctionEditor {
+  public:
+	static void prefs (void);
 
-#define SpectrumEditor__parents(Klas) FunctionEditor__parents(Klas) Thing_inherit (Klas, FunctionEditor)
-Thing_declare1 (SpectrumEditor);
+	SpectrumEditor (GuiObject parent, const wchar_t *title, Any data);
 
-#define SpectrumEditor__members(Klas) FunctionEditor__members(Klas) \
-	double minimum, maximum, cursorHeight; \
-	double bandSmoothing, dynamicRange; \
-	GuiObject publishBandButton, publishSoundButton;
-#define SpectrumEditor__methods(Klas) FunctionEditor__methods(Klas)
-Thing_declare2 (SpectrumEditor, FunctionEditor);
+	const wchar_t * type () { return L"SpectrumEditor"; }
 
-SpectrumEditor SpectrumEditor_create (GuiObject parent, const wchar_t *title, Any data);
+	int fixedPrecision_long () { return 2; }
+	const wchar_t * format_domain () { return L"Frequency domain:"; }
+	const wchar_t * format_short () { return L"%.0f"; }
+	const wchar_t * format_long () { return L"%.2f"; }
+	const wchar_t * format_units () { return L"Hertz"; }
+	const wchar_t * format_totalDuration () { return L"Total bandwidth %.2f seconds"; }
+	const wchar_t * format_window () { return L"Window %.2f Hertz"; }
+	const wchar_t * format_selection () { return L"%.2f Hz"; }
 
-void SpectrumEditor_prefs (void);
+	void updateRange ();
+	void dataChanged ();
+	void draw ();
+	int click (double xWC, double yWC, int shiftKeyPressed);
+	void play (double fmin, double fmax);
+	void createMenus ();
+	void createMenuItems_view (EditorMenu *menu);
+	void createHelpMenuItems (EditorMenu *menu);
 
-#ifdef __cplusplus
-	}
-#endif
+	double _minimum, _maximum, _cursorHeight;
+	double _bandSmoothing, _dynamicRange;
+	GuiObject _publishBandButton, _publishSoundButton;
+};
 
 /* End of file SpectrumEditor.h */
 #endif

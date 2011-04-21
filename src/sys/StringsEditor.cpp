@@ -27,41 +27,39 @@
 #include "EditorM.h"
 #include "machine.h"
 
-static void destroy (I) {
-	iam (StringsEditor);
-	inherited (StringsEditor) destroy (me);
+StringsEditor::StringsEditor (GuiObject parent, const wchar_t *title, Any data)
+	: Editor (parent, 20, 40, 600, 600, title, data) {
+	updateList ();
 }
 
 static int menu_cb_help (EDITOR_ARGS) {
-	EDITOR_IAM (StringsEditor);
-	(void) me;
 	Melder_help (L"StringsEditor");
 	return 1;
 }
 
-static void createHelpMenuItems (StringsEditor me, EditorMenu *menu) {
-	inherited (StringsEditor) createHelpMenuItems (StringsEditor_as_parent (me), menu);
-	EditorMenu_addCommand (menu, L"StringsEditor help", '?', menu_cb_help);
+void StringsEditor::createHelpMenuItems (EditorMenu *menu) {
+	Editor::createHelpMenuItems (menu);
+	menu->addCommand (L"StringsEditor help", '?', menu_cb_help);
 }
 
-static void updateList (StringsEditor me) {
-	Strings strings = (structStrings*)my data;
-	GuiList_deleteAllItems (my list);
+void StringsEditor::updateList () {
+	Strings strings = (structStrings*)_data;
+	GuiList_deleteAllItems (_list);
 	for (long i = 1; i <= strings -> numberOfStrings; i ++)
-		GuiList_insertItem (my list, strings -> strings [i], 0);
+		GuiList_insertItem (_list, strings -> strings [i], 0);
 }
 
 static void gui_button_cb_insert (I, GuiButtonEvent event) {
 	(void) event;
-	iam (StringsEditor);
-	Strings strings = (structStrings*)my data;
+	StringsEditor *stringsEditor = (StringsEditor *)void_me;
+	Strings strings = (structStrings*)stringsEditor->_data;
 	/*
 	 * Find the first selected item.
 	 */
-	long numberOfSelected, *selected = GuiList_getSelectedPositions (my list, & numberOfSelected);
+	long numberOfSelected, *selected = GuiList_getSelectedPositions (stringsEditor->_list, & numberOfSelected);
 	long position = selected == NULL ? strings -> numberOfStrings + 1 : selected [1];
 	NUMlvector_free (selected, 1);
-	wchar_t *text = GuiText_getString (my text);
+	wchar_t *text = GuiText_getString (stringsEditor->_text);
 	/*
 	 * Change the data.
 	 */
@@ -69,21 +67,21 @@ static void gui_button_cb_insert (I, GuiButtonEvent event) {
 	/*
 	 * Change the list.
 	 */
-	GuiList_insertItem (my list, text, position);
-	GuiList_deselectAllItems (my list);
-	GuiList_selectItem (my list, position);
+	GuiList_insertItem (stringsEditor->_list, text, position);
+	GuiList_deselectAllItems (stringsEditor->_list);
+	GuiList_selectItem (stringsEditor->_list, position);
 	/*
 	 * Clean up.
 	 */
 	Melder_free (text);
-	Editor_broadcastChange (StringsEditor_as_Editor (me));
+	stringsEditor->broadcastChange ();
 }
 
 static void gui_button_cb_append (I, GuiButtonEvent event) {
 	(void) event;
-	iam (StringsEditor);
-	Strings strings = (structStrings*)my data;
-	wchar_t *text = GuiText_getString (my text);
+	StringsEditor *stringsEditor = (StringsEditor *)void_me;
+	Strings strings = (structStrings*)stringsEditor->_data;
+	wchar_t *text = GuiText_getString (stringsEditor->_text);
 	/*
 	 * Change the data.
 	 */
@@ -91,81 +89,64 @@ static void gui_button_cb_append (I, GuiButtonEvent event) {
 	/*
 	 * Change the list.
 	 */
-	GuiList_insertItem (my list, text, 0);
-	GuiList_deselectAllItems (my list);
-	GuiList_selectItem (my list, strings -> numberOfStrings);
+	GuiList_insertItem (stringsEditor->_list, text, 0);
+	GuiList_deselectAllItems (stringsEditor->_list);
+	GuiList_selectItem (stringsEditor->_list, strings -> numberOfStrings);
 	/*
 	 * Clean up.
 	 */
 	Melder_free (text);
-	Editor_broadcastChange (StringsEditor_as_Editor (me));
+	stringsEditor->broadcastChange ();
 }
 
 static void gui_button_cb_remove (I, GuiButtonEvent event) {
 	(void) event;
-	iam (StringsEditor);
-	long numberOfSelected, *selected = GuiList_getSelectedPositions (my list, & numberOfSelected);
+	StringsEditor *stringsEditor = (StringsEditor *)void_me;
+	long numberOfSelected, *selected = GuiList_getSelectedPositions (stringsEditor->_list, & numberOfSelected);
 	for (long iselected = numberOfSelected; iselected >= 1; iselected --) {
-		Strings_remove ((structStrings*)my data, selected [iselected]);
+		Strings_remove ((structStrings*)stringsEditor->_data, selected [iselected]);
 	}
 	NUMlvector_free (selected, 1);
-	updateList (me);
-	Editor_broadcastChange (StringsEditor_as_Editor (me));
+	stringsEditor->updateList ();
+	stringsEditor->broadcastChange ();
 }
 
 static void gui_button_cb_replace (I, GuiButtonEvent event) {
 	(void) event;
-	iam (StringsEditor);
-	Strings strings = (structStrings*)my data;
-	long numberOfSelected, *selected = GuiList_getSelectedPositions (my list, & numberOfSelected);
-	wchar_t *text = GuiText_getString (my text);
+	StringsEditor *stringsEditor = (StringsEditor *)void_me;
+	Strings strings = (structStrings*)stringsEditor->_data;
+	long numberOfSelected, *selected = GuiList_getSelectedPositions (stringsEditor->_list, & numberOfSelected);
+	wchar_t *text = GuiText_getString (stringsEditor->_text);
 	for (long iselected = 1; iselected <= numberOfSelected; iselected ++) {
 		Strings_replace (strings, selected [iselected], text);
-		GuiList_replaceItem (my list, text, selected [iselected]);
+		GuiList_replaceItem (stringsEditor->_list, text, selected [iselected]);
 	}
 	Melder_free (text);
-	Editor_broadcastChange (StringsEditor_as_Editor (me));
+	stringsEditor->broadcastChange ();
 }
 
 static void gui_list_cb_doubleClick (GuiObject widget, void *void_me, long item) {
 	(void) widget;
-	iam (StringsEditor);
-	Strings strings = (structStrings*)my data;
+	StringsEditor *stringsEditor = (StringsEditor *)void_me;
+	Strings strings = (structStrings*)stringsEditor->_data;
 	if (item <= strings -> numberOfStrings)
-		GuiText_setString (my text, strings -> strings [item]);
+		GuiText_setString (stringsEditor->_text, strings -> strings [item]);
 }
 
-static void createChildren (StringsEditor me) {
-	my list = GuiList_create (my dialog, 1, 0, Machine_getMenuBarHeight (), -70, true, NULL);
-	//GuiList_setDoubleClickCallback (my list, gui_list_cb_doubleClick, me);
-	GuiObject_show (my list);
+void StringsEditor::createChildren () {
+	_list = GuiList_create (_dialog, 1, 0, Machine_getMenuBarHeight (), -70, true, NULL);
+	//GuiList_setDoubleClickCallback (_list, gui_list_cb_doubleClick, me);
+	GuiObject_show (_list);
 
-	my text = GuiText_createShown (my dialog, 0, 0, Gui_AUTOMATIC, -40, 0);
-	GuiButton_createShown (my dialog, 10, 100, Gui_AUTOMATIC, -10, L"Insert", gui_button_cb_insert, me, GuiButton_DEFAULT);
-	GuiButton_createShown (my dialog, 110, 200, Gui_AUTOMATIC, -10, L"Append", gui_button_cb_append, me, 0);
-	GuiButton_createShown (my dialog, 210, 300, Gui_AUTOMATIC, -10, L"Replace", gui_button_cb_replace, me, 0);
-	GuiButton_createShown (my dialog, 310, 400, Gui_AUTOMATIC, -10, L"Remove", gui_button_cb_remove, me, 0);	
+	_text = GuiText_createShown (_dialog, 0, 0, Gui_AUTOMATIC, -40, 0);
+	GuiButton_createShown (_dialog, 10, 100, Gui_AUTOMATIC, -10, L"Insert", gui_button_cb_insert, this, GuiButton_DEFAULT);
+	GuiButton_createShown (_dialog, 110, 200, Gui_AUTOMATIC, -10, L"Append", gui_button_cb_append, this, 0);
+	GuiButton_createShown (_dialog, 210, 300, Gui_AUTOMATIC, -10, L"Replace", gui_button_cb_replace, this, 0);
+	GuiButton_createShown (_dialog, 310, 400, Gui_AUTOMATIC, -10, L"Remove", gui_button_cb_remove, this, 0);	
 }
 
-static void dataChanged (StringsEditor me) {
-	updateList (me);
-}
-
-class_methods (StringsEditor, Editor) {
-	class_method (destroy)
-	class_method (dataChanged)
-	class_method (createChildren)
-	class_method (createHelpMenuItems)
-	class_methods_end
-}
-
-StringsEditor StringsEditor_create (GuiObject parent, const wchar_t *title, Any data) {
-	StringsEditor me = Thing_new (StringsEditor); cherror
-	Editor_init (StringsEditor_as_parent (me), parent, 20, 40, 600, 600, title, data); cherror
-	updateList (me);
-end:
-	iferror forget (me);
-	return me;
+void StringsEditor::dataChanged () {
+	updateList ();
 }
 
 /* End of file StringsEditor.c */

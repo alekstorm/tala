@@ -30,10 +30,29 @@
 	#include "ExperimentMFC.h"
 #endif
 
-#define RunnerMFC__parents(Klas) Editor__parents(Klas) Thing_inherit (Klas, Editor)
-Thing_declare1 (RunnerMFC);
+class RunnerMFC : public Editor {
+  public:
+	RunnerMFC (GuiObject parent, const wchar_t *title, Ordered experiments);
+	~RunnerMFC ();
 
-RunnerMFC RunnerMFC_create (GuiObject parent, const wchar_t *title, Ordered experiments);
+	wchar_t * type () { return L"RunnerMFC"; }
+	bool isEditable () { return false; }
+	bool isScriptable () { return false; }
+
+	void dataChanged ();
+	int startExperiment ();
+	void drawControlButton (double left, double right, double bottom, double top, const wchar_t *visibleText);
+	void do_ok ();
+	void do_oops ();
+	void do_replay ();
+	void createChildren ();
+
+	GuiObject _drawingArea;
+	Ordered _experiments;
+	long _iexperiment;
+	Graphics _graphics;
+	long _numberOfReplays;
+};
 
 /* End of file RunnerMFC.h */
 #endif

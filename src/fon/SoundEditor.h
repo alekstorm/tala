@@ -25,24 +25,25 @@
 
 #include "TimeSoundAnalysisEditor.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class SoundEditor : public TimeSoundAnalysisEditor {
+  public:
+	SoundEditor (GuiObject parent, const wchar_t *title, Any data);
 
-#define SoundEditor__parents(Klas) TimeSoundAnalysisEditor__parents(Klas) Thing_inherit (Klas, TimeSoundAnalysisEditor)
-Thing_declare1 (SoundEditor);
+	const wchar_t * type () { return L"SoundEditor"; }
 
-#define SoundEditor__members(Klas) TimeSoundAnalysisEditor__members(Klas) \
-	GuiObject cutButton, copyButton, pasteButton, zeroButton, reverseButton; \
-	double maxBuffer;
-#define SoundEditor__methods(Klas) TimeSoundAnalysisEditor__methods(Klas)
-Thing_declare2 (SoundEditor, TimeSoundAnalysisEditor);
+	void dataChanged ();
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+	void prepareDraw ();
+	void draw ();
+	void play (double tmin, double tmax);
+	int click (double xWC, double yWC, int shiftKeyPressed);
+	void highlightSelection (double left, double right, double bottom, double top);
+	void unhighlightSelection (double left, double right, double bottom, double top);
 
-SoundEditor SoundEditor_create (GuiObject parent, const wchar_t *title, Any data);
-
-#ifdef __cplusplus
-	}
-#endif
+	GuiObject _cutButton, _copyButton, _pasteButton, _zeroButton, _reverseButton;
+	double _maxBuffer;
+};
 
 /* End of file SoundEditor.h */
 #endif

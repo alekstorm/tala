@@ -33,30 +33,35 @@
 	#include "Interpreter.h"
 #endif
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
-#define ScriptEditor__parents(Klas) TextEditor__parents(Klas) Thing_inherit (Klas, TextEditor)
-Thing_declare1 (ScriptEditor);
-
-#define ScriptEditor__members(Klas) TextEditor__members(Klas) \
-	wchar_t *environmentName; \
-	Editor_Table editorClass; \
-	Interpreter *interpreter; \
-	UiForm *argsDialog;
-#define ScriptEditor__methods(Klas) TextEditor__methods(Klas)
-Thing_declare2 (ScriptEditor, TextEditor);
-
-ScriptEditor ScriptEditor_createFromText (GuiObject parent, Any editor, const wchar_t *initialText);
-	/* 'initalText' may be NULL. */
-ScriptEditor ScriptEditor_createFromScript (GuiObject parent, Any voidEditor, Script script);
-
 int ScriptEditors_dirty (void);   /* Are there any modified and unsaved scripts? Ask before quitting the program. */
 
-#ifdef __cplusplus
-	}
-#endif
+class ScriptEditor : public TextEditor {
+  public:
+	static void addToEditors (ScriptEditor *editor);
+	static ScriptEditor * createFromText (GuiObject parent, Editor *other, const wchar_t *initialText);
+	static ScriptEditor * createFromScript (GuiObject parent, Editor *other, Script script);
+
+	ScriptEditor (GuiObject parent, Editor *other, const wchar_t *initialText);
+	~ScriptEditor ();
+
+	const wchar_t * type () { return L"ScriptEditor"; }
+	bool isScriptable() { return false; }
+
+	void nameChanged ();
+	void run (wchar_t **text);
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+
+	wchar_t *_environmentName;
+	Interpreter *_interpreter;
+	UiForm *_argsDialog;
+
+  protected:
+	void goAway ();
+
+  private:
+	void init (GuiObject parent, Editor *editor, const wchar_t *initialText);
+};
 
 /* End of file ScriptEditor.h */
 #endif

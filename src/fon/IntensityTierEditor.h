@@ -27,26 +27,28 @@
 #include "IntensityTier.h"
 #include "Sound.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class IntensityTierEditor : public RealTierEditor {
+  public:
+	IntensityTierEditor (GuiObject parent, const wchar_t *title, IntensityTier intensity, Sound sound, int ownSound);
+	// 'sound' may be NULL.
 
-#define IntensityTierEditor__parents(Klas) RealTierEditor__parents(Klas) Thing_inherit (Klas, RealTierEditor)
-Thing_declare1 (IntensityTierEditor);
+	const wchar_t * type () { return L"IntensityTierEditor"; }
+	const wchar_t * quantityText () { return L"Intensity (dB)"; }
+	const wchar_t * quantityKey () { return L"Intensity"; }
+	const wchar_t * rightTickUnits () { return L" dB"; }
+	double defaultYmin () { return 50.0; }
+	double defaultYmax () { return 100.0; }
+	const wchar_t * setRangeTitle () { return L"Set intensity range..."; }
+	const wchar_t * defaultYminText () { return L"50.0"; }
+	const wchar_t * defaultYmaxText () { return L"100.0"; }
+	const wchar_t * yminText () { return L"Minimum intensity (dB)"; }
+	const wchar_t * ymaxText () { return L"Maximum intensity (dB)"; }
+	const wchar_t * yminKey () { return L"Minimum intensity"; }
+	const wchar_t * ymaxKey () { return L"Maximum intensity"; }
 
-#define IntensityTierEditor__members(Klas) RealTierEditor__members(Klas)
-#define IntensityTierEditor__methods(Klas) RealTierEditor__methods(Klas)
-Thing_declare2 (IntensityTierEditor, RealTierEditor);
-
-IntensityTierEditor IntensityTierEditor_create (GuiObject parent, const wchar_t *title,
-	IntensityTier intensity, Sound sound, int ownSound);
-/*
-	'sound' may be NULL.
-*/
-
-#ifdef __cplusplus
-	}
-#endif
+	void createHelpMenuItems (EditorMenu *menu);
+	void play (double tmin, double tmax);
+};
 
 /* End of file IntensityTierEditor.h */
 #endif

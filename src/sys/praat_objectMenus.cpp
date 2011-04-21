@@ -114,7 +114,7 @@ DIRECT (Inspect)
 		return Melder_error1 (L"Cannot inspect data from batch.");
 	} else {
 		WHERE (SELECTED)
-			if (! praat_installEditor (DataEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT)) return 0;
+			if (! praat_installEditor (new DataEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT)) return 0;
 	}
 END
 
@@ -149,20 +149,19 @@ DIRECT (Memory_info)
 END
 
 DIRECT (praat_newScript)
-	ScriptEditor editor = ScriptEditor_createFromText (theCurrentPraatApplication -> topShell, NULL, NULL);
+	ScriptEditor *editor = ScriptEditor::createFromText (theCurrentPraatApplication -> topShell, NULL, NULL);
 	if (! editor) return 0;
 END
 
 DIRECT (praat_openScript)
-	ScriptEditor editor = ScriptEditor_createFromText (theCurrentPraatApplication -> topShell, NULL, NULL);
+	ScriptEditor *editor = ScriptEditor::createFromText (theCurrentPraatApplication -> topShell, NULL, NULL);
 	if (! editor) return 0;
-	TextEditor_showOpen (ScriptEditor_as_TextEditor (editor));
+	editor->showOpen ();
 END
 
-static ButtonEditor theButtonEditor;
+static ButtonEditor *theButtonEditor;
 
-static void cb_ButtonEditor_destroy (Any editor, void *closure) {
-	(void) editor;
+static void cb_ButtonEditor_destroy (Editor *editor, void *closure) {
 	(void) closure;
 	theButtonEditor = NULL;
 }
@@ -180,11 +179,10 @@ END
 
 DIRECT (praat_editButtons)
 	if (theButtonEditor) {
-		Editor_raise (ButtonEditor_as_Editor (theButtonEditor));
+		theButtonEditor->raise ();
 	} else {
-		theButtonEditor = ButtonEditor_create (theCurrentPraatApplication -> topShell);
-		Editor_setDestroyCallback (ButtonEditor_as_Editor (theButtonEditor), cb_ButtonEditor_destroy, NULL);
-		if (! theButtonEditor) return 0;
+		theButtonEditor = new ButtonEditor (theCurrentPraatApplication -> topShell);
+		theButtonEditor->setDestroyCallback (cb_ButtonEditor_destroy, NULL);
 	}
 END
 
@@ -294,7 +292,7 @@ FORM (praat_calculator, L"Calculator", L"Calculator")
 	OK
 DO
 	if (interpreter == NULL) {
-		interpreter = new Interpreter (NULL, NULL);
+		interpreter = new Interpreter (NULL);
 		int status = interpreter->anyExpression (GET_STRING (L"expression"), NULL);
 		forget (interpreter);
 		return status;
@@ -362,7 +360,7 @@ static int readFromFile (MelderFile file) {
 	Data object = (Data) Data_readFromFile (file);
 	int result;
 	if (object && Thing_member (object, classScript)) {
-		ScriptEditor_createFromScript (theCurrentPraatApplication -> topShell, NULL, (Script) object);
+		ScriptEditor::createFromScript (theCurrentPraatApplication -> topShell, NULL, (Script) object);
 		forget (object);
 		iferror return 0;
 		return 1;
@@ -438,7 +436,7 @@ void praat_show (void) {
 	praat_sensitivizeFixedButtonCommand (L"Info", theCurrentPraatObjects -> totalSelection == 1);
 	praat_sensitivizeFixedButtonCommand (L"Inspect", theCurrentPraatObjects -> totalSelection != 0);
 	praat_actions_show ();
-	if (theCurrentPraatApplication == & theForegroundPraatApplication && theButtonEditor) Editor_dataChanged (ButtonEditor_as_Editor (theButtonEditor), NULL);
+	if (theCurrentPraatApplication == & theForegroundPraatApplication && theButtonEditor) theButtonEditor->changeData (NULL);
 }
 
 /********** Menu descriptions. **********/

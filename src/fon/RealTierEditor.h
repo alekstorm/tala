@@ -26,39 +26,43 @@
 #include "TimeSoundEditor.h"
 #include "RealTier.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
-#define RealTierEditor__parents(Klas) TimeSoundEditor__parents(Klas) Thing_inherit (Klas, TimeSoundEditor)
-Thing_declare1 (RealTierEditor);
-
-#define RealTierEditor__members(Klas) TimeSoundEditor__members(Klas) \
-	double ymin, ymax, ycursor;
-#define RealTierEditor__methods(Klas) TimeSoundEditor__methods(Klas) \
-	double minimumLegalValue, maximumLegalValue; \
-	const wchar_t *quantityText, *quantityKey, *rightTickUnits; \
-	double defaultYmin, defaultYmax; \
-	const wchar_t *setRangeTitle, *defaultYminText, *defaultYmaxText; \
-	const wchar_t *yminText, *ymaxText, *yminKey, *ymaxKey;
-Thing_declare2 (RealTierEditor, TimeSoundEditor);
-
-void RealTierEditor_updateScaling (RealTierEditor me);
-/*
-	Computes the ymin and ymax values on the basis of the data.
-	Call after every change in the data.
-*/
-
-int RealTierEditor_init (RealTierEditor me, GuiObject parent, const wchar_t *title, RealTier data, Sound sound, int ownSound);
-/*
-	'Sound' may be NULL;
+class RealTierEditor : public TimeSoundEditor {
+  public:
+	RealTierEditor (GuiObject parent, const wchar_t *title, RealTier data, Sound sound, int ownSound);
+/*	'Sound' may be NULL;
 	if 'ownSound' is TRUE, the editor will contain a deep copy of the Sound,
-	which the editor will destroy when the editor is destroyed.
-*/
+	which the editor will destroy when the editor is destroyed. */
 
-#ifdef __cplusplus
-	}
-#endif
+	const wchar_t * type () { return L"RealTierEditor"; }
+	virtual double minimumLegalValue () { return NUMundefined; }
+	virtual double maximumLegalValue () { return NUMundefined; }
+	virtual const wchar_t * quantityText () { return L"Y"; }   /* Normally includes units. */
+	virtual const wchar_t * quantityKey () { return L"Y"; }   /* Without units. */
+	virtual const wchar_t * rightTickUnits () { return L""; }
+	virtual double defaultYmin () { return 0.0; }
+	virtual double defaultYmax () { return 1.0; }
+	virtual const wchar_t * setRangeTitle () { return L"Set range..."; }
+	virtual const wchar_t * defaultYminText () { return L"0.0"; }
+	virtual const wchar_t * defaultYmaxText () { return L"1.0"; }
+	virtual const wchar_t * yminText () { return L"Minimum"; }   /* Normally includes units. */
+	virtual const wchar_t * ymaxText () { return L"Maximum"; }   /* Normally includes units. */
+	virtual const wchar_t * yminKey () { return L"Minimum"; }   /* Without units. */
+	virtual const wchar_t * ymaxKey () { return L"Maximum"; }   /* Without units. */
+
+	void updateScaling ();
+/*	Computes the ymin and ymax values on the basis of the data.
+	Call after every change in the data. */
+
+	void createMenuItems_view (EditorMenu *menu);
+	void createMenus ();
+	void dataChanged ();
+	void draw ();
+	void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
+	int click (double xWC, double yWC, int shiftKeyPressed);
+	void play (double tmin, double tmax);
+
+	double _ymin, _ymax, _ycursor;
+};
 
 /* End of file RealTierEditor.h */
 #endif

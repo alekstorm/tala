@@ -1,6 +1,6 @@
-#ifndef _ButtonEditor_h_
-#define _ButtonEditor_h_
-/* ButtonEditor.h
+#ifndef _InfoEditor_h_
+#define _InfoEditor_h_
+/* InfoEditor.h
  *
  * Copyright (C) 1996-2011 Paul Boersma
  *
@@ -19,33 +19,19 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/*
- * pb 2011/03/02
- */
+#include "TextEditor.h"
 
-#ifndef _HyperPage_h_
-	#include "HyperPage.h"
-#endif
-#include "praatP.h"
-
-class ButtonEditor : public HyperPage {
+class InfoEditor : public TextEditor {
   public:
-	ButtonEditor (GuiObject parent);
+	InfoEditor (GuiObject parent, const wchar_t *initialText);
 
-	const wchar_t * type () { return L"ButtonEditor"; }
+	const wchar_t * type () { return L"InfoEditor"; }
+
 	bool isScriptable () { return false; }
+	bool isFileBased () { return false; }
 
-	void which (int show);
-	void draw ();
-	void drawMenuCommand (praat_Command cmd, long i);
-	void drawAction (praat_Command cmd, long i);
-	int goToPage (const wchar_t *title);
-	void createChildren ();
-	void createHelpMenuItems (EditorMenu *menu);
-
-	int _show;
-	GuiObject _button1, _button2, _button3, _button4, _button5;
+	void clear ();
 };
 
-/* End of file ButtonEditor.h */
+/* End of file InfoEditor.h */
 #endif

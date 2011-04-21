@@ -326,8 +326,8 @@ DIRECT (OTGrammar_edit)
 	if (theCurrentPraatApplication -> batch) Melder_throw ("Cannot edit from batch.");
 	WHERE (SELECTED) {
 		iam_LOOP (OTGrammar);
-		autoOTGrammarEditor editor = OTGrammarEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, me);
-		praat_installEditor (editor.transfer(), IOBJECT); therror
+		OTGrammarEditor *editor = new OTGrammarEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, me);
+		praat_installEditor (editor, IOBJECT); therror
 	}
 END
 
@@ -1000,8 +1000,8 @@ DIRECT (OTMulti_edit)
 	if (theCurrentPraatApplication -> batch) Melder_throw ("Cannot edit an OTMulti from batch.");
 	WHERE (SELECTED) {
 		iam_LOOP (OTMulti);
-		autoOTMultiEditor editor = OTMultiEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, me);
-		praat_installEditor (editor.transfer(), IOBJECT); therror
+		OTMultiEditor *editor = new OTMultiEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, me);
+		praat_installEditor (editor, IOBJECT); therror
 	}
 END
 

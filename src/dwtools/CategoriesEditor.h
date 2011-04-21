@@ -29,24 +29,26 @@
 #include "sys/Editor.h"
 #include "Categories.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class CategoriesEditor : public Editor {
+  public:
+	CategoriesEditor (GuiObject parent, const wchar_t *title, Any data);
+	~CategoriesEditor ();
 
-#define CategoriesEditor__parents(Klas) Editor__parents(Klas) Thing_inherit (Klas, Editor)
-Thing_declare1 (CategoriesEditor);
-#define CategoriesEditor__members(Klas) Editor__members(Klas)				\
-	CommandHistory history;									\
-	int position;											\
-	GuiObject list, text, outOfView, undo, redo;				\
-	GuiObject remove, insert, insertAtEnd, replace, moveUp, moveDown;
-#define CategoriesEditor__methods(Klas) Editor__methods(Klas)
-Thing_declare2 (CategoriesEditor, Editor);
+	const wchar_t * type () { return L"CategoriesEditor"; }
 
-CategoriesEditor CategoriesEditor_create (GuiObject parent, const wchar_t *title, Any data);
+	void notifyOutOfView ();
+	void update_dos ();
+	void updateWidgets (); /*all buttons except undo & redo */
+	void update (long from, long to, const long *select, long nSelect);
+	void insert (int position);
+	void createHelpMenuItems (EditorMenu *menu);
+	void createChildren ();
+	void dataChanged ();
 
-#ifdef __cplusplus
-	}
-#endif
+	CommandHistory _history;
+	int _position;
+	GuiObject _list, _text, _outOfView, _undo, _redo;
+	GuiObject _remove, _insert, _insertAtEnd, _replace, _moveUp, _moveDown;
+};
 
 #endif /* _CategoriesEditor_h_ */

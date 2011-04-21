@@ -27,46 +27,26 @@
  * pb 2010/07/29 removed GuiDialog_show
  */
 
-#include "TextEditor.h"
+#include "InfoEditor.h"
 
-#define InfoEditor__parents(Klas) TextEditor__parents(Klas) Thing_inherit (Klas, TextEditor)
-Thing_declare1 (InfoEditor);
+static InfoEditor *theInfoEditor;
 
-#define InfoEditor__members(Klas) TextEditor__members(Klas)
-#define InfoEditor__methods(Klas) TextEditor__methods(Klas)
-Thing_declare2 (InfoEditor, TextEditor);
+InfoEditor::InfoEditor (GuiObject parent, const wchar_t *initialText)
+	: TextEditor(parent, initialText) {}
 
-static InfoEditor theInfoEditor;
-
-static void destroy (I) {
-	iam (InfoEditor);
-	theInfoEditor = NULL;
-	inherited (InfoEditor) destroy (me);
-}
-
-static void clear (InfoEditor me) {
-	(void) me;
+void InfoEditor::clear () {
 	Melder_clearInfo ();
 }
 
-class_methods (InfoEditor, TextEditor) {
-	class_method (destroy)
-	us -> scriptable = false;
-	us -> fileBased = false;
-	class_method (clear)
-	class_methods_end
-}
-
-void gui_information (wchar_t *message);
+// FIXME
 void gui_information (wchar_t *message) {
 	if (! theInfoEditor) {
-		theInfoEditor = Thing_new (InfoEditor);
-		TextEditor_init (InfoEditor_as_parent (theInfoEditor), (GtkWidget*)Melder_topShell, L"");
+		theInfoEditor = new InfoEditor ((GtkWidget*)Melder_topShell, L"");
 		Thing_setName (theInfoEditor, L"Praat Info");
 	}
-	GuiText_setString (theInfoEditor -> textWidget, message);
-	GuiObject_show (theInfoEditor -> dialog);
-	GuiWindow_drain (theInfoEditor -> shell);
+	GuiText_setString (theInfoEditor -> _textWidget, message);
+	GuiObject_show (theInfoEditor -> _dialog);
+	GuiWindow_drain (theInfoEditor -> _shell);
 }
 
 /* End of file InfoEditor.c */

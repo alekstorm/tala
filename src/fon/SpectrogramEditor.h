@@ -26,23 +26,17 @@
 #include "FunctionEditor.h"
 #include "Spectrogram.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class SpectrogramEditor : public FunctionEditor {
+  public:
+	SpectrogramEditor (GuiObject parent, const wchar_t *title, Any data);
 
-#define SpectrogramEditor__parents(Klas) FunctionEditor__parents(Klas) Thing_inherit (Klas, FunctionEditor)
-Thing_declare1 (SpectrogramEditor);
+	const wchar_t * type () { return L"SpectrogramEditor"; }
 
-#define SpectrogramEditor__members(Klas) FunctionEditor__members(Klas) \
-	double maximum;
-#define SpectrogramEditor__methods(Klas) FunctionEditor__methods(Klas)
-Thing_declare2 (SpectrogramEditor, FunctionEditor);
+	void draw ();
+	int click (double xWC, double yWC, int shiftKeyPressed);
 
-SpectrogramEditor SpectrogramEditor_create (GuiObject parent, const wchar_t *title, Any data);
-
-#ifdef __cplusplus
-	}
-#endif
+	double _maximum;
+};
 
 /* End of file SpectrogramEditor.h */
 #endif

@@ -668,7 +668,7 @@ DO
 	}
 END
 
-static void cb_TextGridEditor_publish (Any editor, void *closure, Any publish) {
+static void cb_TextGridEditor_publish (Editor *editor, void *closure, Any publish) {
 	(void) editor;
 	(void) closure;
 	if (! praat_new1 (publish, NULL)) { Melder_flushError (NULL); return; }
@@ -676,7 +676,7 @@ static void cb_TextGridEditor_publish (Any editor, void *closure, Any publish) {
 	if (Thing_member (publish, classSpectrum) && wcsequ (Thing_getName (publish), L"slice")) {
 		int IOBJECT;
 		WHERE (SELECTED) {
-			SpectrumEditor editor2 = SpectrumEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT);
+			SpectrumEditor *editor2 = new SpectrumEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT);
 			if (! editor2) return;
 			if (! praat_installEditor (editor2, IOBJECT)) Melder_flushError (NULL);
 		}
@@ -687,10 +687,10 @@ DIRECT (TextGrid_edit)
 		return Melder_error1 (L"Cannot edit a TextGrid from batch.");
 	} else {
 		WHERE (SELECTED && CLASS == classTextGrid) {
-			TextGridEditor editor = TextGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			TextGridEditor *editor = new TextGridEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				(structTextGrid *)OBJECT, ONLY (classSound), NULL);
 			if (! praat_installEditor (editor, IOBJECT)) return 0;
-			Editor_setPublishCallback (TextGridEditor_as_Editor (editor), cb_TextGridEditor_publish, NULL);
+			editor->setPublishCallback (cb_TextGridEditor_publish, NULL);
 		}
 	}
 END
@@ -705,7 +705,7 @@ DIRECT (TextGrid_LongSound_edit)
 			if (CLASS == classLongSound) longSound = (structLongSound *)OBJECT, ilongSound = IOBJECT;
 		Melder_assert (ilongSound != 0);
 		WHERE (SELECTED && CLASS == classTextGrid)
-			if (! praat_installEditor2 (TextGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			if (! praat_installEditor2 (new TextGridEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				(structTextGrid *)OBJECT, longSound, NULL), IOBJECT, ilongSound)) return 0;
 	}
 END
@@ -720,7 +720,7 @@ DIRECT (TextGrid_SpellingChecker_edit)
 			if (CLASS == classSpellingChecker) spellingChecker = (structSpellingChecker *)OBJECT, ispellingChecker = IOBJECT;
 		Melder_assert (ispellingChecker != 0);
 		WHERE (SELECTED && CLASS == classTextGrid)
-			if (! praat_installEditor2 (TextGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			if (! praat_installEditor2 (new TextGridEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				(structTextGrid *)OBJECT, ONLY (classSound), spellingChecker), IOBJECT, ispellingChecker)) return 0;
 	}
 END
@@ -738,7 +738,7 @@ DIRECT (TextGrid_LongSound_SpellingChecker_edit)
 		}
 		Melder_assert (ilongSound != 0 && ispellingChecker != 0);
 		WHERE (SELECTED && CLASS == classTextGrid)
-			if (! praat_installEditor3 (TextGridEditor_create (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
+			if (! praat_installEditor3 (new TextGridEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME,
 				(structTextGrid *)OBJECT, longSound, spellingChecker), IOBJECT, ilongSound, ispellingChecker)) return 0;
 	}
 END
@@ -1350,7 +1350,7 @@ extern "C" void praat_uvafon_TextGrid_init (void);
 void praat_uvafon_TextGrid_init (void) {
 	Thing_recognizeClassByOtherName (classTextTier, L"MarkTier");
 
-	TextGridEditor_prefs ();
+	TextGridEditor::prefs ();
 
 	praat_addAction1 (classIntervalTier, 0, L"IntervalTier help", 0, 0, DO_IntervalTier_help);
 	praat_addAction1 (classIntervalTier, 1, L"Save as Xwaves label file...", 0, 0, DO_IntervalTier_writeToXwaves);

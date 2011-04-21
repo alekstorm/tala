@@ -42,7 +42,7 @@
  * pb 2008/03/13 Windows: better file dropping
  * pb 2008/04/09 removed explicit GSL
  * pb 2008/11/01 praatcon -a
- * pb 2009/01/17 arguments to UiForm *callbacks
+ * pb 2009/01/17 arguments to UiForm callbacks
  * pb 2009/03/17 split up theCurrentPraat into Application, Objects and Picture
  * pb 2009/12/22 invokingButtonTitle
  * pb 2010/05/24 sendpraat for GTK
@@ -64,6 +64,7 @@
 	#include <unistd.h>
 #endif
 
+#include "praat.h"
 #include "praatP.h"
 #include "praat_script.h"
 #include "site.h"
@@ -261,7 +262,7 @@ void praat_write_do (UiOutfile *dia, const wchar_t *extension) {
 	dia->do_ (defaultFileName.string);
 }
 
-static void removeAllReferencesToEditor (Any editor) {
+static void removeAllReferencesToEditor (Editor *editor) {
 	int iobject, ieditor;
 	/*
 	 * Remove all references to this editor.
@@ -290,7 +291,7 @@ static void praat_remove (int iobject) {
 	 * To prevent synchronization problems, kill editors before killing the data.
 	 */
 	for (ieditor = 0; ieditor < praat_MAXNUM_EDITORS; ieditor ++) {
-		Any editor = theCurrentPraatObjects -> list [iobject]. editors [ieditor];   /* Save this one reference. */
+		Editor *editor = (Editor *)theCurrentPraatObjects -> list [iobject]. editors [ieditor];   /* Save this one reference. */
 		if (editor) {
 			removeAllReferencesToEditor (editor);
 			forget (editor);
@@ -621,14 +622,12 @@ static void praat_exit (int exit_code) {
 	exit (exit_code);
 }
 
-static void cb_Editor_destroy (I, void *closure) {
-	iam (Editor);
+static void cb_Editor_destroy (Editor *editor, void *closure) {
 	(void) closure;
-	removeAllReferencesToEditor (me);   /* Remove reference(s) to moribund Editor. */
+	removeAllReferencesToEditor (editor);   /* Remove reference(s) to moribund Editor. */
 }
 
-static void cb_Editor_dataChanged (I, void *closure, Any data) {
-	iam (Editor);
+static void cb_Editor_dataChanged (Editor *editor, void *closure, Any data) {
 	int iobject, ieditor;
 	(void) closure;
 	for (iobject = 1; iobject <= theCurrentPraatObjects -> n; iobject ++) {
@@ -637,7 +636,7 @@ static void cb_Editor_dataChanged (I, void *closure, Any data) {
 		 * Am I editing this object?
 		 */
 		for (ieditor = 0; ieditor < praat_MAXNUM_EDITORS; ieditor ++)
-			if (theCurrentPraatObjects -> list [iobject]. editors [ieditor] == me)
+			if (theCurrentPraatObjects -> list [iobject]. editors [ieditor] == editor)
 				editingThisObject = TRUE;
 		if (editingThisObject) {
 			/*
@@ -650,16 +649,16 @@ static void cb_Editor_dataChanged (I, void *closure, Any data) {
 			 * Notify all other editors associated with this object.
 			 */
 			for (ieditor = 0; ieditor < praat_MAXNUM_EDITORS; ieditor ++) {
-				Editor otherEditor = (Editor) theCurrentPraatObjects -> list [iobject]. editors [ieditor];
-				if (otherEditor != NULL && otherEditor != me) {
-					Editor_dataChanged (otherEditor, data);
+				Editor *otherEditor = (Editor *) theCurrentPraatObjects -> list [iobject]. editors [ieditor];
+				if (otherEditor != NULL && otherEditor != editor) {
+					otherEditor->changeData (data);
 				}
 			}
 		}
 	}
 }
 
-static void cb_Editor_publish (Any editor, void *closure, Any publish) {
+static void cb_Editor_publish (Editor *editor, void *closure, Any publish) {
 /*
    The default publish callback.
    Works nicely if the publisher invents a name.
@@ -670,14 +669,14 @@ static void cb_Editor_publish (Any editor, void *closure, Any publish) {
 	praat_updateSelection ();
 }
 
-int praat_installEditor (Any editor, int IOBJECT) {
+int praat_installEditor (Editor *editor, int IOBJECT) {
 	if (editor == NULL) return 0;
 	for (int ieditor = 0; ieditor < praat_MAXNUM_EDITORS; ieditor ++) {
 		if (EDITOR [ieditor] == NULL) {
 			EDITOR [ieditor] = editor;
-			Editor_setDestroyCallback ((Editor) editor, cb_Editor_destroy, NULL);
-			Editor_setDataChangedCallback ((Editor) editor, cb_Editor_dataChanged, NULL);
-			Editor_setPublishCallback ((Editor) editor, cb_Editor_publish, NULL);
+			editor->setDestroyCallback (cb_Editor_destroy, NULL);
+			editor->setDataChangedCallback (cb_Editor_dataChanged, NULL);
+			editor->setPublishCallback (cb_Editor_publish, NULL);
 			return 1;
 		}
 	}
@@ -685,7 +684,7 @@ int praat_installEditor (Any editor, int IOBJECT) {
 	return Melder_error3 (L"(praat_installEditor:) Cannot have more than ", Melder_integer (praat_MAXNUM_EDITORS), L" editors with one object.");
 }
 
-int praat_installEditor2 (Any editor, int i1, int i2) {
+int praat_installEditor2 (Editor *editor, int i1, int i2) {
 	int ieditor1 = 0, ieditor2 = 0;
 	if (editor == NULL) return 0;
 	for (ieditor1 = 0; ieditor1 < praat_MAXNUM_EDITORS; ieditor1 ++)
@@ -696,9 +695,9 @@ int praat_installEditor2 (Any editor, int i1, int i2) {
 			break;
 	if (ieditor1 < praat_MAXNUM_EDITORS && ieditor2 < praat_MAXNUM_EDITORS) {
 		theCurrentPraatObjects -> list [i1]. editors [ieditor1] = theCurrentPraatObjects -> list [i2]. editors [ieditor2] = editor;
-		Editor_setDestroyCallback ((Editor) editor, cb_Editor_destroy, NULL);
-		Editor_setDataChangedCallback ((Editor) editor, cb_Editor_dataChanged, NULL);
-		Editor_setPublishCallback ((Editor) editor, cb_Editor_publish, NULL);
+		editor->setDestroyCallback (cb_Editor_destroy, NULL);
+		editor->setDataChangedCallback (cb_Editor_dataChanged, NULL);
+		editor->setPublishCallback (cb_Editor_publish, NULL);
 	} else {
 		forget (editor);
 		return Melder_error3 (L"(praat_installEditor2:) Cannot have more than ", Melder_integer (praat_MAXNUM_EDITORS), L" editors with one object.");
@@ -706,7 +705,7 @@ int praat_installEditor2 (Any editor, int i1, int i2) {
 	return 1;
 }
 
-int praat_installEditor3 (Any editor, int i1, int i2, int i3) {
+int praat_installEditor3 (Editor *editor, int i1, int i2, int i3) {
 	int ieditor1 = 0, ieditor2 = 0, ieditor3;
 	if (! editor) return 0;
 	for (ieditor1 = 0; ieditor1 < praat_MAXNUM_EDITORS; ieditor1 ++)
@@ -720,9 +719,9 @@ int praat_installEditor3 (Any editor, int i1, int i2, int i3) {
 			break;
 	if (ieditor1 < praat_MAXNUM_EDITORS && ieditor2 < praat_MAXNUM_EDITORS && ieditor3 < praat_MAXNUM_EDITORS) {
 		theCurrentPraatObjects -> list [i1]. editors [ieditor1] = theCurrentPraatObjects -> list [i2]. editors [ieditor2] = theCurrentPraatObjects -> list [i3]. editors [ieditor3] = editor;
-		Editor_setDestroyCallback ((Editor) editor, cb_Editor_destroy, NULL);
-		Editor_setDataChangedCallback ((Editor) editor, cb_Editor_dataChanged, NULL);
-		Editor_setPublishCallback ((Editor) editor, cb_Editor_publish, NULL);
+		editor->setDestroyCallback (cb_Editor_destroy, NULL);
+		editor->setDataChangedCallback (cb_Editor_dataChanged, NULL);
+		editor->setPublishCallback (cb_Editor_publish, NULL);
 	} else {
 		forget (editor);
 		return Melder_error3 (L"(praat_installEditor3:) Cannot have more than ", Melder_integer (praat_MAXNUM_EDITORS), L" editors with one object.");
@@ -730,7 +729,7 @@ int praat_installEditor3 (Any editor, int i1, int i2, int i3) {
 	return 1;
 }
 
-int praat_installEditorN (Any editor, Ordered objects) {
+int praat_installEditorN (Editor *editor, Ordered objects) {
 	long iOrderedObject, iPraatObject;
 	if (editor == NULL) return 0;
 	/*
@@ -767,9 +766,9 @@ int praat_installEditorN (Any editor, Ordered objects) {
 				for (ieditor = 0; ieditor < praat_MAXNUM_EDITORS; ieditor ++) {
 					if (theCurrentPraatObjects -> list [iPraatObject]. editors [ieditor] == NULL) {
 						theCurrentPraatObjects -> list [iPraatObject]. editors [ieditor] = editor;
-						Editor_setDestroyCallback ((Editor) editor, cb_Editor_destroy, NULL);
-						Editor_setDataChangedCallback ((Editor) editor, cb_Editor_dataChanged, NULL);
-						Editor_setPublishCallback ((Editor) editor, cb_Editor_publish, NULL);
+						editor->setDestroyCallback (cb_Editor_destroy, NULL);
+						editor->setDataChangedCallback (cb_Editor_dataChanged, NULL);
+						editor->setPublishCallback (cb_Editor_publish, NULL);
 						break;
 					}
 				}
@@ -796,7 +795,7 @@ void praat_dataChanged (Any object) {
 	WHERE (OBJECT == object) {
 		for (ieditor = 0; ieditor < praat_MAXNUM_EDITORS; ieditor ++)
 			if (EDITOR [ieditor])
-				Editor_dataChanged ((Editor) EDITOR [ieditor], object);
+				((Editor *) EDITOR [ieditor])->changeData (object);
 	}
 	if (duringError) {
 		Melder_error1 (saveError);   // BUG: this appends an empty newline to the original error message
@@ -809,7 +808,7 @@ void praat_clipboardChanged (void *closure, Any clipboard) {
 	for (int iobject = 1; iobject <= theCurrentPraatObjects -> n; iobject ++)
 		for (int ieditor = 0; ieditor < praat_MAXNUM_EDITORS; ieditor ++)
 			if (theCurrentPraatObjects -> list [iobject]. editors [ieditor])
-				Editor_clipboardChanged ((Editor) theCurrentPraatObjects -> list [iobject]. editors [ieditor], clipboard);
+				((Editor *) theCurrentPraatObjects -> list [iobject]. editors [ieditor])->changeClipboard (clipboard);
 }
 
 static void helpProc (const wchar_t *query) {
@@ -993,13 +992,13 @@ void praat_init (const char *title, unsigned int argc, char **argv) {
 	 */
 	praat_statistics_prefs ();   // Number of sessions, memory used...
 	praat_picture_prefs ();   // Font...
-	Editor_prefs ();   // Erase picture first...
-	HyperPage_prefs ();   // Font...
+	Editor::prefs ();   // Erase picture first...
+	HyperPage::prefs ();   // Font...
 	Site_prefs ();   // Print command...
 	Melder_audio_prefs ();   // Use speaker (Sun & HP), output gain (HP)...
 	Melder_textEncoding_prefs ();
 	Printer_prefs ();   // Paper size, printer command...
-	TextEditor_prefs ();   // Font size...
+	TextEditor::prefs ();   // Font size...
 
 	unsigned int iarg_batchName = 1;
 	#if defined (UNIX) || defined (macintosh) || defined (_WIN32) && defined (CONSOLE_APPLICATION)

@@ -26,18 +26,23 @@
 #include "sys/HyperPage.h"
 #include "OTMulti.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+class OTMultiEditor : public HyperPage {
+  public:
+	OTMultiEditor (GuiObject parent, const wchar_t *title, OTMulti grammar);
 
-#define OTMultiEditor__parents(Klas) HyperPage__parents(Klas) Thing_inherit (Klas, HyperPage)
-Thing_declare1 (OTMultiEditor);
+	const wchar_t * type () { return L"OTMultiEditor"; }
+	bool isEditable () { return true; }
+	void do_limit ();
+	void createChildren ();
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+	void draw ();
+	int goToPage (const wchar_t *title);
 
-OTMultiEditor OTMultiEditor_create (GuiObject parent, const wchar_t *title, OTMulti grammar);
-
-#ifdef __cplusplus
-	}
-#endif
+	const wchar_t *_form1, *_form2;
+	GuiObject _form1Text, _form2Text;
+	long _selectedConstraint;
+};
 
 /* End of file OTMultiEditor.h */
 #endif

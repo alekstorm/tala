@@ -29,54 +29,59 @@
 #include "ArtwordEditor.h"
 #include "sys/machine.h"
 
-static void destroy (I) {
-	iam (ArtwordEditor);
-	forget (my graphics);
-	inherited (ArtwordEditor) destroy (me);
+ArtwordEditor::ArtwordEditor (GuiObject parent, const wchar_t *title, Artword data)
+	: Editor (parent, 20, 40, 650, 600, title, data) {
+	//XtUnmanageChild (_menuBar);
+	_graphics = Graphics_create_xmdrawingarea (_drawingArea);
+	updateList ();
 }
 
-static void updateList (ArtwordEditor me) {
-	Artword artword = (Artword) my data;
-	ArtwordData a = & artword -> data [my feature];
-	GuiList_deleteAllItems (my list);
+ArtwordEditor::~ArtwordEditor () {
+	forget (_graphics);
+}
+
+void ArtwordEditor::updateList () {
+	Artword artword = (Artword) _data;
+	ArtwordData a = & artword -> data [_feature];
+	GuiList_deleteAllItems (_list);
 	for (int i = 1; i <= a -> numberOfTargets; i ++) {
 		static MelderString itemText = { 0 };
 		MelderString_empty (& itemText);
 		MelderString_append3 (& itemText, Melder_single (a -> times [i]), L"  ", Melder_single (a -> targets [i]));
-		GuiList_insertItem (my list, itemText.string, i);
+		GuiList_insertItem (_list, itemText.string, i);
 	}
-	Graphics_updateWs (my graphics);
+	Graphics_updateWs (_graphics);
 }
 
 static void gui_button_cb_removeTarget (I, GuiButtonEvent event) {
 	(void) event;
-	iam (ArtwordEditor);
-	Artword artword = (Artword) my data;
-	long numberOfSelectedPositions, *selectedPositions = GuiList_getSelectedPositions (my list, & numberOfSelectedPositions);
+	ArtwordEditor *editor = (ArtwordEditor *)void_me;
+	Artword artword = (Artword) editor->_data;
+	long numberOfSelectedPositions, *selectedPositions = GuiList_getSelectedPositions (editor->_list, & numberOfSelectedPositions);
 	if (selectedPositions != NULL) {
 		for (long ipos = numberOfSelectedPositions; ipos > 0; ipos --)
-			Artword_removeTarget (artword, my feature, selectedPositions [ipos]);
+			Artword_removeTarget (artword, editor->_feature, selectedPositions [ipos]);
 	}
 	NUMlvector_free (selectedPositions, 1);
-	updateList (me);
-	Editor_broadcastChange (ArtwordEditor_as_Editor (me));
+	editor->updateList ();
+	editor->broadcastChange ();
 }
 
 static void gui_button_cb_addTarget (I, GuiButtonEvent event) {
 	(void) event;
-	iam (ArtwordEditor);
-	Artword artword = (Artword) my data;
-	wchar_t *timeText = GuiText_getString (my time);
+	ArtwordEditor *editor = (ArtwordEditor *)void_me;
+	Artword artword = (Artword) editor->_data;
+	wchar_t *timeText = GuiText_getString (editor->_time);
 	double tim = Melder_atof (timeText);
-	wchar_t *valueText = GuiText_getString (my value);
+	wchar_t *valueText = GuiText_getString (editor->_value);
 	double value = Melder_atof (valueText);
-	ArtwordData a = & artword -> data [my feature];
+	ArtwordData a = & artword -> data [editor->_feature];
 	int i = 1, oldCount = a -> numberOfTargets;
 	Melder_free (timeText);
 	Melder_free (valueText);
-	Artword_setTarget (artword, my feature, tim, value);
+	Artword_setTarget (artword, editor->_feature, tim, value);
 
-	/* Optimization instead of "updateList (me)". */
+	/* Optimization instead of "updateList ()". */
 
 	if (tim < 0) tim = 0;
 	if (tim > artword -> totalTime) tim = artword -> totalTime;
@@ -88,106 +93,89 @@ static void gui_button_cb_addTarget (I, GuiButtonEvent event) {
 	MelderString_empty (& itemText);
 	MelderString_append3 (& itemText, Melder_single (tim), L"  ", Melder_single (value));
 	if (a -> numberOfTargets == oldCount) {
-		GuiList_replaceItem (my list, itemText.string, i);
+		GuiList_replaceItem (editor->_list, itemText.string, i);
 	} else {
-		GuiList_insertItem (my list, itemText.string, i);
+		GuiList_insertItem (editor->_list, itemText.string, i);
 	}
-	Graphics_updateWs (my graphics);
-	Editor_broadcastChange (ArtwordEditor_as_Editor (me));
+	Graphics_updateWs (editor->_graphics);
+	editor->broadcastChange ();
 }
 
 static void gui_radiobutton_cb_toggle (I, GuiRadioButtonEvent event) {
-	iam (ArtwordEditor);
+	ArtwordEditor *editor = (ArtwordEditor *)void_me;
 	int i = 0;
-	while (event -> toggle != my button [i]) {
+	while (event -> toggle != editor->_button [i]) {
 		i ++;
 		Melder_assert (i <= kArt_muscle_MAX);
 	}
-	my feature = i;
-	Melder_assert (my feature > 0);
-	Melder_assert (my feature <= kArt_muscle_MAX);
-	updateList (me);
+	editor->_feature = i;
+	Melder_assert (editor->_feature > 0);
+	Melder_assert (editor->_feature <= kArt_muscle_MAX);
+	editor->updateList ();
 }
 
 static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
-	iam (ArtwordEditor);
+	ArtwordEditor *editor = (ArtwordEditor *)void_me;
 	(void) event;
-	if (my graphics == NULL) return;
-	Artword artword = (Artword) my data;
-	Graphics_clearWs (my graphics);
-	Artword_draw (artword, my graphics, my feature, TRUE);
+	if (editor->_graphics == NULL) return;
+	Artword artword = (Artword) editor->_data;
+	Graphics_clearWs (editor->_graphics);
+	Artword_draw (artword, editor->_graphics, editor->_feature, TRUE);
 }
 
 static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
-	iam (ArtwordEditor);
-	if (my graphics == NULL) return;
+	ArtwordEditor *editor = (ArtwordEditor *)void_me;
+	if (editor->_graphics == NULL) return;
 if (gtk && event -> type != BUTTON_PRESS) return;
-	Artword artword = (Artword) my data;
-	Graphics_setWindow (my graphics, 0, artword -> totalTime, -1.0, 1.0);
-	Graphics_setInner (my graphics);
+	Artword artword = (Artword) editor->_data;
+	Graphics_setWindow (editor->_graphics, 0, artword -> totalTime, -1.0, 1.0);
+	Graphics_setInner (editor->_graphics);
 	double xWC, yWC;
-	Graphics_DCtoWC (my graphics, event -> x, event -> y, & xWC, & yWC);
-	Graphics_unsetInner (my graphics);
-	GuiText_setString (my time, Melder_fixed (xWC, 6));
-	GuiText_setString (my value, Melder_fixed (yWC, 6));
+	Graphics_DCtoWC (editor->_graphics, event -> x, event -> y, & xWC, & yWC);
+	Graphics_unsetInner (editor->_graphics);
+	GuiText_setString (editor->_time, Melder_fixed (xWC, 6));
+	GuiText_setString (editor->_value, Melder_fixed (yWC, 6));
 }
 
-static void dataChanged (ArtwordEditor me) {
-	updateList (me);
-	Graphics_updateWs (my graphics);
+void ArtwordEditor::dataChanged () {
+	updateList ();
+	Graphics_updateWs (_graphics);
 }
 
-static void createChildren (ArtwordEditor me) {
+void ArtwordEditor::createChildren () {
 	int dy = Machine_getMenuBarHeight ();
-	GuiLabel_createShown (my dialog, 40, 100, dy + 3, Gui_AUTOMATIC, L"Targets:", 0);
-	GuiLabel_createShown (my dialog, 5, 65, dy + 20, Gui_AUTOMATIC, L"Times:", 0);
-	GuiLabel_createShown (my dialog, 80, 140, dy + 20, Gui_AUTOMATIC, L"Values:", 0);
-	my list = GuiList_createShown (my dialog, 0, 140, dy + 40, dy + 340, true, NULL);
+	GuiLabel_createShown (_dialog, 40, 100, dy + 3, Gui_AUTOMATIC, L"Targets:", 0);
+	GuiLabel_createShown (_dialog, 5, 65, dy + 20, Gui_AUTOMATIC, L"Times:", 0);
+	GuiLabel_createShown (_dialog, 80, 140, dy + 20, Gui_AUTOMATIC, L"Values:", 0);
+	_list = GuiList_createShown (_dialog, 0, 140, dy + 40, dy + 340, true, NULL);
 
-	GuiButton_createShown (my dialog, 10, 130, dy + 410, Gui_AUTOMATIC, L"Remove target", gui_button_cb_removeTarget, me, 0);
+	GuiButton_createShown (_dialog, 10, 130, dy + 410, Gui_AUTOMATIC, L"Remove target", gui_button_cb_removeTarget, this, 0);
 
-	my drawingArea = GuiDrawingArea_createShown (my dialog, 170, 470, dy + 10, dy + 310,
-		gui_drawingarea_cb_expose, gui_drawingarea_cb_click, NULL, NULL, me, 0);
+	_drawingArea = GuiDrawingArea_createShown (_dialog, 170, 470, dy + 10, dy + 310,
+		gui_drawingarea_cb_expose, gui_drawingarea_cb_click, NULL, NULL, this, 0);
 
-	GuiLabel_createShown (my dialog, 220, 270, dy + 340, Gui_AUTOMATIC, L"Time:", 0);
-	my time = GuiText_createShown (my dialog, 270, 370, dy + 340, Gui_AUTOMATIC, 0);
+	GuiLabel_createShown (_dialog, 220, 270, dy + 340, Gui_AUTOMATIC, L"Time:", 0);
+	_time = GuiText_createShown (_dialog, 270, 370, dy + 340, Gui_AUTOMATIC, 0);
 
-	GuiLabel_createShown (my dialog, 220, 270, dy + 370, Gui_AUTOMATIC, L"Value:", 0);
-	my value = GuiText_createShown (my dialog, 270, 370, dy + 370, Gui_AUTOMATIC, 0);
+	GuiLabel_createShown (_dialog, 220, 270, dy + 370, Gui_AUTOMATIC, L"Value:", 0);
+	_value = GuiText_createShown (_dialog, 270, 370, dy + 370, Gui_AUTOMATIC, 0);
 
-	GuiButton_createShown (my dialog, 240, 360, dy + 410, Gui_AUTOMATIC, L"Add target", gui_button_cb_addTarget, me, GuiButton_DEFAULT);
+	GuiButton_createShown (_dialog, 240, 360, dy + 410, Gui_AUTOMATIC, L"Add target", gui_button_cb_addTarget, this, GuiButton_DEFAULT);
 
 	#if gtk
-	my radio = my dialog;	
+	_radio = _dialog;	
 	#elif motif
-	my radio = XtVaCreateManagedWidget
-		("radioBox", xmRowColumnWidgetClass, my dialog,
+	_radio = XtVaCreateManagedWidget
+		("radioBox", xmRowColumnWidgetClass, _dialog,
 		 XmNradioBehavior, True, XmNx, 470, XmNy, dy, NULL);
 	#endif
 	for (int i = 1; i <= kArt_muscle_MAX; i ++) {
-		my button [i] = GuiRadioButton_createShown (my radio,
+		_button [i] = GuiRadioButton_createShown (_radio,
 			0, 160, Gui_AUTOMATIC, Gui_AUTOMATIC,
-			kArt_muscle_getText (i), gui_radiobutton_cb_toggle, me, 0);
+			kArt_muscle_getText (i), gui_radiobutton_cb_toggle, this, 0);
 	}
-	my feature = 1;
-	GuiRadioButton_setValue (my button [1], true);
-}
-
-class_methods (ArtwordEditor, Editor) {
-	class_method (destroy)
-	class_method (dataChanged)
-	class_method (createChildren)
-	class_methods_end
-}
-
-ArtwordEditor ArtwordEditor_create (GuiObject parent, const wchar_t *title, Artword data) {
-	ArtwordEditor me = Thing_new (ArtwordEditor);
-	if (! me || ! Editor_init (ArtwordEditor_as_parent (me), parent, 20, 40, 650, 600, title, data))
-		return NULL;
-	//XtUnmanageChild (my menuBar);
-	my graphics = Graphics_create_xmdrawingarea (my drawingArea);
-	updateList (me);
-	return me;
+	_feature = 1;
+	GuiRadioButton_setValue (_button [1], true);
 }
 
 /* End of file ArtwordEditor.cpp */
