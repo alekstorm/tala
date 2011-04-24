@@ -292,7 +292,6 @@ static int menu_cb_AddingToAFixedMenu (EDITOR_ARGS) { Melder_help (L"Add to fixe
 static int menu_cb_AddingToADynamicMenu (EDITOR_ARGS) { Melder_help (L"Add to dynamic menu..."); return 1; }
 
 void ScriptEditor::createMenus () {
-	TextEditor::createMenus ();
 	if (_environmentName) {
 		addCommand (L"File", L"Add to menu...", 0, menu_cb_addToMenu);
 	} else {
@@ -311,7 +310,6 @@ void ScriptEditor::createMenus () {
 }
 
 void ScriptEditor::createHelpMenuItems (EditorMenu *menu) {
-	TextEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"About ScriptEditor", '?', menu_cb_AboutScriptEditor);
 	menu->addCommand (L"Scripting tutorial", 0, menu_cb_ScriptingTutorial);
 	menu->addCommand (L"Scripting examples", 0, menu_cb_ScriptingExamples);

@@ -39,6 +39,7 @@
 
 RealTierEditor::RealTierEditor (GuiObject parent, const wchar_t *title, RealTier data, Sound sound, int ownSound)
 	: TimeSoundEditor (parent, title, data, sound, ownSound) {
+	createMenus ();
 	Melder_assert (data != NULL);
 	Melder_assert (Thing_member (data, classRealTier));
 	_ymin = -1.0;
@@ -114,13 +115,11 @@ static int menu_cb_setRange (EDITOR_ARGS) {
 }
 
 void RealTierEditor::createMenuItems_view (EditorMenu *menu) {
-	TimeSoundEditor::createMenuItems_view (menu);
 	menu->addCommand (L"-- view/realtier --", 0, 0);
 	menu->addCommand (setRangeTitle (), 0, menu_cb_setRange);
 }
 
 void RealTierEditor::createMenus () {
-	TimeSoundEditor::createMenus ();
 	EditorMenu *menu = addMenu (L"Point", 0);
 	menu->addCommand (L"Add point at cursor", 'T', menu_cb_addPointAtCursor);
 	menu->addCommand (L"Add point at...", 0, menu_cb_addPointAt);

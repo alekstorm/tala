@@ -88,6 +88,7 @@ void ManipulationEditor::prefs (void) {
 
 ManipulationEditor::ManipulationEditor (GuiObject parent, const wchar_t *title, Manipulation ana)
 	: FunctionEditor (parent, title, ana) {
+	createMenus ();
 	_pitchTier.draggingStrategy = preferences.pitchTier.draggingStrategy;
 	_pitchTier.units = preferences.pitchTier.units;
 	double maximumPitchValue = RealTier_getMaximumValue (ana -> pitch);
@@ -633,8 +634,6 @@ menu_cb_Synth_common (menu_cb_Synth_OverlapAdd, Manipulation_OVERLAPADD)
 menu_cb_Synth_common (menu_cb_Synth_Pitch_Lpc, Manipulation_PITCH_LPC)
 
 void ManipulationEditor::createMenus () {
-	FunctionEditor::createMenus ();
-
 	addCommand (L"File", L"Extract original sound", 0, menu_cb_extractOriginalSound);
 	addCommand (L"File", L"Extract pulses", 0, menu_cb_extractPulses);
 	addCommand (L"File", L"Extract pitch tier", 0, menu_cb_extractPitchTier);
@@ -694,7 +693,6 @@ void ManipulationEditor::createMenus () {
 }
 
 void ManipulationEditor::createHelpMenuItems (EditorMenu *menu) {
-	FunctionEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"ManipulationEditor help", '?', menu_cb_ManipulationEditorHelp);
 	menu->addCommand (L"Manipulation help", 0, menu_cb_ManipulationHelp);
 }

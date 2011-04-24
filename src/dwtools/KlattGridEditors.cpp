@@ -47,7 +47,6 @@ KlattGrid_realTierEditor::KlattGrid_realTierEditor (GuiObject parent, const wcha
 
 void KlattGrid_realTierEditor::createHelpMenuItems (EditorMenu *menu)
 {
-	RealTierEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"KlattGrid help", 0, menu_cb_KlattGridHelp);
 }
 

@@ -318,6 +318,7 @@ static Boolean workProc (XtPointer void_me) {
    for recording in 16-bit mono or stereo (SGI, MacOS, SunOS, HPUX, Linux, Windows). */
 SoundRecorder::SoundRecorder (GuiObject parent, int numberOfChannels, void *applicationContext)
 	: Editor (parent, 100, 100, 600, 500, L"SoundRecorder", NULL) {
+	createChildren ();
 	//try { // FIXME exception
 		_inputUsesPortAudio = MelderAudio_getInputUsesPortAudio ();
 
@@ -1608,7 +1609,6 @@ static int menu_cb_writeNist (EDITOR_ARGS) {
 static int menu_cb_SoundRecorder_help (EDITOR_ARGS) { Melder_help (L"SoundRecorder"); return 1; }
 
 void SoundRecorder::createMenus () {
-	Editor::createMenus ();
 	addCommand (L"File", L"Save as WAV file...", 0, menu_cb_writeWav);
 	addCommand (L"File", L"Save as AIFC file...", 0, menu_cb_writeAifc);
 	addCommand (L"File", L"Save as NeXT/Sun file...", 0, menu_cb_writeNextSun);
@@ -1617,7 +1617,6 @@ void SoundRecorder::createMenus () {
 }
 
 void SoundRecorder::createHelpMenuItems (EditorMenu *menu) {
-	Editor::createHelpMenuItems (menu);
 	menu->addCommand (L"SoundRecorder help", '?', menu_cb_SoundRecorder_help);
 }
 

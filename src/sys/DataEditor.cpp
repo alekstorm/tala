@@ -102,6 +102,7 @@ DataSubEditor::DataSubEditor (DataEditor *root, const wchar_t *title, void *addr
 	  _description(description),
 	  _topField(1),
 	  _numberOfFields(countFields ()) {
+	createChildren ();
 	if (this != root) Collection_addItem (root -> _children, this);
 	update ();
 }
@@ -411,7 +412,6 @@ void DataSubEditor::createChildren () {
 static int menu_cb_help (EDITOR_ARGS) { Melder_help (L"Inspect"); return 1; }
 
 void DataSubEditor::createHelpMenuItems (EditorMenu *menu) {
-	Editor::createHelpMenuItems (menu);
 	menu->addCommand (L"DataEditor *help", '?', menu_cb_help);
 }
 

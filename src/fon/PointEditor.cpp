@@ -40,6 +40,7 @@
 
 PointEditor::PointEditor (GuiObject parent, const wchar_t *title, PointProcess point, Sound sound)
 	: TimeSoundEditor (parent, title, point, Sound_convertToMono (sound), false) {
+	createMenus ();
 	if (sound) {
 		_monoSound = _sound.data; // FIXME should be what's passed to base class constructor
 	}
@@ -166,8 +167,6 @@ static int menu_cb_addPointAt (EDITOR_ARGS) {
 static int menu_cb_PointEditorHelp (EDITOR_ARGS) { PointEditor *editor = (PointEditor *)editor_me; Melder_help (L"PointEditor"); return 1; }
 
 void PointEditor::createMenus () {
-	TimeSoundEditor::createMenus ();
-
 	addCommand (L"Query", L"-- query jitter --", 0, NULL);
 	addCommand (L"Query", L"Get jitter (local)", 0, menu_cb_getJitter_local);
 	addCommand (L"Query", L"Get jitter (local, absolute)", 0, menu_cb_getJitter_local_absolute);
@@ -192,7 +191,6 @@ void PointEditor::createMenus () {
 }
 
 void PointEditor::createHelpMenuItems (EditorMenu *menu) {
-	TimeSoundEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"PointEditor help", '?', menu_cb_PointEditorHelp);
 }
 

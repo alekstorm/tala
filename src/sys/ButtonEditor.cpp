@@ -43,6 +43,7 @@
 
 ButtonEditor::ButtonEditor (GuiObject parent)
 	: HyperPage (parent, L"Buttons", NULL) {
+	createChildren ();
 	which (1);
 }
 
@@ -259,7 +260,6 @@ static void gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event) { (void)
 static void gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (5); }
 
 void ButtonEditor::createChildren () {
-	HyperPage::createChildren ();
 	#if gtk
 		void *group = NULL;
 	#endif
@@ -294,7 +294,6 @@ void ButtonEditor::createChildren () {
 static int menu_cb_ButtonEditorHelp (EDITOR_ARGS) { Melder_help (L"ButtonEditor"); return 1; }
 
 void ButtonEditor::createHelpMenuItems (EditorMenu *menu) {
-	HyperPage::createHelpMenuItems (menu);
 	menu->addCommand (L"ButtonEditor help", '?', menu_cb_ButtonEditorHelp);
 }
 

@@ -119,19 +119,9 @@ class TimeSoundAnalysisEditor : public TimeSoundEditor {
 	const wchar_t * type () { return L"TimeSoundAnalysisEditor"; }
 	void info ();
 
-	void createMenuItems_spectrum_picture (EditorMenu *menu);
-	void createMenuItems_pitch_picture (EditorMenu *menu);
-	void createMenuItems_intensity_picture (EditorMenu *menu);
-	void createMenuItems_formant_picture (EditorMenu *menu);
-	void createMenuItems_pulses_picture (EditorMenu *menu);
 	void destroy_analysis ();
 	void draw_analysis ();
 	void draw_analysis_pulses ();
-	void createMenuItems_query_log (EditorMenu *menu);
-	void createMenus_analysis ();
-	void createMenuItems_view_sound (EditorMenu *menu);
-	void createMenuItems_view_sound_analysis (EditorMenu *menu);
-	void createMenuItems_query (EditorMenu *menu);
 	void computeSpectrogram ();
 	void computePitch ();
 	void computeIntensity ();
@@ -156,6 +146,20 @@ class TimeSoundAnalysisEditor : public TimeSoundEditor {
 	struct FunctionEditor_formant _formant;
 	struct FunctionEditor_pulses _pulses;
 	GuiObject _spectrogramToggle, _pitchToggle, _intensityToggle, _formantToggle, _pulsesToggle;
+
+  protected:
+	void createMenus_analysis ();
+
+  private:
+	void createMenuItems_spectrum_picture (EditorMenu *menu);
+	void createMenuItems_pitch_picture (EditorMenu *menu);
+	void createMenuItems_intensity_picture (EditorMenu *menu);
+	void createMenuItems_formant_picture (EditorMenu *menu);
+	void createMenuItems_pulses_picture (EditorMenu *menu);
+	void createMenuItems_query_log (EditorMenu *menu);
+	void createMenuItems_view_sound (EditorMenu *menu);
+	void createMenuItems_view_sound_analysis (EditorMenu *menu);
+	void createMenuItems_query (EditorMenu *menu);
 };
 
 /* End of file TimeSoundAnalysisEditor.h */

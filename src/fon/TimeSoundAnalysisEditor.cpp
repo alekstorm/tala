@@ -216,6 +216,7 @@ void TimeSoundAnalysisEditor::prefs (void) {
 
 TimeSoundAnalysisEditor::TimeSoundAnalysisEditor (GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound)
 	: TimeSoundEditor (parent, title, data, sound, ownSound) {
+	
 	_longestAnalysis = preferences.longestAnalysis;
 	if (preferences.log[0].toLogFile == FALSE && preferences.log[0].toInfoWindow == FALSE)
 		preferences.log[0].toLogFile = TRUE, preferences.log[0].toInfoWindow = TRUE;
@@ -1647,7 +1648,6 @@ DIRECT (TimeSoundAnalysisEditor, cb_getShimmer_dda) if (! cb_getShimmer_xx (me, 
 */
 
 void TimeSoundAnalysisEditor::createMenuItems_view_sound (EditorMenu *menu) {
-	TimeSoundEditor::createMenuItems_view_sound (menu);
 	createMenuItems_view_sound_analysis (menu);
 }
 
@@ -1659,7 +1659,6 @@ void TimeSoundAnalysisEditor::createMenuItems_view_sound_analysis (EditorMenu *m
 }
 
 void TimeSoundAnalysisEditor::createMenuItems_query (EditorMenu *menu) {
-	TimeSoundEditor::createMenuItems_query (menu);
 	if (_sound.data || _longSound.data) {
 		createMenuItems_query_log (menu);
 	}

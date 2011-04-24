@@ -29,6 +29,7 @@
 
 StringsEditor::StringsEditor (GuiObject parent, const wchar_t *title, Any data)
 	: Editor (parent, 20, 40, 600, 600, title, data) {
+	createChildren ();
 	updateList ();
 }
 
@@ -38,7 +39,6 @@ static int menu_cb_help (EDITOR_ARGS) {
 }
 
 void StringsEditor::createHelpMenuItems (EditorMenu *menu) {
-	Editor::createHelpMenuItems (menu);
 	menu->addCommand (L"StringsEditor help", '?', menu_cb_help);
 }
 

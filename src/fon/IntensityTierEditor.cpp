@@ -35,7 +35,6 @@ IntensityTierEditor::IntensityTierEditor (GuiObject parent, const wchar_t *title
 static int menu_cb_IntensityTierHelp (EDITOR_ARGS) { Melder_help (L"IntensityTier"); return 1; }
 
 void IntensityTierEditor::createHelpMenuItems (EditorMenu *menu) {
-	RealTierEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"IntensityTier help", 0, menu_cb_IntensityTierHelp);
 }
 

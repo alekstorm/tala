@@ -44,23 +44,27 @@ class TimeSoundEditor : public FunctionEditor {
 	const wchar_t * type () { return L"TimeSoundEditor"; }
 	void info ();
 
-	void createMenuItems_view (EditorMenu *menu);
-	void createMenuItems_view_sound (EditorMenu *menu);
-	void updateMenuItems_file ();
-	void draw_sound (double globalMinimum, double globalMaximum);
-	void createMenuItems_file_draw (EditorMenu *menu);
-	void createMenuItems_file_extract (EditorMenu *menu);
-	void createMenuItems_file_write (EditorMenu *menu);
-	void createMenuItems_file (EditorMenu *menu);
-	void createMenuItems_query_info (EditorMenu *menu);
 	int do_ExtractSelectedSound (bool preserveTimes);
 	int do_write (MelderFile file, int format);
+	void draw_sound (double globalMinimum, double globalMaximum);
 
 	bool _ownSound;
 	struct TimeSoundEditor_sound _sound;
 	struct { LongSound data; } _longSound;
 	GuiObject _drawButton, _publishButton, _publishPreserveButton, _publishWindowButton;
 	GuiObject _writeAiffButton, _writeAifcButton, _writeWavButton, _writeNextSunButton, _writeNistButton, _writeFlacButton;
+
+  protected:
+	void updateMenuItems_file (); // FIXME
+
+  private:
+	void createMenuItems_view (EditorMenu *menu);
+	void createMenuItems_view_sound (EditorMenu *menu);
+	void createMenuItems_file_draw (EditorMenu *menu);
+	void createMenuItems_file_extract (EditorMenu *menu);
+	void createMenuItems_file_write (EditorMenu *menu);
+	void createMenuItems_file (EditorMenu *menu);
+	void createMenuItems_query_info (EditorMenu *menu);
 };
 
 /* End of file TimeSoundEditor.h */

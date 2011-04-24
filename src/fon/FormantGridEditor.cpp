@@ -64,6 +64,7 @@ void FormantGridEditor::prefs (void) {
 
 FormantGridEditor::FormantGridEditor (GuiObject parent, const wchar_t *title, FormantGrid data)
 	: FunctionEditor (parent, title, data) {
+	createMenus ();
 	Melder_assert (data != NULL);
 	Melder_assert (Thing_member (data, classFormantGrid));
 	_formantFloor = preferences.formantFloor;
@@ -223,7 +224,6 @@ static int menu_cb_pitchSettings (EDITOR_ARGS) {
 }
 
 void FormantGridEditor::createMenus () {
-	FunctionEditor::createMenus ();
 	EditorMenu *menu = addMenu (L"Formant", 0);
 	menu->addCommand (L"Show bandwidths", GuiMenu_CHECKBUTTON + 'B', menu_cb_showBandwidths);
 	menu->addCommand (L"Set formant range...", 0, menu_cb_setFormantRange);

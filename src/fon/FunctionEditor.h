@@ -72,15 +72,14 @@ class FunctionEditor : public Editor {
 	~FunctionEditor ();
 
 	const wchar_t * type () { return L"FunctionEditor"; }
-	int hasText () { return FALSE; }
-	int fixedPrecision_long () { return 6; }
-	const wchar_t * format_domain () { return L"Time domain:"; }
-	const wchar_t * format_short () { return L"%.3f"; }
-	const wchar_t * format_long () { return L"%f"; }
-	const wchar_t * format_units () { return L"seconds"; }
-	const wchar_t * format_totalDuration () { return L"Total duration %f seconds"; }
-	const wchar_t * format_window () { return L"Visible part %f seconds"; }
-	const wchar_t * format_selection () { return L"%f (%.3f / s)"; }
+	virtual int fixedPrecision_long () { return 6; }
+	virtual const wchar_t * format_domain () { return L"Time domain:"; }
+	virtual const wchar_t * format_short () { return L"%.3f"; }
+	virtual const wchar_t * format_long () { return L"%f"; }
+	virtual const wchar_t * format_units () { return L"seconds"; }
+	virtual const wchar_t * format_totalDuration () { return L"Total duration %f seconds"; }
+	virtual const wchar_t * format_window () { return L"Visible part %f seconds"; }
+	virtual const wchar_t * format_selection () { return L"%f (%.3f / s)"; }
 
 	void info ();
 	void draw ();
@@ -93,17 +92,6 @@ class FunctionEditor : public Editor {
 	void prefs_addFields (EditorCommand *cmd);
 	void prefs_setValues (EditorCommand *cmd);
 	void prefs_getValues (EditorCommand *cmd);
-	void createMenuItems_file_draw (EditorMenu *menu);
-	void createMenuItems_file_extract (EditorMenu *menu);
-	void createMenuItems_file_write (EditorMenu *menu);
-	void createMenuItems_view (EditorMenu *menu);
-	void createMenuItems_view_timeDomain (EditorMenu *menu);
-	void createMenuItems_view_audio (EditorMenu *menu);
-	void createMenuItems_file (EditorMenu *menu);
-	void createMenuItems_query (EditorMenu *menu);
-	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
-	void createChildren ();
 	void highlightSelection (double left, double right, double bottom, double top);
 	void unhighlightSelection (double left, double right, double bottom, double top);
 	double getBottomOfSoundAndAnalysisArea ();
@@ -262,6 +250,19 @@ class FunctionEditor : public Editor {
   protected:
 	GuiObject _drawingArea, _scrollBar, _groupButton, _bottomArea;
 	int _numberOfMarkers;
+
+  private:
+	void createMenuItems_file_draw (EditorMenu *menu);
+	void createMenuItems_file_extract (EditorMenu *menu);
+	void createMenuItems_file_write (EditorMenu *menu);
+	void createMenuItems_view (EditorMenu *menu);
+	void createMenuItems_view_timeDomain (EditorMenu *menu);
+	void createMenuItems_view_audio (EditorMenu *menu);
+	void createMenuItems_file (EditorMenu *menu);
+	void createMenuItems_query (EditorMenu *menu);
+	void createMenus ();
+	void createHelpMenuItems (EditorMenu *menu);
+	void createChildren ();
 };
 
 /* End of file FunctionEditor.h */

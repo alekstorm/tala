@@ -87,13 +87,6 @@ class Editor {
 	virtual void info ();
 	virtual void nameChanged ();
 	virtual void goAway ();
-	virtual void createMenuItems_file (EditorMenu *menu);
-	virtual void createMenuItems_edit (EditorMenu *menu);
-	virtual void createMenuItems_query (EditorMenu *menu);
-	virtual void createMenuItems_query_info (EditorMenu *menu);
-	virtual void createMenus ();
-	virtual void createHelpMenuItems (EditorMenu *menu);
-	virtual void createChildren ();
 	virtual void dataChanged ();
 	virtual void clipboardChanged (Any clipboard);
 	virtual void save ();
@@ -171,6 +164,13 @@ class Editor {
 
   protected:
 	void setMenuSensitive (const wchar_t *menu, int sensitive);
+
+  private:
+	void createMenus ();
+	void createMenuItems_file (EditorMenu *menu);
+	void createMenuItems_edit (EditorMenu *menu);
+	void createMenuItems_query (EditorMenu *menu);
+	void createMenuItems_query_info (EditorMenu *menu);
 };
 #else
 typedef struct Editor Editor;

@@ -32,8 +32,6 @@ class SoundEditor : public TimeSoundAnalysisEditor {
 	const wchar_t * type () { return L"SoundEditor"; }
 
 	void dataChanged ();
-	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 	void prepareDraw ();
 	void draw ();
 	void play (double tmin, double tmax);
@@ -43,6 +41,9 @@ class SoundEditor : public TimeSoundAnalysisEditor {
 
 	GuiObject _cutButton, _copyButton, _pasteButton, _zeroButton, _reverseButton;
 	double _maxBuffer;
+
+  private:
+	void createMenus ();
 };
 
 /* End of file SoundEditor.h */

@@ -46,6 +46,7 @@ void SpectrumEditor::prefs (void) {
 
 SpectrumEditor::SpectrumEditor (GuiObject parent, const wchar_t *title, Any data)
 	: FunctionEditor (parent, title, data) {
+	createMenus ();
 	_cursorHeight = -1000;
 	_bandSmoothing = preferences.bandSmoothing;
 	_dynamicRange = preferences.dynamicRange;
@@ -188,7 +189,6 @@ static int menu_cb_help_SpectrumEditor (EDITOR_ARGS) { Melder_help (L"SpectrumEd
 static int menu_cb_help_Spectrum (EDITOR_ARGS) { Melder_help (L"Spectrum"); return 1; }
 
 void SpectrumEditor::createMenus () {
-	FunctionEditor::createMenus ();
 	_publishBandButton = addCommand (L"File", L"Publish band", 0, menu_cb_publishBand);
 	_publishSoundButton = addCommand (L"File", L"Publish band-filtered sound", 0, menu_cb_publishSound);
 	addCommand (L"File", L"-- close --", 0, NULL);
@@ -200,11 +200,9 @@ void SpectrumEditor::createMenus () {
 void SpectrumEditor::createMenuItems_view (EditorMenu *menu) {
 	menu->addCommand (L"Set dynamic range...", 0, menu_cb_setDynamicRange);
 	menu->addCommand (L"-- view settings --", 0, 0);
-	FunctionEditor::createMenuItems_view (menu);
 }
 
 void SpectrumEditor::createHelpMenuItems (EditorMenu *menu) {
-	FunctionEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"SpectrumEditor help", '?', menu_cb_help_SpectrumEditor);
 	menu->addCommand (L"Spectrum help", 0, menu_cb_help_Spectrum);
 }

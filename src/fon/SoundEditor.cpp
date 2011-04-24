@@ -49,7 +49,9 @@
 
 SoundEditor::SoundEditor (GuiObject parent, const wchar_t *title, Any data)
 	: TimeSoundAnalysisEditor (parent, title, data, data, false) {
+	createMenus ();
 	Melder_assert (data != NULL);
+	createMenus ();
 	//try { // FIXME exception
 		/*
 		 * _longSound.data or _sound.data have to be set before we call FunctionEditor_init,
@@ -313,7 +315,6 @@ static int menu_cb_SoundEditorHelp (EDITOR_ARGS) { Melder_help (L"SoundEditor");
 static int menu_cb_LongSoundEditorHelp (EDITOR_ARGS) { Melder_help (L"LongSoundEditor"); return 1; }
 
 void SoundEditor::createMenus () {
-	TimeSoundAnalysisEditor::createMenus ();
 	Melder_assert (_data != NULL);
 	Melder_assert (_sound.data != NULL || _longSound.data != NULL);
 
@@ -336,12 +337,10 @@ void SoundEditor::createMenus () {
 	}
 
 	createMenus_analysis ();
-}
 
-void SoundEditor::createHelpMenuItems (EditorMenu *menu) {
-	TimeSoundAnalysisEditor::createHelpMenuItems (menu);
-	menu->addCommand (L"SoundEditor help", '?', menu_cb_SoundEditorHelp);
-	menu->addCommand (L"LongSoundEditor help", 0, menu_cb_LongSoundEditorHelp);
+	// FIXME
+	//_helpMenu->addCommand (L"SoundEditor help", '?', menu_cb_SoundEditorHelp);
+	//_helpMenu->addCommand (L"LongSoundEditor help", 0, menu_cb_LongSoundEditorHelp);
 }
 
 /********** UPDATE **********/

@@ -371,7 +371,6 @@ void TimeSoundEditor::createMenuItems_file_write (EditorMenu *menu) {
 }
 
 void TimeSoundEditor::createMenuItems_file (EditorMenu *menu) {
-	FunctionEditor::createMenuItems_file (menu);
 	createMenuItems_file_draw (menu);
 	menu->addCommand (L"-- after file draw --", 0, NULL);
 	createMenuItems_file_extract (menu);
@@ -395,7 +394,6 @@ static int menu_cb_LongSoundInfo (EDITOR_ARGS) {
 }
 
 void TimeSoundEditor::createMenuItems_query_info (EditorMenu *menu) {
-	FunctionEditor::createMenuItems_query_info (menu);
 	if (_sound.data != NULL && _sound.data != _data) {
 		menu->addCommand (L"Sound info", 0, menu_cb_SoundInfo);
 	} else if (_longSound.data != NULL && _longSound.data != _data) {
@@ -414,7 +412,6 @@ static int menu_cb_autoscaling (EDITOR_ARGS) {
 
 void TimeSoundEditor::createMenuItems_view (EditorMenu *menu) {
 	if (_sound.data || _longSound.data) createMenuItems_view_sound (menu);
-	FunctionEditor::createMenuItems_view (menu);
 }
 
 void TimeSoundEditor::createMenuItems_view_sound (EditorMenu *menu) {

@@ -99,6 +99,8 @@ void TextGridEditor::prefs (void) {
 
 TextGridEditor::TextGridEditor (GuiObject parent, const wchar_t *title, TextGrid grid, Any sound, Any spellingChecker)
 	: TimeSoundAnalysisEditor (parent, title, grid, sound, sound && Thing_member (sound, classSound)) {
+	createMenus ();
+	createChildren ();
 	_spellingChecker = (SpellingChecker) spellingChecker;   // Set in time.
 
 	/*
@@ -269,7 +271,6 @@ static int menu_cb_ExtractSelectedTextGrid_timeFromZero (EDITOR_ARGS) {
 }
 
 void TextGridEditor::createMenuItems_file_extract (EditorMenu *menu) {
-	TimeSoundAnalysisEditor::createMenuItems_file_extract (menu);
 	_extractSelectedTextGridPreserveTimesButton =
 		menu->addCommand (L"Extract selected TextGrid (preserve times)", 0, menu_cb_ExtractSelectedTextGrid_preserveTimes);
 	_extractSelectedTextGridTimeFromZeroButton =
@@ -298,7 +299,6 @@ static int menu_cb_WriteToTextFile (EDITOR_ARGS) {
 }
 
 void TextGridEditor::createMenuItems_file_write (EditorMenu *menu) {
-	TimeSoundAnalysisEditor::createMenuItems_file_write (menu);
 	menu->addCommand (L"Save TextGrid as text file...", 'S', menu_cb_WriteToTextFile);
 	_writeSelectedTextGridButton = menu->addCommand (L"Save selected TextGrid to text file...", 0, menu_cb_WriteSelectionToTextFile);
 }
@@ -358,7 +358,6 @@ static int menu_cb_DrawVisibleSoundAndTextGrid (EDITOR_ARGS) {
 }
 
 void TextGridEditor::createMenuItems_file_draw (EditorMenu *menu) {
-	TimeSoundAnalysisEditor::createMenuItems_file_draw (menu);
 	menu->addCommand (L"Draw visible TextGrid...", 0, menu_cb_DrawVisibleTextGrid);
 	if (_sound.data || _longSound.data)
 		menu->addCommand (L"Draw visible sound and TextGrid...", 0, menu_cb_DrawVisibleSoundAndTextGrid);
@@ -1302,7 +1301,6 @@ static int menu_cb_AboutTextStyles (EDITOR_ARGS) { Melder_help (L"Text styles");
 
 void TextGridEditor::createMenus () {
 	EditorMenu *menu;
-	TimeSoundAnalysisEditor::createMenus ();
 
 	#ifndef macintosh
 		addCommand (L"Edit", L"-- cut copy paste --", 0, NULL);
@@ -1394,7 +1392,6 @@ void TextGridEditor::createMenus () {
 }
 
 void TextGridEditor::createHelpMenuItems (EditorMenu *menu) {
-	TimeSoundAnalysisEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"TextGridEditor help", '?', menu_cb_TextGridEditorHelp);
 	menu->addCommand (L"About special symbols", 0, menu_cb_AboutSpecialSymbols);
 	menu->addCommand (L"Phonetic symbols", 0, menu_cb_PhoneticSymbols);
@@ -1437,7 +1434,34 @@ static void gui_text_cb_change (I, GuiTextEvent event) {
 }
 
 void TextGridEditor::createChildren () {
-	TimeSoundAnalysisEditor::createChildren ();
+	#if gtk
+		_text = GuiText_create (NULL, 0, 0, 0, TEXT_HEIGHT, GuiText_WORDWRAP | GuiText_MULTILINE);
+		gtk_box_pack_start (GTK_BOX (_dialog), _text, FALSE, FALSE, 3);
+		GuiObject_show (_text);
+	#else
+		_text = GuiText_createShown (_dialog, 0, 0, 0, TEXT_HEIGHT, GuiText_WORDWRAP | GuiText_MULTILINE); // FIXME motif XmCreateForm
+	#endif
+	/*
+	 * X Toolkit 4:184,461 says: "you should never call XtSetKeyboardFocus",
+	 * "since it interferes with the keyboard traversal code".
+	 * That's true, we needed to switch traversal off for 'form' (see above).
+	 * But does anyone know of an alternative?
+	 * Our simple and natural desire is that all keyboard input shall go to the only text widget
+	 * in the window (in Motif emulator, this is the automatic behaviour).
+	 */
+	#if gtk
+		gtk_widget_grab_focus (_text);   // BUG: can hardly be correct (the text should grab the focus of the window, not the global focus)
+	#elif motif && defined (UNIX)
+		XtSetKeyboardFocus (form, _text);
+	#endif
+
+	int top = TEXT_HEIGHT;
+	int bottom = GuiObject_getY(_drawingArea)+GuiObject_getHeight(_drawingArea);
+	int left = GuiObject_getX(_drawingArea);
+	int right = GuiObject_getWidth(_drawingArea);
+	GuiObject_size (_drawingArea, right - left, bottom - top);
+	//_GuiObject_position (_drawingArea, left, right, top, bottom); // FIXME gtk
+
 	GuiText_setChangeCallback (_text, gui_text_cb_change, this);
 }
 
@@ -2241,7 +2265,6 @@ void TextGridEditor::prefs_getValues (EditorCommand *cmd) {
 }
 
 void TextGridEditor::createMenuItems_view_timeDomain (EditorMenu *menu) {
-	TimeSoundAnalysisEditor::createMenuItems_view_timeDomain (menu);
 	menu->addCommand (L"Select previous tier", GuiMenu_OPTION | GuiMenu_UP_ARROW, menu_cb_SelectPreviousTier);
 	menu->addCommand (L"Select next tier", GuiMenu_OPTION | GuiMenu_DOWN_ARROW, menu_cb_SelectNextTier);
 	menu->addCommand (L"Select previous interval", GuiMenu_OPTION | GuiMenu_LEFT_ARROW, menu_cb_SelectPreviousInterval);
@@ -2277,7 +2300,6 @@ double TextGridEditor::getBottomOfSoundAndAnalysisArea () {
 }
 
 void TextGridEditor::createMenuItems_pitch_picture (EditorMenu *menu) {
-	TimeSoundAnalysisEditor::createMenuItems_pitch_picture (menu);
 	menu->addCommand (L"Draw visible pitch contour and TextGrid...", 0, menu_cb_DrawTextGridAndPitch);
 }
 

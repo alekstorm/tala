@@ -29,6 +29,8 @@
 #include "TextGrid.h"
 #include "TextGridEditor_enums.h"
 
+#define TEXT_HEIGHT  50
+
 class TextGridEditor : public TimeSoundAnalysisEditor {
   public:
 	static void prefs (void);
@@ -39,7 +41,6 @@ class TextGridEditor : public TimeSoundAnalysisEditor {
 	~TextGridEditor ();
 
 	const wchar_t * type () { return L"TextGridEditor"; }
-	int hasText () { return TRUE; }
 	void info ();
 
 	double _computeSoundY ();

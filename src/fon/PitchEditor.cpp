@@ -44,7 +44,9 @@
 #define RADIUS  2.5
 
 PitchEditor::PitchEditor (GuiObject parent, const wchar_t *title, Pitch pitch)
-	: FunctionEditor (parent, title, pitch) {}
+	: FunctionEditor (parent, title, pitch) {
+	createMenus ();
+}
 
 /********** MENU COMMANDS **********/
 
@@ -166,8 +168,6 @@ static int menu_cb_PitchEditorHelp (EDITOR_ARGS) { Melder_help (L"PitchEditor");
 static int menu_cb_PitchHelp (EDITOR_ARGS) { Melder_help (L"Pitch"); return 1; }
 
 void PitchEditor::createMenus () {
-	FunctionEditor::createMenus ();
-
 	addCommand (L"Edit", L"Change ceiling...", 0, menu_cb_setCeiling);
 	addCommand (L"Edit", L"Path finder...", 0, menu_cb_pathFinder);
 
@@ -184,7 +184,6 @@ void PitchEditor::createMenus () {
 }
 
 void PitchEditor::createHelpMenuItems (EditorMenu *menu) {
-	FunctionEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"PitchEditor help", '?', menu_cb_PitchEditorHelp);
 	menu->addCommand (L"Pitch help", 0, menu_cb_PitchHelp);
 }

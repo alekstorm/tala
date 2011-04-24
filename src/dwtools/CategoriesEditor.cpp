@@ -447,6 +447,7 @@ class_methods_end
 
 CategoriesEditor::CategoriesEditor (GuiObject parent, const wchar_t *title, Any data)
 	: Editor (parent, 20, 40, 600, 600, title, data) {
+	createChildren ();
 	_history = (structCommandHistory *)CommandHistory_create (100);
 	update (0, 0, NULL, 0);
 	updateWidgets ();
@@ -836,7 +837,6 @@ static void gui_button_cb_redo (I, GuiButtonEvent event) {
 
 void CategoriesEditor::createHelpMenuItems (EditorMenu *menu)
 {
-	Editor::createHelpMenuItems (menu);
 	menu->addCommand (L"CategoriesEditor help", '?', menu_cb_help);
 }
 

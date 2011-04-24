@@ -194,6 +194,8 @@ static void cb_publish (Editor *editor, void *closure, Any publish)
 
 VowelEditor::VowelEditor (GuiObject parent, const wchar_t *title, Any data)
 	: Editor (parent, 20, 40, 650, 650, title, data) {
+	createMenus ();
+	createChildren ();
 	#if motif
 	Melder_assert (XtWindow (_drawingArea));
 	#endif
@@ -1422,8 +1424,6 @@ void VowelEditor::updateWidgets () {}
 
 void VowelEditor::createMenus ()
 {
-	Editor::createMenus ();
-
 	addCommand (L"File", L"Preferences...", 0, menu_cb_prefs);
 	addCommand (L"File", L"-- publish data --", 0, NULL);
 	addCommand (L"File", L"Publish Sound", 0, menu_cb_publishSound);
@@ -1447,7 +1447,6 @@ void VowelEditor::createMenus ()
 }
 
 void VowelEditor::createHelpMenuItems (EditorMenu *menu) {
-	Editor::createHelpMenuItems (menu);
 	menu->addCommand (L"VowelEditor help", '?', menu_cb_help);
 }
 

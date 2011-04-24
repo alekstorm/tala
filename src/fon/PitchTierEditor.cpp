@@ -38,7 +38,6 @@ static int menu_cb_PitchTierEditorHelp (EDITOR_ARGS) { Melder_help (L"PitchTierE
 static int menu_cb_PitchTierHelp (EDITOR_ARGS) { Melder_help (L"PitchTier"); return 1; }
 
 void PitchTierEditor::createHelpMenuItems (EditorMenu *menu) {
-	RealTierEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"PitchTierEditor help", 0, menu_cb_PitchTierEditorHelp);
 	menu->addCommand (L"PitchTier help", 0, menu_cb_PitchTierHelp);
 }

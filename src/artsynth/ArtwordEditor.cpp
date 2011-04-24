@@ -31,6 +31,7 @@
 
 ArtwordEditor::ArtwordEditor (GuiObject parent, const wchar_t *title, Artword data)
 	: Editor (parent, 20, 40, 650, 600, title, data) {
+	createChildren ();
 	//XtUnmanageChild (_menuBar);
 	_graphics = Graphics_create_xmdrawingarea (_drawingArea);
 	updateList ();

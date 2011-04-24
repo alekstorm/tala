@@ -95,6 +95,7 @@ static gboolean gui_cb_drawing_area_scroll(GuiObject w, GdkEventScroll *event, g
 
 TableEditor::TableEditor (GuiObject parent, const wchar_t *title, Table table)
 	: Editor (parent, 0, 0, 700, 500, title, table) {
+	createChildren ();
 	//try { // FIXME exception
 		#if motif
 		Melder_assert (XtWindow (_drawingArea));
@@ -422,8 +423,6 @@ void TableEditor::createChildren () {
 }
 
 void TableEditor::createMenus () {
-	Editor::createMenus ();
-
 	#ifndef macintosh
 	addCommand (L"Edit", L"-- cut copy paste --", 0, NULL);
 	addCommand (L"Edit", L"Cut text", 'X', menu_cb_Cut);
@@ -438,7 +437,6 @@ void TableEditor::createMenus () {
 }
 
 void TableEditor::createHelpMenuItems (EditorMenu *menu) {
-	Editor::createHelpMenuItems (menu);
 	menu->addCommand (L"TableEditor help", '?', menu_cb_TableEditorHelp);
 }
 

@@ -30,12 +30,12 @@
 #include "sys/EditorM.h"
 
 AmplitudeTierEditor::AmplitudeTierEditor (GuiObject parent, const wchar_t *title, AmplitudeTier amplitude, Sound sound, int ownSound)
-	: RealTierEditor (parent, title, (RealTier) amplitude, sound, ownSound) {}
+	: RealTierEditor (parent, title, (RealTier) amplitude, sound, ownSound) {
+}
 
 static int menu_cb_AmplitudeTierHelp (EDITOR_ARGS) { Melder_help (L"AmplitudeTier"); return 1; }
 
 void AmplitudeTierEditor::createHelpMenuItems (EditorMenu *menu) {
-	RealTierEditor::createHelpMenuItems (menu);
 	menu->addCommand (L"AmplitudeTier help", 0, menu_cb_AmplitudeTierHelp);
 }
 

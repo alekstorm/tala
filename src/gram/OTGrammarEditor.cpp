@@ -184,7 +184,6 @@ static int menu_cb_OTGrammar_help (EDITOR_ARGS) { OTGrammarEditor *editor = (OTG
 static int menu_cb_OTLearningTutorial (EDITOR_ARGS) { OTGrammarEditor *editor = (OTGrammarEditor *)editor_me; Melder_help (L"OT learning"); return 1; }
 
 void OTGrammarEditor::createMenus () {
-	HyperPage::createMenus ();
 	addCommand (L"Edit", L"-- edit ot --", 0, NULL);
 	addCommand (L"Edit", L"Evaluate...", 0, menu_cb_evaluate);
 	addCommand (L"Edit", L"Evaluate (noise 2.0)", '2', menu_cb_evaluate_noise_2_0);
@@ -199,7 +198,6 @@ void OTGrammarEditor::createMenus () {
 }
 
 void OTGrammarEditor::createHelpMenuItems (EditorMenu *menu) {
-	HyperPage::createHelpMenuItems (menu);
 	menu->addCommand (L"OTGrammarEditor help", '?', menu_cb_OTGrammarEditor_help);
 	menu->addCommand (L"OTGrammar help", 0, menu_cb_OTGrammar_help);
 	menu->addCommand (L"OT learning tutorial", 0, menu_cb_OTLearningTutorial);

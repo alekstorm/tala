@@ -65,6 +65,8 @@ static Collection theOpenTextEditors = NULL;
 /* 'initialText' may be NULL. */
 TextEditor::TextEditor (GuiObject parent, const wchar_t *initialText)
 	: Editor (parent, 0, 0, 600, 400, NULL, NULL) {
+	createMenus ();
+	createChildren ();
 	setFontSize (theTextEditorFontSize);
 	if (initialText) {
 		GuiText_setString (_textWidget, initialText);
@@ -681,7 +683,6 @@ static int menu_cb_fontSize (EDITOR_ARGS) {
 }
 
 void TextEditor::createMenus () {
-	Editor::createMenus ();
 	if (isFileBased ()) {
 		Editor::addCommand (L"File", L"New", 'N', menu_cb_new);
 		Editor::addCommand (L"File", L"Open...", 'O', menu_cb_open);

@@ -973,8 +973,6 @@ static void gui_button_cb_forth (void *void_me, GuiButtonEvent event) {
 }
 
 void HyperPage::createMenus () {
-	Editor::createMenus ();
-
 	addCommand (L"File", L"PostScript settings...", 0, menu_cb_postScriptSettings);
 	#ifdef macintosh
 		addCommand (L"File", L"Page setup...", 0, menu_cb_pageSetup);

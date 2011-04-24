@@ -46,7 +46,6 @@
 #define MARGIN 107
 #define BOTTOM_MARGIN  2
 #define TOP_MARGIN  3
-#define TEXT_HEIGHT  50
 #ifdef macintosh
 	#define BUTTON_X  3
 	#define BUTTON_WIDTH  40
@@ -152,6 +151,8 @@ static void gui_checkbutton_cb_group (I, GuiCheckButtonEvent event) {
 
 FunctionEditor::FunctionEditor (GuiObject parent, const wchar_t *title, Any data)
 	: Editor (parent, 0, 0, preferences.shellWidth, preferences.shellHeight, title, data) {
+	createMenus ();
+	createChildren ();
 	_tmin = ((Function) data) -> xmin;   /* Set before adding children (see group button). */
 	_tmax = ((Function) data) -> xmax;
 
@@ -1034,7 +1035,6 @@ static int menu_cb_intro (EDITOR_ARGS) {
 }
 
 void FunctionEditor::createMenuItems_file (EditorMenu *menu) {
-	Editor::createMenuItems_file (menu);
 	menu->addCommand (L"Preferences...", 0, menu_cb_preferences);
 	menu->addCommand (L"-- after preferences --", 0, 0);
 }
@@ -1066,7 +1066,6 @@ void FunctionEditor::createMenuItems_view (EditorMenu *menu) {
 }
 
 void FunctionEditor::createMenuItems_query (EditorMenu *menu) {
-	Editor::createMenuItems_query (menu);
 	menu->addCommand (L"-- query selection --", 0, 0);
 	menu->addCommand (L"Get start of selection", 0, menu_cb_getB);
 	menu->addCommand (L"Get begin of selection", Editor_HIDDEN, menu_cb_getB);
@@ -1076,7 +1075,6 @@ void FunctionEditor::createMenuItems_query (EditorMenu *menu) {
 }
 
 void FunctionEditor::createMenus () {
-	Editor::createMenus ();
 	EditorMenu *menu;
 
 	menu = addMenu (L"View", 0);
@@ -1104,7 +1102,6 @@ void FunctionEditor::createMenus () {
 }
 
 void FunctionEditor::createHelpMenuItems (EditorMenu *menu) {
-	Editor::createHelpMenuItems (menu);
 	menu->addCommand (L"Intro", 0, menu_cb_intro);
 }
 
@@ -1273,35 +1270,10 @@ void FunctionEditor::createChildren () {
 			L"Group", gui_checkbutton_cb_group, this, group_equalDomain (_tmin, _tmax) ? GuiCheckButton_SET : 0);
 	#endif
 
-	/***** Create optional text field. *****/
-
-	if (hasText ()) {
-		#if gtk
-			_text = GuiText_create (NULL, 0, 0, 0, TEXT_HEIGHT, GuiText_WORDWRAP | GuiText_MULTILINE);
-			gtk_box_pack_start (GTK_BOX (form), _text, FALSE, FALSE, 3);
-			GuiObject_show (_text);
-		#else
-			_text = GuiText_createShown (form, 0, 0, 0, TEXT_HEIGHT, GuiText_WORDWRAP | GuiText_MULTILINE);
-		#endif
-		/*
-		 * X Toolkit 4:184,461 says: "you should never call XtSetKeyboardFocus",
-		 * "since it interferes with the keyboard traversal code".
-		 * That's true, we needed to switch traversal off for 'form' (see above).
-		 * But does anyone know of an alternative?
-		 * Our simple and natural desire is that all keyboard input shall go to the only text widget
-		 * in the window (in Motif emulator, this is the automatic behaviour).
-		 */
-		#if gtk
-			gtk_widget_grab_focus (_text);   // BUG: can hardly be correct (the text should grab the focus of the window, not the global focus)
-		#elif motif && defined (UNIX)
-			XtSetKeyboardFocus (form, _text);
-		#endif
-	}
-
 	/***** Create drawing area. *****/
 
 	#if gtk
-		_drawingArea = GuiDrawingArea_create (NULL, 0, 0, hasText () ? TEXT_HEIGHT : 0, - Machine_getScrollBarWidth () - 9,
+		_drawingArea = GuiDrawingArea_create (NULL, 0, 0, 0, - Machine_getScrollBarWidth () - 9,
 			gui_drawingarea_cb_expose, gui_drawingarea_cb_click, gui_drawingarea_cb_key, gui_drawingarea_cb_resize, this, 0);
 		
 		// turn off double-buffering, otherwise the reaction to the expose-events gets
@@ -1314,7 +1286,7 @@ void FunctionEditor::createChildren () {
 		gtk_box_pack_start (GTK_BOX (form), _drawingArea, TRUE, TRUE, 0);
 		GuiObject_show (_drawingArea);
 	#else
-		_drawingArea = GuiDrawingArea_createShown (form, 0, 0, hasText () ? TEXT_HEIGHT : 0, - Machine_getScrollBarWidth () - 9,
+		_drawingArea = GuiDrawingArea_createShown (form, 0, 0, 0, - Machine_getScrollBarWidth () - 9,
 			gui_drawingarea_cb_expose, gui_drawingarea_cb_click, gui_drawingarea_cb_key, gui_drawingarea_cb_resize, this, 0);
 	#endif
 

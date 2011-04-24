@@ -165,7 +165,6 @@ static int menu_cb_close (EDITOR_ARGS) {
 Editor::Editor (GuiObject parent, int x, int y, int width, int height, const wchar_t *title, Any data)
 	: _name(Melder_wcsdup_f (title)),
 	  _parent(parent),
-	  _shell(GuiObject_parent (_dialog)),
 	  _menuBar(NULL),
 	  _undoButton(NULL),
 	  _searchButton(NULL),
@@ -220,30 +219,30 @@ Editor::Editor (GuiObject parent, int x, int y, int width, int height, const wch
 		bottom += Machine_getTitleBarHeight ();
 	#endif
 	_dialog = GuiWindow_create (parent, left, top, right - left, bottom - top, title, gui_window_cb_goAway, this, canFullScreen() ? GuiWindow_FULLSCREEN : 0);
+	_shell = GuiObject_parent (_dialog);
 
 	/* Create menus. */
 
+	Melder_clearError ();   /* FIXME: to protect against CategoriesEditor */
 	if (hasMenuBar()) {
 		_menus = Ordered_create ();
 		_menuBar = Gui_addMenuBar (_dialog);
 		createMenus ();
-		Melder_clearError ();   /* FIXME: to protect against CategoriesEditor */
-		EditorMenu *helpMenu = addMenu (L"Help", 0);
+		/*EditorMenu *helpMenu = addMenu (L"Help", 0); FIXME
 		createHelpMenuItems (helpMenu);
 		if (isScriptable()) {
 			addCommand (L"File", L"New editor script", 0, menu_cb_newScript);
 			addCommand (L"File", L"Open editor script...", 0, menu_cb_openScript);
 			addCommand (L"File", L"-- after script --", 0, 0);
-		}
+		}*/
 		/*
 		 * Add the scripted commands.
 		 */
-		praat_addCommandsToEditor (this);
+		/*praat_addCommandsToEditor (this); FIXME
 		addCommand (L"File", L"Close", 'W', menu_cb_close);
-		GuiObject_show (_menuBar);
+		GuiObject_show (_menuBar);*/
 	}
 
-	createChildren ();
 	GuiObject_show (_dialog);
 }
 
@@ -472,12 +471,6 @@ void Editor::createMenus () {
 	menu = addMenu (L"Query", 0); // TODO check that this should always be executed
 	createMenuItems_query (menu);
 }
-
-void Editor::createHelpMenuItems (EditorMenu *menu) {
-	(void) menu;
-}
-
-void Editor::createChildren () {}
 
 void Editor::form_pictureWindow (EditorCommand *cmd) {
 	LABEL (L"", L"Picture window:")

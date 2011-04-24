@@ -182,7 +182,6 @@ void OTMultiEditor::createChildren () {
 	#define STRING_SPACING 2
 #endif
 	int height = Machine_getTextHeight (), y = Machine_getMenuBarHeight () + 4;
-	HyperPage::createChildren ();
 	GuiButton_createShown (_dialog, 4, 124, y, y + height,
 		L"Partial forms:", gui_button_cb_limit, this,
 		#ifdef _WIN32
@@ -204,7 +203,6 @@ void OTMultiEditor::createChildren () {
 }
 
 void OTMultiEditor::createMenus () {
-	HyperPage::createMenus ();
 	addCommand (L"Edit", L"-- edit ot --", 0, NULL);
 	addCommand (L"Edit", L"Evaluate...", 0, menu_cb_evaluate);
 	addCommand (L"Edit", L"Evaluate (noise 2.0)", '2', menu_cb_evaluate_noise_2_0);
@@ -217,7 +215,6 @@ void OTMultiEditor::createMenus () {
 }
 
 void OTMultiEditor::createHelpMenuItems (EditorMenu *menu) {
-	HyperPage::createHelpMenuItems (menu);
 	menu->addCommand (L"OT learning tutorial", 0, menu_cb_OTLearningTutorial);
 }
 
