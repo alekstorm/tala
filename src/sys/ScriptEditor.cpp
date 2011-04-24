@@ -326,9 +326,13 @@ void ScriptEditor::createHelpMenuItems (EditorMenu *menu) {
 
 ScriptEditor::ScriptEditor (GuiObject parent, Editor *other, const wchar_t *initialText)
 	: TextEditor (parent, initialText) {
-	if (other != NULL)
+	createMenus ();
+	if (other != NULL) {
 		_environmentName = Melder_wcsdup_e (other -> _name);
-	_interpreter = new Interpreter (other->_name);
+		_interpreter = new Interpreter (other->_name);
+	}
+	else
+		_interpreter = new Interpreter (NULL);
 }
 
 void ScriptEditor::addToEditors (ScriptEditor *editor) {

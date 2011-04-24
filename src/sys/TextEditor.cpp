@@ -64,7 +64,12 @@ static Collection theOpenTextEditors = NULL;
 
 /* 'initialText' may be NULL. */
 TextEditor::TextEditor (GuiObject parent, const wchar_t *initialText)
-	: Editor (parent, 0, 0, 600, 400, NULL, NULL) {
+	: Editor (parent, 0, 0, 600, 400, NULL, NULL),
+	  _fontSizeButton_10(NULL),
+	  _fontSizeButton_12(NULL),
+	  _fontSizeButton_14(NULL),
+	  _fontSizeButton_18(NULL),
+	  _fontSizeButton_24(NULL) {
 	createMenus ();
 	createChildren ();
 	setFontSize (theTextEditorFontSize);

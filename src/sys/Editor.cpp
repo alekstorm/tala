@@ -224,10 +224,11 @@ Editor::Editor (GuiObject parent, int x, int y, int width, int height, const wch
 	/* Create menus. */
 
 	Melder_clearError ();   /* FIXME: to protect against CategoriesEditor */
-	if (hasMenuBar()) {
-		_menus = Ordered_create ();
-		_menuBar = Gui_addMenuBar (_dialog);
-		createMenus ();
+	_menus = Ordered_create (); // FIXME create menubar'd subclass
+	_menuBar = Gui_addMenuBar (_dialog);
+	createMenus ();
+	GuiObject_show (_menuBar);
+	if (hasMenuBar()) { // FIXME won't work
 		/*EditorMenu *helpMenu = addMenu (L"Help", 0); FIXME
 		createHelpMenuItems (helpMenu);
 		if (isScriptable()) {
@@ -239,8 +240,7 @@ Editor::Editor (GuiObject parent, int x, int y, int width, int height, const wch
 		 * Add the scripted commands.
 		 */
 		/*praat_addCommandsToEditor (this); FIXME
-		addCommand (L"File", L"Close", 'W', menu_cb_close);
-		GuiObject_show (_menuBar);*/
+		addCommand (L"File", L"Close", 'W', menu_cb_close);*/
 	}
 
 	GuiObject_show (_dialog);
