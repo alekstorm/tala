@@ -446,9 +446,10 @@ class_methods_end
 /********************* Commands (End)  *************************************/
 
 CategoriesEditor::CategoriesEditor (GuiObject parent, const wchar_t *title, Any data)
-	: Editor (parent, 20, 40, 600, 600, title, data) {
+	: Editor (parent, 20, 40, 600, 600, title, data),
+	_history((structCommandHistory *)CommandHistory_create (100)),
+	_position(0) {
 	createChildren ();
-	_history = (structCommandHistory *)CommandHistory_create (100);
 	update (0, 0, NULL, 0);
 	updateWidgets ();
 }

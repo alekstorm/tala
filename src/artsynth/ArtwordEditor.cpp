@@ -30,7 +30,8 @@
 #include "sys/machine.h"
 
 ArtwordEditor::ArtwordEditor (GuiObject parent, const wchar_t *title, Artword data)
-	: Editor (parent, 20, 40, 650, 600, title, data) {
+	: Editor (parent, 20, 40, 650, 600, title, data),
+	  _feature(1) {
 	createChildren ();
 	//XtUnmanageChild (_menuBar);
 	_graphics = Graphics_create_xmdrawingarea (_drawingArea);
@@ -175,7 +176,6 @@ void ArtwordEditor::createChildren () {
 			0, 160, Gui_AUTOMATIC, Gui_AUTOMATIC,
 			kArt_muscle_getText (i), gui_radiobutton_cb_toggle, this, 0);
 	}
-	_feature = 1;
 	GuiRadioButton_setValue (_button [1], true);
 }
 

@@ -317,13 +317,22 @@ static Boolean workProc (XtPointer void_me) {
 /* create a SoundRecorder, which is an interactive window
    for recording in 16-bit mono or stereo (SGI, MacOS, SunOS, HPUX, Linux, Windows). */
 SoundRecorder::SoundRecorder (GuiObject parent, int numberOfChannels, void *applicationContext)
-	: Editor (parent, 100, 100, 600, 500, L"SoundRecorder", NULL) {
+	: Editor (parent, 100, 100, 600, 500, L"SoundRecorder", NULL),
+	  _numberOfChannels(numberOfChannels),
+	  _nsamp(0),
+	  _nmax(0),
+	  _fakeMono(false),
+	  _synchronous(false),
+	  _recording(false),
+	  _lastLeftMaximum(0),
+	  _lastRightMaximum(0),
+	  _numberOfInputDevices(0),
+	  _buffer(NULL),
+	  _inputUsesPortAudio(MelderAudio_getInputUsesPortAudio ()),
+	  _portaudioStream(NULL) {
 	createChildren ();
 	//try { // FIXME exception
-		_inputUsesPortAudio = MelderAudio_getInputUsesPortAudio ();
-
-		if (_inputUsesPortAudio) {
-		} else {
+		if (!_inputUsesPortAudio) {
 			#if defined (_WIN32)
 				UINT numberOfDevices = waveInGetNumDevs (), i;
 				WAVEINCAPS caps;
@@ -351,12 +360,9 @@ SoundRecorder::SoundRecorder (GuiObject parent, int numberOfChannels, void *appl
 					Melder_throw ("Your computer does not support stereo sound input.");
 			#endif
 		}
-		_numberOfChannels = numberOfChannels;
 		if (sizeof (short) != 2)
 			Melder_throw ("Long shorts!!!!!");
-		if (_inputUsesPortAudio) {
-			_synchronous = false;
-		} else {
+		if (!_inputUsesPortAudio) {
 			#if defined (macintosh) || defined (_WIN32)
 				_synchronous = false;
 			#else

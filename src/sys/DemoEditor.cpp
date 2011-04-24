@@ -47,7 +47,12 @@ static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
 }
 
 DemoEditor::DemoEditor (GuiObject parent)
-	: Editor (parent, 0, 0, 1024, 768, L"", NULL) {
+	: Editor (parent, 0, 0, 1024, 768, L"", NULL),
+	  _praatPicture(NULL),
+	  _clicked(false),
+	  _keyPressed(false), _shiftKeyPressed(false), _commandKeyPressed(false), _optionKeyPressed(false), _extraControlKeyPressed(false),
+	  _x(0), _y(0),
+	  _waitingForInput(false), _userWantsToClose(false), _fullScreen(false) {
 	createChildren ();
 	_graphics = Graphics_create_xmdrawingarea (_drawingArea);
 	Graphics_setColour (_graphics, Graphics_WHITE);

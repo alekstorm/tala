@@ -215,21 +215,20 @@ void TimeSoundAnalysisEditor::prefs (void) {
 }
 
 TimeSoundAnalysisEditor::TimeSoundAnalysisEditor (GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound)
-	: TimeSoundEditor (parent, title, data, sound, ownSound) {
-	
-	_longestAnalysis = preferences.longestAnalysis;
+	: TimeSoundEditor (parent, title, data, sound, ownSound),
+	  _longestAnalysis(preferences.longestAnalysis),
+	  _timeStepStrategy(preferences.timeStepStrategy),
+	  _fixedTimeStep(preferences.fixedTimeStep),
+	  _numberOfTimeStepsPerView(preferences.numberOfTimeStepsPerView),
+	  _spectrogram(preferences.spectrogram),
+	  _pitch(preferences.pitch),
+	  _intensity(preferences.intensity),
+	  _formant(preferences.formant),
+	  _pulses(preferences.pulses) {
 	if (preferences.log[0].toLogFile == FALSE && preferences.log[0].toInfoWindow == FALSE)
 		preferences.log[0].toLogFile = TRUE, preferences.log[0].toInfoWindow = TRUE;
 	if (preferences.log[1].toLogFile == FALSE && preferences.log[1].toInfoWindow == FALSE)
 		preferences.log[1].toLogFile = TRUE, preferences.log[1].toInfoWindow = TRUE;
-	_timeStepStrategy = preferences.timeStepStrategy;
-	_fixedTimeStep = preferences.fixedTimeStep;
-	_numberOfTimeStepsPerView = preferences.numberOfTimeStepsPerView;
-	_spectrogram = preferences.spectrogram;
-	_pitch = preferences.pitch;
-	_intensity = preferences.intensity;
-	_formant = preferences.formant;
-	_pulses = preferences.pulses;
 }
 
 TimeSoundAnalysisEditor::~TimeSoundAnalysisEditor () {

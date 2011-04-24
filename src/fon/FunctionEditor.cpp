@@ -150,15 +150,14 @@ static void gui_checkbutton_cb_group (I, GuiCheckButtonEvent event) {
 }
 
 FunctionEditor::FunctionEditor (GuiObject parent, const wchar_t *title, Any data)
-	: Editor (parent, 0, 0, preferences.shellWidth, preferences.shellHeight, title, data) {
+	: Editor (parent, 0, 0, preferences.shellWidth, preferences.shellHeight, title, data),
+	  _tmin(((Function) data) -> xmin),   /* Set before adding children (see group button). */
+	  _tmax(((Function) data) -> xmax),
+	  _startWindow(_tmin),
+	  _endWindow(_tmax) {
+	  _startSelection = _endSelection = 0.5 * (_tmin + _tmax);
 	createMenus ();
 	createChildren ();
-	_tmin = ((Function) data) -> xmin;   /* Set before adding children (see group button). */
-	_tmax = ((Function) data) -> xmax;
-
-	_startWindow = _tmin;
-	_endWindow = _tmax;
-	_startSelection = _endSelection = 0.5 * (_tmin + _tmax);
 	#if motif
 		Melder_assert (XtWindow (_drawingArea));
 	#endif

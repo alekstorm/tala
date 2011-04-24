@@ -28,9 +28,9 @@
 #include "SpectrogramEditor.h"
 
 SpectrogramEditor::SpectrogramEditor (GuiObject parent, const wchar_t *title, Any data)
-	: FunctionEditor (parent, title, data) {
+	: FunctionEditor (parent, title, data),
+	  _maximum(10000) {
 	//try { // FIXME exception
-		_maximum = 10000;
 	/*} catch (...) {
 		rethrowmzero ("Spectrogram window not created.");
 	}*/

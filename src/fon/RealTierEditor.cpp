@@ -38,11 +38,11 @@
 #define SOUND_HEIGHT  0.382
 
 RealTierEditor::RealTierEditor (GuiObject parent, const wchar_t *title, RealTier data, Sound sound, int ownSound)
-	: TimeSoundEditor (parent, title, data, sound, ownSound) {
+	: TimeSoundEditor (parent, title, data, sound, ownSound),
+	  _ymin(-1.0) {
 	createMenus ();
 	Melder_assert (data != NULL);
 	Melder_assert (Thing_member (data, classRealTier));
-	_ymin = -1.0;
 	updateScaling ();
 	_ycursor = 0.382 * _ymin + 0.618 * _ymax;
 }

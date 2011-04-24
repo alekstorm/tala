@@ -39,7 +39,8 @@
 #include "VoiceAnalysis.h"
 
 PointEditor::PointEditor (GuiObject parent, const wchar_t *title, PointProcess point, Sound sound)
-	: TimeSoundEditor (parent, title, point, Sound_convertToMono (sound), false) {
+	: TimeSoundEditor (parent, title, point, Sound_convertToMono (sound), false),
+	  _monoSound(NULL) {
 	createMenus ();
 	if (sound) {
 		_monoSound = _sound.data; // FIXME should be what's passed to base class constructor

@@ -63,18 +63,18 @@ void FormantGridEditor::prefs (void) {
 }
 
 FormantGridEditor::FormantGridEditor (GuiObject parent, const wchar_t *title, FormantGrid data)
-	: FunctionEditor (parent, title, data) {
+	: FunctionEditor (parent, title, data),
+	  _formantFloor(preferences.formantFloor),
+	  _formantCeiling(preferences.formantCeiling),
+	  _bandwidthFloor(preferences.bandwidthFloor),
+	  _bandwidthCeiling(preferences.bandwidthCeiling),
+	  _play(preferences.play),
+	  _source(preferences.source),
+	  _ycursor(0.382 * _formantFloor + 0.618 * _formantCeiling),
+	  _selectedFormant(1) {
 	createMenus ();
 	Melder_assert (data != NULL);
 	Melder_assert (Thing_member (data, classFormantGrid));
-	_formantFloor = preferences.formantFloor;
-	_formantCeiling = preferences.formantCeiling;
-	_bandwidthFloor = preferences.bandwidthFloor;
-	_bandwidthCeiling = preferences.bandwidthCeiling;
-	_play = preferences.play;
-	_source = preferences.source;
-	_ycursor = 0.382 * _formantFloor + 0.618 * _formantCeiling;
-	_selectedFormant = 1;
 }
 
 /********** MENU COMMANDS **********/

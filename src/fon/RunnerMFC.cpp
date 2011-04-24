@@ -47,9 +47,12 @@ static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
 }
 
 RunnerMFC::RunnerMFC (GuiObject parent, const wchar_t *title, Ordered experiments)
-	: Editor (parent, 0, 0, 2000, 2000, title, NULL) {
+	: Editor (parent, 0, 0, 2000, 2000, title, NULL),
+	  _experiments(experiments),
+	  _iexperiment(1),
+	  _numberOfReplays(0) {
+	createChildren ();
 	//try { // FIXME exception
-		_experiments = experiments;
 		_graphics = Graphics_create_xmdrawingarea (_drawingArea);
 		#if gtk
 			gtk_widget_set_double_buffered (_drawingArea, FALSE);

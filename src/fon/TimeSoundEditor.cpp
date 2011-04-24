@@ -63,8 +63,8 @@ void TimeSoundEditor::prefs (void) {
 /********** TimeSoundEditor methods **********/
 
 TimeSoundEditor::TimeSoundEditor (GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound)
-	: FunctionEditor (parent, title, data) {
-	_ownSound = ownSound;
+	: FunctionEditor (parent, title, data),
+	  _ownSound(ownSound) {
 	if (sound != NULL) {
 		if (ownSound) {
 			Melder_assert (Thing_member (sound, classSound));

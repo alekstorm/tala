@@ -169,10 +169,11 @@ static void gui_cb_limit (GUI_ARGS) {
 }
 
 OTMultiEditor::OTMultiEditor (GuiObject parent, const wchar_t *title, OTMulti grammar)
-	: HyperPage (parent, title, grammar) {
+	: HyperPage (parent, title, grammar),
+	  _form1(Melder_wcsdup_e (L"")),
+	  _form2(Melder_wcsdup_e (L"")),
+	  _selectedConstraint(0) {
 	_data = grammar;
-	_form1 = Melder_wcsdup_e (L"");
-	_form2 = Melder_wcsdup_e (L"");
 }
 
 void OTMultiEditor::createChildren () {

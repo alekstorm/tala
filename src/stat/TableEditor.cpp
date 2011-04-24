@@ -94,16 +94,13 @@ static gboolean gui_cb_drawing_area_scroll(GuiObject w, GdkEventScroll *event, g
 #endif
 
 TableEditor::TableEditor (GuiObject parent, const wchar_t *title, Table table)
-	: Editor (parent, 0, 0, 700, 500, title, table) {
+	: Editor (parent, 0, 0, 700, 500, title, table),
+	  _topRow(1), _leftColumn(1), _selectedColumn(1), _selectedRow(1) {
 	createChildren ();
 	//try { // FIXME exception
 		#if motif
 		Melder_assert (XtWindow (_drawingArea));
 		#endif
-		_topRow = 1;
-		_leftColumn = 1;
-		_selectedColumn = 1;
-		_selectedRow = 1;
 		_graphics = Graphics_create_xmdrawingarea (_drawingArea);
 		double size_pixels = SIZE_INCHES * Graphics_getResolution (_graphics);
 		Graphics_setWsViewport (_graphics, 0, size_pixels, 0, size_pixels);

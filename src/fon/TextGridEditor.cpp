@@ -98,23 +98,23 @@ void TextGridEditor::prefs (void) {
 }
 
 TextGridEditor::TextGridEditor (GuiObject parent, const wchar_t *title, TextGrid grid, Any sound, Any spellingChecker)
-	: TimeSoundAnalysisEditor (parent, title, grid, sound, sound && Thing_member (sound, classSound)) {
+	: TimeSoundAnalysisEditor (parent, title, grid, sound, sound && Thing_member (sound, classSound)),
+	  _spellingChecker((SpellingChecker) spellingChecker),   // Set in time.
+	  _useTextStyles(preferences.useTextStyles),
+	  _fontSize(preferences.fontSize),
+	  _alignment(preferences.alignment),
+	  _shiftDragMultiple(preferences.shiftDragMultiple),
+	  _showNumberOf(preferences.showNumberOf),
+	  _greenMethod(preferences.greenMethod),
+	  _selectedTier(1) {
 	createMenus ();
 	createChildren ();
-	_spellingChecker = (SpellingChecker) spellingChecker;   // Set in time.
 
 	/*
 	 * Include a deep copy of the Sound, owned by the TextGridEditor, or a pointer to the LongSound.
 	 */
 
-	_useTextStyles = preferences.useTextStyles;
-	_fontSize = preferences.fontSize;
-	_alignment = preferences.alignment;
-	_shiftDragMultiple = preferences.shiftDragMultiple;
-	_showNumberOf = preferences.showNumberOf;
-	_greenMethod = preferences.greenMethod;
 	wcscpy (_greenString, preferences.greenString);
-	_selectedTier = 1;
 	if (_endWindow - _startWindow > 30.0) {
 		_endWindow = _startWindow + 30.0;
 		if (_startWindow == _tmin)

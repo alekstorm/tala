@@ -45,11 +45,13 @@ void SpectrumEditor::prefs (void) {
 }
 
 SpectrumEditor::SpectrumEditor (GuiObject parent, const wchar_t *title, Any data)
-	: FunctionEditor (parent, title, data) {
+	: FunctionEditor (parent, title, data),
+	  _minimum(0),
+	  _maximum(0),
+	  _cursorHeight(-1000),
+	  _bandSmoothing(preferences.bandSmoothing),
+	  _dynamicRange(preferences.dynamicRange) {
 	createMenus ();
-	_cursorHeight = -1000;
-	_bandSmoothing = preferences.bandSmoothing;
-	_dynamicRange = preferences.dynamicRange;
 	updateRange ();
 }
 

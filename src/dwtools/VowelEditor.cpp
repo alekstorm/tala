@@ -193,7 +193,21 @@ static void cb_publish (Editor *editor, void *closure, Any publish)
 }
 
 VowelEditor::VowelEditor (GuiObject parent, const wchar_t *title, Any data)
-	: Editor (parent, 20, 40, 650, 650, title, data) {
+	: Editor (parent, 20, 40, 650, 650, title, data),
+	  _f1min(preferences.f1min),
+	  _f1max(preferences.f1max),
+	  _f2min(preferences.f2min),
+	  _f2max(preferences.f2max),
+	  _frequencyScale(preferences.frequencyScale),
+	  _axisOrientation(preferences.axisOrientation),
+	  _speakerType(preferences.speakerType),
+	  _soundFollowsMouse(preferences.soundFollowsMouse),
+	  _maximumDuration(BUFFER_SIZE_SEC),
+	  _extendDuration(0.05),
+	  _markTraceEvery(0.05),
+	  _f0(f0default),
+	  _target(Sound_createSimple (1, _maximumDuration, _f0.samplingFrequency)),
+	  _grid(griddefault) {
 	createMenus ();
 	createChildren ();
 	#if motif
@@ -204,18 +218,8 @@ VowelEditor::VowelEditor (GuiObject parent, const wchar_t *title, Any data)
 	prefs ();
 	setPublishCallback (cb_publish, NULL);
 
-	_f1min = preferences.f1min;
-	_f1max = preferences.f1max;
-	_f2min = preferences.f2min;
-	_f2max = preferences.f2max;
-	_frequencyScale = preferences.frequencyScale;
-	_axisOrientation = preferences.axisOrientation;
-	_speakerType = preferences.speakerType;
-	_soundFollowsMouse = preferences.soundFollowsMouse;
 	if (! setMarks (2, _speakerType, 14)) return;
 	if (! setF3F4 (preferences.f3, preferences.b3, preferences.f4, preferences.b4)) return;
-	_maximumDuration = BUFFER_SIZE_SEC;
-	_extendDuration = 0.05;
 	if (_data != NULL)
 	{
 		_vowel = (structVowel *)Data_copy (data);
@@ -225,15 +229,11 @@ VowelEditor::VowelEditor (GuiObject parent, const wchar_t *title, Any data)
 	{
 		_vowel = Vowel_create_twoFormantSchwa (0.2);
 	}
-	_markTraceEvery = 0.05;
-	_f0 = f0default;
 	if (! setSource ()) return;
-	_target = Sound_createSimple (1, _maximumDuration, _f0.samplingFrequency);
 	GuiText_setString (_f0TextField, Melder_double (_f0.start));
 	GuiText_setString (_f0SlopeTextField, Melder_double (_f0.slopeOctPerSec));
 	GuiText_setString (_durationTextField, L"0.2"); // Source has been created
 	GuiText_setString (_extendTextField, Melder_double (_extendDuration));
-	_grid = griddefault;
 	struct structGuiDrawingAreaResizeEvent event = { 0 };
 	event.widget = _drawingArea;
 	gui_drawingarea_cb_resize (this, & event);

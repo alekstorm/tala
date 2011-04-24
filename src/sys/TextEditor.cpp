@@ -65,6 +65,15 @@ static Collection theOpenTextEditors = NULL;
 /* 'initialText' may be NULL. */
 TextEditor::TextEditor (GuiObject parent, const wchar_t *initialText)
 	: Editor (parent, 0, 0, 600, 400, NULL, NULL),
+	  _textWidget(NULL),
+	  _openDialog(NULL),
+	  _saveDialog(NULL),
+	  _printDialog(NULL),
+	  _findDialog(NULL),
+	  _dirty(FALSE),
+	  _dirtyNewDialog(NULL),
+	  _dirtyOpenDialog(NULL),
+	  _dirtyCloseDialog(NULL),
 	  _fontSizeButton_10(NULL),
 	  _fontSizeButton_12(NULL),
 	  _fontSizeButton_14(NULL),
@@ -75,7 +84,6 @@ TextEditor::TextEditor (GuiObject parent, const wchar_t *initialText)
 	setFontSize (theTextEditorFontSize);
 	if (initialText) {
 		GuiText_setString (_textWidget, initialText);
-		_dirty = FALSE;   /* Was set to TRUE in valueChanged callback. */
 	}
 	if (theOpenTextEditors == NULL) {
 		theOpenTextEditors = Collection_create (NULL, 100);
@@ -115,7 +123,7 @@ void TextEditor::nameChanged () {
 			XtVaSetValues (_shell, XmNiconName, Melder_peekWcsToUtf8 (windowTitle.string), NULL);
 		#endif
 	} else {
-		Editor::nameChanged ();
+		nameChanged ();
 	}
 }
 
@@ -360,7 +368,7 @@ static void gui_button_cb_saveAndClose (void *void_me, GuiButtonEvent event) {
 		if (! editor->saveDocument (& editor->_file)) { Melder_flushError (NULL); return; }
 		editor->closeDocument ();
 	} else {
-		menu_cb_saveAs (editor, editor->Editor::getMenuCommand (L"File", L"Save as..."), NULL, NULL, NULL);
+		menu_cb_saveAs (editor, editor->getMenuCommand (L"File", L"Save as..."), NULL, NULL, NULL);
 	}
 }
 
@@ -689,45 +697,45 @@ static int menu_cb_fontSize (EDITOR_ARGS) {
 
 void TextEditor::createMenus () {
 	if (isFileBased ()) {
-		Editor::addCommand (L"File", L"New", 'N', menu_cb_new);
-		Editor::addCommand (L"File", L"Open...", 'O', menu_cb_open);
-		Editor::addCommand (L"File", L"Reopen from disk", 0, menu_cb_reopen);
+		addCommand (L"File", L"New", 'N', menu_cb_new);
+		addCommand (L"File", L"Open...", 'O', menu_cb_open);
+		addCommand (L"File", L"Reopen from disk", 0, menu_cb_reopen);
 	} else {
-		Editor::addCommand (L"File", L"Clear", 'N', menu_cb_clear);
+		addCommand (L"File", L"Clear", 'N', menu_cb_clear);
 	}
-	Editor::addCommand (L"File", L"-- save --", 0, NULL);
+	addCommand (L"File", L"-- save --", 0, NULL);
 	if (isFileBased ()) {
-		Editor::addCommand (L"File", L"Save", 'S', menu_cb_save);
-		Editor::addCommand (L"File", L"Save as...", 0, menu_cb_saveAs);
+		addCommand (L"File", L"Save", 'S', menu_cb_save);
+		addCommand (L"File", L"Save as...", 0, menu_cb_saveAs);
 	} else {
-		Editor::addCommand (L"File", L"Save as...", 'S', menu_cb_saveAs);
+		addCommand (L"File", L"Save as...", 'S', menu_cb_saveAs);
 	}
-	Editor::addCommand (L"File", L"-- close --", 0, NULL);
-	Editor::addCommand (L"Edit", L"Undo", 'Z', menu_cb_undo);
-	Editor::addCommand (L"Edit", L"Redo", 'Y', menu_cb_redo);
-	Editor::addCommand (L"Edit", L"-- cut copy paste --", 0, NULL);
-	Editor::addCommand (L"Edit", L"Cut", 'X', menu_cb_cut);
-	Editor::addCommand (L"Edit", L"Copy", 'C', menu_cb_copy);
-	Editor::addCommand (L"Edit", L"Paste", 'V', menu_cb_paste);
-	Editor::addCommand (L"Edit", L"Erase", 0, menu_cb_erase);
-	Editor::addMenu (L"Search", 0);
-	Editor::addCommand (L"Search", L"Find...", 'F', menu_cb_find);
-	Editor::addCommand (L"Search", L"Find again", 'G', menu_cb_findAgain);
-	Editor::addCommand (L"Search", L"Replace...", GuiMenu_SHIFT + 'F', menu_cb_replace);
-	Editor::addCommand (L"Search", L"Replace again", GuiMenu_SHIFT + 'G', menu_cb_replaceAgain);
-	Editor::addCommand (L"Search", L"-- line --", 0, NULL);
-	Editor::addCommand (L"Search", L"Where am I?", 0, menu_cb_whereAmI);
-	Editor::addCommand (L"Search", L"Go to line...", 'L', menu_cb_goToLine);
-	Editor::addMenu (L"Convert", 0);
-	Editor::addCommand (L"Convert", L"Convert to C string", 0, menu_cb_convertToCString);
+	addCommand (L"File", L"-- close --", 0, NULL);
+	addCommand (L"Edit", L"Undo", 'Z', menu_cb_undo);
+	addCommand (L"Edit", L"Redo", 'Y', menu_cb_redo);
+	addCommand (L"Edit", L"-- cut copy paste --", 0, NULL);
+	addCommand (L"Edit", L"Cut", 'X', menu_cb_cut);
+	addCommand (L"Edit", L"Copy", 'C', menu_cb_copy);
+	addCommand (L"Edit", L"Paste", 'V', menu_cb_paste);
+	addCommand (L"Edit", L"Erase", 0, menu_cb_erase);
+	addMenu (L"Search", 0);
+	addCommand (L"Search", L"Find...", 'F', menu_cb_find);
+	addCommand (L"Search", L"Find again", 'G', menu_cb_findAgain);
+	addCommand (L"Search", L"Replace...", GuiMenu_SHIFT + 'F', menu_cb_replace);
+	addCommand (L"Search", L"Replace again", GuiMenu_SHIFT + 'G', menu_cb_replaceAgain);
+	addCommand (L"Search", L"-- line --", 0, NULL);
+	addCommand (L"Search", L"Where am I?", 0, menu_cb_whereAmI);
+	addCommand (L"Search", L"Go to line...", 'L', menu_cb_goToLine);
+	addMenu (L"Convert", 0);
+	addCommand (L"Convert", L"Convert to C string", 0, menu_cb_convertToCString);
 	#ifdef macintosh
-		Editor::addMenu (L"Font", 0);
-		Editor::addCommand (L"Font", L"Font size...", 0, menu_cb_fontSize);
-		_fontSizeButton_10 = Editor::addCommand (L"Font", L"10", GuiMenu_CHECKBUTTON, menu_cb_10);
-		_fontSizeButton_12 = Editor::addCommand (L"Font", L"12", GuiMenu_CHECKBUTTON, menu_cb_12);
-		_fontSizeButton_14 = Editor::addCommand (L"Font", L"14", GuiMenu_CHECKBUTTON, menu_cb_14);
-		_fontSizeButton_18 = Editor::addCommand (L"Font", L"18", GuiMenu_CHECKBUTTON, menu_cb_18);
-		_fontSizeButton_24 = Editor::addCommand (L"Font", L"24", GuiMenu_CHECKBUTTON, menu_cb_24);
+		addMenu (L"Font", 0);
+		addCommand (L"Font", L"Font size...", 0, menu_cb_fontSize);
+		_fontSizeButton_10 = addCommand (L"Font", L"10", GuiMenu_CHECKBUTTON, menu_cb_10);
+		_fontSizeButton_12 = addCommand (L"Font", L"12", GuiMenu_CHECKBUTTON, menu_cb_12);
+		_fontSizeButton_14 = addCommand (L"Font", L"14", GuiMenu_CHECKBUTTON, menu_cb_14);
+		_fontSizeButton_18 = addCommand (L"Font", L"18", GuiMenu_CHECKBUTTON, menu_cb_18);
+		_fontSizeButton_24 = addCommand (L"Font", L"24", GuiMenu_CHECKBUTTON, menu_cb_24);
 	#endif
 }
 
@@ -743,8 +751,8 @@ static void gui_text_cb_change (void *void_me, GuiTextEvent event) {
 void TextEditor::createChildren () {
 	_textWidget = GuiText_createShown (_dialog, 0, 0, Machine_getMenuBarHeight (), 0, GuiText_SCROLLED);
 	GuiText_setChangeCallback (_textWidget, gui_text_cb_change, this);
-	GuiText_setUndoItem (_textWidget, Editor::getMenuCommand (L"Edit", L"Undo") -> _itemWidget);
-	GuiText_setRedoItem (_textWidget, Editor::getMenuCommand (L"Edit", L"Redo") -> _itemWidget);
+	GuiText_setUndoItem (_textWidget, getMenuCommand (L"Edit", L"Undo") -> _itemWidget);
+	GuiText_setRedoItem (_textWidget, getMenuCommand (L"Edit", L"Redo") -> _itemWidget);
 }
 
 void TextEditor::clear () {}
@@ -752,7 +760,7 @@ void TextEditor::clear () {}
 void TextEditor::createMenuItems_query (EditorMenu *menu) {}
 
 void TextEditor::showOpen () {
-	cb_showOpen (Editor::getMenuCommand (L"File", L"Open..."), NULL, NULL, NULL);
+	cb_showOpen (getMenuCommand (L"File", L"Open..."), NULL, NULL, NULL);
 }
 
 /* End of file TextEditor.c */

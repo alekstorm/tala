@@ -87,7 +87,13 @@ void ManipulationEditor::prefs (void) {
 }
 
 ManipulationEditor::ManipulationEditor (GuiObject parent, const wchar_t *title, Manipulation ana)
-	: FunctionEditor (parent, title, ana) {
+	: FunctionEditor (parent, title, ana),
+	  _previousPulses(NULL),
+	  _previousPitch(NULL),
+	  _previousDuration(NULL),
+	  _soundmin(0),
+	  _soundmax(0),
+	  _synthesisMethod(prefs_synthesisMethod) {
 	createMenus ();
 	_pitchTier.draggingStrategy = preferences.pitchTier.draggingStrategy;
 	_pitchTier.units = preferences.pitchTier.units;
@@ -118,7 +124,6 @@ ManipulationEditor::ManipulationEditor (GuiObject parent, const wchar_t *title, 
 	if (_duration.maximum < preferences.duration.maximum) _duration.maximum = preferences.duration.maximum;
 	_duration.cursor = 1.0;
 
-	_synthesisMethod = prefs_synthesisMethod;
 	if (ana -> sound)
 		Matrix_getWindowExtrema (ana -> sound, 0, 0, 0, 0, & _soundmin, & _soundmax);
 	if (_soundmin == _soundmax) _soundmin = -1.0, _soundmax = +1.0;

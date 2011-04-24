@@ -49,6 +49,13 @@ int ScriptEditors_dirty (void) {
 	return FALSE;
 }
 
+ScriptEditor::ScriptEditor (GuiObject parent, Editor *other, const wchar_t *initialText)
+	: TextEditor (parent, initialText),
+	  _environmentName(other != NULL ? Melder_wcsdup_e (other -> _name) : NULL),
+	  _interpreter(new Interpreter (other != NULL ? other->_name : NULL)) {
+	createMenus ();
+}
+
 ScriptEditor::~ScriptEditor () {
 	Melder_free (_environmentName);
 	forget (_interpreter);
@@ -322,17 +329,6 @@ void ScriptEditor::createHelpMenuItems (EditorMenu *menu) {
 	menu->addCommand (L"-- help add --", 0, NULL);
 	menu->addCommand (L"Adding to a fixed menu", 0, menu_cb_AddingToAFixedMenu);
 	menu->addCommand (L"Adding to a dynamic menu", 0, menu_cb_AddingToADynamicMenu);
-}
-
-ScriptEditor::ScriptEditor (GuiObject parent, Editor *other, const wchar_t *initialText)
-	: TextEditor (parent, initialText) {
-	createMenus ();
-	if (other != NULL) {
-		_environmentName = Melder_wcsdup_e (other -> _name);
-		_interpreter = new Interpreter (other->_name);
-	}
-	else
-		_interpreter = new Interpreter (NULL);
 }
 
 void ScriptEditor::addToEditors (ScriptEditor *editor) {
