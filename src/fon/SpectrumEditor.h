@@ -49,8 +49,6 @@ class SpectrumEditor : public FunctionEditor {
 	int click (double xWC, double yWC, int shiftKeyPressed);
 	void play (double fmin, double fmax);
 	void createMenus ();
-	void createMenuItems_view (EditorMenu *menu);
-	void createHelpMenuItems (EditorMenu *menu);
 
 	double _minimum, _maximum, _cursorHeight;
 	double _bandSmoothing, _dynamicRange;

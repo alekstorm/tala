@@ -95,7 +95,7 @@ class VowelEditor : public Editor {
 	void drawBackground (Graphics g);
 	void updateWidgets ();
 	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
+	void createHelpMenuItems ();
 	void createChildren ();
 	void dataChanged ();
 

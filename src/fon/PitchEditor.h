@@ -33,7 +33,6 @@ class PitchEditor : public FunctionEditor {
 	const wchar_t * type () { return L"PitchEditor"; }
 
 	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 	void draw ();
 	void play (double tmin, double tmax);
 	int click (double xWC, double yWC, int dummy);

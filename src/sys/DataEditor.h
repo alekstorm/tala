@@ -50,7 +50,7 @@ class DataSubEditor : public Editor {
 
 	wchar_t * type () { return L"DataSubEditor"; }
 	bool isScriptable() { return false; }
-	void createHelpMenuItems (EditorMenu *menu);
+	void createMenus ();
 	void update ();
 	long countFields ();
 	Data_Description findNumberUse (const wchar_t *number);

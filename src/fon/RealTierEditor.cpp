@@ -114,17 +114,16 @@ static int menu_cb_setRange (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-void RealTierEditor::createMenuItems_view (EditorMenu *menu) {
-	menu->addCommand (L"-- view/realtier --", 0, 0);
-	menu->addCommand (setRangeTitle (), 0, menu_cb_setRange);
-}
-
 void RealTierEditor::createMenus () {
 	EditorMenu *menu = addMenu (L"Point", 0);
 	menu->addCommand (L"Add point at cursor", 'T', menu_cb_addPointAtCursor);
 	menu->addCommand (L"Add point at...", 0, menu_cb_addPointAt);
 	menu->addCommand (L"-- remove point --", 0, NULL);
 	menu->addCommand (L"Remove point(s)", GuiMenu_OPTION + 'T', menu_cb_removePoints);
+
+	menu = getMenu (L"View");
+	menu->addCommand (L"-- view/realtier --", 0, 0);
+	menu->addCommand (setRangeTitle (), 0, menu_cb_setRange);
 }
 
 void RealTierEditor::updateScaling () {

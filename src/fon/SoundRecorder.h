@@ -109,7 +109,6 @@ class SoundRecorder : public Editor {
 	bool isScriptable () { return false; }
 
 	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 	void stopRecording ();
 	void showMaximum (int channel, double maximum);
 	void showMeter (short *buffer, long nsamp);

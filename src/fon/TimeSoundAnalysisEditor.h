@@ -147,19 +147,8 @@ class TimeSoundAnalysisEditor : public TimeSoundEditor {
 	struct FunctionEditor_pulses _pulses;
 	GuiObject _spectrogramToggle, _pitchToggle, _intensityToggle, _formantToggle, _pulsesToggle;
 
-  protected:
-	void createMenus_analysis ();
-
   private:
-	void createMenuItems_spectrum_picture (EditorMenu *menu);
-	void createMenuItems_pitch_picture (EditorMenu *menu);
-	void createMenuItems_intensity_picture (EditorMenu *menu);
-	void createMenuItems_formant_picture (EditorMenu *menu);
-	void createMenuItems_pulses_picture (EditorMenu *menu);
-	void createMenuItems_query_log (EditorMenu *menu);
-	void createMenuItems_view_sound (EditorMenu *menu);
-	void createMenuItems_view_sound_analysis (EditorMenu *menu);
-	void createMenuItems_query (EditorMenu *menu);
+	void createMenus ();
 };
 
 /* End of file TimeSoundAnalysisEditor.h */

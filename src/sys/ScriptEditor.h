@@ -50,7 +50,6 @@ class ScriptEditor : public TextEditor {
 	void nameChanged ();
 	void run (wchar_t **text);
 	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 
 	wchar_t *_environmentName;
 	Interpreter *_interpreter;

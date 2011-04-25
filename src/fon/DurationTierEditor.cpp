@@ -26,11 +26,14 @@
 #include "sys/EditorM.h"
 
 DurationTierEditor::DurationTierEditor (GuiObject parent, const wchar_t *title, DurationTier duration, Sound sound, int ownSound)
-	: RealTierEditor (parent, title, (RealTier) duration, sound, ownSound) {}
+	: RealTierEditor (parent, title, (RealTier) duration, sound, ownSound) {
+	createMenus ();
+}
 
 static int menu_cb_DurationTierHelp (EDITOR_ARGS) { Melder_help (L"DurationTier"); return 1; }
 
-void DurationTierEditor::createHelpMenuItems (EditorMenu *menu) {
+void DurationTierEditor::createMenus () {
+	EditorMenu *menu = getMenu(L"Help");
 	menu->addCommand (L"DurationTier help", 0, menu_cb_DurationTierHelp);
 }
 

@@ -47,7 +47,7 @@ class PitchTierEditor : public RealTierEditor {
 	const wchar_t * yminKey () { return L"Minimum frequency"; }
 	const wchar_t * ymaxKey () { return L"Maximum frequency"; }
 
-	void createHelpMenuItems (EditorMenu *menu);
+	void createMenus ();
 	void play (double tmin, double tmax);
 };
 

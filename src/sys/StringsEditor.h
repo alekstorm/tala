@@ -37,7 +37,7 @@ class StringsEditor : public Editor {
 	const wchar_t * type () { return L"StringsEditor"; }
 
 	void updateList ();
-	void createHelpMenuItems (EditorMenu *menu);
+	void createMenus ();
 	void createChildren ();
 	void dataChanged ();
 

@@ -41,14 +41,15 @@ class TableEditor : public Editor {
 	void updateVerticalScrollBar ();
 	void updateHorizontalScrollBar ();
 	void dataChanged ();
-	void createChildren ();
-	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 
 	long _topRow, _leftColumn, _selectedRow, _selectedColumn;
 	GuiObject _text, _drawingArea, _horizontalScrollBar, _verticalScrollBar;
 	double _columnLeft [MAXNUM_VISIBLE_COLUMNS], _columnRight [MAXNUM_VISIBLE_COLUMNS];
 	Graphics _graphics;
+
+  private:
+	void createChildren ();
+	void createMenus ();
 };
 
 /* End of file TableEditor.h */

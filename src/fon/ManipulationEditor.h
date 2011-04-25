@@ -44,7 +44,6 @@ class ManipulationEditor : public FunctionEditor {
 	void save ();
 	void restore ();
 	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 	void drawSoundArea (double ymin, double ymax);
 	void drawPitchArea (double ymin, double ymax);
 	void drawDurationArea (double ymin, double ymax);

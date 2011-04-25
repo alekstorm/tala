@@ -1033,13 +1033,13 @@ static int menu_cb_intro (EDITOR_ARGS) {
 	return 1;
 }
 
-void FunctionEditor::createMenuItems_file (EditorMenu *menu) {
+void FunctionEditor::createMenus () {
+	EditorMenu *menu = getMenu (L"File");
 	menu->addCommand (L"Preferences...", 0, menu_cb_preferences);
 	menu->addCommand (L"-- after preferences --", 0, 0);
-}
 
-void FunctionEditor::createMenuItems_view_timeDomain (EditorMenu *menu) {
-	menu->addCommand (format_domain (), GuiMenu_INSENSITIVE, menu_cb_zoom /* dum_*/);
+	menu = addMenu (L"View", 0);
+	menu->addCommand (format_domain (), GuiMenu_INSENSITIVE, menu_cb_zoom /* dummy */);
 	menu->addCommand (L"Zoom...", 0, menu_cb_zoom);
 	menu->addCommand (L"Show all", 'A', menu_cb_showAll);
 	menu->addCommand (L"Zoom in", 'I', menu_cb_zoomIn);
@@ -1048,59 +1048,43 @@ void FunctionEditor::createMenuItems_view_timeDomain (EditorMenu *menu) {
 	menu->addCommand (L"Zoom back", 'B', menu_cb_zoomBack);
 	menu->addCommand (L"Scroll page back", GuiMenu_PAGE_UP, menu_cb_pageUp);
 	menu->addCommand (L"Scroll page forward", GuiMenu_PAGE_DOWN, menu_cb_pageDown);
-}
 
-void FunctionEditor::createMenuItems_view_audio (EditorMenu *menu) {
 	menu->addCommand (L"-- play --", 0, 0);
-	menu->addCommand (L"Audio:", GuiMenu_INSENSITIVE, menu_cb_play /* dum_*/);
+	menu->addCommand (L"Audio:", GuiMenu_INSENSITIVE, menu_cb_play /* dummy */);
 	menu->addCommand (L"Play...", 0, menu_cb_play);
 	menu->addCommand (L"Play or stop", gtk ? 0 : GuiMenu_TAB, menu_cb_playOrStop);
 	menu->addCommand (L"Play window", gtk ? 0 : GuiMenu_SHIFT + GuiMenu_TAB, menu_cb_playWindow);
 	menu->addCommand (L"Interrupt playing", GuiMenu_ESCAPE, menu_cb_interruptPlaying);
-}
 
-void FunctionEditor::createMenuItems_view (EditorMenu *menu) {
-	createMenuItems_view_timeDomain (menu);
-	createMenuItems_view_audio (menu);
-}
-
-void FunctionEditor::createMenuItems_query (EditorMenu *menu) {
+	menu = getMenu (L"Query");
 	menu->addCommand (L"-- query selection --", 0, 0);
 	menu->addCommand (L"Get start of selection", 0, menu_cb_getB);
 	menu->addCommand (L"Get begin of selection", Editor_HIDDEN, menu_cb_getB);
 	menu->addCommand (L"Get cursor", GuiMenu_F6, menu_cb_getCursor);
 	menu->addCommand (L"Get end of selection", 0, menu_cb_getE);
 	menu->addCommand (L"Get selection length", 0, menu_cb_getSelectionDuration);
-}
 
-void FunctionEditor::createMenus () {
-	EditorMenu *menu;
+	menu = addMenu (L"Select", 0);
+	menu->addCommand (L"Select...", 0, menu_cb_select);
+	menu->addCommand (L"Move cursor to start of selection", 0, menu_cb_moveCursorToB);
+	menu->addCommand (L"Move cursor to begin of selection", Editor_HIDDEN, menu_cb_moveCursorToB);
+	menu->addCommand (L"Move cursor to end of selection", 0, menu_cb_moveCursorToE);
+	menu->addCommand (L"Move cursor to...", 0, menu_cb_moveCursorTo);
+	menu->addCommand (L"Move cursor by...", 0, menu_cb_moveCursorBy);
+	menu->addCommand (L"Move start of selection by...", 0, menu_cb_moveBby);
+	menu->addCommand (L"Move begin of selection by...", Editor_HIDDEN, menu_cb_moveBby);
+	menu->addCommand (L"Move end of selection by...", 0, menu_cb_moveEby);
+	/*menu->addCommand (L"Move cursor back by half a second", motif_, menu_cb_moveCursorBy);*/
+	menu->addCommand (L"Select earlier", GuiMenu_UP_ARROW, menu_cb_selectEarlier);
+	menu->addCommand (L"Select later", GuiMenu_DOWN_ARROW, menu_cb_selectLater);
+	menu->addCommand (L"Move start of selection left", GuiMenu_SHIFT + GuiMenu_UP_ARROW, menu_cb_moveBleft);
+	menu->addCommand (L"Move begin of selection left", Editor_HIDDEN, menu_cb_moveBleft);
+	menu->addCommand (L"Move start of selection right", GuiMenu_SHIFT + GuiMenu_DOWN_ARROW, menu_cb_moveBright);
+	menu->addCommand (L"Move begin of selection right", Editor_HIDDEN, menu_cb_moveBright);
+	menu->addCommand (L"Move end of selection left", GuiMenu_COMMAND + GuiMenu_UP_ARROW, menu_cb_moveEleft);
+	menu->addCommand (L"Move end of selection right", GuiMenu_COMMAND + GuiMenu_DOWN_ARROW, menu_cb_moveEright);
 
-	menu = addMenu (L"View", 0);
-	createMenuItems_view (menu);
-
-	addMenu (L"Select", 0);
-	addCommand (L"Select", L"Select...", 0, menu_cb_select);
-	addCommand (L"Select", L"Move cursor to start of selection", 0, menu_cb_moveCursorToB);
-	addCommand (L"Select", L"Move cursor to begin of selection", Editor_HIDDEN, menu_cb_moveCursorToB);
-	addCommand (L"Select", L"Move cursor to end of selection", 0, menu_cb_moveCursorToE);
-	addCommand (L"Select", L"Move cursor to...", 0, menu_cb_moveCursorTo);
-	addCommand (L"Select", L"Move cursor by...", 0, menu_cb_moveCursorBy);
-	addCommand (L"Select", L"Move start of selection by...", 0, menu_cb_moveBby);
-	addCommand (L"Select", L"Move begin of selection by...", Editor_HIDDEN, menu_cb_moveBby);
-	addCommand (L"Select", L"Move end of selection by...", 0, menu_cb_moveEby);
-	/*addCommand (L"Select", L"Move cursor back by half a second", motif_, menu_cb_moveCursorBy);*/
-	addCommand (L"Select", L"Select earlier", GuiMenu_UP_ARROW, menu_cb_selectEarlier);
-	addCommand (L"Select", L"Select later", GuiMenu_DOWN_ARROW, menu_cb_selectLater);
-	addCommand (L"Select", L"Move start of selection left", GuiMenu_SHIFT + GuiMenu_UP_ARROW, menu_cb_moveBleft);
-	addCommand (L"Select", L"Move begin of selection left", Editor_HIDDEN, menu_cb_moveBleft);
-	addCommand (L"Select", L"Move start of selection right", GuiMenu_SHIFT + GuiMenu_DOWN_ARROW, menu_cb_moveBright);
-	addCommand (L"Select", L"Move begin of selection right", Editor_HIDDEN, menu_cb_moveBright);
-	addCommand (L"Select", L"Move end of selection left", GuiMenu_COMMAND + GuiMenu_UP_ARROW, menu_cb_moveEleft);
-	addCommand (L"Select", L"Move end of selection right", GuiMenu_COMMAND + GuiMenu_DOWN_ARROW, menu_cb_moveEright);
-}
-
-void FunctionEditor::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Help");
 	menu->addCommand (L"Intro", 0, menu_cb_intro);
 }
 

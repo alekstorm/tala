@@ -252,16 +252,7 @@ class FunctionEditor : public Editor {
 	int _numberOfMarkers;
 
   private:
-	void createMenuItems_file_draw (EditorMenu *menu);
-	void createMenuItems_file_extract (EditorMenu *menu);
-	void createMenuItems_file_write (EditorMenu *menu);
-	void createMenuItems_view (EditorMenu *menu);
-	void createMenuItems_view_timeDomain (EditorMenu *menu);
-	void createMenuItems_view_audio (EditorMenu *menu);
-	void createMenuItems_file (EditorMenu *menu);
-	void createMenuItems_query (EditorMenu *menu);
 	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 	void createChildren ();
 };
 

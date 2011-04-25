@@ -173,6 +173,7 @@ OTMultiEditor::OTMultiEditor (GuiObject parent, const wchar_t *title, OTMulti gr
 	  _form1(Melder_wcsdup_e (L"")),
 	  _form2(Melder_wcsdup_e (L"")),
 	  _selectedConstraint(0) {
+	createMenus ();
 	_data = grammar;
 }
 
@@ -204,18 +205,17 @@ void OTMultiEditor::createChildren () {
 }
 
 void OTMultiEditor::createMenus () {
-	addCommand (L"Edit", L"-- edit ot --", 0, NULL);
-	addCommand (L"Edit", L"Evaluate...", 0, menu_cb_evaluate);
-	addCommand (L"Edit", L"Evaluate (noise 2.0)", '2', menu_cb_evaluate_noise_2_0);
-	addCommand (L"Edit", L"Evaluate (tiny noise)", '9', menu_cb_evaluate_tinyNoise);
-	addCommand (L"Edit", L"Edit ranking...", 'E', menu_cb_editRanking);
-	addCommand (L"Edit", L"Reset all rankings...", 'R', menu_cb_resetAllRankings);
-	addCommand (L"Edit", L"Learn one...", '1', menu_cb_learnOne);
-	addCommand (L"Edit", L"-- remove --", 0, NULL);
-	addCommand (L"Edit", L"Remove constraint", 0, menu_cb_removeConstraint);
-}
+	EditorMenu *menu = getMenu (L"Edit");
+	menu->addCommand (L"-- edit ot --", 0, NULL);
+	menu->addCommand (L"Evaluate...", 0, menu_cb_evaluate);
+	menu->addCommand (L"Evaluate (noise 2.0)", '2', menu_cb_evaluate_noise_2_0);
+	menu->addCommand (L"Evaluate (tiny noise)", '9', menu_cb_evaluate_tinyNoise);
+	menu->addCommand (L"Edit ranking...", 'E', menu_cb_editRanking);
+	menu->addCommand (L"Reset all rankings...", 'R', menu_cb_resetAllRankings);
+	menu->addCommand (L"Learn one...", '1', menu_cb_learnOne);
+	menu->addCommand (L"-- remove --", 0, NULL);
+	menu->addCommand (L"Remove constraint", 0, menu_cb_removeConstraint);
 
-void OTMultiEditor::createHelpMenuItems (EditorMenu *menu) {
 	menu->addCommand (L"OT learning tutorial", 0, menu_cb_OTLearningTutorial);
 }
 

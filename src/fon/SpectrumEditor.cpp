@@ -191,20 +191,21 @@ static int menu_cb_help_SpectrumEditor (EDITOR_ARGS) { Melder_help (L"SpectrumEd
 static int menu_cb_help_Spectrum (EDITOR_ARGS) { Melder_help (L"Spectrum"); return 1; }
 
 void SpectrumEditor::createMenus () {
-	_publishBandButton = addCommand (L"File", L"Publish band", 0, menu_cb_publishBand);
-	_publishSoundButton = addCommand (L"File", L"Publish band-filtered sound", 0, menu_cb_publishSound);
-	addCommand (L"File", L"-- close --", 0, NULL);
-	addCommand (L"Edit", L"-- edit band --", 0, NULL);
-	addCommand (L"Edit", L"Pass band...", 0, menu_cb_passBand);
-	addCommand (L"Edit", L"Stop band...", 0, menu_cb_stopBand);
-}
+	EditorMenu *menu = getMenu (L"File");
+	_publishBandButton = menu->addCommand (L"Publish band", 0, menu_cb_publishBand) -> _itemWidget;
+	_publishSoundButton = menu->addCommand (L"Publish band-filtered sound", 0, menu_cb_publishSound) -> _itemWidget;
+	menu->addCommand (L"-- close --", 0, NULL);
 
-void SpectrumEditor::createMenuItems_view (EditorMenu *menu) {
+	menu = getMenu (L"Edit");
+	menu->addCommand (L"-- edit band --", 0, NULL);
+	menu->addCommand (L"Pass band...", 0, menu_cb_passBand);
+	menu->addCommand (L"Stop band...", 0, menu_cb_stopBand);
+
+	menu = getMenu (L"View");
 	menu->addCommand (L"Set dynamic range...", 0, menu_cb_setDynamicRange);
 	menu->addCommand (L"-- view settings --", 0, 0);
-}
 
-void SpectrumEditor::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Help");
 	menu->addCommand (L"SpectrumEditor help", '?', menu_cb_help_SpectrumEditor);
 	menu->addCommand (L"Spectrum help", 0, menu_cb_help_Spectrum);
 }

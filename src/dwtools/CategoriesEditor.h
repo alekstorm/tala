@@ -41,7 +41,7 @@ class CategoriesEditor : public Editor {
 	void updateWidgets (); /*all buttons except undo & redo */
 	void update (long from, long to, const long *select, long nSelect);
 	void insert (int position);
-	void createHelpMenuItems (EditorMenu *menu);
+	void createMenus ();
 	void createChildren ();
 	void dataChanged ();
 

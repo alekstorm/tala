@@ -244,7 +244,7 @@ void FormantGridEditor::createMenus () {
 	menu->addCommand (L"Add point at...", 0, menu_cb_addPointAt);
 	menu->addCommand (L"-- remove point --", 0, NULL);
 	menu->addCommand (L"Remove point(s)", GuiMenu_OPTION + 'T', menu_cb_removePoints);
-	if (hasSourceMenu ()) {
+	if (hasSourceMenu ()) { // FIXME subclass
 		menu = addMenu (L"Source", 0);
 		menu->addCommand (L"Pitch settings...", 0, menu_cb_pitchSettings);
 		//menu->addCommand (L"Phonation settings...", 0, menu_cb_phonationSettings);

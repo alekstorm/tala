@@ -168,30 +168,30 @@ static int menu_cb_addPointAt (EDITOR_ARGS) {
 static int menu_cb_PointEditorHelp (EDITOR_ARGS) { PointEditor *editor = (PointEditor *)editor_me; Melder_help (L"PointEditor"); return 1; }
 
 void PointEditor::createMenus () {
-	addCommand (L"Query", L"-- query jitter --", 0, NULL);
-	addCommand (L"Query", L"Get jitter (local)", 0, menu_cb_getJitter_local);
-	addCommand (L"Query", L"Get jitter (local, absolute)", 0, menu_cb_getJitter_local_absolute);
-	addCommand (L"Query", L"Get jitter (rap)", 0, menu_cb_getJitter_rap);
-	addCommand (L"Query", L"Get jitter (ppq5)", 0, menu_cb_getJitter_ppq5);
-	addCommand (L"Query", L"Get jitter (ddp)", 0, menu_cb_getJitter_ddp);
+	EditorMenu *menu = getMenu (L"Query");
+	menu->addCommand (L"-- query jitter --", 0, NULL);
+	menu->addCommand (L"Get jitter (local)", 0, menu_cb_getJitter_local);
+	menu->addCommand (L"Get jitter (local, absolute)", 0, menu_cb_getJitter_local_absolute);
+	menu->addCommand (L"Get jitter (rap)", 0, menu_cb_getJitter_rap);
+	menu->addCommand (L"Get jitter (ppq5)", 0, menu_cb_getJitter_ppq5);
+	menu->addCommand (L"Get jitter (ddp)", 0, menu_cb_getJitter_ddp);
 	if (_sound.data) {
-		addCommand (L"Query", L"-- query shimmer --", 0, NULL);
-		addCommand (L"Query", L"Get shimmer (local)", 0, menu_cb_getShimmer_local);
-		addCommand (L"Query", L"Get shimmer (local, dB)", 0, menu_cb_getShimmer_local_dB);
-		addCommand (L"Query", L"Get shimmer (apq3)", 0, menu_cb_getShimmer_apq3);
-		addCommand (L"Query", L"Get shimmer (apq5)", 0, menu_cb_getShimmer_apq5);
-		addCommand (L"Query", L"Get shimmer (apq11)", 0, menu_cb_getShimmer_apq11);
-		addCommand (L"Query", L"Get shimmer (dda)", 0, menu_cb_getShimmer_dda);
+		menu->addCommand (L"-- query shimmer --", 0, NULL);
+		menu->addCommand (L"Get shimmer (local)", 0, menu_cb_getShimmer_local);
+		menu->addCommand (L"Get shimmer (local, dB)", 0, menu_cb_getShimmer_local_dB);
+		menu->addCommand (L"Get shimmer (apq3)", 0, menu_cb_getShimmer_apq3);
+		menu->addCommand (L"Get shimmer (apq5)", 0, menu_cb_getShimmer_apq5);
+		menu->addCommand (L"Get shimmer (apq11)", 0, menu_cb_getShimmer_apq11);
+		menu->addCommand (L"Get shimmer (dda)", 0, menu_cb_getShimmer_dda);
 	}
 
-	addMenu (L"Point", 0);
-	addCommand (L"Point", L"Add point at cursor", 'P', menu_cb_addPointAtCursor);
-	addCommand (L"Point", L"Add point at...", 0, menu_cb_addPointAt);
-	addCommand (L"Point", L"-- remove point --", 0, NULL);
-	addCommand (L"Point", L"Remove point(s)", GuiMenu_OPTION + 'P', menu_cb_removePoints);
-}
+	menu = addMenu (L"Point", 0);
+	menu->addCommand (L"Add point at cursor", 'P', menu_cb_addPointAtCursor);
+	menu->addCommand (L"Add point at...", 0, menu_cb_addPointAt);
+	menu->addCommand (L"-- remove point --", 0, NULL);
+	menu->addCommand (L"Remove point(s)", GuiMenu_OPTION + 'P', menu_cb_removePoints);
 
-void PointEditor::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Help");
 	menu->addCommand (L"PointEditor help", '?', menu_cb_PointEditorHelp);
 }
 

@@ -109,6 +109,7 @@ static void gui_cb_verticalScroll (GUI_ARGS) {
 
 HyperPage::HyperPage (GuiObject parent, const wchar_t *title, Any data)
 	: Editor (parent, 0, 0, 6 * resolution + 30, 800, title, data) {
+	createMenus ();
 	resolution = Gui_getResolution (parent);
 	#if motif
 		Melder_assert (XtWindow (_drawingArea));
@@ -973,32 +974,33 @@ static void gui_button_cb_forth (void *void_me, GuiButtonEvent event) {
 }
 
 void HyperPage::createMenus () {
-	addCommand (L"File", L"PostScript settings...", 0, menu_cb_postScriptSettings);
+	EditorMenu *menu = getMenu (L"File");
+	menu->addCommand (L"PostScript settings...", 0, menu_cb_postScriptSettings);
 	#ifdef macintosh
-		addCommand (L"File", L"Page setup...", 0, menu_cb_pageSetup);
+		menu->addCommand (L"Page setup...", 0, menu_cb_pageSetup);
 	#endif
-	addCommand (L"File", L"Print page...", 'P', menu_cb_print);
-	addCommand (L"File", L"-- close --", 0, NULL);
+	menu->addCommand (L"Print page...", 'P', menu_cb_print);
+	menu->addCommand (L"-- close --", 0, NULL);
 
 	if (_hasHistory) {
-		addMenu (L"Go to", 0);
-		addCommand (L"Go to", L"Search for page...", 0, menu_cb_searchForPage);
-		addCommand (L"Go to", L"Back", GuiMenu_OPTION | GuiMenu_LEFT_ARROW, menu_cb_back);
-		addCommand (L"Go to", L"Forward", GuiMenu_OPTION | GuiMenu_RIGHT_ARROW, menu_cb_forth);
-		addCommand (L"Go to", L"-- page --", 0, NULL);
-		addCommand (L"Go to", L"Page up", GuiMenu_PAGE_UP, menu_cb_pageUp);
-		addCommand (L"Go to", L"Page down", GuiMenu_PAGE_DOWN, menu_cb_pageDown);
+		menu = addMenu (L"Go to", 0);
+		menu->addCommand (L"Search for page...", 0, menu_cb_searchForPage);
+		menu->addCommand (L"Back", GuiMenu_OPTION | GuiMenu_LEFT_ARROW, menu_cb_back);
+		menu->addCommand (L"Forward", GuiMenu_OPTION | GuiMenu_RIGHT_ARROW, menu_cb_forth);
+		menu->addCommand (L"-- page --", 0, NULL);
+		menu->addCommand (L"Page up", GuiMenu_PAGE_UP, menu_cb_pageUp);
+		menu->addCommand (L"Page down", GuiMenu_PAGE_DOWN, menu_cb_pageDown);
 	}
 
-	addMenu (L"Font", 0);
-	addCommand (L"Font", L"Font size...", 0, menu_cb_fontSize);
-	_fontSizeButton_10 = addCommand (L"Font", L"10", GuiMenu_CHECKBUTTON, menu_cb_10);
-	_fontSizeButton_12 = addCommand (L"Font", L"12", GuiMenu_CHECKBUTTON, menu_cb_12);
-	_fontSizeButton_14 = addCommand (L"Font", L"14", GuiMenu_CHECKBUTTON, menu_cb_14);
-	_fontSizeButton_18 = addCommand (L"Font", L"18", GuiMenu_CHECKBUTTON, menu_cb_18);
-	_fontSizeButton_24 = addCommand (L"Font", L"24", GuiMenu_CHECKBUTTON, menu_cb_24);
-	addCommand (L"Font", L"-- font --", 0, NULL);
-	addCommand (L"Font", L"Font...", 0, menu_cb_font);
+	menu = addMenu (L"Font", 0);
+	menu->addCommand (L"Font size...", 0, menu_cb_fontSize);
+	_fontSizeButton_10 = menu->addCommand (L"10", GuiMenu_CHECKBUTTON, menu_cb_10) -> _itemWidget;
+	_fontSizeButton_12 = menu->addCommand (L"12", GuiMenu_CHECKBUTTON, menu_cb_12) -> _itemWidget;
+	_fontSizeButton_14 = menu->addCommand (L"14", GuiMenu_CHECKBUTTON, menu_cb_14) -> _itemWidget;
+	_fontSizeButton_18 = menu->addCommand (L"18", GuiMenu_CHECKBUTTON, menu_cb_18) -> _itemWidget;
+	_fontSizeButton_24 = menu->addCommand (L"24", GuiMenu_CHECKBUTTON, menu_cb_24) -> _itemWidget;
+	menu->addCommand (L"-- font --", 0, NULL);
+	menu->addCommand (L"Font...", 0, menu_cb_font);
 }
 
 static void gui_button_cb_previousPage (void *void_me, GuiButtonEvent event) {

@@ -168,26 +168,27 @@ static int menu_cb_PitchEditorHelp (EDITOR_ARGS) { Melder_help (L"PitchEditor");
 static int menu_cb_PitchHelp (EDITOR_ARGS) { Melder_help (L"Pitch"); return 1; }
 
 void PitchEditor::createMenus () {
-	addCommand (L"Edit", L"Change ceiling...", 0, menu_cb_setCeiling);
-	addCommand (L"Edit", L"Path finder...", 0, menu_cb_pathFinder);
+	EditorMenu *menu = getMenu (L"Edit");
+	menu->addCommand (L"Change ceiling...", 0, menu_cb_setCeiling);
+	menu->addCommand (L"Path finder...", 0, menu_cb_pathFinder);
 
-	addCommand (L"Query", L"-- pitch --", 0, NULL);
-	addCommand (L"Query", L"Get pitch", GuiMenu_F5, menu_cb_getPitch);
+	menu = getMenu (L"Query");
+	menu->addCommand (L"-- pitch --", 0, NULL);
+	menu->addCommand (L"Get pitch", GuiMenu_F5, menu_cb_getPitch);
 
-	addMenu (L"Selection", 0);
-	addCommand (L"Selection", L"Unvoice", 0, menu_cb_voiceless);
-	addCommand (L"Selection", L"-- up and down --", 0, NULL);
-	addCommand (L"Selection", L"Octave up", 0, menu_cb_octaveUp);
-	addCommand (L"Selection", L"Fifth up", 0, menu_cb_fifthUp);
-	addCommand (L"Selection", L"Fifth down", 0, menu_cb_fifthDown);
-	addCommand (L"Selection", L"Octave down", 0, menu_cb_octaveDown);
-}
+	menu = addMenu (L"Selection", 0);
+	menu->addCommand (L"Unvoice", 0, menu_cb_voiceless);
+	menu->addCommand (L"-- up and down --", 0, NULL);
+	menu->addCommand (L"Octave up", 0, menu_cb_octaveUp);
+	menu->addCommand (L"Fifth up", 0, menu_cb_fifthUp);
+	menu->addCommand (L"Fifth down", 0, menu_cb_fifthDown);
+	menu->addCommand (L"Octave down", 0, menu_cb_octaveDown);
 
-void PitchEditor::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Help");
 	menu->addCommand (L"PitchEditor help", '?', menu_cb_PitchEditorHelp);
 	menu->addCommand (L"Pitch help", 0, menu_cb_PitchHelp);
 }
-	
+
 /********** DRAWING AREA **********/
 
 void PitchEditor::draw () {

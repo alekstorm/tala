@@ -65,7 +65,6 @@ class TextGridEditor : public TimeSoundAnalysisEditor {
 	void do_find ();
 	int checkSpellingInTier ();
 	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 	void createChildren ();
 	void dataChanged ();
 	void prepareDraw ();

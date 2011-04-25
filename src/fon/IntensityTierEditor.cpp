@@ -30,11 +30,14 @@
 #include "sys/EditorM.h"
 
 IntensityTierEditor::IntensityTierEditor (GuiObject parent, const wchar_t *title, IntensityTier intensity, Sound sound, int ownSound)
-	: RealTierEditor (parent, title, (RealTier) intensity, sound, ownSound) {}
+	: RealTierEditor (parent, title, (RealTier) intensity, sound, ownSound) {
+	createMenus ();
+}
 
 static int menu_cb_IntensityTierHelp (EDITOR_ARGS) { Melder_help (L"IntensityTier"); return 1; }
 
-void IntensityTierEditor::createHelpMenuItems (EditorMenu *menu) {
+void IntensityTierEditor::createMenus () {
+	EditorMenu *menu = getMenu (L"Help");
 	menu->addCommand (L"IntensityTier help", 0, menu_cb_IntensityTierHelp);
 }
 

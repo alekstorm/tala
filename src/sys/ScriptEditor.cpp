@@ -299,24 +299,25 @@ static int menu_cb_AddingToAFixedMenu (EDITOR_ARGS) { Melder_help (L"Add to fixe
 static int menu_cb_AddingToADynamicMenu (EDITOR_ARGS) { Melder_help (L"Add to dynamic menu..."); return 1; }
 
 void ScriptEditor::createMenus () {
+	EditorMenu *menu = getMenu (L"File");
 	if (_environmentName) {
-		addCommand (L"File", L"Add to menu...", 0, menu_cb_addToMenu);
+		menu->addCommand (L"Add to menu...", 0, menu_cb_addToMenu);
 	} else {
-		addCommand (L"File", L"Add to fixed menu...", 0, menu_cb_addToFixedMenu);
-		addCommand (L"File", L"Add to dynamic menu...", 0, menu_cb_addToDynamicMenu);
+		menu->addCommand (L"Add to fixed menu...", 0, menu_cb_addToFixedMenu);
+		menu->addCommand (L"Add to dynamic menu...", 0, menu_cb_addToDynamicMenu);
 	}
-	addCommand (L"File", L"-- close --", 0, NULL);
-	addCommand (L"Edit", L"-- history --", 0, 0);
-	addCommand (L"Edit", L"Clear history", 0, menu_cb_clearHistory);
-	addCommand (L"Edit", L"Paste history", 'H', menu_cb_pasteHistory);
-	addCommand (L"Convert", L"-- expand --", 0, 0);
-	addCommand (L"Convert", L"Expand include files", 0, menu_cb_expandIncludeFiles);
-	addMenu (L"Run", 0);
-	addCommand (L"Run", L"Run", 'R', menu_cb_run);
-	addCommand (L"Run", L"Run selection", 'T', menu_cb_runSelection);
-}
+	menu->addCommand (L"-- close --", 0, NULL);
+	menu = getMenu (L"Edit");
+	menu->addCommand (L"-- history --", 0, 0);
+	menu->addCommand (L"Clear history", 0, menu_cb_clearHistory);
+	menu->addCommand (L"Paste history", 'H', menu_cb_pasteHistory);
+	menu->addCommand (L"-- expand --", 0, 0);
+	menu->addCommand (L"Expand include files", 0, menu_cb_expandIncludeFiles);
+	menu = addMenu (L"Run", 0);
+	menu->addCommand (L"Run", 'R', menu_cb_run);
+	menu->addCommand (L"Run selection", 'T', menu_cb_runSelection);
 
-void ScriptEditor::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Help");
 	menu->addCommand (L"About ScriptEditor", '?', menu_cb_AboutScriptEditor);
 	menu->addCommand (L"Scripting tutorial", 0, menu_cb_ScriptingTutorial);
 	menu->addCommand (L"Scripting examples", 0, menu_cb_ScriptingExamples);

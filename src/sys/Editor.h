@@ -61,7 +61,7 @@ class EditorMenu {
   public:
 	~EditorMenu ();
 
-	GuiObject addCommand (const wchar_t *itemTitle, long flags,
+	EditorCommand * addCommand (const wchar_t *itemTitle, long flags,
 		int (*commandCallback) (Editor *editor, EditorCommand *, UiForm *, const wchar_t *, Interpreter *));
 	GuiObject getMenuWidget ();
 
@@ -98,7 +98,8 @@ class Editor {
 	virtual void ok_pictureMargins (EditorCommand *cmd);
 	virtual void do_pictureMargins (EditorCommand *cmd);
 
-	EditorMenu *addMenu (const wchar_t *menuTitle, long flags);
+	EditorMenu * addMenu (const wchar_t *menuTitle, long flags);
+	EditorMenu * getMenu (const wchar_t *menuTitle);
 
 	void raise ();
 	/* Raises and deiconizes the editor window. */
@@ -157,10 +158,6 @@ class Editor {
 	void *_publishClosure;
 	void (*_publish2Callback) (Editor *editor, void *closure, Any publish1, Any publish2);
 	void *_publish2Closure;
-	GuiObject addCommand (const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
-		int (*commandCallback) (Editor *editor, EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter));
-	GuiObject addCommandScript (const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
-		const wchar_t *script);
 
   protected:
 	void setMenuSensitive (const wchar_t *menu, int sensitive);

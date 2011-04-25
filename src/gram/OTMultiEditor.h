@@ -34,14 +34,15 @@ class OTMultiEditor : public HyperPage {
 	bool isEditable () { return true; }
 	void do_limit ();
 	void createChildren ();
-	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 	void draw ();
 	int goToPage (const wchar_t *title);
 
 	const wchar_t *_form1, *_form2;
 	GuiObject _form1Text, _form2Text;
 	long _selectedConstraint;
+
+  private:
+	void createMenus ();
 };
 
 /* End of file OTMultiEditor.h */

@@ -51,7 +51,6 @@ SoundEditor::SoundEditor (GuiObject parent, const wchar_t *title, Any data)
 	: TimeSoundAnalysisEditor (parent, title, data, data, false) {
 	createMenus ();
 	Melder_assert (data != NULL);
-	createMenus ();
 	//try { // FIXME exception
 		/*
 		 * _longSound.data or _sound.data have to be set before we call FunctionEditor_init,
@@ -318,29 +317,29 @@ void SoundEditor::createMenus () {
 	Melder_assert (_data != NULL);
 	Melder_assert (_sound.data != NULL || _longSound.data != NULL);
 
-	addCommand (L"Edit", L"-- cut copy paste --", 0, NULL);
-	if (_sound.data) _cutButton = addCommand (L"Edit", L"Cut", 'X', menu_cb_Cut);
-	_copyButton = addCommand (L"Edit", L"Copy selection to Sound clipboard", 'C', menu_cb_Copy);
-	if (_sound.data) _pasteButton = addCommand (L"Edit", L"Paste after selection", 'V', menu_cb_Paste);
+	EditorMenu *menu = getMenu (L"Edit");
+	menu->addCommand (L"-- cut copy paste --", 0, NULL);
+	if (_sound.data) _cutButton = menu->addCommand (L"Cut", 'X', menu_cb_Cut) -> _itemWidget;
+	_copyButton = menu->addCommand (L"Copy selection to Sound clipboard", 'C', menu_cb_Copy) -> _itemWidget;
+	if (_sound.data) _pasteButton = menu->addCommand (L"Paste after selection", 'V', menu_cb_Paste) -> _itemWidget;
 	if (_sound.data) {
-		addCommand (L"Edit", L"-- zero --", 0, NULL);
-		_zeroButton = addCommand (L"Edit", L"Set selection to zero", 0, menu_cb_SetSelectionToZero);
-		_reverseButton = addCommand (L"Edit", L"Reverse selection", 'R', menu_cb_ReverseSelection);
+		menu->addCommand (L"-- zero --", 0, NULL);
+		_zeroButton = menu->addCommand (L"Set selection to zero", 0, menu_cb_SetSelectionToZero) -> _itemWidget;
+		_reverseButton = menu->addCommand (L"Reverse selection", 'R', menu_cb_ReverseSelection) -> _itemWidget;
 	}
 
 	if (_sound.data) {
-		addCommand (L"Select", L"-- move to zero --", 0, 0);
-		addCommand (L"Select", L"Move start of selection to nearest zero crossing", ',', menu_cb_MoveBtoZero);
-		addCommand (L"Select", L"Move begin of selection to nearest zero crossing", Editor_HIDDEN, menu_cb_MoveBtoZero);
-		addCommand (L"Select", L"Move cursor to nearest zero crossing", '0', menu_cb_MoveCursorToZero);
-		addCommand (L"Select", L"Move end of selection to nearest zero crossing", '.', menu_cb_MoveEtoZero);
+		menu = getMenu (L"Select");
+		menu->addCommand (L"-- move to zero --", 0, 0);
+		menu->addCommand (L"Move start of selection to nearest zero crossing", ',', menu_cb_MoveBtoZero);
+		menu->addCommand (L"Move begin of selection to nearest zero crossing", Editor_HIDDEN, menu_cb_MoveBtoZero);
+		menu->addCommand (L"Move cursor to nearest zero crossing", '0', menu_cb_MoveCursorToZero);
+		menu->addCommand (L"Move end of selection to nearest zero crossing", '.', menu_cb_MoveEtoZero);
 	}
 
-	createMenus_analysis ();
-
-	// FIXME
-	//_helpMenu->addCommand (L"SoundEditor help", '?', menu_cb_SoundEditorHelp);
-	//_helpMenu->addCommand (L"LongSoundEditor help", 0, menu_cb_LongSoundEditorHelp);
+	menu = getMenu (L"Help");
+	menu->addCommand (L"SoundEditor help", '?', menu_cb_SoundEditorHelp);
+	menu->addCommand (L"LongSoundEditor help", 0, menu_cb_LongSoundEditorHelp);
 }
 
 /********** UPDATE **********/

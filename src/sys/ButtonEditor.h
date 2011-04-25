@@ -41,7 +41,7 @@ class ButtonEditor : public HyperPage {
 	void drawAction (praat_Command cmd, long i);
 	int goToPage (const wchar_t *title);
 	void createChildren ();
-	void createHelpMenuItems (EditorMenu *menu);
+	void createMenus ();
 
 	int _show;
 	GuiObject _button1, _button2, _button3, _button4, _button5;

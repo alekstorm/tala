@@ -58,13 +58,7 @@ class TimeSoundEditor : public FunctionEditor {
 	void updateMenuItems_file (); // FIXME
 
   private:
-	void createMenuItems_view (EditorMenu *menu);
-	void createMenuItems_view_sound (EditorMenu *menu);
-	void createMenuItems_file_draw (EditorMenu *menu);
-	void createMenuItems_file_extract (EditorMenu *menu);
-	void createMenuItems_file_write (EditorMenu *menu);
-	void createMenuItems_file (EditorMenu *menu);
-	void createMenuItems_query_info (EditorMenu *menu);
+	void createMenus ();
 };
 
 /* End of file TimeSoundEditor.h */

@@ -35,7 +35,6 @@ class PointEditor : public TimeSoundEditor {
 	const wchar_t * type () { return L"PointEditor"; }
 
 	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 	void draw ();
 	void play (double tmin, double tmax);
 

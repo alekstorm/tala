@@ -270,13 +270,6 @@ static int menu_cb_ExtractSelectedTextGrid_timeFromZero (EDITOR_ARGS) {
 	return 1;
 }
 
-void TextGridEditor::createMenuItems_file_extract (EditorMenu *menu) {
-	_extractSelectedTextGridPreserveTimesButton =
-		menu->addCommand (L"Extract selected TextGrid (preserve times)", 0, menu_cb_ExtractSelectedTextGrid_preserveTimes);
-	_extractSelectedTextGridTimeFromZeroButton =
-		menu->addCommand (L"Extract selected TextGrid (time from zero)", 0, menu_cb_ExtractSelectedTextGrid_timeFromZero);
-}
-
 static int menu_cb_WriteSelectionToTextFile (EDITOR_ARGS) {
 	TextGridEditor *editor = (TextGridEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selection as TextGrid text file", 0)
@@ -296,11 +289,6 @@ static int menu_cb_WriteToTextFile (EDITOR_ARGS) {
 	EDITOR_DO_WRITE
 		if (! Data_writeToTextFile (editor->_data, file)) return 0;
 	EDITOR_END
-}
-
-void TextGridEditor::createMenuItems_file_write (EditorMenu *menu) {
-	menu->addCommand (L"Save TextGrid as text file...", 'S', menu_cb_WriteToTextFile);
-	_writeSelectedTextGridButton = menu->addCommand (L"Save selected TextGrid to text file...", 0, menu_cb_WriteSelectionToTextFile);
 }
 
 static int menu_cb_DrawVisibleTextGrid (EDITOR_ARGS) {
@@ -355,12 +343,6 @@ static int menu_cb_DrawVisibleSoundAndTextGrid (EDITOR_ARGS) {
 		editor->garnish ();
 		editor->closePraatPicture ();
 	EDITOR_END
-}
-
-void TextGridEditor::createMenuItems_file_draw (EditorMenu *menu) {
-	menu->addCommand (L"Draw visible TextGrid...", 0, menu_cb_DrawVisibleTextGrid);
-	if (_sound.data || _longSound.data)
-		menu->addCommand (L"Draw visible sound and TextGrid...", 0, menu_cb_DrawVisibleSoundAndTextGrid);
 }
 
 /***** EDIT MENU *****/
@@ -1300,42 +1282,56 @@ static int menu_cb_PhoneticSymbols (EDITOR_ARGS) { Melder_help (L"Phonetic symbo
 static int menu_cb_AboutTextStyles (EDITOR_ARGS) { Melder_help (L"Text styles"); return 1; }
 
 void TextGridEditor::createMenus () {
-	EditorMenu *menu;
+	EditorMenu *menu = getMenu (L"File");
+	_extractSelectedTextGridPreserveTimesButton =
+		menu->addCommand (L"Extract selected TextGrid (preserve times)", 0, menu_cb_ExtractSelectedTextGrid_preserveTimes) -> _itemWidget;
+	_extractSelectedTextGridTimeFromZeroButton =
+		menu->addCommand (L"Extract selected TextGrid (time from zero)", 0, menu_cb_ExtractSelectedTextGrid_timeFromZero) -> _itemWidget;
 
+	menu->addCommand (L"Save TextGrid as text file...", 'S', menu_cb_WriteToTextFile);
+	_writeSelectedTextGridButton = menu->addCommand (L"Save selected TextGrid to text file...", 0, menu_cb_WriteSelectionToTextFile) -> _itemWidget;
+
+	menu->addCommand (L"Draw visible TextGrid...", 0, menu_cb_DrawVisibleTextGrid);
+	if (_sound.data || _longSound.data)
+		menu->addCommand (L"Draw visible sound and TextGrid...", 0, menu_cb_DrawVisibleSoundAndTextGrid);
+
+	menu = getMenu (L"Edit");
 	#ifndef macintosh
-		addCommand (L"Edit", L"-- cut copy paste --", 0, NULL);
-		addCommand (L"Edit", L"Cut text", 'X', menu_cb_Cut);
-		addCommand (L"Edit", L"Cut", Editor_HIDDEN, menu_cb_Cut);
-		addCommand (L"Edit", L"Copy text", 'C', menu_cb_Copy);
-		addCommand (L"Edit", L"Copy", Editor_HIDDEN, menu_cb_Copy);
-		addCommand (L"Edit", L"Paste text", 'V', menu_cb_Paste);
-		addCommand (L"Edit", L"Paste", Editor_HIDDEN, menu_cb_Paste);
-		addCommand (L"Edit", L"Erase text", 0, menu_cb_Erase);
-		addCommand (L"Edit", L"Erase", Editor_HIDDEN, menu_cb_Erase);
+		menu->addCommand (L"-- cut copy paste --", 0, NULL);
+		menu->addCommand (L"Cut text", 'X', menu_cb_Cut);
+		menu->addCommand (L"Cut", Editor_HIDDEN, menu_cb_Cut);
+		menu->addCommand (L"Copy text", 'C', menu_cb_Copy);
+		menu->addCommand (L"Copy", Editor_HIDDEN, menu_cb_Copy);
+		menu->addCommand (L"Paste text", 'V', menu_cb_Paste);
+		menu->addCommand (L"Paste", Editor_HIDDEN, menu_cb_Paste);
+		menu->addCommand (L"Erase text", 0, menu_cb_Erase);
+		menu->addCommand (L"Erase", Editor_HIDDEN, menu_cb_Erase);
 	#endif
-	addCommand (L"Edit", L"-- encoding --", 0, NULL);
-	addCommand (L"Edit", L"Convert entire TextGrid to backslash trigraphs", 0, menu_cb_Genericize);
-	addCommand (L"Edit", L"Genericize entire TextGrid", Editor_HIDDEN, menu_cb_Genericize);
-	addCommand (L"Edit", L"Genericize", Editor_HIDDEN, menu_cb_Genericize);
-	addCommand (L"Edit", L"Convert entire TextGrid to Unicode", 0, menu_cb_Nativize);
-	addCommand (L"Edit", L"Nativize entire TextGrid", Editor_HIDDEN, menu_cb_Nativize);
-	addCommand (L"Edit", L"Nativize", Editor_HIDDEN, menu_cb_Nativize);
-	addCommand (L"Edit", L"-- search --", 0, NULL);
-	addCommand (L"Edit", L"Find...", 'F', menu_cb_Find);
-	addCommand (L"Edit", L"Find again", 'G', menu_cb_FindAgain);
+	menu->addCommand (L"-- encoding --", 0, NULL);
+	menu->addCommand (L"Convert entire TextGrid to backslash trigraphs", 0, menu_cb_Genericize);
+	menu->addCommand (L"Genericize entire TextGrid", Editor_HIDDEN, menu_cb_Genericize);
+	menu->addCommand (L"Genericize", Editor_HIDDEN, menu_cb_Genericize);
+	menu->addCommand (L"Convert entire TextGrid to Unicode", 0, menu_cb_Nativize);
+	menu->addCommand (L"Nativize entire TextGrid", Editor_HIDDEN, menu_cb_Nativize);
+	menu->addCommand (L"Nativize", Editor_HIDDEN, menu_cb_Nativize);
+	menu->addCommand (L"-- search --", 0, NULL);
+	menu->addCommand (L"Find...", 'F', menu_cb_Find);
+	menu->addCommand (L"Find again", 'G', menu_cb_FindAgain);
 
 	if (_sound.data) {
-		addCommand (L"Select", L"-- move to zero --", 0, 0);
-		addCommand (L"Select", L"Move start of selection to nearest zero crossing", ',', menu_cb_MoveBtoZero);
-		addCommand (L"Select", L"Move begin of selection to nearest zero crossing", Editor_HIDDEN, menu_cb_MoveBtoZero);
-		addCommand (L"Select", L"Move cursor to nearest zero crossing", '0', menu_cb_MoveCursorToZero);
-		addCommand (L"Select", L"Move end of selection to nearest zero crossing", '.', menu_cb_MoveEtoZero);
+		menu = getMenu (L"Select");
+		menu->addCommand (L"-- move to zero --", 0, 0);
+		menu->addCommand (L"Move start of selection to nearest zero crossing", ',', menu_cb_MoveBtoZero);
+		menu->addCommand (L"Move begin of selection to nearest zero crossing", Editor_HIDDEN, menu_cb_MoveBtoZero);
+		menu->addCommand (L"Move cursor to nearest zero crossing", '0', menu_cb_MoveCursorToZero);
+		menu->addCommand (L"Move end of selection to nearest zero crossing", '.', menu_cb_MoveEtoZero);
 	}
 
-	addCommand (L"Query", L"-- query interval --", 0, NULL);
-	addCommand (L"Query", L"Get starting point of interval", 0, menu_cb_GetStartingPointOfInterval);
-	addCommand (L"Query", L"Get end point of interval", 0, menu_cb_GetEndPointOfInterval);
-	addCommand (L"Query", L"Get label of interval", 0, menu_cb_GetLabelOfInterval);
+	menu = getMenu (L"Query");
+	menu->addCommand (L"-- query interval --", 0, NULL);
+	menu->addCommand (L"Get starting point of interval", 0, menu_cb_GetStartingPointOfInterval);
+	menu->addCommand (L"Get end point of interval", 0, menu_cb_GetEndPointOfInterval);
+	menu->addCommand (L"Get label of interval", 0, menu_cb_GetLabelOfInterval);
 
 	menu = addMenu (L"Interval", 0);
 	menu->addCommand (L"Add interval on tier 1", GuiMenu_COMMAND | '1', menu_cb_InsertIntervalOnTier1);
@@ -1386,12 +1382,11 @@ void TextGridEditor::createMenus () {
 		menu->addCommand (L"Add selected word to user dictionary", 0, menu_cb_AddToUserDictionary);
 	}
 
-	if (_sound.data || _longSound.data) {
+	/*if (_sound.data || _longSound.data) { // FIXME
 		createMenus_analysis ();   // Insert some of the ancestor's menus *after* the TextGrid menus.
-	}
-}
+	}*/
 
-void TextGridEditor::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Help");
 	menu->addCommand (L"TextGridEditor help", '?', menu_cb_TextGridEditorHelp);
 	menu->addCommand (L"About special symbols", 0, menu_cb_AboutSpecialSymbols);
 	menu->addCommand (L"Phonetic symbols", 0, menu_cb_PhoneticSymbols);

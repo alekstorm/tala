@@ -43,6 +43,7 @@
 
 ButtonEditor::ButtonEditor (GuiObject parent)
 	: HyperPage (parent, L"Buttons", NULL) {
+	createMenus ();
 	createChildren ();
 	which (1);
 }
@@ -293,7 +294,8 @@ void ButtonEditor::createChildren () {
 
 static int menu_cb_ButtonEditorHelp (EDITOR_ARGS) { Melder_help (L"ButtonEditor"); return 1; }
 
-void ButtonEditor::createHelpMenuItems (EditorMenu *menu) {
+void ButtonEditor::createMenus () {
+	EditorMenu *menu = getMenu (L"Help");
 	menu->addCommand (L"ButtonEditor help", '?', menu_cb_ButtonEditorHelp);
 }
 

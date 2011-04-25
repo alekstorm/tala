@@ -47,7 +47,7 @@ class DurationTierEditor : public RealTierEditor {
 	const wchar_t * yminKey () { return L"Minimum duration"; }
 	const wchar_t * ymaxKey () { return L"Maximum duration"; }
 
-	void createHelpMenuItems (EditorMenu *menu);
+	void createMenus ();
 	void play (double tmin, double tmax);
 };
 

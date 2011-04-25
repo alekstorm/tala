@@ -330,6 +330,7 @@ SoundRecorder::SoundRecorder (GuiObject parent, int numberOfChannels, void *appl
 	  _buffer(NULL),
 	  _inputUsesPortAudio(MelderAudio_getInputUsesPortAudio ()),
 	  _portaudioStream(NULL) {
+	createMenus ();
 	createChildren ();
 	//try { // FIXME exception
 		if (!_inputUsesPortAudio) {
@@ -1615,14 +1616,14 @@ static int menu_cb_writeNist (EDITOR_ARGS) {
 static int menu_cb_SoundRecorder_help (EDITOR_ARGS) { Melder_help (L"SoundRecorder"); return 1; }
 
 void SoundRecorder::createMenus () {
-	addCommand (L"File", L"Save as WAV file...", 0, menu_cb_writeWav);
-	addCommand (L"File", L"Save as AIFC file...", 0, menu_cb_writeAifc);
-	addCommand (L"File", L"Save as NeXT/Sun file...", 0, menu_cb_writeNextSun);
-	addCommand (L"File", L"Save as NIST file...", 0, menu_cb_writeNist);
-	addCommand (L"File", L"-- write --", 0, 0);
-}
+	EditorMenu *menu = getMenu (L"File");
+	menu->addCommand (L"Save as WAV file...", 0, menu_cb_writeWav);
+	menu->addCommand (L"Save as AIFC file...", 0, menu_cb_writeAifc);
+	menu->addCommand (L"Save as NeXT/Sun file...", 0, menu_cb_writeNextSun);
+	menu->addCommand (L"Save as NIST file...", 0, menu_cb_writeNist);
+	menu->addCommand (L"-- write --", 0, 0);
 
-void SoundRecorder::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Help");
 	menu->addCommand (L"SoundRecorder help", '?', menu_cb_SoundRecorder_help);
 }
 

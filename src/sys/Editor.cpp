@@ -90,7 +90,7 @@ EditorMenu::~EditorMenu () {
 	forget (_commands);
 }
 
-GuiObject EditorMenu::addCommand (const wchar_t *itemTitle, long flags,
+EditorCommand * EditorMenu::addCommand (const wchar_t *itemTitle, long flags,
 	int (*commandCallback) (Editor *editor, EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter))
 {
 	EditorCommand *cmd = new EditorCommand();
@@ -103,7 +103,7 @@ GuiObject EditorMenu::addCommand (const wchar_t *itemTitle, long flags,
 		GuiMenu_addItem (_menuWidget, itemTitle, flags, commonCallback, cmd);
 	Collection_addItem (_commands, cmd);
 	cmd->_commandCallback = commandCallback;
-	return cmd->_itemWidget;
+	return cmd;
 }
 
 /********** Editor **********/
@@ -226,22 +226,21 @@ Editor::Editor (GuiObject parent, int x, int y, int width, int height, const wch
 	Melder_clearError ();   /* FIXME: to protect against CategoriesEditor */
 	_menus = Ordered_create (); // FIXME create menubar'd subclass
 	_menuBar = Gui_addMenuBar (_dialog);
+	EditorMenu *helpMenu = addMenu (L"Help", 0);
 	createMenus ();
-	GuiObject_show (_menuBar);
-	if (hasMenuBar()) { // FIXME won't work
-		/*EditorMenu *helpMenu = addMenu (L"Help", 0); FIXME
-		createHelpMenuItems (helpMenu);
-		if (isScriptable()) {
-			addCommand (L"File", L"New editor script", 0, menu_cb_newScript);
-			addCommand (L"File", L"Open editor script...", 0, menu_cb_openScript);
-			addCommand (L"File", L"-- after script --", 0, 0);
-		}*/
+	GuiObject_show (_menuBar); // FIXME
+	/*if (isScriptable()) {
+		addCommand (L"File", L"New editor script", 0, menu_cb_newScript);
+		addCommand (L"File", L"Open editor script...", 0, menu_cb_openScript);
+		addCommand (L"File", L"-- after script --", 0, 0);
+	}*/
+	//if (hasMenuBar()) {
 		/*
 		 * Add the scripted commands.
 		 */
 		/*praat_addCommandsToEditor (this); FIXME
 		addCommand (L"File", L"Close", 'W', menu_cb_close);*/
-	}
+	//}
 
 	GuiObject_show (_dialog);
 }
@@ -260,52 +259,14 @@ EditorMenu *Editor::addMenu (const wchar_t *menuTitle, long flags) {
 	return menu;
 }
 
-GuiObject Editor::addCommand (const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
-	int (*commandCallback) (Editor *editor, EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter))
-{
+EditorMenu * Editor::getMenu (const wchar_t *menuTitle) {
 	int numberOfMenus = _menus -> size, imenu;
 	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
 		EditorMenu *menu = (EditorMenu*)_menus -> item [imenu];
 		if (wcsequ (menuTitle, menu -> _menuTitle))
-			return menu->addCommand (itemTitle, flags, commandCallback);
+			return menu;
 	}
-	Melder_error3 (L"(Editor::addCommand:) No menu \"", menuTitle, L"\". Cannot insert command.");
-	return NULL;
-}
-
-static int scriptCallback (Editor *editor, EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
-	(void) sendingForm;
-	(void) sendingString;
-	(void) interpreter;
-	return DO_RunTheScriptFromAnyAddedEditorCommand (editor, cmd -> _script);
-}
-
-GuiObject Editor::addCommandScript (const wchar_t *menuTitle, const wchar_t *itemTitle, long flags,
-	const wchar_t *script)
-{
-	int numberOfMenus = _menus -> size, imenu;
-	for (imenu = 1; imenu <= numberOfMenus; imenu ++) {
-		EditorMenu *menu = (EditorMenu *)_menus -> item [imenu];
-		if (wcsequ (menuTitle, menu -> _menuTitle)) {
-			EditorCommand *cmd = new EditorCommand();
-			cmd -> _editor = this;
-			cmd -> _menu = menu;
-			cmd -> _itemTitle = Melder_wcsdup_f (itemTitle);
-			cmd -> _itemWidget = script == NULL ? GuiMenu_addSeparator (menu -> _menuWidget) :
-				GuiMenu_addItem (menu -> _menuWidget, itemTitle, flags, commonCallback, cmd);
-			Collection_addItem (menu -> _commands, cmd);
-			cmd -> _commandCallback = scriptCallback;
-			if (wcslen (script) == 0) {
-				cmd -> _script = Melder_wcsdup_f (L"");
-			} else {
-				structMelderFile file = { 0 };
-				Melder_relativePathToFile (script, & file);
-				cmd -> _script = Melder_wcsdup_f (Melder_fileToPath (& file));
-			}
-			return cmd -> _itemWidget;
-		}
-	}
-	Melder_error3 (L"(Editor::addCommand:) No menu \"", menuTitle, L"\". Cannot insert command.");
+	Melder_error3 (L"(Editor::getMenu:) No menu \"", menuTitle, L"\".");
 	return NULL;
 }
 
@@ -427,13 +388,9 @@ static int menu_cb_undo (EDITOR_ARGS) {
 	return 1;
 }
 
-void Editor::createMenuItems_file (EditorMenu *menu) {
-	(void) menu;
-}
-
 void Editor::createMenuItems_edit (EditorMenu *menu) {
 	if (_data)
-		_undoButton = menu->addCommand (L"Cannot undo", GuiMenu_INSENSITIVE + 'Z', menu_cb_undo);
+		_undoButton = menu->addCommand (L"Cannot undo", GuiMenu_INSENSITIVE + 'Z', menu_cb_undo) -> _itemWidget;
 }
 
 static int menu_cb_settingsReport (EDITOR_ARGS) {
@@ -444,10 +401,6 @@ static int menu_cb_settingsReport (EDITOR_ARGS) {
 static int menu_cb_info (EDITOR_ARGS) {
 	if (editor_me->_data) Thing_info (editor_me->_data);
 	return 1;
-}
-
-void Editor::createMenuItems_query (EditorMenu *menu) {
-	createMenuItems_query_info (menu);
 }
 
 void Editor::createMenuItems_query_info (EditorMenu *menu) {
@@ -463,13 +416,12 @@ void Editor::createMenuItems_query_info (EditorMenu *menu) {
 
 void Editor::createMenus () {
 	EditorMenu *menu = addMenu (L"File", 0);
-	createMenuItems_file (menu);
 	if (isEditable()) {
 		menu = addMenu (L"Edit", 0);
 		createMenuItems_edit (menu);
 	}
 	menu = addMenu (L"Query", 0); // TODO check that this should always be executed
-	createMenuItems_query (menu);
+	createMenuItems_query_info (menu);
 }
 
 void Editor::form_pictureWindow (EditorCommand *cmd) {

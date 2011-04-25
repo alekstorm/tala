@@ -32,12 +32,15 @@
 #include "sys/EditorM.h"
 
 PitchTierEditor::PitchTierEditor (GuiObject parent, const wchar_t *title, PitchTier pitch, Sound sound, int ownSound)
-	: RealTierEditor (parent, title, (RealTier) pitch, sound, ownSound) {}
+	: RealTierEditor (parent, title, (RealTier) pitch, sound, ownSound) {
+	createMenus ();
+}
 
 static int menu_cb_PitchTierEditorHelp (EDITOR_ARGS) { Melder_help (L"PitchTierEditor"); return 1; }
 static int menu_cb_PitchTierHelp (EDITOR_ARGS) { Melder_help (L"PitchTier"); return 1; }
 
-void PitchTierEditor::createHelpMenuItems (EditorMenu *menu) {
+void PitchTierEditor::createMenus () {
+	EditorMenu *menu = getMenu (L"Help");
 	menu->addCommand (L"PitchTierEditor help", 0, menu_cb_PitchTierEditorHelp);
 	menu->addCommand (L"PitchTier help", 0, menu_cb_PitchTierHelp);
 }

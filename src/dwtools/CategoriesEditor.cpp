@@ -449,6 +449,7 @@ CategoriesEditor::CategoriesEditor (GuiObject parent, const wchar_t *title, Any 
 	: Editor (parent, 20, 40, 600, 600, title, data),
 	_history((structCommandHistory *)CommandHistory_create (100)),
 	_position(0) {
+	createMenus ();
 	createChildren ();
 	update (0, 0, NULL, 0);
 	updateWidgets ();
@@ -836,8 +837,8 @@ static void gui_button_cb_redo (I, GuiButtonEvent event) {
 	editor->updateWidgets ();
 }
 
-void CategoriesEditor::createHelpMenuItems (EditorMenu *menu)
-{
+void CategoriesEditor::createMenus () {
+	EditorMenu *menu = getMenu(L"Help");
 	menu->addCommand (L"CategoriesEditor help", '?', menu_cb_help);
 }
 

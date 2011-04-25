@@ -31,11 +31,13 @@
 
 AmplitudeTierEditor::AmplitudeTierEditor (GuiObject parent, const wchar_t *title, AmplitudeTier amplitude, Sound sound, int ownSound)
 	: RealTierEditor (parent, title, (RealTier) amplitude, sound, ownSound) {
+	createMenus ();
 }
 
 static int menu_cb_AmplitudeTierHelp (EDITOR_ARGS) { Melder_help (L"AmplitudeTier"); return 1; }
 
-void AmplitudeTierEditor::createHelpMenuItems (EditorMenu *menu) {
+void AmplitudeTierEditor::createMenus () {
+	EditorMenu *menu = getMenu(L"Help");
 	menu->addCommand (L"AmplitudeTier help", 0, menu_cb_AmplitudeTierHelp);
 }
 

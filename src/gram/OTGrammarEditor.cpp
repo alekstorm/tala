@@ -35,6 +35,7 @@
 OTGrammarEditor::OTGrammarEditor (GuiObject parent, const wchar_t *title, OTGrammar ot)
 	: HyperPage (parent, title, ot),
 	  _selected(0) {
+	createMenus ();
 	_data = ot;
 }
 
@@ -185,20 +186,20 @@ static int menu_cb_OTGrammar_help (EDITOR_ARGS) { OTGrammarEditor *editor = (OTG
 static int menu_cb_OTLearningTutorial (EDITOR_ARGS) { OTGrammarEditor *editor = (OTGrammarEditor *)editor_me; Melder_help (L"OT learning"); return 1; }
 
 void OTGrammarEditor::createMenus () {
-	addCommand (L"Edit", L"-- edit ot --", 0, NULL);
-	addCommand (L"Edit", L"Evaluate...", 0, menu_cb_evaluate);
-	addCommand (L"Edit", L"Evaluate (noise 2.0)", '2', menu_cb_evaluate_noise_2_0);
-	addCommand (L"Edit", L"Evaluate (zero noise)", '0', menu_cb_evaluate_zeroNoise);
-	addCommand (L"Edit", L"Evaluate (tiny noise)", '9', menu_cb_evaluate_tinyNoise);
-	addCommand (L"Edit", L"Edit constraint...", 'E', menu_cb_editConstraint);
-	addCommand (L"Edit", L"Reset all rankings...", 'R', menu_cb_resetAllRankings);
-	addCommand (L"Edit", L"Learn one...", 0, menu_cb_learnOne);
-	addCommand (L"Edit", L"Learn one from partial output...", '1', menu_cb_learnOneFromPartialOutput);
-	addCommand (L"Edit", L"-- remove ot --", 0, NULL);
-	addCommand (L"Edit", L"Remove constraint", 0, menu_cb_removeConstraint);
-}
+	EditorMenu *menu = getMenu (L"Edit");
+	menu->addCommand (L"-- edit ot --", 0, NULL);
+	menu->addCommand (L"Evaluate...", 0, menu_cb_evaluate);
+	menu->addCommand (L"Evaluate (noise 2.0)", '2', menu_cb_evaluate_noise_2_0);
+	menu->addCommand (L"Evaluate (zero noise)", '0', menu_cb_evaluate_zeroNoise);
+	menu->addCommand (L"Evaluate (tiny noise)", '9', menu_cb_evaluate_tinyNoise);
+	menu->addCommand (L"Edit constraint...", 'E', menu_cb_editConstraint);
+	menu->addCommand (L"Reset all rankings...", 'R', menu_cb_resetAllRankings);
+	menu->addCommand (L"Learn one...", 0, menu_cb_learnOne);
+	menu->addCommand (L"Learn one from partial output...", '1', menu_cb_learnOneFromPartialOutput);
+	menu->addCommand (L"-- remove ot --", 0, NULL);
+	menu->addCommand (L"Remove constraint", 0, menu_cb_removeConstraint);
 
-void OTGrammarEditor::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Help");
 	menu->addCommand (L"OTGrammarEditor help", '?', menu_cb_OTGrammarEditor_help);
 	menu->addCommand (L"OTGrammar help", 0, menu_cb_OTGrammar_help);
 	menu->addCommand (L"OT learning tutorial", 0, menu_cb_OTLearningTutorial);

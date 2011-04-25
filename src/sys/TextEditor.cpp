@@ -696,46 +696,49 @@ static int menu_cb_fontSize (EDITOR_ARGS) {
 }
 
 void TextEditor::createMenus () {
+	EditorMenu *menu = getMenu (L"File");
 	if (isFileBased ()) {
-		addCommand (L"File", L"New", 'N', menu_cb_new);
-		addCommand (L"File", L"Open...", 'O', menu_cb_open);
-		addCommand (L"File", L"Reopen from disk", 0, menu_cb_reopen);
+		menu->addCommand (L"New", 'N', menu_cb_new);
+		menu->addCommand (L"Open...", 'O', menu_cb_open);
+		menu->addCommand (L"Reopen from disk", 0, menu_cb_reopen);
 	} else {
-		addCommand (L"File", L"Clear", 'N', menu_cb_clear);
+		menu->addCommand (L"Clear", 'N', menu_cb_clear);
 	}
-	addCommand (L"File", L"-- save --", 0, NULL);
+	menu->addCommand (L"-- save --", 0, NULL);
 	if (isFileBased ()) {
-		addCommand (L"File", L"Save", 'S', menu_cb_save);
-		addCommand (L"File", L"Save as...", 0, menu_cb_saveAs);
+		menu->addCommand (L"Save", 'S', menu_cb_save);
+		menu->addCommand (L"Save as...", 0, menu_cb_saveAs);
 	} else {
-		addCommand (L"File", L"Save as...", 'S', menu_cb_saveAs);
+		menu->addCommand (L"Save as...", 'S', menu_cb_saveAs);
 	}
-	addCommand (L"File", L"-- close --", 0, NULL);
-	addCommand (L"Edit", L"Undo", 'Z', menu_cb_undo);
-	addCommand (L"Edit", L"Redo", 'Y', menu_cb_redo);
-	addCommand (L"Edit", L"-- cut copy paste --", 0, NULL);
-	addCommand (L"Edit", L"Cut", 'X', menu_cb_cut);
-	addCommand (L"Edit", L"Copy", 'C', menu_cb_copy);
-	addCommand (L"Edit", L"Paste", 'V', menu_cb_paste);
-	addCommand (L"Edit", L"Erase", 0, menu_cb_erase);
-	addMenu (L"Search", 0);
-	addCommand (L"Search", L"Find...", 'F', menu_cb_find);
-	addCommand (L"Search", L"Find again", 'G', menu_cb_findAgain);
-	addCommand (L"Search", L"Replace...", GuiMenu_SHIFT + 'F', menu_cb_replace);
-	addCommand (L"Search", L"Replace again", GuiMenu_SHIFT + 'G', menu_cb_replaceAgain);
-	addCommand (L"Search", L"-- line --", 0, NULL);
-	addCommand (L"Search", L"Where am I?", 0, menu_cb_whereAmI);
-	addCommand (L"Search", L"Go to line...", 'L', menu_cb_goToLine);
-	addMenu (L"Convert", 0);
-	addCommand (L"Convert", L"Convert to C string", 0, menu_cb_convertToCString);
+	menu->addCommand (L"-- close --", 0, NULL);
+
+	menu = getMenu (L"Edit");
+	menu->addCommand (L"Undo", 'Z', menu_cb_undo);
+	menu->addCommand (L"Redo", 'Y', menu_cb_redo);
+	menu->addCommand (L"-- cut copy paste --", 0, NULL);
+	menu->addCommand (L"Cut", 'X', menu_cb_cut);
+	menu->addCommand (L"Copy", 'C', menu_cb_copy);
+	menu->addCommand (L"Paste", 'V', menu_cb_paste);
+	menu->addCommand (L"Erase", 0, menu_cb_erase);
+	menu = addMenu (L"Search", 0);
+	menu->addCommand (L"Find...", 'F', menu_cb_find);
+	menu->addCommand (L"Find again", 'G', menu_cb_findAgain);
+	menu->addCommand (L"Replace...", GuiMenu_SHIFT + 'F', menu_cb_replace);
+	menu->addCommand (L"Replace again", GuiMenu_SHIFT + 'G', menu_cb_replaceAgain);
+	menu->addCommand (L"-- line --", 0, NULL);
+	menu->addCommand (L"Where am I?", 0, menu_cb_whereAmI);
+	menu->addCommand (L"Go to line...", 'L', menu_cb_goToLine);
+	menu = addMenu (L"Convert", 0);
+	menu->addCommand (L"Convert to C string", 0, menu_cb_convertToCString);
 	#ifdef macintosh
-		addMenu (L"Font", 0);
-		addCommand (L"Font", L"Font size...", 0, menu_cb_fontSize);
-		_fontSizeButton_10 = addCommand (L"Font", L"10", GuiMenu_CHECKBUTTON, menu_cb_10);
-		_fontSizeButton_12 = addCommand (L"Font", L"12", GuiMenu_CHECKBUTTON, menu_cb_12);
-		_fontSizeButton_14 = addCommand (L"Font", L"14", GuiMenu_CHECKBUTTON, menu_cb_14);
-		_fontSizeButton_18 = addCommand (L"Font", L"18", GuiMenu_CHECKBUTTON, menu_cb_18);
-		_fontSizeButton_24 = addCommand (L"Font", L"24", GuiMenu_CHECKBUTTON, menu_cb_24);
+		menu = addMenu (L"Font", 0);
+		menu->addCommand (L"Font size...", 0, menu_cb_fontSize);
+		_fontSizeButton_10 = menu->addCommand (L"10", GuiMenu_CHECKBUTTON, menu_cb_10);
+		_fontSizeButton_12 = menu->addCommand (L"12", GuiMenu_CHECKBUTTON, menu_cb_12);
+		_fontSizeButton_14 = menu->addCommand (L"14", GuiMenu_CHECKBUTTON, menu_cb_14);
+		_fontSizeButton_18 = menu->addCommand (L"18", GuiMenu_CHECKBUTTON, menu_cb_18);
+		_fontSizeButton_24 = menu->addCommand (L"24", GuiMenu_CHECKBUTTON, menu_cb_24);
 	#endif
 }
 
@@ -756,8 +759,6 @@ void TextEditor::createChildren () {
 }
 
 void TextEditor::clear () {}
-
-void TextEditor::createMenuItems_query (EditorMenu *menu) {}
 
 void TextEditor::showOpen () {
 	cb_showOpen (getMenuCommand (L"File", L"Open..."), NULL, NULL, NULL);

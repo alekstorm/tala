@@ -49,7 +49,6 @@ class TextEditor : public Editor {
 	bool getSelectedLines (long *firstLine, long *lastLine);
 	void do_find ();
 	void do_replace ();
-	void createMenuItems_query (EditorMenu *menu);
 
 	structMelderFile _file;
 	GuiObject _textWidget;

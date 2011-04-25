@@ -53,7 +53,6 @@ class RealTierEditor : public TimeSoundEditor {
 /*	Computes the ymin and ymax values on the basis of the data.
 	Call after every change in the data. */
 
-	void createMenuItems_view (EditorMenu *menu);
 	void createMenus ();
 	void dataChanged ();
 	void draw ();

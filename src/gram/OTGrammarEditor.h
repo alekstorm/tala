@@ -32,12 +32,13 @@ class OTGrammarEditor : public HyperPage {
 
 	const wchar_t * type () { return L"OTGrammarEditor"; }
 	bool isEditable () { return true; }
-	void createMenus ();
-	void createHelpMenuItems (EditorMenu *menu);
 	void draw ();
 	int goToPage (const wchar_t *title);
 
 	long _selected;
+
+  private:
+	void createMenus ();
 };
 
 /* End of file OTGrammarEditor.h */

@@ -225,6 +225,7 @@ TimeSoundAnalysisEditor::TimeSoundAnalysisEditor (GuiObject parent, const wchar_
 	  _intensity(preferences.intensity),
 	  _formant(preferences.formant),
 	  _pulses(preferences.pulses) {
+	createMenus ();
 	if (preferences.log[0].toLogFile == FALSE && preferences.log[0].toInfoWindow == FALSE)
 		preferences.log[0].toLogFile = TRUE, preferences.log[0].toInfoWindow = TRUE;
 	if (preferences.log[1].toLogFile == FALSE && preferences.log[1].toInfoWindow == FALSE)
@@ -1646,40 +1647,28 @@ DIRECT (TimeSoundAnalysisEditor, cb_getShimmer_apq11) if (! cb_getShimmer_xx (me
 DIRECT (TimeSoundAnalysisEditor, cb_getShimmer_dda) if (! cb_getShimmer_xx (me, PointProcess_Sound_getShimmer_dda)) return 0; END
 */
 
-void TimeSoundAnalysisEditor::createMenuItems_view_sound (EditorMenu *menu) {
-	createMenuItems_view_sound_analysis (menu);
-}
-
-void TimeSoundAnalysisEditor::createMenuItems_view_sound_analysis (EditorMenu *menu) {
+void TimeSoundAnalysisEditor::createMenus () {
+	EditorMenu *menu = getMenu (L"View");
 	menu->addCommand (L"Analysis window:", GuiMenu_INSENSITIVE, menu_cb_showAnalyses);
 	menu->addCommand (L"Show analyses...", 0, menu_cb_showAnalyses);
 	menu->addCommand (L"Time step settings...", 0, menu_cb_timeStepSettings);
 	menu->addCommand (L"-- sound analysis --", 0, 0);
-}
 
-void TimeSoundAnalysisEditor::createMenuItems_query (EditorMenu *menu) {
 	if (_sound.data || _longSound.data) {
-		createMenuItems_query_log (menu);
+		menu = getMenu (L"Query");
+		menu->addCommand (L"-- query log --", 0, NULL);
+		menu->addCommand (L"Log settings...", 0, menu_cb_logSettings);
+		menu->addCommand (L"Delete log file 1", 0, menu_cb_deleteLogFile1);
+		menu->addCommand (L"Delete log file 2", 0, menu_cb_deleteLogFile2);
+		menu->addCommand (L"Log 1", GuiMenu_F12, menu_cb_log1);
+		menu->addCommand (L"Log 2", GuiMenu_F12 + GuiMenu_SHIFT, menu_cb_log2);
+		menu->addCommand (L"Log script 3 (...)", GuiMenu_F12 + GuiMenu_OPTION, menu_cb_logScript3);
+		menu->addCommand (L"Log script 4 (...)", GuiMenu_F12 + GuiMenu_COMMAND, menu_cb_logScript4);
 	}
-}
-
-void TimeSoundAnalysisEditor::createMenuItems_query_log (EditorMenu *menu) {
-	menu->addCommand (L"-- query log --", 0, NULL);
-	menu->addCommand (L"Log settings...", 0, menu_cb_logSettings);
-	menu->addCommand (L"Delete log file 1", 0, menu_cb_deleteLogFile1);
-	menu->addCommand (L"Delete log file 2", 0, menu_cb_deleteLogFile2);
-	menu->addCommand (L"Log 1", GuiMenu_F12, menu_cb_log1);
-	menu->addCommand (L"Log 2", GuiMenu_F12 + GuiMenu_SHIFT, menu_cb_log2);
-	menu->addCommand (L"Log script 3 (...)", GuiMenu_F12 + GuiMenu_OPTION, menu_cb_logScript3);
-	menu->addCommand (L"Log script 4 (...)", GuiMenu_F12 + GuiMenu_COMMAND, menu_cb_logScript4);
-}
-
-void TimeSoundAnalysisEditor::createMenus_analysis () {
-	EditorMenu *menu;
 
 	menu = addMenu (L"Spectrum", 0);
 	_spectrogramToggle = menu->addCommand (L"Show spectrogram",
-		GuiMenu_CHECKBUTTON | (preferences.spectrogram.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showSpectrogram);
+		GuiMenu_CHECKBUTTON | (preferences.spectrogram.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showSpectrogram) -> _itemWidget;
 	menu->addCommand (L"Spectrogram settings...", 0, menu_cb_spectrogramSettings);
 	menu->addCommand (L"Advanced spectrogram settings...", 0, menu_cb_advancedSpectrogramSettings);
 	menu->addCommand (L"-- spectrum query --", 0, NULL);
@@ -1689,7 +1678,9 @@ void TimeSoundAnalysisEditor::createMenus_analysis () {
 	menu->addCommand (L"-- spectrum select --", 0, NULL);
 	menu->addCommand (L"Select:", GuiMenu_INSENSITIVE, menu_cb_moveFrequencyCursorTo/* dummy */);
 	menu->addCommand (L"Move frequency cursor to...", 0, menu_cb_moveFrequencyCursorTo);
-	createMenuItems_spectrum_picture (menu);
+	menu->addCommand (L"-- spectrum draw --", 0, NULL);
+	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_paintVisibleSpectrogram /* dummy */);
+	menu->addCommand (L"Paint visible spectrogram...", 0, menu_cb_paintVisibleSpectrogram);
 	menu->addCommand (L"-- spectrum extract --", 0, NULL);
 	menu->addCommand (L"Extract to objects window:", GuiMenu_INSENSITIVE, menu_cb_extractVisibleSpectrogram /* dummy */);
 	menu->addCommand (L"Extract visible spectrogram", 0, menu_cb_extractVisibleSpectrogram);
@@ -1697,7 +1688,7 @@ void TimeSoundAnalysisEditor::createMenus_analysis () {
 
 	menu = addMenu (L"Pitch", 0);
 	_pitchToggle = menu->addCommand (L"Show pitch",
-		GuiMenu_CHECKBUTTON | (preferences.pitch.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showPitch);
+		GuiMenu_CHECKBUTTON | (preferences.pitch.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showPitch) -> _itemWidget;
 	menu->addCommand (L"Pitch settings...", 0, menu_cb_pitchSettings);
 	menu->addCommand (L"Advanced pitch settings...", 0, menu_cb_advancedPitchSettings);
 	menu->addCommand (L"-- pitch query --", 0, NULL);
@@ -1710,14 +1701,16 @@ void TimeSoundAnalysisEditor::createMenus_analysis () {
 	menu->addCommand (L"Select:", GuiMenu_INSENSITIVE, menu_cb_moveCursorToMinimumPitch /* dummy */);
 	menu->addCommand (L"Move cursor to minimum pitch", GuiMenu_COMMAND + GuiMenu_SHIFT + 'L', menu_cb_moveCursorToMinimumPitch);
 	menu->addCommand (L"Move cursor to maximum pitch", GuiMenu_COMMAND + GuiMenu_SHIFT + 'H', menu_cb_moveCursorToMaximumPitch);
-	createMenuItems_pitch_picture (menu);
+	menu->addCommand (L"-- pitch draw --", 0, NULL);
+	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisiblePitchContour /* dummy */);
+	menu->addCommand (L"Draw visible pitch contour...", 0, menu_cb_drawVisiblePitchContour);
 	menu->addCommand (L"-- pitch extract --", 0, NULL);
 	menu->addCommand (L"Extract to objects window:", GuiMenu_INSENSITIVE, menu_cb_extractVisiblePitchContour /* dummy */);
 	menu->addCommand (L"Extract visible pitch contour", 0, menu_cb_extractVisiblePitchContour);
 
 	menu = addMenu (L"Intensity", 0);
 	_intensityToggle = menu->addCommand (L"Show intensity",
-		GuiMenu_CHECKBUTTON | (preferences.intensity.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showIntensity);
+		GuiMenu_CHECKBUTTON | (preferences.intensity.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showIntensity) -> _itemWidget;
 	menu->addCommand (L"Intensity settings...", 0, menu_cb_intensitySettings);
 	menu->addCommand (L"-- intensity query --", 0, NULL);
 	menu->addCommand (L"Query:", GuiMenu_INSENSITIVE, menu_cb_getFrequency /* dummy */);
@@ -1725,14 +1718,16 @@ void TimeSoundAnalysisEditor::createMenus_analysis () {
 	menu->addCommand (L"Get intensity", GuiMenu_F8, menu_cb_getIntensity);
 	menu->addCommand (L"Get minimum intensity", GuiMenu_F8 + GuiMenu_COMMAND, menu_cb_getMinimumIntensity);
 	menu->addCommand (L"Get maximum intensity", GuiMenu_F8 + GuiMenu_SHIFT, menu_cb_getMaximumIntensity);
-	createMenuItems_intensity_picture (menu);
+	menu->addCommand (L"-- intensity draw --", 0, NULL);
+	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisibleIntensityContour /* dummy */);
+	menu->addCommand (L"Draw visible intensity contour...", 0, menu_cb_drawVisibleIntensityContour);
 	menu->addCommand (L"-- intensity extract --", 0, NULL);
 	menu->addCommand (L"Extract to objects window:", GuiMenu_INSENSITIVE, menu_cb_extractVisibleIntensityContour /* dummy */);
 	menu->addCommand (L"Extract visible intensity contour", 0, menu_cb_extractVisibleIntensityContour);
 
 	menu = addMenu (L"Formant", 0);
 	_formantToggle = menu->addCommand (L"Show formants",
-		GuiMenu_CHECKBUTTON | (preferences.formant.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showFormants);
+		GuiMenu_CHECKBUTTON | (preferences.formant.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showFormants) -> _itemWidget;
 	menu->addCommand (L"Formant settings...", 0, menu_cb_formantSettings);
 	menu->addCommand (L"Advanced formant settings...", 0, menu_cb_advancedFormantSettings);
 	menu->addCommand (L"-- formant query --", 0, NULL);
@@ -1748,14 +1743,16 @@ void TimeSoundAnalysisEditor::createMenus_analysis () {
 	menu->addCommand (L"Get fourth bandwidth", 0, menu_cb_getFourthBandwidth);
 	menu->addCommand (L"Get formant...", 0, menu_cb_getFormant);
 	menu->addCommand (L"Get bandwidth...", 0, menu_cb_getBandwidth);
-	createMenuItems_formant_picture (menu);
+	menu->addCommand (L"-- formant draw --", 0, NULL);
+	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisibleFormantContour /* dummy */);
+	menu->addCommand (L"Draw visible formant contour...", 0, menu_cb_drawVisibleFormantContour);
 	menu->addCommand (L"-- formant extract --", 0, NULL);
 	menu->addCommand (L"Extract to objects window:", GuiMenu_INSENSITIVE, menu_cb_extractVisibleFormantContour /* dummy */);
 	menu->addCommand (L"Extract visible formant contour", 0, menu_cb_extractVisibleFormantContour);
 
 	menu = addMenu (L"Pulses", 0);
 	_pulsesToggle = menu->addCommand (L"Show pulses",
-		GuiMenu_CHECKBUTTON | (preferences.pulses.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showPulses);
+		GuiMenu_CHECKBUTTON | (preferences.pulses.show ? GuiMenu_TOGGLE_ON : 0), menu_cb_showPulses) -> _itemWidget;
 	menu->addCommand (L"Advanced pulses settings...", 0, menu_cb_advancedPulsesSettings);
 	menu->addCommand (L"-- pulses query --", 0, NULL);
 	menu->addCommand (L"Query:", GuiMenu_INSENSITIVE, menu_cb_getFrequency /* dummy */);
@@ -1774,40 +1771,12 @@ void TimeSoundAnalysisEditor::createMenus_analysis () {
 	menu->addCommand (L"Get shimmer (apq11)", 0, cb_getShimmer_apq11);
 	menu->addCommand (L"Get shimmer (dda)", 0, cb_getShimmer_dda);
 	*/
-	createMenuItems_pulses_picture (menu);
-	menu->addCommand (L"-- pulses extract --", 0, NULL);
-	menu->addCommand (L"Extract to objects window:", GuiMenu_INSENSITIVE, menu_cb_extractVisiblePulses /* dummy */);
-	menu->addCommand (L"Extract visible pulses", 0, menu_cb_extractVisiblePulses);
-}
-
-void TimeSoundAnalysisEditor::createMenuItems_spectrum_picture (EditorMenu *menu) {
-	menu->addCommand (L"-- spectrum draw --", 0, NULL);
-	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_paintVisibleSpectrogram /* dummy */);
-	menu->addCommand (L"Paint visible spectrogram...", 0, menu_cb_paintVisibleSpectrogram);
-}
-
-void TimeSoundAnalysisEditor::createMenuItems_pitch_picture (EditorMenu *menu) {
-	menu->addCommand (L"-- pitch draw --", 0, NULL);
-	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisiblePitchContour /* dummy */);
-	menu->addCommand (L"Draw visible pitch contour...", 0, menu_cb_drawVisiblePitchContour);
-}
-
-void TimeSoundAnalysisEditor::createMenuItems_intensity_picture (EditorMenu *menu) {
-	menu->addCommand (L"-- intensity draw --", 0, NULL);
-	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisibleIntensityContour /* dummy */);
-	menu->addCommand (L"Draw visible intensity contour...", 0, menu_cb_drawVisibleIntensityContour);
-}
-
-void TimeSoundAnalysisEditor::createMenuItems_formant_picture (EditorMenu *menu) {
-	menu->addCommand (L"-- formant draw --", 0, NULL);
-	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisibleFormantContour /* dummy */);
-	menu->addCommand (L"Draw visible formant contour...", 0, menu_cb_drawVisibleFormantContour);
-}
-
-void TimeSoundAnalysisEditor::createMenuItems_pulses_picture (EditorMenu *menu) {
 	menu->addCommand (L"-- pulses draw --", 0, NULL);
 	menu->addCommand (L"Draw to picture window:", GuiMenu_INSENSITIVE, menu_cb_drawVisiblePulses /* dummy */);
 	menu->addCommand (L"Draw visible pulses...", 0, menu_cb_drawVisiblePulses);
+	menu->addCommand (L"-- pulses extract --", 0, NULL);
+	menu->addCommand (L"Extract to objects window:", GuiMenu_INSENSITIVE, menu_cb_extractVisiblePulses /* dummy */);
+	menu->addCommand (L"Extract visible pulses", 0, menu_cb_extractVisiblePulses);
 }
 
 void TimeSoundAnalysisEditor::computeSpectrogram () {

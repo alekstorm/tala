@@ -46,7 +46,7 @@ class AmplitudeTierEditor : public RealTierEditor {
 	const wchar_t * yminKey () { return L"Minimum amplitude"; }
 	const wchar_t * ymaxKey () { return L"Maximum amplitude"; }
 
-	void createHelpMenuItems (EditorMenu *menu);
+	void createMenus ();
 	void play (double tmin, double tmax);
 };
 

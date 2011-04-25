@@ -440,13 +440,30 @@ long praat_getNumberOfMenuCommands (void) { return theNumberOfCommands; }
 praat_Command praat_getMenuCommand (long i)
 	{ return i < 1 || i > theNumberOfCommands ? NULL : & theCommands [i]; }
 
+static int scriptCallback (Editor *editor, EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
+	(void) sendingForm;
+	(void) sendingString;
+	(void) interpreter;
+	return DO_RunTheScriptFromAnyAddedEditorCommand (editor, cmd -> _script);
+}
+
 void praat_addCommandsToEditor (Editor *editor) {
 	const wchar_t *windowName = editor->_name; // FIXME _className?
 	for (long i = 1; i <= theNumberOfCommands; i ++) if (wcsequ (theCommands [i]. window, windowName)) {
-		if (!  editor->addCommandScript (theCommands [i]. menu, theCommands [i]. title, 0, theCommands [i]. script))
+		EditorMenu *menu = editor->getMenu (theCommands [i]. menu);
+		if ( !menu )
 			Melder_flushError ("To fix this, go to Praat:Preferences:Buttons:Editors, "
 				"and remove the script from this menu.\n"
 				"You may want to install the script in a different menu.");
+		EditorCommand *cmd = menu->addCommand (theCommands [i]. title, 0, theCommands [i]. script ? scriptCallback : NULL);
+		const wchar_t *script = theCommands [i]. script;
+		if (wcslen (script) == 0) {
+			cmd -> _script = Melder_wcsdup_f (L"");
+		} else {
+			structMelderFile file = { 0 };
+			Melder_relativePathToFile (script, & file);
+			cmd -> _script = Melder_wcsdup_f (Melder_fileToPath (& file));
+		}
 	}
 }
 

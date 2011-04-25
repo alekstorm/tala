@@ -96,6 +96,7 @@ static gboolean gui_cb_drawing_area_scroll(GuiObject w, GdkEventScroll *event, g
 TableEditor::TableEditor (GuiObject parent, const wchar_t *title, Table table)
 	: Editor (parent, 0, 0, 700, 500, title, table),
 	  _topRow(1), _leftColumn(1), _selectedColumn(1), _selectedRow(1) {
+	createMenus ();
 	createChildren ();
 	//try { // FIXME exception
 		#if motif
@@ -420,20 +421,20 @@ void TableEditor::createChildren () {
 }
 
 void TableEditor::createMenus () {
+	EditorMenu *menu = getMenu (L"Edit");
 	#ifndef macintosh
-	addCommand (L"Edit", L"-- cut copy paste --", 0, NULL);
-	addCommand (L"Edit", L"Cut text", 'X', menu_cb_Cut);
-	addCommand (L"Edit", L"Cut", Editor_HIDDEN, menu_cb_Cut);
-	addCommand (L"Edit", L"Copy text", 'C', menu_cb_Copy);
-	addCommand (L"Edit", L"Copy", Editor_HIDDEN, menu_cb_Copy);
-	addCommand (L"Edit", L"Paste text", 'V', menu_cb_Paste);
-	addCommand (L"Edit", L"Paste", Editor_HIDDEN, menu_cb_Paste);
-	addCommand (L"Edit", L"Erase text", 0, menu_cb_Erase);
-	addCommand (L"Edit", L"Erase", Editor_HIDDEN, menu_cb_Erase);
+	menu->addCommand (L"-- cut copy paste --", 0, NULL);
+	menu->addCommand (L"Cut text", 'X', menu_cb_Cut);
+	menu->addCommand (L"Cut", Editor_HIDDEN, menu_cb_Cut);
+	menu->addCommand (L"Copy text", 'C', menu_cb_Copy);
+	menu->addCommand (L"Copy", Editor_HIDDEN, menu_cb_Copy);
+	menu->addCommand (L"Paste text", 'V', menu_cb_Paste);
+	menu->addCommand (L"Paste", Editor_HIDDEN, menu_cb_Paste);
+	menu->addCommand (L"Erase text", 0, menu_cb_Erase);
+	menu->addCommand (L"Erase", Editor_HIDDEN, menu_cb_Erase);
 	#endif
-}
 
-void TableEditor::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Help");
 	menu->addCommand (L"TableEditor help", '?', menu_cb_TableEditorHelp);
 }
 

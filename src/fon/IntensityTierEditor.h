@@ -46,7 +46,7 @@ class IntensityTierEditor : public RealTierEditor {
 	const wchar_t * yminKey () { return L"Minimum intensity"; }
 	const wchar_t * ymaxKey () { return L"Maximum intensity"; }
 
-	void createHelpMenuItems (EditorMenu *menu);
+	void createMenus ();
 	void play (double tmin, double tmax);
 };
 

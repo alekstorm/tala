@@ -1424,29 +1424,31 @@ void VowelEditor::updateWidgets () {}
 
 void VowelEditor::createMenus ()
 {
-	addCommand (L"File", L"Preferences...", 0, menu_cb_prefs);
-	addCommand (L"File", L"-- publish data --", 0, NULL);
-	addCommand (L"File", L"Publish Sound", 0, menu_cb_publishSound);
-	addCommand (L"File", L"Extract KlattGrid", 0, menu_cb_extract_KlattGrid);
-	addCommand (L"File", L"Extract FormantGrid", 0, menu_cb_extract_FormantGrid);
-	addCommand (L"File", L"Extract PitchTsier", 0, menu_cb_extract_PitchTier);
-	addCommand (L"File", L"-- script stuff --", 0, NULL);
-	addCommand (L"File", L"Draw trajectory...", 0, menu_cb_drawTrajectory);
-	addCommand (L"Edit", L"Show one vowel mark...", 0, menu_cb_showOneVowelMark);
-	addCommand (L"Edit", L"Show vowel marks...", 0, menu_cb_showVowelMarks);
-	addCommand (L"Edit", L"-- f0 --", 0, NULL);
-	addCommand (L"Edit", L"Set F0...", 0, menu_cb_setF0);
-	addCommand (L"Edit", L"Set F3 & F4...", 0, menu_cb_setF3F4);
-	addCommand (L"Edit", L"-- trajectory commands --", 0, NULL);
-	addCommand (L"Edit", L"Reverse trajectory", 0, menu_cb_reverseTrajectory);
-	addCommand (L"Edit", L"Modify trajectory duration...", 0, menu_cb_modifyTrajectoryDuration);
-	addCommand (L"Edit", L"New trajectory...", 0, menu_cb_newTrajectory);
-	addCommand (L"Edit", L"Extend trajectory...", 0, menu_cb_extendTrajectory);
-	addCommand (L"Edit", L"Shift trajectory...", 0, menu_cb_shiftTrajectory);
-	addCommand (L"Edit", L"Show trajectory time markers every...", 0, menu_cb_showTrajectoryTimeMarkersEvery);
-}
+	EditorMenu *menu = getMenu (L"File");
+	menu->addCommand (L"Preferences...", 0, menu_cb_prefs);
+	menu->addCommand (L"-- publish data --", 0, NULL);
+	menu->addCommand (L"Publish Sound", 0, menu_cb_publishSound);
+	menu->addCommand (L"Extract KlattGrid", 0, menu_cb_extract_KlattGrid);
+	menu->addCommand (L"Extract FormantGrid", 0, menu_cb_extract_FormantGrid);
+	menu->addCommand (L"Extract PitchTsier", 0, menu_cb_extract_PitchTier);
+	menu->addCommand (L"-- script stuff --", 0, NULL);
+	menu->addCommand (L"Draw trajectory...", 0, menu_cb_drawTrajectory);
 
-void VowelEditor::createHelpMenuItems (EditorMenu *menu) {
+	menu = getMenu (L"Edit");
+	menu->addCommand (L"Show one vowel mark...", 0, menu_cb_showOneVowelMark);
+	menu->addCommand (L"Show vowel marks...", 0, menu_cb_showVowelMarks);
+	menu->addCommand (L"-- f0 --", 0, NULL);
+	menu->addCommand (L"Set F0...", 0, menu_cb_setF0);
+	menu->addCommand (L"Set F3 & F4...", 0, menu_cb_setF3F4);
+	menu->addCommand (L"-- trajectory commands --", 0, NULL);
+	menu->addCommand (L"Reverse trajectory", 0, menu_cb_reverseTrajectory);
+	menu->addCommand (L"Modify trajectory duration...", 0, menu_cb_modifyTrajectoryDuration);
+	menu->addCommand (L"New trajectory...", 0, menu_cb_newTrajectory);
+	menu->addCommand (L"Extend trajectory...", 0, menu_cb_extendTrajectory);
+	menu->addCommand (L"Shift trajectory...", 0, menu_cb_shiftTrajectory);
+	menu->addCommand (L"Show trajectory time markers every...", 0, menu_cb_showTrajectoryTimeMarkersEvery);
+
+	menu = getMenu (L"Help");
 	menu->addCommand (L"VowelEditor help", '?', menu_cb_help);
 }
 
