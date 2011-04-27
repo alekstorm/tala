@@ -245,7 +245,7 @@ void TimeSoundAnalysisEditor::destroy_analysis () {
 }
 
 void TimeSoundAnalysisEditor::info () {
-	TimeSoundAnalysisEditor::info ();
+	TimeSoundEditor::info ();
 	/* Spectrogram flag: */
 	MelderInfo_writeLine2 (L"Spectrogram show: ", Melder_boolean (_spectrogram.show));
 	/* Spectrogram settings: */
