@@ -164,10 +164,6 @@ class Editor {
 
   private:
 	void createMenus ();
-	void createMenuItems_file (EditorMenu *menu);
-	void createMenuItems_edit (EditorMenu *menu);
-	void createMenuItems_query (EditorMenu *menu);
-	void createMenuItems_query_info (EditorMenu *menu);
 };
 #else
 typedef struct Editor Editor;

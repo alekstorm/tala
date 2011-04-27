@@ -316,6 +316,8 @@ int Editor::doMenuCommand (const wchar_t *commandTitle, const wchar_t *arguments
 }
 
 void Editor::info () {
+	Melder_clearInfo ();
+	MelderInfo_open (); // FIXME object id like in Thing.c
 	MelderInfo_writeLine2 (L"Editor type: ", type ());
 	MelderInfo_writeLine2 (L"Editor name: ", _name ? _name : L"<no name>");
 	time_t today = time (NULL);
@@ -324,6 +326,7 @@ void Editor::info () {
 		MelderInfo_writeLine2 (L"Data type: ", ((Thing) _data) -> methods -> _className);
 		MelderInfo_writeLine2 (L"Data name: ", ((Thing) _data) -> name);
 	}
+	MelderInfo_close ();
 }
 
 void Editor::nameChanged () {
@@ -388,11 +391,6 @@ static int menu_cb_undo (EDITOR_ARGS) {
 	return 1;
 }
 
-void Editor::createMenuItems_edit (EditorMenu *menu) {
-	if (_data)
-		_undoButton = menu->addCommand (L"Cannot undo", GuiMenu_INSENSITIVE + 'Z', menu_cb_undo) -> _itemWidget;
-}
-
 static int menu_cb_settingsReport (EDITOR_ARGS) {
 	editor_me->info ();
 	return 1;
@@ -403,7 +401,14 @@ static int menu_cb_info (EDITOR_ARGS) {
 	return 1;
 }
 
-void Editor::createMenuItems_query_info (EditorMenu *menu) {
+void Editor::createMenus () {
+	EditorMenu *menu = addMenu (L"File", 0);
+	if (isEditable()) { // FIXME subclass
+		menu = addMenu (L"Edit", 0);
+		if (_data)
+			_undoButton = menu->addCommand (L"Cannot undo", GuiMenu_INSENSITIVE + 'Z', menu_cb_undo) -> _itemWidget;
+	}
+	menu = addMenu (L"Query", 0); // TODO check that this should always be executed
 	menu->addCommand (L"Editor info", 0, menu_cb_settingsReport);
 	menu->addCommand (L"Settings report", Editor_HIDDEN, menu_cb_settingsReport);
 	if (_data) {
@@ -412,16 +417,6 @@ void Editor::createMenuItems_query_info (EditorMenu *menu) {
 		MelderString_append2 (& title, Thing_className (_data), L" info");
 		menu->addCommand (title.string, 0, menu_cb_info);
 	}
-}
-
-void Editor::createMenus () {
-	EditorMenu *menu = addMenu (L"File", 0);
-	if (isEditable()) {
-		menu = addMenu (L"Edit", 0);
-		createMenuItems_edit (menu);
-	}
-	menu = addMenu (L"Query", 0); // TODO check that this should always be executed
-	createMenuItems_query_info (menu);
 }
 
 void Editor::form_pictureWindow (EditorCommand *cmd) {
