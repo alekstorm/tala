@@ -392,7 +392,10 @@ static int menu_cb_undo (EDITOR_ARGS) {
 }
 
 static int menu_cb_settingsReport (EDITOR_ARGS) {
+	Melder_clearInfo ();
+	MelderInfo_open (); // FIXME object id like in Thing.c
 	editor_me->info ();
+	MelderInfo_close ();
 	return 1;
 }
 
