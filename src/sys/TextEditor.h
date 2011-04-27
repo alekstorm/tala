@@ -23,47 +23,23 @@
  * pb 2011/03/02
  */
 
-#ifndef _Editor_h_
-	#include "Editor.h"
-#endif
-#include "UiFile.h"
+#include "InfoEditor.h"
 
-class TextEditor : public Editor {
+class TextEditor : public InfoEditor {
   public:
-	static void prefs (void);
-
 	TextEditor (GuiObject parent, const wchar_t *initialText);
-	~TextEditor ();
 
 	const wchar_t * type () { return L"TextEditor"; }
-	bool isFileBased () { return true; }
 
-	void showOpen ();
-	void clear ();
-	void setFontSize (int fontSize);
 	void nameChanged ();
-	int openDocument (MelderFile file);
 	void newDocument ();
 	int saveDocument (MelderFile file);
-	void closeDocument ();
-	bool getSelectedLines (long *firstLine, long *lastLine);
-	void do_find ();
-	void do_replace ();
-
-	structMelderFile _file;
-	GuiObject _textWidget;
-	UiInfile *_openDialog;
-	UiOutfile *_saveDialog;
-	UiForm *_printDialog, *_findDialog;
-	int _dirty, _fontSize;
-	GuiObject _dirtyNewDialog, _dirtyOpenDialog, _dirtyCloseDialog;
-	GuiObject _fontSizeButton_10, _fontSizeButton_12, _fontSizeButton_14, _fontSizeButton_18, _fontSizeButton_24;
+	void menu_new (EditorCommand *cmd);
+	const wchar_t * getName ();
 
   protected:
-	void goAway ();
-	void updateSizeMenu ();
 	void createMenus ();
-	void createChildren ();
+	void goAway ();
 };
 
 /* End of file TextEditor.h */

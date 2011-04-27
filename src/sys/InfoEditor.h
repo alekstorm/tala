@@ -19,18 +19,49 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "TextEditor.h"
+#ifndef _Editor_h_
+	#include "Editor.h"
+#endif
+#include "UiFile.h"
 
-class InfoEditor : public TextEditor {
+class InfoEditor : public Editor {
   public:
+	static void prefs (void);
+
 	InfoEditor (GuiObject parent, const wchar_t *initialText);
+	~InfoEditor ();
 
 	const wchar_t * type () { return L"InfoEditor"; }
 
 	bool isScriptable () { return false; }
-	bool isFileBased () { return false; }
 
+	void showOpen ();
 	void clear ();
+	void setFontSize (int fontSize);
+	virtual int openDocument (MelderFile file);
+	virtual void newDocument ();
+	virtual int saveDocument (MelderFile file);
+	void closeDocument ();
+	bool getSelectedLines (long *firstLine, long *lastLine);
+	void do_find ();
+	void do_replace ();
+	virtual const wchar_t * getName ();
+	virtual void menu_new (EditorCommand *cmd);
+
+	structMelderFile _file;
+	GuiObject _textWidget;
+	UiInfile *_openDialog;
+	UiOutfile *_saveDialog;
+	UiForm *_printDialog, *_findDialog;
+	int _dirty, _fontSize;
+	GuiObject _dirtyNewDialog, _dirtyOpenDialog, _dirtyCloseDialog;
+	GuiObject _fontSizeButton_10, _fontSizeButton_12, _fontSizeButton_14, _fontSizeButton_18, _fontSizeButton_24;
+
+  protected:
+	virtual void goAway ();
+	void updateSizeMenu ();
+	void createMenus ();
+	void createChildren ();
 };
 
 /* End of file InfoEditor.h */
