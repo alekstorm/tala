@@ -39,7 +39,7 @@
 #include "VoiceAnalysis.h"
 
 PointEditor::PointEditor (GuiObject parent, const wchar_t *title, PointProcess point, Sound sound)
-	: TimeSoundEditor (parent, title, point, Sound_convertToMono (sound), false),
+	: TimeSoundEditor (parent, title, point, sound ? Sound_convertToMono (sound) : NULL, false),
 	  _monoSound(NULL) {
 	createMenus ();
 	if (sound) {
