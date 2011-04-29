@@ -128,17 +128,17 @@ static wchar_t *DRAW_BUTTON    = L"Draw -";
 static wchar_t *MODIFY_BUTTON  = L"Modify -";
 static wchar_t *EXTRACT_BUTTON = L"Extract -";
 
-extern void praat_TimeFunction_query_init (void *klas);
-extern void praat_TimeFrameSampled_query_init (void *klas);
-extern void praat_TableOfReal_init (void *klas);
-void praat_TableOfReal_init2  (void *klas);
-void praat_SSCP_as_TableOfReal_init (void *klas);
+extern "C" void praat_TimeFunction_query_init (void *klas);
+extern "C" void praat_TimeFrameSampled_query_init (void *klas);
+extern "C" void praat_TableOfReal_init (void *klas);
+extern "C" void praat_TableOfReal_init2  (void *klas);
+extern "C" void praat_SSCP_as_TableOfReal_init (void *klas);
 
-void praat_CC_init (void *klas);
+extern "C" void praat_CC_init (void *klas);
 void DTW_constraints_addCommonFields (UiForm *dia);
 void DTW_constraints_getCommonFields (UiForm *dia, int *begin, int *end, int *slope);
-void praat_Matrixft_query_init (void *klas);
-int praat_Fon_formula (UiForm *dia, Interpreter *interpreter);
+extern "C" void praat_Matrixft_query_init (void *klas);
+extern "C" int praat_Fon_formula (UiForm *dia, Interpreter *interpreter);
 
 #undef INCLUDE_DTW_SLOPES
 
@@ -4725,7 +4725,7 @@ INCLUDE_LIBRARY (praat_KlattGrid_init)
 INCLUDE_LIBRARY (praat_HMM_init)
 INCLUDE_LIBRARY (praat_BSS_init)
 
-void praat_uvafon_David_init (void);
+extern "C" void praat_uvafon_David_init (void);
 void praat_uvafon_David_init (void)
 {
 	Data_recognizeFileType (TextGrid_TIMITLabelFileRecognizer);
@@ -5301,8 +5301,6 @@ void praat_uvafon_David_init (void)
 	praat_KlattGrid_init();
 	praat_HMM_init();
 	praat_BSS_init();
-}
-}
 }
 
 /* End of file praat_David.c */
