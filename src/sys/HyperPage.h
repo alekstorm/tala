@@ -50,55 +50,55 @@ class HyperPage : public Editor {
 	static int _hasHistory, _isOrdered;
 
 	HyperPage (GuiObject parent, const wchar_t *title, Any data);
-	~HyperPage ();
+	virtual ~HyperPage ();
 
-	const wchar_t * type () { return L"HyperPage"; }
-	bool isEditable () { return false; }
-	void clear ();
-	int any (const wchar_t *text, int font, int size, int style, double minFooterDistance,
+	virtual const wchar_t * type () { return L"HyperPage"; }
+	virtual bool isEditable () { return false; }
+	virtual void clear ();
+	virtual int any (const wchar_t *text, int font, int size, int style, double minFooterDistance,
 		double x, double secondIndent, double topSpacing, double bottomSpacing, unsigned long method);
-	int pageTitle (const wchar_t *title);
-	int intro (const wchar_t *text);
-	int entry (const wchar_t *title);
-	int paragraph (const wchar_t *text);
-	int listItem (const wchar_t *text);
-	int listItem1 (const wchar_t *text);
-	int listItem2 (const wchar_t *text);
-	int listItem3 (const wchar_t *text);
-	int listTag (const wchar_t *text);
-	int listTag1 (const wchar_t *text);
-	int listTag2 (const wchar_t *text);
-	int listTag3 (const wchar_t *text);
-	int definition (const wchar_t *text);
-	int definition1 (const wchar_t *text);
-	int definition2 (const wchar_t *text);
-	int definition3 (const wchar_t *text);
-	int code (const wchar_t *text);
-	int code1 (const wchar_t *text);
-	int code2 (const wchar_t *text);
-	int code3 (const wchar_t *text);
-	int code4 (const wchar_t *text);
-	int code5 (const wchar_t *text);
-	int prototype (const wchar_t *text);
-	int formula (const wchar_t *formula);
-	int picture (double width_inches, double height_inches, void (*draw) (Graphics g));
-	int script (double width_inches, double height_inches, const wchar_t *script);
-	void setEntryHint (const wchar_t *entry);
-	void initSheetOfPaper ();
-	void updateVerticalScrollBar ();
-	void draw ();
-	void initScreen ();
-	void saveHistory (const wchar_t *title);
-	int goToPage (const wchar_t *title);
-	int goToPage_i (long ipage);
-	void defaultHeaders (EditorCommand *cmd);
-	void setFontSize (int fontSize);
-	int do_forth ();
-	void createMenus ();
-	long getCurrentPageNumber ();
-	long getNumberOfPages ();
-	void dataChanged ();
-	int do_back ();
+	virtual int pageTitle (const wchar_t *title);
+	virtual int intro (const wchar_t *text);
+	virtual int entry (const wchar_t *title);
+	virtual int paragraph (const wchar_t *text);
+	virtual int listItem (const wchar_t *text);
+	virtual int listItem1 (const wchar_t *text);
+	virtual int listItem2 (const wchar_t *text);
+	virtual int listItem3 (const wchar_t *text);
+	virtual int listTag (const wchar_t *text);
+	virtual int listTag1 (const wchar_t *text);
+	virtual int listTag2 (const wchar_t *text);
+	virtual int listTag3 (const wchar_t *text);
+	virtual int definition (const wchar_t *text);
+	virtual int definition1 (const wchar_t *text);
+	virtual int definition2 (const wchar_t *text);
+	virtual int definition3 (const wchar_t *text);
+	virtual int code (const wchar_t *text);
+	virtual int code1 (const wchar_t *text);
+	virtual int code2 (const wchar_t *text);
+	virtual int code3 (const wchar_t *text);
+	virtual int code4 (const wchar_t *text);
+	virtual int code5 (const wchar_t *text);
+	virtual int prototype (const wchar_t *text);
+	virtual int formula (const wchar_t *formula);
+	virtual int picture (double width_inches, double height_inches, void (*draw) (Graphics g));
+	virtual int script (double width_inches, double height_inches, const wchar_t *script);
+	virtual void setEntryHint (const wchar_t *entry);
+	virtual void initSheetOfPaper ();
+	virtual void updateVerticalScrollBar ();
+	virtual void draw ();
+	virtual void initScreen ();
+	virtual void saveHistory (const wchar_t *title);
+	virtual int goToPage (const wchar_t *title);
+	virtual int goToPage_i (long ipage);
+	virtual void defaultHeaders (EditorCommand *cmd);
+	virtual void setFontSize (int fontSize);
+	virtual int do_forth ();
+	virtual void createMenus ();
+	virtual long getCurrentPageNumber ();
+	virtual long getNumberOfPages ();
+	virtual void dataChanged ();
+	virtual int do_back ();
 
 	GuiObject _drawingArea, _verticalScrollBar;
 	Graphics _g, _ps;
@@ -120,9 +120,9 @@ class HyperPage : public Editor {
 	structMelderDir _rootDirectory;
 
   protected:
-	void updateSizeMenu ();
-	void createVerticalScrollBar (GuiObject parent);
-	void createChildren ();
+	virtual void updateSizeMenu ();
+	virtual void createVerticalScrollBar (GuiObject parent);
+	virtual void createChildren ();
 };
 
 /* End of file HyperPage.h */

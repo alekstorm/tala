@@ -40,16 +40,16 @@ class FormantGridEditor : public FunctionEditor {
 
 	FormantGridEditor (GuiObject parent, const wchar_t *title, FormantGrid data);
 
-	const wchar_t * type () { return L"FormantGridEditor"; }
-	bool hasSourceMenu () { return true; }
+	virtual const wchar_t * type () { return L"FormantGridEditor"; }
+	virtual bool hasSourceMenu () { return true; }
 
-	int selectFormantOrBandwidth (long iformant);
-	void createMenus ();
-	void dataChanged ();
-	void draw ();
-	void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
-	int click (double xWC, double yWC, int shiftKeyPressed);
-	void play (double tmin, double tmax);
+	virtual int selectFormantOrBandwidth (long iformant);
+	virtual void createMenus ();
+	virtual void dataChanged ();
+	virtual void draw ();
+	virtual void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void play (double tmin, double tmax);
 
 	bool _editingBandwidths;
 	long _selectedFormant;

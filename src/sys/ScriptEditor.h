@@ -42,21 +42,21 @@ class ScriptEditor : public TextEditor {
 	static ScriptEditor * createFromScript (GuiObject parent, Editor *other, Script script);
 
 	ScriptEditor (GuiObject parent, Editor *other, const wchar_t *initialText);
-	~ScriptEditor ();
+	virtual ~ScriptEditor ();
 
-	const wchar_t * type () { return L"ScriptEditor"; }
-	bool isScriptable() { return false; }
+	virtual const wchar_t * type () { return L"ScriptEditor"; }
+	virtual bool isScriptable() { return false; }
 
-	void nameChanged ();
-	void run (wchar_t **text);
-	void createMenus ();
+	virtual void nameChanged ();
+	virtual void run (wchar_t **text);
+	virtual void createMenus ();
 
 	wchar_t *_environmentName;
 	Interpreter *_interpreter;
 	UiForm *_argsDialog;
 
   protected:
-	void goAway ();
+	virtual void goAway ();
 
   private:
 	void init (GuiObject parent, Editor *editor, const wchar_t *initialText);

@@ -74,30 +74,29 @@ class VowelEditor : public Editor {
 	VowelEditor (GuiObject parent, const wchar_t *title, Any data);
 	virtual ~VowelEditor ();
 
-	const wchar_t * type () { return L"VowelEditor"; }
-	PitchTier to_PitchTier (double duration);
-	void updateF0Info ();
-	void updateExtendDuration ();
-	double updateDurationInfo ();
-	int Vowel_updateTiers (Vowel thee, double time, double x, double y);
-	int Vowel_addData (Vowel thee, double time, double f1, double f2, double f0);
-	void getXYFromF1F2 (double f1, double f2, double *x, double *y);
-	void getF1F2FromXY (double x, double y, double *f1, double *f2);
-	void updateVowel ();
-	Sound createTarget ();
-	void Vowel_reverseFormantTier ();
-	void checkF1F2 (double *f1, double *f2);
-	void shiftF1F2 (double f1_st, double f2_st);
-	int setSource ();
-	int setMarks (int dataset, int speakerType, int fontSize);
-	int setF3F4 (double f3, double b3, double f4, double b4);
-	void getF3F4 (double f1, double f2, double *f3, double *b3, double *f4, double *b4);
-	void drawBackground (Graphics g);
-	void updateWidgets ();
-	void createMenus ();
-	void createHelpMenuItems ();
-	void createChildren ();
-	void dataChanged ();
+	virtual const wchar_t * type () { return L"VowelEditor"; }
+	virtual PitchTier to_PitchTier (double duration);
+	virtual void updateF0Info ();
+	virtual void updateExtendDuration ();
+	virtual double updateDurationInfo ();
+	virtual int Vowel_updateTiers (Vowel thee, double time, double x, double y);
+	virtual int Vowel_addData (Vowel thee, double time, double f1, double f2, double f0);
+	virtual void getXYFromF1F2 (double f1, double f2, double *x, double *y);
+	virtual void getF1F2FromXY (double x, double y, double *f1, double *f2);
+	virtual void updateVowel ();
+	virtual Sound createTarget ();
+	virtual void Vowel_reverseFormantTier ();
+	virtual void checkF1F2 (double *f1, double *f2);
+	virtual void shiftF1F2 (double f1_st, double f2_st);
+	virtual int setSource ();
+	virtual int setMarks (int dataset, int speakerType, int fontSize);
+	virtual int setF3F4 (double f3, double b3, double f4, double b4);
+	virtual void getF3F4 (double f1, double f2, double *f3, double *b3, double *f4, double *b4);
+	virtual void drawBackground (Graphics g);
+	virtual void updateWidgets ();
+	virtual void createMenus ();
+	virtual void createChildren ();
+	virtual void dataChanged ();
 
 	int _soundFollowsMouse, _shiftKeyPressed;
 	double _f1min, _f1max, _f2min, _f2max; /* Domain of graphics F1-F2 area */

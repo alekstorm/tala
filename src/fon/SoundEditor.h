@@ -29,15 +29,15 @@ class SoundEditor : public TimeSoundAnalysisEditor {
   public:
 	SoundEditor (GuiObject parent, const wchar_t *title, Any data);
 
-	const wchar_t * type () { return L"SoundEditor"; }
+	virtual const wchar_t * type () { return L"SoundEditor"; }
 
-	void dataChanged ();
-	void prepareDraw ();
-	void draw ();
-	void play (double tmin, double tmax);
-	int click (double xWC, double yWC, int shiftKeyPressed);
-	void highlightSelection (double left, double right, double bottom, double top);
-	void unhighlightSelection (double left, double right, double bottom, double top);
+	virtual void dataChanged ();
+	virtual void prepareDraw ();
+	virtual void draw ();
+	virtual void play (double tmin, double tmax);
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void highlightSelection (double left, double right, double bottom, double top);
+	virtual void unhighlightSelection (double left, double right, double bottom, double top);
 
 	GuiObject _cutButton, _copyButton, _pasteButton, _zeroButton, _reverseButton;
 	double _maxBuffer;

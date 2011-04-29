@@ -69,7 +69,7 @@ class FunctionEditor : public Editor {
 			'GuiObject_show (my dialog); GuiObject_show (my shell);'
 			before calling FunctionEditor_open (me).
 */
-	~FunctionEditor ();
+	virtual ~FunctionEditor ();
 
 	const wchar_t * type () { return L"FunctionEditor"; }
 	virtual int fixedPrecision_long () { return 6; }
@@ -81,34 +81,34 @@ class FunctionEditor : public Editor {
 	virtual const wchar_t * format_window () { return L"Visible part %f seconds"; }
 	virtual const wchar_t * format_selection () { return L"%f (%.3f / s)"; }
 
-	void info ();
-	void draw ();
-	void prepareDraw ();   /* For less flashing. */
-	void play (double tmin, double tmax);
-	int click (double xWC, double yWC, int shiftKeyPressed);
-	int clickB (double xWC, double yWC);
-	int clickE (double xWC, double yWC);
-	void key (unsigned char key);
-	void prefs_addFields (EditorCommand *cmd);
-	void prefs_setValues (EditorCommand *cmd);
-	void prefs_getValues (EditorCommand *cmd);
-	void highlightSelection (double left, double right, double bottom, double top);
-	void unhighlightSelection (double left, double right, double bottom, double top);
-	double getBottomOfSoundAndAnalysisArea ();
-	void form_pictureSelection (EditorCommand *cmd);
-	void ok_pictureSelection (EditorCommand *cmd);
-	void do_pictureSelection (EditorCommand *cmd);
-	void updateScrollBar ();
-	void updateGroup ();
-	void drawNow ();
-	void do_showAll ();
-	void do_zoomIn ();
-	void do_zoomOut ();
-	void do_zoomToSelection ();
-	void do_zoomBack ();
-	void scrollToView (double t);
-	void dataChanged ();
-	void drawWhileDragging (double x1, double x2);
+	virtual void info ();
+	virtual void draw () = 0;
+	virtual void prepareDraw ();   /* For less flashing. */
+	virtual void play (double tmin, double tmax);
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual int clickB (double xWC, double yWC);
+	virtual int clickE (double xWC, double yWC);
+	virtual void key (unsigned char key);
+	virtual void prefs_addFields (EditorCommand *cmd);
+	virtual void prefs_setValues (EditorCommand *cmd);
+	virtual void prefs_getValues (EditorCommand *cmd);
+	virtual void highlightSelection (double left, double right, double bottom, double top);
+	virtual void unhighlightSelection (double left, double right, double bottom, double top);
+	virtual double getBottomOfSoundAndAnalysisArea ();
+	virtual void form_pictureSelection (EditorCommand *cmd);
+	virtual void ok_pictureSelection (EditorCommand *cmd);
+	virtual void do_pictureSelection (EditorCommand *cmd);
+	virtual void updateScrollBar ();
+	virtual void updateGroup ();
+	virtual void drawNow ();
+	virtual void do_showAll ();
+	virtual void do_zoomIn ();
+	virtual void do_zoomOut ();
+	virtual void do_zoomToSelection ();
+	virtual void do_zoomBack ();
+	virtual void scrollToView (double t);
+	virtual void dataChanged ();
+	virtual void drawWhileDragging (double x1, double x2);
 
 /*	Attributes:
 		data: must be a Function.
@@ -153,7 +153,7 @@ class FunctionEditor : public Editor {
 		FunctionEditor::key ignores this message.
 */
 
-	void marksChanged ();
+	virtual void marksChanged ();
 /*	Function:
 		update optional text field, the scroll bar, the drawing area and the buttons,
 		from the current total time, window, cursor, and selection,
@@ -162,14 +162,14 @@ class FunctionEditor : public Editor {
 		call this after a change in any of the markers or in the duration of the data.
 */
 
-	void shift (double shift);
+	virtual void shift (double shift);
 /*	Function:
 		shift (scroll) the window through time, keeping the window length constant.
 	Usage:
 		call this after a search.
 */
 
-	void updateText ();
+	virtual void updateText ();
 /*	Function:
 		update the optional text widget.
 	Usage:
@@ -180,7 +180,7 @@ class FunctionEditor : public Editor {
 		since FunctionEditor::updateText does nothing.
 */
 
-	void redraw ();
+	virtual void redraw ();
 /*
 	Function:
 		update the drawing area of a single editor.
@@ -191,7 +191,7 @@ class FunctionEditor : public Editor {
 		we just call Graphics_updateWs (my graphics).
 */
 
-	void enableUpdates (bool enable);
+	virtual void enableUpdates (bool enable);
 /*	Function:
 		temporarily disable update event to cause 'draw' messages.
 	Usage:
@@ -203,7 +203,7 @@ class FunctionEditor : public Editor {
 		This may happen if you call an analysis routine which calls Melder_progress.
 */
 
-	void ungroup ();
+	virtual void ungroup ();
 /*	Function:
 		force me out of the group.
 	Usage:
@@ -217,13 +217,13 @@ class FunctionEditor : public Editor {
 	/* The x axis of the window is supposed to have been set to [my startWindow, my endWindow]. */
 	/* Preconditions: default line type, default line width. */
 	/* Postconditions: default line type, default line width, undefined colour, undefined text alignment. */
-	void drawRangeMark (double yWC, const wchar_t *yWC_string, const wchar_t *units, int verticalAlignment);
-	void drawCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units);
-	void insertCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units, double minimum, double maximum);
-	void drawHorizontalHair (double yWC, const wchar_t *yWC_string, const wchar_t *units);
-	void drawGridLine (double yWC);
-	void insetViewport ();
-	void garnish ();   // Optionally selection times and selection hairs.
+	virtual void drawRangeMark (double yWC, const wchar_t *yWC_string, const wchar_t *units, int verticalAlignment);
+	virtual void drawCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units);
+	virtual void insertCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units, double minimum, double maximum);
+	virtual void drawHorizontalHair (double yWC, const wchar_t *yWC_string, const wchar_t *units);
+	virtual void drawGridLine (double yWC);
+	virtual void insetViewport ();
+	virtual void garnish ();   // Optionally selection times and selection hairs.
 
 	/* Subclass may change the following attributes, */
 	/* but has to respect the invariants, */

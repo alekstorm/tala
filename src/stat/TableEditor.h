@@ -34,13 +34,13 @@ class TableEditor : public Editor {
 	TableEditor (GuiObject parent, const wchar_t *title, Table table);
 	~TableEditor ();
 
-	wchar_t * type () { return L"TableEditor"; }
+	virtual wchar_t * type () { return L"TableEditor"; }
 
-	void draw ();
-	int click (double xWC, double yWC, int shiftKeyPressed);
-	void updateVerticalScrollBar ();
-	void updateHorizontalScrollBar ();
-	void dataChanged ();
+	virtual void draw ();
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void updateVerticalScrollBar ();
+	virtual void updateHorizontalScrollBar ();
+	virtual void dataChanged ();
 
 	long _topRow, _leftColumn, _selectedRow, _selectedColumn;
 	GuiObject _text, _drawingArea, _horizontalScrollBar, _verticalScrollBar;

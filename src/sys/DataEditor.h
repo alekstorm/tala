@@ -46,15 +46,15 @@ class DataSubEditor : public Editor {
 	};
 
 	DataSubEditor (DataEditor *root, const wchar_t *title, void *address, Data_Description description);
-	~DataSubEditor ();
+	virtual ~DataSubEditor ();
 
-	wchar_t * type () { return L"DataSubEditor"; }
-	bool isScriptable() { return false; }
-	void createMenus ();
-	void update ();
-	long countFields ();
-	Data_Description findNumberUse (const wchar_t *number);
-	void createChildren ();
+	virtual wchar_t * type () { return L"DataSubEditor"; }
+	virtual bool isScriptable() { return false; }
+	virtual void createMenus ();
+	virtual void update ();
+	virtual long countFields ();
+	virtual Data_Description findNumberUse (const wchar_t *number);
+	virtual void createChildren ();
 
 	DataEditor *_root;
 	void *_address;
@@ -66,10 +66,10 @@ class DataSubEditor : public Editor {
   protected:
 	static wchar_t * singleTypeToText (void *address, int type, void *tagType, MelderString *buffer);
 
-	Data_Description getDescription () { return _description; }
-	void showStructMember (void *structAddress, Data_Description structDescription, Data_Description memberDescription, FieldData *fieldData, wchar_t *history);
-	void showStructMembers (void *structAddress, Data_Description structDescription, int fromMember, wchar_t *history);
-	void showMembers ();
+	virtual Data_Description getDescription () { return _description; }
+	virtual void showStructMember (void *structAddress, Data_Description structDescription, Data_Description memberDescription, FieldData *fieldData, wchar_t *history);
+	virtual void showStructMembers (void *structAddress, Data_Description structDescription, int fromMember, wchar_t *history);
+	virtual void showMembers ();
 };
 
 class VectorEditor : public DataSubEditor {
@@ -83,10 +83,10 @@ class VectorEditor : public DataSubEditor {
 
   protected:
 	/* No structs inside. */
-	Data_Description getDescription () { return _description -> type != structwa ? NULL : (Data_Description) _description -> tagType; }
+	virtual Data_Description getDescription () { return _description -> type != structwa ? NULL : (Data_Description) _description -> tagType; }
 
-	long countFields ();
-	void showMembers ();
+	virtual long countFields ();
+	virtual void showMembers ();
 };
 
 class MatrixEditor : public DataSubEditor {
@@ -94,46 +94,45 @@ class MatrixEditor : public DataSubEditor {
 	MatrixEditor (DataEditor *root, const wchar_t *title, void *address,
 		Data_Description description, long min1, long max1, long min2, long max2);
 
-	wchar_t * type () { return L"MatrixEditor"; }
+	virtual wchar_t * type () { return L"MatrixEditor"; }
 
 	long _minimum, _maximum, _min2, _max2;
 
   protected:
 	/* No structs inside. */
-	Data_Description getDescription () { return NULL; }
-	long countFields ();
-	void showMembers ();
+	virtual Data_Description getDescription () { return NULL; }
+	virtual long countFields ();
+	virtual void showMembers ();
 };
 
 class StructEditor : public DataSubEditor {
   public:
 	StructEditor (DataEditor *root, const wchar_t *title, void *address, Data_Description description);
 
-	wchar_t * type () { return L"StructEditor"; }
+	virtual wchar_t * type () { return L"StructEditor"; }
 
   protected:
-	long countFields ();
-	void showMembers ();
+	virtual long countFields ();
+	virtual void showMembers ();
 };
 
 class ClassEditor : public StructEditor {
   public:
 	ClassEditor (DataEditor *root, const wchar_t *title, void *address, Data_Description description);
 
-	wchar_t * type () { return L"ClassEditor"; }
+	virtual wchar_t * type () { return L"ClassEditor"; }
 
   protected:
-	long countFields ();
-	void showMembers ();
-	void showMembers_recursive (void *klas);
+	virtual void showMembers ();
+	virtual void showMembers_recursive (void *klas);
 };
 
 class DataEditor : public ClassEditor {
   public:
 	DataEditor (GuiObject parent, const wchar_t *title, Any data);
-	~DataEditor ();
+	virtual ~DataEditor ();
 
-	void dataChanged ();
+	virtual void dataChanged ();
 
 	Collection _children;
 };

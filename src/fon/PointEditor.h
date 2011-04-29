@@ -30,13 +30,13 @@ class PointEditor : public TimeSoundEditor {
   public:
 	// 'sound' may be NULL.
 	PointEditor (GuiObject parent, const wchar_t *title, PointProcess point, Sound sound);
-	~PointEditor ();
+	virtual ~PointEditor ();
 
-	const wchar_t * type () { return L"PointEditor"; }
+	virtual const wchar_t * type () { return L"PointEditor"; }
 
-	void createMenus ();
-	void draw ();
-	void play (double tmin, double tmax);
+	virtual void createMenus ();
+	virtual void draw ();
+	virtual void play (double tmin, double tmax);
 
 	Sound _monoSound;
 	GuiObject _addPointAtDialog;

@@ -32,23 +32,23 @@ class PitchTierEditor : public RealTierEditor {
 	PitchTierEditor (GuiObject parent, const wchar_t *title, PitchTier pitch, Sound sound, int ownSound);
 	//'sound' may be NULL.
 
-	const wchar_t * type () { return L"PitchTierEditor"; }
-	double minimumLegalValue () { return 0.0; }
-	const wchar_t * quantityText () { return L"Frequency (Hz)"; }
-	const wchar_t * quantityKey () { return L"Frequency"; }
-	const wchar_t * rightTickUnits () { return L" Hz"; }
-	double defaultYmin () { return 50.0; }
-	double defaultYmax () { return 600.0; }
-	const wchar_t * setRangeTitle () { return L"Set frequency range..."; }
-	const wchar_t * defaultYminText () { return L"50.0"; }
-	const wchar_t * defaultYmaxText () { return L"600.0"; }
-	const wchar_t * yminText () { return L"Minimum frequency (Hz)"; }
-	const wchar_t * ymaxText () { return L"Maximum frequency (Hz)"; }
-	const wchar_t * yminKey () { return L"Minimum frequency"; }
-	const wchar_t * ymaxKey () { return L"Maximum frequency"; }
+	virtual const wchar_t * type () { return L"PitchTierEditor"; }
+	virtual double minimumLegalValue () { return 0.0; }
+	virtual const wchar_t * quantityText () { return L"Frequency (Hz)"; }
+	virtual const wchar_t * quantityKey () { return L"Frequency"; }
+	virtual const wchar_t * rightTickUnits () { return L" Hz"; }
+	virtual double defaultYmin () { return 50.0; }
+	virtual double defaultYmax () { return 600.0; }
+	virtual const wchar_t * setRangeTitle () { return L"Set frequency range..."; }
+	virtual const wchar_t * defaultYminText () { return L"50.0"; }
+	virtual const wchar_t * defaultYmaxText () { return L"600.0"; }
+	virtual const wchar_t * yminText () { return L"Minimum frequency (Hz)"; }
+	virtual const wchar_t * ymaxText () { return L"Maximum frequency (Hz)"; }
+	virtual const wchar_t * yminKey () { return L"Minimum frequency"; }
+	virtual const wchar_t * ymaxKey () { return L"Maximum frequency"; }
 
-	void createMenus ();
-	void play (double tmin, double tmax);
+	virtual void createMenus ();
+	virtual void play (double tmin, double tmax);
 };
 
 /* End of file PitchTierEditor.h */

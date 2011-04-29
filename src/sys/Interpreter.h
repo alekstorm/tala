@@ -37,7 +37,7 @@
 class InterpreterVariable {
   public:
 	InterpreterVariable (const wchar_t *key);
-	~InterpreterVariable();
+	virtual ~InterpreterVariable();
 
 	wchar_t *_key, *_stringValue;
 	double _numericValue;
@@ -53,26 +53,26 @@ class UiForm;
 class Interpreter { // : protected Thing
   public:
 	Interpreter (wchar_t *environmentName);
-	~Interpreter();
+	virtual ~Interpreter();
 
-	int readParameters (wchar_t *text);
-	UiForm * createForm (GuiObject parent, const wchar_t *fileName, int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure);
-	int getArgumentsFromDialog (UiForm *dialog);
-	int getArgumentsFromString (const wchar_t *arguments);
-	int run (wchar_t *text);   /* Destroys 'text'. */
-	void stop ();   // Can be called from any procedure called deep-down by the interpreter. Will stop before next line.
+	virtual int readParameters (wchar_t *text);
+	virtual UiForm * createForm (GuiObject parent, const wchar_t *fileName, int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure);
+	virtual int getArgumentsFromDialog (UiForm *dialog);
+	virtual int getArgumentsFromString (const wchar_t *arguments);
+	virtual int run (wchar_t *text);   /* Destroys 'text'. */
+	virtual void stop ();   // Can be called from any procedure called deep-down by the interpreter. Will stop before next line.
 
-	int voidExpression (const wchar_t *expression);
-	int numericExpression (const wchar_t *expression, double *value);
-	int stringExpression (const wchar_t *expression, wchar_t **value);
-	int numericArrayExpression (const wchar_t *expression, struct Formula_NumericArray *value);
-	int anyExpression (const wchar_t *expression, struct Formula_Result *result);
+	virtual int voidExpression (const wchar_t *expression);
+	virtual int numericExpression (const wchar_t *expression, double *value);
+	virtual int stringExpression (const wchar_t *expression, wchar_t **value);
+	virtual int numericArrayExpression (const wchar_t *expression, struct Formula_NumericArray *value);
+	virtual int anyExpression (const wchar_t *expression, struct Formula_Result *result);
 
-	int addNumericVariable (const wchar_t *key, double value);
-	InterpreterVariable* addStringVariable (const wchar_t *key, const wchar_t *value);
+	virtual int addNumericVariable (const wchar_t *key, double value);
+	virtual InterpreterVariable* addStringVariable (const wchar_t *key, const wchar_t *value);
 
-	InterpreterVariable* hasVariable (const wchar_t *key);
-	InterpreterVariable* lookUpVariable (const wchar_t *key);
+	virtual InterpreterVariable* hasVariable (const wchar_t *key);
+	virtual InterpreterVariable* lookUpVariable (const wchar_t *key);
 
 	wchar_t *_environmentName;
 	int _numberOfParameters, _numberOfLabels, _callDepth;

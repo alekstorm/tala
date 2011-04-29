@@ -30,12 +30,12 @@
 class ArtwordEditor : public Editor {
   public:
 	ArtwordEditor (GuiObject parent, const wchar_t *title, Artword data);
-	~ArtwordEditor ();
+	virtual ~ArtwordEditor ();
 
-	const wchar_t * type () { return L"ArtwordEditor"; }
-	void updateList ();
-	void dataChanged ();
-	void createChildren ();
+	virtual const wchar_t * type () { return L"ArtwordEditor"; }
+	virtual void updateList ();
+	virtual void dataChanged ();
+	virtual void createChildren ();
 
 	Graphics _graphics;
 	int _feature;

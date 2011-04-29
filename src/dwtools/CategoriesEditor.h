@@ -32,18 +32,18 @@
 class CategoriesEditor : public Editor {
   public:
 	CategoriesEditor (GuiObject parent, const wchar_t *title, Any data);
-	~CategoriesEditor ();
+	virtual ~CategoriesEditor ();
 
-	const wchar_t * type () { return L"CategoriesEditor"; }
+	virtual const wchar_t * type () { return L"CategoriesEditor"; }
 
-	void notifyOutOfView ();
-	void update_dos ();
-	void updateWidgets (); /*all buttons except undo & redo */
-	void update (long from, long to, const long *select, long nSelect);
-	void insert (int position);
-	void createMenus ();
-	void createChildren ();
-	void dataChanged ();
+	virtual void notifyOutOfView ();
+	virtual void update_dos ();
+	virtual void updateWidgets (); /*all buttons except undo & redo */
+	virtual void update (long from, long to, const long *select, long nSelect);
+	virtual void insert (int position);
+	virtual void createMenus ();
+	virtual void createChildren ();
+	virtual void dataChanged ();
 
 	CommandHistory _history;
 	int _position;

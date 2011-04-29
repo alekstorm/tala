@@ -32,28 +32,28 @@ class ManipulationEditor : public FunctionEditor {
 	static void prefs (void);
 
 	ManipulationEditor (GuiObject parent, const wchar_t *title, Manipulation ana);
-	~ManipulationEditor ();
+	virtual ~ManipulationEditor ();
 
-	const wchar_t * type () { return L"ManipulationEditor"; }
+	virtual const wchar_t * type () { return L"ManipulationEditor"; }
 
-	void updateMenus ();
-	int getSoundArea (double *ymin, double *ymax);
-	int getPitchArea (double *ymin, double *ymax);
-	int getDurationArea (double *ymin, double *ymax);
-	void save (const wchar_t *text);
-	void save ();
-	void restore ();
-	void createMenus ();
-	void drawSoundArea (double ymin, double ymax);
-	void drawPitchArea (double ymin, double ymax);
-	void drawDurationArea (double ymin, double ymax);
-	void draw ();
-	void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
-	int clickPitch (double xWC, double yWC, int shiftKeyPressed);
-	void drawDurationWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
-	int clickDuration (double xWC, double yWC, int shiftKeyPressed);
-	int click (double xWC, double yWC, int shiftKeyPressed);
-	void play (double tmin, double tmax);
+	virtual void updateMenus ();
+	virtual int getSoundArea (double *ymin, double *ymax);
+	virtual int getPitchArea (double *ymin, double *ymax);
+	virtual int getDurationArea (double *ymin, double *ymax);
+	virtual void save (const wchar_t *text);
+	virtual void save ();
+	virtual void restore ();
+	virtual void createMenus ();
+	virtual void drawSoundArea (double ymin, double ymax);
+	virtual void drawPitchArea (double ymin, double ymax);
+	virtual void drawDurationArea (double ymin, double ymax);
+	virtual void draw ();
+	virtual void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
+	virtual int clickPitch (double xWC, double yWC, int shiftKeyPressed);
+	virtual void drawDurationWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
+	virtual int clickDuration (double xWC, double yWC, int shiftKeyPressed);
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void play (double tmin, double tmax);
 
 	PointProcess _previousPulses;
 	PitchTier _previousPitch;

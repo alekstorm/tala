@@ -30,12 +30,12 @@ class OTMultiEditor : public HyperPage {
   public:
 	OTMultiEditor (GuiObject parent, const wchar_t *title, OTMulti grammar);
 
-	const wchar_t * type () { return L"OTMultiEditor"; }
-	bool isEditable () { return true; }
-	void do_limit ();
-	void createChildren ();
-	void draw ();
-	int goToPage (const wchar_t *title);
+	virtual const wchar_t * type () { return L"OTMultiEditor"; }
+	virtual bool isEditable () { return true; }
+	virtual void do_limit ();
+	virtual void createChildren ();
+	virtual void draw ();
+	virtual int goToPage (const wchar_t *title);
 
 	const wchar_t *_form1, *_form2;
 	GuiObject _form1Text, _form2Text;

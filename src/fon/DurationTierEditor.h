@@ -32,23 +32,23 @@ class DurationTierEditor : public RealTierEditor {
 	DurationTierEditor (GuiObject parent, const wchar_t *title, DurationTier duration, Sound sound, int ownSound);
 	// 'sound' may be NULL.
 
-	const wchar_t * type () { return L"DurationTierEditor"; }
-	double minimumLegalValue () { return 0.0; }
-	const wchar_t * quantityText () { return L"Relative duration"; }
-	const wchar_t * quantityKey () { return L"Relative duration"; }
-	const wchar_t * rightTickUnits () { return L""; }
-	double defaultYmin () { return 0.25; }
-	double defaultYmax () { return 3.0; }
-	const wchar_t * setRangeTitle () { return L"Set duration range..."; }
-	const wchar_t * defaultYminText () { return L"0.25"; }
-	const wchar_t * defaultYmaxText () { return L"3.0"; }
-	const wchar_t * yminText () { return L"Minimum duration"; }
-	const wchar_t * ymaxText () { return L"Maximum duration"; }
-	const wchar_t * yminKey () { return L"Minimum duration"; }
-	const wchar_t * ymaxKey () { return L"Maximum duration"; }
+	virtual const wchar_t * type () { return L"DurationTierEditor"; }
+	virtual double minimumLegalValue () { return 0.0; }
+	virtual const wchar_t * quantityText () { return L"Relative duration"; }
+	virtual const wchar_t * quantityKey () { return L"Relative duration"; }
+	virtual const wchar_t * rightTickUnits () { return L""; }
+	virtual double defaultYmin () { return 0.25; }
+	virtual double defaultYmax () { return 3.0; }
+	virtual const wchar_t * setRangeTitle () { return L"Set duration range..."; }
+	virtual const wchar_t * defaultYminText () { return L"0.25"; }
+	virtual const wchar_t * defaultYmaxText () { return L"3.0"; }
+	virtual const wchar_t * yminText () { return L"Minimum duration"; }
+	virtual const wchar_t * ymaxText () { return L"Maximum duration"; }
+	virtual const wchar_t * yminKey () { return L"Minimum duration"; }
+	virtual const wchar_t * ymaxKey () { return L"Maximum duration"; }
 
-	void createMenus ();
-	void play (double tmin, double tmax);
+	virtual void createMenus ();
+	virtual void play (double tmin, double tmax);
 };
 
 /* End of file DurationTierEditor.h */

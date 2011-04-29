@@ -109,14 +109,14 @@ class UiForm {
 	class UiField {
 	  public:
 		UiField(int type, const wchar_t *name);
-		~UiField();
+		virtual ~UiField();
 
-		UiOption * addRadio (const wchar_t *label);
-		UiOption * addOptionMenu (const wchar_t *label);
+		virtual UiOption * addRadio (const wchar_t *label);
+		virtual UiOption * addOptionMenu (const wchar_t *label);
 
-		void setDefault();
-		int widgetToValue();
-		int stringToValue (const wchar_t *string, Interpreter *interpreter);
+		virtual void setDefault();
+		virtual int widgetToValue();
+		virtual int stringToValue (const wchar_t *string, Interpreter *interpreter);
 
 		int _type;
 		const wchar_t *_formLabel;
@@ -149,23 +149,23 @@ class UiForm {
 		const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
 	virtual ~UiForm();
 
-	UiField * addReal (const wchar_t *label, const wchar_t *defaultValue);
-	UiField * addRealOrUndefined (const wchar_t *label, const wchar_t *defaultValue);
-	UiField * addPositive (const wchar_t *label, const wchar_t *defaultValue);
-	UiField * addInteger (const wchar_t *label, const wchar_t *defaultValue);
-	UiField * addNatural (const wchar_t *label, const wchar_t *defaultValue);
-	UiField * addWord (const wchar_t *label, const wchar_t *defaultValue);
-	UiField * addSentence (const wchar_t *label, const wchar_t *defaultValue);
-	UiField * addLabel (const wchar_t *name, const wchar_t *label);
-	UiField * addBoolean (const wchar_t *label, int defaultValue);
-	UiField * addText (const wchar_t *name, const wchar_t *defaultValue);
-	UiField * addRadio (const wchar_t *label, int defaultValue);
-	UiField * addOptionMenu (const wchar_t *label, int defaultValue);
-	UiField * addList (const wchar_t *label, long numberOfStrings, const wchar_t **strings, long defaultValue);
-	UiField * addColour (const wchar_t *label, const wchar_t *defaultValue);
-	UiField * addChannel (const wchar_t *label, const wchar_t *defaultValue);
-	void finish ();
-	void setPauseForm (
+	virtual UiField * addReal (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addRealOrUndefined (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addPositive (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addInteger (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addNatural (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addWord (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addSentence (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addLabel (const wchar_t *name, const wchar_t *label);
+	virtual UiField * addBoolean (const wchar_t *label, int defaultValue);
+	virtual UiField * addText (const wchar_t *name, const wchar_t *defaultValue);
+	virtual UiField * addRadio (const wchar_t *label, int defaultValue);
+	virtual UiField * addOptionMenu (const wchar_t *label, int defaultValue);
+	virtual UiField * addList (const wchar_t *label, long numberOfStrings, const wchar_t **strings, long defaultValue);
+	virtual UiField * addColour (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addChannel (const wchar_t *label, const wchar_t *defaultValue);
+	virtual void finish ();
+	virtual void setPauseForm (
 		int numberOfContinueButtons, int defaultContinueButton, int cancelContinueButton,
 		const wchar_t *continue1, const wchar_t *continue2, const wchar_t *continue3,
 		const wchar_t *continue4, const wchar_t *continue5, const wchar_t *continue6,
@@ -177,14 +177,14 @@ class UiForm {
 	/* Do not call from batch. */
 	/* 'fieldName' is name from addXXXXXX (), */
 	/* without anything from and including the first " (" or ":". */
-	void setString (const wchar_t *fieldName, const wchar_t *text);
+	virtual void setString (const wchar_t *fieldName, const wchar_t *text);
 		/* Real, Positive, Integer, Natural, Word, Sentence, Label, Text, Radio, List. */
-	void setReal (const wchar_t *fieldName, double value);
+	virtual void setReal (const wchar_t *fieldName, double value);
 		/* Real, Positive. */
-	void setInteger (const wchar_t *fieldName, long value);
+	virtual void setInteger (const wchar_t *fieldName, long value);
 		/* Integer, Natural, Boolean, Radio, List. */
 
-	void do_ (bool modified);
+	virtual void do_ (bool modified);
 	/*
 		Function:
 			put the form on the screen.
@@ -217,23 +217,23 @@ class UiForm {
 	/* The field names are the 'label' or 'name' arguments to addXXXXXX (), */
 	/* without anything from parentheses or from a colon. */
 	/* These routines work from the screen and from batch. */
-	double getReal (const wchar_t *fieldName);	/* Real, Positive */
-	long getInteger (const wchar_t *fieldName);	/* Integer, Natural, Boolean, Radio, List */
-	wchar_t * getString (const wchar_t *fieldName);	/* Word, Sentence, Text, Radio, List */
-	Graphics_Colour getColour (const wchar_t *fieldName);   /* Colour */
-	MelderFile getFile (const wchar_t *fieldName); /* FileIn, FileOut */
+	virtual double getReal (const wchar_t *fieldName);	/* Real, Positive */
+	virtual long getInteger (const wchar_t *fieldName);	/* Integer, Natural, Boolean, Radio, List */
+	virtual wchar_t * getString (const wchar_t *fieldName);	/* Word, Sentence, Text, Radio, List */
+	virtual Graphics_Colour getColour (const wchar_t *fieldName);   /* Colour */
+	//virtual MelderFile getFile (const wchar_t *fieldName); /* FileIn, FileOut */ // FIXME why did this disappear?
 
-	double getReal_check (const wchar_t *fieldName);
-	long getInteger_check (const wchar_t *fieldName);
-	wchar_t * getString_check (const wchar_t *fieldName);
-	Graphics_Colour getColour_check (const wchar_t *fieldName);
+	virtual double getReal_check (const wchar_t *fieldName);
+	virtual long getInteger_check (const wchar_t *fieldName);
+	virtual wchar_t * getString_check (const wchar_t *fieldName);
+	virtual Graphics_Colour getColour_check (const wchar_t *fieldName);
 
-	int parseString (const wchar_t *arguments, Interpreter *interpreter);
+	virtual int parseString (const wchar_t *arguments, Interpreter *interpreter);
 
-	int getClickedContinueButton ();
-	int widgetsToValues ();
-	void okOrApply (GuiObject button, int hide);
-	int Interpreter_addVariables (Interpreter *interpreter);
+	virtual int getClickedContinueButton ();
+	virtual int widgetsToValues ();
+	virtual void okOrApply (GuiObject button, int hide);
+	virtual int Interpreter_addVariables (Interpreter *interpreter);
 
 	EditorCommand *_command;
 	GuiObject _parent, _shell, _dialog;

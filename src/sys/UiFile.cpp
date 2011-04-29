@@ -36,10 +36,6 @@
 #include "Editor.h"
 #include "UiFile.h"
 
-	structMelderFile _file;
-	void *_okClosure;
-	int _shiftKeyPressed;
-
 UiFile::UiFile (GuiObject parent, const wchar_t *title,
 	int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure,
 	const wchar_t *invokingButtonTitle, const wchar_t *helpTitle)

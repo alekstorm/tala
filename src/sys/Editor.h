@@ -46,7 +46,7 @@ class Editor;
 
 class EditorCommand {
   public:
-	~EditorCommand ();
+	virtual ~EditorCommand ();
 
 	Editor *_editor;
 	EditorMenu *_menu;
@@ -59,11 +59,11 @@ class EditorCommand {
 
 class EditorMenu {
   public:
-	~EditorMenu ();
+	virtual ~EditorMenu ();
 
 	EditorCommand * addCommand (const wchar_t *itemTitle, long flags,
 		int (*commandCallback) (Editor *editor, EditorCommand *, UiForm *, const wchar_t *, Interpreter *));
-	GuiObject getMenuWidget ();
+	// virtual GuiObject getMenuWidget (); // FIXME why did this disappear?
 
 	Editor *_editor;
 	const wchar_t *_menuTitle;
@@ -98,26 +98,26 @@ class Editor {
 	virtual void ok_pictureMargins (EditorCommand *cmd);
 	virtual void do_pictureMargins (EditorCommand *cmd);
 
-	EditorMenu * addMenu (const wchar_t *menuTitle, long flags);
-	EditorMenu * getMenu (const wchar_t *menuTitle);
+	virtual EditorMenu * addMenu (const wchar_t *menuTitle, long flags);
+	virtual EditorMenu * getMenu (const wchar_t *menuTitle);
 
-	void raise ();
+	virtual void raise ();
 	/* Raises and deiconizes the editor window. */
 
-	void changeData (Any data);
+	virtual void changeData (Any data);
 	/* Tell the Editor that the data has changed.
 	   If 'data' is not NULL, this routine installs 'data' into the Editor's 'data' field.
 	*/
 
-	void changeClipboard (Any data);
+	virtual void changeClipboard (Any data);
 	/* Tell the Editor that a clipboard has changed. */
 
-	void setDestroyCallback (void (*cb) (Editor *editor, void *closure), void *closure);
+	virtual void setDestroyCallback (void (*cb) (Editor *editor, void *closure), void *closure);
 	/* Makes the Editor notify client when user clicks "Close":	*/
 	/* the Editor will destroy itself.				*/
 	/* Use this callback to remove your references to "me".		*/
 
-	void setDataChangedCallback (void (*cb) (Editor *editor, void *closure, Any data), void *closure);
+	virtual void setDataChangedCallback (void (*cb) (Editor *editor, void *closure, Any data), void *closure);
 	/* Makes the Editor notify client (boss, creator, owner) when user changes data. */
 	/* 'data' is the new data (if not NULL). */
 	/* Most Editors will include the following line at several places, after 'data' or '*data' has changed:
@@ -125,11 +125,11 @@ class Editor {
 			my dataChangedCallback (me, my dataChangedClosure, my data);
 	*/
 
-	void broadcastChange ();
+	virtual void broadcastChange ();
 	/* A shortcut for the line above, with NULL for the 'data' argument, i.e. only '*data' has changed. */
 
-	void setPublishCallback (void (*cb) (Editor *editor, void *closure, Any publish), void *closure);
-	void setPublish2Callback (void (*cb) (Editor *editor, void *closure, Any publish1, Any publish2), void *closure);
+	virtual void setPublishCallback (void (*cb) (Editor *editor, void *closure, Any publish), void *closure);
+	virtual void setPublish2Callback (void (*cb) (Editor *editor, void *closure, Any publish1, Any publish2), void *closure);
 	/*
 		Makes the Editor notify client when user clicks a "Publish" button:
 		the Editor should create some new Data ("publish").
@@ -138,11 +138,11 @@ class Editor {
 
 	virtual void save (const wchar_t *text);   /* For Undo. */
 
-	EditorCommand *getMenuCommand (const wchar_t *menuTitle, const wchar_t *itemTitle);
-	int doMenuCommand (const wchar_t *command, const wchar_t *arguments, Interpreter *interpreter);
+	virtual EditorCommand *getMenuCommand (const wchar_t *menuTitle, const wchar_t *itemTitle);
+	virtual int doMenuCommand (const wchar_t *command, const wchar_t *arguments, Interpreter *interpreter);
 
-	void openPraatPicture ();
-	void closePraatPicture ();
+	virtual void openPraatPicture ();
+	virtual void closePraatPicture ();
 
 	wchar_t *_name;
 	GuiObject _parent, _shell, _dialog, _menuBar, _undoButton, _searchButton;
@@ -160,7 +160,7 @@ class Editor {
 	void *_publish2Closure;
 
   protected:
-	void setMenuSensitive (const wchar_t *menu, int sensitive);
+	virtual void setMenuSensitive (const wchar_t *menu, int sensitive);
 
   private:
 	void createMenus ();

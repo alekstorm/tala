@@ -32,16 +32,16 @@ class ButtonEditor : public HyperPage {
   public:
 	ButtonEditor (GuiObject parent);
 
-	const wchar_t * type () { return L"ButtonEditor"; }
-	bool isScriptable () { return false; }
+	virtual const wchar_t * type () { return L"ButtonEditor"; }
+	virtual bool isScriptable () { return false; }
 
-	void which (int show);
-	void draw ();
-	void drawMenuCommand (praat_Command cmd, long i);
-	void drawAction (praat_Command cmd, long i);
-	int goToPage (const wchar_t *title);
-	void createChildren ();
-	void createMenus ();
+	virtual void which (int show);
+	virtual void draw ();
+	virtual void drawMenuCommand (praat_Command cmd, long i);
+	virtual void drawAction (praat_Command cmd, long i);
+	virtual int goToPage (const wchar_t *title);
+	virtual void createChildren ();
+	virtual void createMenus ();
 
 	int _show;
 	GuiObject _button1, _button2, _button3, _button4, _button5;

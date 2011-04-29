@@ -30,12 +30,12 @@ class PitchEditor : public FunctionEditor {
   public:
 	PitchEditor (GuiObject parent, const wchar_t *title, Pitch pitch);
 
-	const wchar_t * type () { return L"PitchEditor"; }
+	virtual const wchar_t * type () { return L"PitchEditor"; }
 
-	void createMenus ();
-	void draw ();
-	void play (double tmin, double tmax);
-	int click (double xWC, double yWC, int dummy);
+	virtual void createMenus ();
+	virtual void draw ();
+	virtual void play (double tmin, double tmax);
+	virtual int click (double xWC, double yWC, int dummy);
 };
 
 /* End of file PitchEditor.h */

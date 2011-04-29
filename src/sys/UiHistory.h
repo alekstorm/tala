@@ -22,9 +22,9 @@
 #ifdef __cplusplus
 class UiHistory {
   public:
-	void write (const wchar_t *string) { MelderString_append (& _contents, string); }
-	wchar_t *get (void) { return _contents.string; }
-	void clear (void) { MelderString_empty (& _contents); }
+	virtual void write (const wchar_t *string) { MelderString_append (& _contents, string); }
+	virtual wchar_t *get (void) { return _contents.string; }
+	virtual void clear (void) { MelderString_empty (& _contents); }
 
   private:
 	MelderString _contents;

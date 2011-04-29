@@ -102,23 +102,23 @@ class SoundRecorder : public Editor {
 	static void setBufferSizePref_MB (int size);
 
 	SoundRecorder (GuiObject parent, int numberOfChannels, void *applicationContext);
-	~SoundRecorder ();
+	virtual ~SoundRecorder ();
 
-	wchar_t * type () { return L"SoundRecorder"; }
-	bool isEditable () { return false; }
-	bool isScriptable () { return false; }
+	virtual wchar_t * type () { return L"SoundRecorder"; }
+	virtual bool isEditable () { return false; }
+	virtual bool isScriptable () { return false; }
 
-	void createMenus ();
-	void stopRecording ();
-	void showMaximum (int channel, double maximum);
-	void showMeter (short *buffer, long nsamp);
-	int tooManySamplesInBufferToReturnToGui ();
-	long getMyNsamp ();
-	void publish ();
-	int initialize ();
-	void createChildren ();
-	void writeFakeMonoFile_e (MelderFile file, int audioFileType);
-	int writeAudioFile (MelderFile file, int audioFileType);
+	virtual void createMenus ();
+	virtual void stopRecording ();
+	virtual void showMaximum (int channel, double maximum);
+	virtual void showMeter (short *buffer, long nsamp);
+	virtual int tooManySamplesInBufferToReturnToGui ();
+	virtual long getMyNsamp ();
+	virtual void publish ();
+	virtual int initialize ();
+	virtual void createChildren ();
+	virtual void writeFakeMonoFile_e (MelderFile file, int audioFileType);
+	virtual int writeAudioFile (MelderFile file, int audioFileType);
 
 	int _numberOfChannels;
 	long _nsamp, _nmax;

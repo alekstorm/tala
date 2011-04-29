@@ -1291,8 +1291,6 @@ void FunctionEditor::dataChanged () {
 	marksChanged ();
 }
 
-void FunctionEditor::draw () {}
-
 void FunctionEditor::prepareDraw () {}
 
 void FunctionEditor::play (double tmin, double tmax) {}

@@ -32,23 +32,23 @@ class SpectrumEditor : public FunctionEditor {
 
 	SpectrumEditor (GuiObject parent, const wchar_t *title, Any data);
 
-	const wchar_t * type () { return L"SpectrumEditor"; }
+	virtual const wchar_t * type () { return L"SpectrumEditor"; }
 
-	int fixedPrecision_long () { return 2; }
-	const wchar_t * format_domain () { return L"Frequency domain:"; }
-	const wchar_t * format_short () { return L"%.0f"; }
-	const wchar_t * format_long () { return L"%.2f"; }
-	const wchar_t * format_units () { return L"Hertz"; }
-	const wchar_t * format_totalDuration () { return L"Total bandwidth %.2f seconds"; }
-	const wchar_t * format_window () { return L"Window %.2f Hertz"; }
-	const wchar_t * format_selection () { return L"%.2f Hz"; }
+	virtual int fixedPrecision_long () { return 2; }
+	virtual const wchar_t * format_domain () { return L"Frequency domain:"; }
+	virtual const wchar_t * format_short () { return L"%.0f"; }
+	virtual const wchar_t * format_long () { return L"%.2f"; }
+	virtual const wchar_t * format_units () { return L"Hertz"; }
+	virtual const wchar_t * format_totalDuration () { return L"Total bandwidth %.2f seconds"; }
+	virtual const wchar_t * format_window () { return L"Window %.2f Hertz"; }
+	virtual const wchar_t * format_selection () { return L"%.2f Hz"; }
 
-	void updateRange ();
-	void dataChanged ();
-	void draw ();
-	int click (double xWC, double yWC, int shiftKeyPressed);
-	void play (double fmin, double fmax);
-	void createMenus ();
+	virtual void updateRange ();
+	virtual void dataChanged ();
+	virtual void draw ();
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void play (double fmin, double fmax);
+	virtual void createMenus ();
 
 	double _minimum, _maximum, _cursorHeight;
 	double _bandSmoothing, _dynamicRange;

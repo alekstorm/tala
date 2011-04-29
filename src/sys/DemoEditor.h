@@ -35,32 +35,32 @@ class DemoEditor : public Editor {
 	static DemoEditor *theDemoEditor;
 
 	DemoEditor (GuiObject parent);
-	~DemoEditor ();
+	virtual ~DemoEditor ();
 
-	wchar_t * type () { return L"DemoEditor"; }
-	bool hasMenuBar () { return false; }
-	bool canFullScreen () { return true; }
-	bool isScriptable () { return false; }
+	virtual wchar_t * type () { return L"DemoEditor"; }
+	virtual bool hasMenuBar () { return false; }
+	virtual bool canFullScreen () { return true; }
+	virtual bool isScriptable () { return false; }
 
-	int windowTitle (const wchar_t *title);
-	int show (void);
-	bool waitForInput (Interpreter *interpreter);
-	bool clicked (void);
-	double x (void);
-	double y (void);
-	bool keyPressed (void);
-	wchar_t key (void);
-	bool shiftKeyPressed (void);
-	bool commandKeyPressed (void);
-	bool optionKeyPressed (void);
-	bool extraControlKeyPressed (void);
-	void info ();
-	void goAway ();
-	void createChildren ();
+	virtual int windowTitle (const wchar_t *title);
+	virtual int show (void);
+	virtual bool waitForInput (Interpreter *interpreter);
+	virtual bool clicked (void);
+	virtual double x (void);
+	virtual double y (void);
+	virtual bool keyPressed (void);
+	virtual wchar_t key (void);
+	virtual bool shiftKeyPressed (void);
+	virtual bool commandKeyPressed (void);
+	virtual bool optionKeyPressed (void);
+	virtual bool extraControlKeyPressed (void);
+	virtual void info ();
+	virtual void goAway ();
+	virtual void createChildren ();
 
 	/* Shortcuts: */
-	bool input (const wchar_t *keys);
-	bool clickedIn (double left, double right, double bottom, double top);
+	virtual bool input (const wchar_t *keys);
+	virtual bool clickedIn (double left, double right, double bottom, double top);
 
 	GuiObject _drawingArea;
 	Graphics _graphics;

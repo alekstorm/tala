@@ -33,7 +33,7 @@ class RealTierEditor : public TimeSoundEditor {
 	if 'ownSound' is TRUE, the editor will contain a deep copy of the Sound,
 	which the editor will destroy when the editor is destroyed. */
 
-	const wchar_t * type () { return L"RealTierEditor"; }
+	virtual const wchar_t * type () { return L"RealTierEditor"; }
 	virtual double minimumLegalValue () { return NUMundefined; }
 	virtual double maximumLegalValue () { return NUMundefined; }
 	virtual const wchar_t * quantityText () { return L"Y"; }   /* Normally includes units. */
@@ -49,16 +49,16 @@ class RealTierEditor : public TimeSoundEditor {
 	virtual const wchar_t * yminKey () { return L"Minimum"; }   /* Without units. */
 	virtual const wchar_t * ymaxKey () { return L"Maximum"; }   /* Without units. */
 
-	void updateScaling ();
+	virtual void updateScaling ();
 /*	Computes the ymin and ymax values on the basis of the data.
 	Call after every change in the data. */
 
-	void createMenus ();
-	void dataChanged ();
-	void draw ();
-	void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
-	int click (double xWC, double yWC, int shiftKeyPressed);
-	void play (double tmin, double tmax);
+	virtual void createMenus ();
+	virtual void dataChanged ();
+	virtual void draw ();
+	virtual void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void play (double tmin, double tmax);
 
 	double _ymin, _ymax, _ycursor;
 };

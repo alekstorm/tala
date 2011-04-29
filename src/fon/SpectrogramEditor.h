@@ -30,10 +30,10 @@ class SpectrogramEditor : public FunctionEditor {
   public:
 	SpectrogramEditor (GuiObject parent, const wchar_t *title, Any data);
 
-	const wchar_t * type () { return L"SpectrogramEditor"; }
+	virtual const wchar_t * type () { return L"SpectrogramEditor"; }
 
-	void draw ();
-	int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void draw ();
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
 
 	double _maximum;
 };

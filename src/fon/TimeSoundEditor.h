@@ -39,14 +39,14 @@ class TimeSoundEditor : public FunctionEditor {
 	static void prefs (void);
 
 	TimeSoundEditor (GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound);
-	~TimeSoundEditor ();
+	virtual ~TimeSoundEditor ();
 
-	const wchar_t * type () { return L"TimeSoundEditor"; }
-	void info ();
+	virtual const wchar_t * type () { return L"TimeSoundEditor"; }
+	virtual void info ();
 
-	int do_ExtractSelectedSound (bool preserveTimes);
-	int do_write (MelderFile file, int format);
-	void draw_sound (double globalMinimum, double globalMaximum);
+	virtual int do_ExtractSelectedSound (bool preserveTimes);
+	virtual int do_write (MelderFile file, int format);
+	virtual void draw_sound (double globalMinimum, double globalMaximum);
 
 	bool _ownSound;
 	struct TimeSoundEditor_sound _sound;

@@ -29,22 +29,22 @@ class InfoEditor : public Editor {
 	static void prefs (void);
 
 	InfoEditor (GuiObject parent, const wchar_t *initialText);
-	~InfoEditor ();
+	virtual ~InfoEditor ();
 
-	const wchar_t * type () { return L"InfoEditor"; }
+	virtual const wchar_t * type () { return L"InfoEditor"; }
 
-	bool isScriptable () { return false; }
+	virtual bool isScriptable () { return false; }
 
-	void showOpen ();
-	void clear ();
-	void setFontSize (int fontSize);
+	virtual void showOpen ();
+	virtual void clear ();
+	virtual void setFontSize (int fontSize);
 	virtual int openDocument (MelderFile file);
 	virtual void newDocument ();
 	virtual int saveDocument (MelderFile file);
-	void closeDocument ();
-	bool getSelectedLines (long *firstLine, long *lastLine);
-	void do_find ();
-	void do_replace ();
+	virtual void closeDocument ();
+	virtual bool getSelectedLines (long *firstLine, long *lastLine);
+	virtual void do_find ();
+	virtual void do_replace ();
 	virtual const wchar_t * getName ();
 	virtual void menu_new (EditorCommand *cmd);
 
@@ -59,9 +59,9 @@ class InfoEditor : public Editor {
 
   protected:
 	virtual void goAway ();
-	void updateSizeMenu ();
-	void createMenus ();
-	void createChildren ();
+	virtual void updateSizeMenu ();
+	virtual void createMenus ();
+	virtual void createChildren ();
 };
 
 /* End of file InfoEditor.h */

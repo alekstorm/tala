@@ -28,8 +28,8 @@ class UiFile : public UiForm {
 		int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure,
 		const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
 
-	MelderFile getFile ();
-	void hide (void);
+	virtual MelderFile getFile ();
+	//virtual void hide (void); // FIXME why did this disappear?
 	/*
 	Hides the visible UiFile that was opened most recently.
 	Normally, file selectors stay open until their okCallback has completed.
@@ -51,7 +51,7 @@ class UiInfile : public UiFile {
 		int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure,
 		const wchar_t *invokingButtonTitle, const wchar_t *helpTitle, bool allowMultipleFiles);
 
-	void do_ ();
+	virtual void do_ ();
 
 	bool _allowMultipleFiles;
 };
@@ -64,7 +64,7 @@ class UiOutfile : public UiFile {
 		int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure,
 		const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
 
-	void do_ (const wchar_t *defaultName);
+	virtual void do_ (const wchar_t *defaultName);
 
 	int (*_allowExecutionHook) (void *closure);
 	void *_allowExecutionClosure;   /* I am owner (see destroy). */

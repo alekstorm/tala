@@ -34,12 +34,12 @@ class StringsEditor : public Editor {
   public:
 	StringsEditor (GuiObject parent, const wchar_t *title, Any data);
 
-	const wchar_t * type () { return L"StringsEditor"; }
+	virtual const wchar_t * type () { return L"StringsEditor"; }
 
-	void updateList ();
-	void createMenus ();
-	void createChildren ();
-	void dataChanged ();
+	virtual void updateList ();
+	virtual void createMenus ();
+	virtual void createChildren ();
+	virtual void dataChanged ();
 
 	GuiObject _list, _text;
 };

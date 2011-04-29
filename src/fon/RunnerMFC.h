@@ -33,19 +33,19 @@
 class RunnerMFC : public Editor {
   public:
 	RunnerMFC (GuiObject parent, const wchar_t *title, Ordered experiments);
-	~RunnerMFC ();
+	virtual ~RunnerMFC ();
 
-	wchar_t * type () { return L"RunnerMFC"; }
-	bool isEditable () { return false; }
-	bool isScriptable () { return false; }
+	virtual wchar_t * type () { return L"RunnerMFC"; }
+	virtual bool isEditable () { return false; }
+	virtual bool isScriptable () { return false; }
 
-	void dataChanged ();
-	int startExperiment ();
-	void drawControlButton (double left, double right, double bottom, double top, const wchar_t *visibleText);
-	void do_ok ();
-	void do_oops ();
-	void do_replay ();
-	void createChildren ();
+	virtual void dataChanged ();
+	virtual int startExperiment ();
+	virtual void drawControlButton (double left, double right, double bottom, double top, const wchar_t *visibleText);
+	virtual void do_ok ();
+	virtual void do_oops ();
+	virtual void do_replay ();
+	virtual void createChildren ();
 
 	GuiObject _drawingArea;
 	Ordered _experiments;

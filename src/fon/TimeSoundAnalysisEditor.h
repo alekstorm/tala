@@ -114,27 +114,27 @@ class TimeSoundAnalysisEditor : public TimeSoundEditor {
 	static void prefs (void);
 
 	TimeSoundAnalysisEditor (GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound);
-	~TimeSoundAnalysisEditor ();
+	virtual ~TimeSoundAnalysisEditor ();
 
-	const wchar_t * type () { return L"TimeSoundAnalysisEditor"; }
-	void info ();
+	virtual const wchar_t * type () { return L"TimeSoundAnalysisEditor"; }
+	virtual void info ();
 
-	void destroy_analysis ();
-	void draw_analysis ();
-	void draw_analysis_pulses ();
-	void computeSpectrogram ();
-	void computePitch ();
-	void computeIntensity ();
-	void computeFormants ();
-	void computePulses ();
-	int makeQueriable (int allowCursor, double *tmin, double *tmax);
-	int do_deleteLogFile (int which);
-	int do_log (int which);
-	Sound extractSound (double tmin, double tmax);
-	int do_getFormant (int iformant);
-	int do_getBandwidth (int iformant);
-	void computePitch_inside ();
-	int click (double xbegin, double ybegin, int shiftKeyPressed);
+	virtual void destroy_analysis ();
+	virtual void draw_analysis ();
+	virtual void draw_analysis_pulses ();
+	virtual void computeSpectrogram ();
+	virtual void computePitch ();
+	virtual void computeIntensity ();
+	virtual void computeFormants ();
+	virtual void computePulses ();
+	virtual int makeQueriable (int allowCursor, double *tmin, double *tmax);
+	virtual int do_deleteLogFile (int which);
+	virtual int do_log (int which);
+	virtual Sound extractSound (double tmin, double tmax);
+	virtual int do_getFormant (int iformant);
+	virtual int do_getBandwidth (int iformant);
+	virtual void computePitch_inside ();
+	virtual int click (double xbegin, double ybegin, int shiftKeyPressed);
 
 	double _longestAnalysis;
 	enum kTimeSoundAnalysisEditor_timeStepStrategy _timeStepStrategy;

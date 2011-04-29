@@ -29,17 +29,17 @@ class TextEditor : public InfoEditor {
   public:
 	TextEditor (GuiObject parent, const wchar_t *initialText);
 
-	const wchar_t * type () { return L"TextEditor"; }
+	virtual const wchar_t * type () { return L"TextEditor"; }
 
-	void nameChanged ();
-	void newDocument ();
-	int saveDocument (MelderFile file);
-	void menu_new (EditorCommand *cmd);
-	const wchar_t * getName ();
+	virtual void nameChanged ();
+	virtual void newDocument ();
+	virtual int saveDocument (MelderFile file);
+	virtual void menu_new (EditorCommand *cmd);
+	virtual const wchar_t * getName ();
 
   protected:
-	void createMenus ();
-	void goAway ();
+	virtual void createMenus ();
+	virtual void goAway ();
 };
 
 /* End of file TextEditor.h */
