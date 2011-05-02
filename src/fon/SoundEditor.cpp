@@ -40,8 +40,9 @@
  */
 
 #include "SoundEditor.h"
-#include "Sound_and_Spectrogram.h"
+
 #include "Pitch.h"
+#include "Sound_and_Spectrogram.h"
 #include "sys/Preferences.h"
 
 /********** METHODS **********/

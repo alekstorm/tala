@@ -32,8 +32,8 @@
  */
 
 #include "TableEditor.h"
+
 #include "sys/machine.h"
-#include "sys/EditorM.h"
 
 /********** EDITOR METHODS **********/
 

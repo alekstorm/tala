@@ -23,8 +23,8 @@
  * pb 2011/03/23
  */
 
-#include "RealTierEditor.h"
 #include "AmplitudeTier.h"
+#include "RealTierEditor.h"
 #include "Sound.h"
 
 class AmplitudeTierEditor : public RealTierEditor {

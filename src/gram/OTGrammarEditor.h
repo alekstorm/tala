@@ -23,8 +23,8 @@
  * pb 2011/03/08
  */
 
-#include "sys/HyperPage.h"
 #include "OTGrammar.h"
+#include "sys/HyperPage.h"
 
 class OTGrammarEditor : public HyperPage {
   public:

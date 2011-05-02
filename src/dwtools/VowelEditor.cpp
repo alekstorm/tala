@@ -52,20 +52,24 @@ trajectory --> path ????
  Make sound-follows-mouse real time!
 */
 
-#include "fon/FormantGrid.h"
+#include "VowelEditor.h"
+
 #include "KlattGrid.h"
-#include <portaudio.h>
-#include "sys/praat.h"
+#include "TableOfReal_extensions.h"
+#include "Table_extensions.h"
+#include "fon/FormantGrid.h"
 #include "fon/PitchTier_to_PointProcess.h"
 #include "fon/PitchTier_to_Sound.h"
 #include "fon/PointProcess_and_Sound.h"
 #include "fon/Polygon.h"
-#include "TableOfReal_extensions.h"
-#include "Table_extensions.h"
-#include "VowelEditor.h"
+#include "sys/EditorM.h"
 #include "sys/machine.h"
 #include "sys/Preferences.h"
+
+#include "sys/praat.h"
 #include "sys/EditorM.h"
+
+#include <portaudio.h>
 #include <time.h>
 
 #if defined (macintosh)

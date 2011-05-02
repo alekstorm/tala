@@ -23,8 +23,8 @@
  * pb 2011/03/23
  */
 
-#include "RealTierEditor.h"
 #include "PitchTier.h"
+#include "RealTierEditor.h"
 #include "Sound.h"
 
 class PitchTierEditor : public RealTierEditor {

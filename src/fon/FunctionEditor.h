@@ -23,10 +23,9 @@
  * pb 2011/03/23
  */
 
+#include "Function.h"
 #include "sys/Editor.h"
 #include "sys/Graphics.h"
-#include "sys/EditorM.h"
-#include "Function.h"
 
 #define FunctionEditor_UPDATE_NEEDED  1
 #define FunctionEditor_NO_UPDATE_NEEDED  0

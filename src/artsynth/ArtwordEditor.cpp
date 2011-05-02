@@ -27,6 +27,7 @@
  */
 
 #include "ArtwordEditor.h"
+
 #include "sys/machine.h"
 
 ArtwordEditor::ArtwordEditor (GuiObject parent, const wchar_t *title, Artword data)

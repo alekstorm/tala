@@ -30,7 +30,7 @@
  */
 
 #include "OTMultiEditor.h"
-#include "sys/EditorM.h"
+
 #include "sys/machine.h"
 
 int OTMultiEditor::menu_cb_evaluate (EDITOR_ARGS) {

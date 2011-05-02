@@ -23,12 +23,8 @@
  * 2011/03/02
 */
 
-#ifndef _Editor_h_
-	#include "Editor.h"
-#endif
-#ifndef _Strings_h_
-	#include "Strings.h"
-#endif
+#include "Editor.h"
+#include "Strings.h"
 
 class StringsEditor : public Editor {
   public:

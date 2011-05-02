@@ -35,9 +35,9 @@
  * pb 2011/03/22 C++
  */
 
-#include "Pitch_to_Sound.h"
 #include "PitchEditor.h"
-#include "sys/EditorM.h"
+
+#include "Pitch_to_Sound.h"
 
 #define HEIGHT_UNV  3.0
 #define HEIGHT_INTENS  6.0

@@ -25,10 +25,9 @@
  djmw 20110305 Latest modification.
 */
 
+#include "Categories.h"
 #include "dwsys/Command.h"
 #include "sys/Editor.h"
-#include "sys/EditorM.h"
-#include "Categories.h"
 
 class CategoriesEditor : public Editor {
   public:

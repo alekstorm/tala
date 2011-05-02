@@ -24,7 +24,7 @@
  */
 
 #include "StringsEditor.h"
-#include "EditorM.h"
+
 #include "machine.h"
 
 StringsEditor::StringsEditor (GuiObject parent, const wchar_t *title, Any data)

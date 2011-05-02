@@ -24,28 +24,11 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _FormantTier_h_
-	#include "fon/FormantTier.h"
-#endif
-#ifndef _PitchTier_h_
-	#include "fon/PitchTier.h"
-#endif
-
-#ifndef _Graphics_h_
-	#include "sys/Graphics.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
-#ifndef _Editor_h_
-	#include "sys/Editor.h"
-#endif
-
-#include "sys/EditorM.h"
-
-#ifdef __cplusplus
-	extern "C" {
-#endif
+#include "fon/FormantTier.h"
+#include "fon/PitchTier.h"
+#include "stat/TableOfReal.h"
+#include "sys/Editor.h"
+#include "sys/Graphics.h"
 
 #define Vowel_members Function_members \
 	PitchTier pt; \
@@ -149,9 +132,5 @@ class VowelEditor : public Editor {
 	static void gui_button_cb_reverse (I, GuiButtonEvent event);
 	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 };
-
-#ifdef __cplusplus
-	}
-#endif
 
 #endif /* _VowelEditor_h_ */

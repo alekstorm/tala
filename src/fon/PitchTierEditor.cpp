@@ -28,8 +28,8 @@
  */
 
 #include "PitchTierEditor.h"
+
 #include "PitchTier_to_Sound.h"
-#include "sys/EditorM.h"
 
 PitchTierEditor::PitchTierEditor (GuiObject parent, const wchar_t *title, PitchTier pitch, Sound sound, int ownSound)
 	: RealTierEditor (parent, title, (RealTier) pitch, sound, ownSound) {

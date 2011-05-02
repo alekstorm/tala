@@ -27,6 +27,7 @@
  */
 
 #include "AmplitudeTierEditor.h"
+
 #include "sys/EditorM.h"
 
 AmplitudeTierEditor::AmplitudeTierEditor (GuiObject parent, const wchar_t *title, AmplitudeTier amplitude, Sound sound, int ownSound)

@@ -32,14 +32,16 @@
  * pb 2010/05/14 GTK
  */
 
-#include <ctype.h>
 #include "HyperPage.h"
+
+#include "machine.h"
 #include "Printer.h"
 #include "Preferences.h"
-#include "machine.h"
 
 #include "praat.h"
 #include "EditorM.h"
+
+#include <ctype.h>
 
 #define PAGE_HEIGHT  320.0
 #define SCREEN_HEIGHT  15.0

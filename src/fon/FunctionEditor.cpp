@@ -35,6 +35,7 @@
  */
 
 #include "FunctionEditor.h"
+
 #include "sys/machine.h"
 #include "sys/Preferences.h"
 

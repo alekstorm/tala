@@ -68,11 +68,12 @@
  * are hard to predict. For this reason, everything is done with system #ifdefs.
  */
 
-#include <errno.h>
 #include "SoundRecorder.h"
+
 #include "sys/Editor.h"
-#include "sys/EditorM.h"
 #include "sys/Preferences.h"
+
+#include <errno.h>
 
 static struct {
 	int bufferSize_MB;

@@ -34,9 +34,10 @@
  */
 
 #include "PointEditor.h"
+
 #include "PointProcess_and_Sound.h"
-#include "sys/EditorM.h"
 #include "VoiceAnalysis.h"
+#include "sys/EditorM.h"
 
 PointEditor::PointEditor (GuiObject parent, const wchar_t *title, PointProcess point, Sound sound)
 	: TimeSoundEditor (parent, title, point, sound ? Sound_convertToMono (sound) : NULL, false),

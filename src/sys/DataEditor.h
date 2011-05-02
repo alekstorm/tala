@@ -23,9 +23,7 @@
  * pb 2011/03/02
  */
 
-#ifndef _Editor_h_
-	#include "Editor.h"
-#endif
+#include "Editor.h"
 
 #include "Data.h"
 

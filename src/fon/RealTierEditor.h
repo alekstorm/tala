@@ -23,8 +23,8 @@
  * pb 2011/03/23
  */
 
-#include "TimeSoundEditor.h"
 #include "RealTier.h"
+#include "TimeSoundEditor.h"
 
 class RealTierEditor : public TimeSoundEditor {
   public:

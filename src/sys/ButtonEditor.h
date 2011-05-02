@@ -23,9 +23,7 @@
  * pb 2011/03/02
  */
 
-#ifndef _HyperPage_h_
-	#include "HyperPage.h"
-#endif
+#include "HyperPage.h"
 #include "praatP.h"
 
 class ButtonEditor : public HyperPage {

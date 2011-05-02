@@ -24,7 +24,6 @@
  */
 
 #include "TimeSoundAnalysisEditor.h"
-#include "sys/EditorM.h"
 
 class SoundEditor : public TimeSoundAnalysisEditor {
   public:

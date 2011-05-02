@@ -23,8 +23,8 @@
  * pb 2011/03/23
  */
 
-#include "FunctionEditor.h"
 #include "FormantGrid.h"
+#include "FunctionEditor.h"
 
 struct FormantGridEditor_Play {
 	double samplingFrequency;

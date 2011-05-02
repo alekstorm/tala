@@ -24,8 +24,8 @@
  */
 
 #include "FunctionEditor.h"
-#include "Sound.h"
 #include "LongSound.h"
+#include "Sound.h"
 
 struct TimeSoundEditor_sound {
 	/* KEEP IN SYNC WITH PREFS. */

@@ -30,9 +30,9 @@
  */
 
 #include "SpectrumEditor.h"
+
 #include "Sound_and_Spectrum.h"
 #include "sys/Preferences.h"
-#include "sys/EditorM.h"
 
 static struct {
 	double bandSmoothing;

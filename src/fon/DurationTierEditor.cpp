@@ -23,7 +23,6 @@
  */
 
 #include "DurationTierEditor.h"
-#include "sys/EditorM.h"
 
 DurationTierEditor::DurationTierEditor (GuiObject parent, const wchar_t *title, DurationTier duration, Sound sound, int ownSound)
 	: RealTierEditor (parent, title, (RealTier) duration, sound, ownSound) {

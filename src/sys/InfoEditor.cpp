@@ -28,9 +28,9 @@
  */
 
 #include "InfoEditor.h"
-#include "EditorM.h"
-#include "Preferences.h"
+
 #include "machine.h"
+#include "Preferences.h"
 
 // FIXME
 static InfoEditor *theInfoEditor;

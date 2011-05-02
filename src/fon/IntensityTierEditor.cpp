@@ -27,7 +27,6 @@
  */
 
 #include "IntensityTierEditor.h"
-#include "sys/EditorM.h"
 
 IntensityTierEditor::IntensityTierEditor (GuiObject parent, const wchar_t *title, IntensityTier intensity, Sound sound, int ownSound)
 	: RealTierEditor (parent, title, (RealTier) intensity, sound, ownSound) {

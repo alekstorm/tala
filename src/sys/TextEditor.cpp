@@ -46,9 +46,9 @@
  */
 
 #include "TextEditor.h"
+
 #include "machine.h"
 #include "kar/longchar.h"
-#include "EditorM.h"
 #include "kar/UnicodeData.h"
 
 /***** TextEditor methods *****/

@@ -23,8 +23,8 @@
  * pb 2011/03/03
  */
 
-#include "sys/Editor.h"
 #include "Table.h"
+#include "sys/Editor.h"
 
 #define MAXNUM_VISIBLE_COLUMNS  100
 #define SIZE_INCHES  40

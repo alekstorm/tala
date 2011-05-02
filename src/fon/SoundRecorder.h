@@ -25,10 +25,12 @@
 
 /* An editor-like object that allows the user to record sounds. */
 
-#include "sys/Editor.h"
 #include "Sound.h"
+#include "sys/Editor.h"
 #include "sys/machine.h"
+
 #include <portaudio.h>
+
 #if defined (macintosh)
 	#include "pa_mac_core.h"
 #endif

@@ -34,7 +34,7 @@
  */
 
 #include "RunnerMFC.h"
-#include "sys/EditorM.h"
+
 #include "sys/machine.h"
 
 void RunnerMFC::gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {

@@ -23,8 +23,8 @@
  * pb 2011/03/08
  */
 
-#include "sys/HyperPage.h"
 #include "OTMulti.h"
+#include "sys/HyperPage.h"
 
 class OTMultiEditor : public HyperPage {
   public:

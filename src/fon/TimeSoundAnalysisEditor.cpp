@@ -78,23 +78,24 @@
  * pb 2011/03/23 C++
  */
 
-#include <time.h>
 #include "TimeSoundAnalysisEditor.h"
-#include "sys/Preferences.h"
-#include "sys/EditorM.h"
+
+#include "Pitch_to_PointProcess.h"
 #include "Sound_and_Spectrogram.h"
 #include "Sound_and_Spectrum.h"
-#include "Sound_to_Pitch.h"
 #include "Sound_to_Intensity.h"
+#include "Sound_to_Pitch.h"
 #include "Sound_to_Formant.h"
-#include "Pitch_to_PointProcess.h"
 #include "VoiceAnalysis.h"
 #include "sys/praat_script.h"
+#include "sys/Preferences.h"
 
 #include "sys/enums_getText.h"
 #include "TimeSoundAnalysisEditor_enums.h"
 #include "sys/enums_getValue.h"
 #include "TimeSoundAnalysisEditor_enums.h"
+
+#include <time.h>
 
 static const wchar_t * theMessage_Cannot_compute_spectrogram = L"The spectrogram is not defined at the edge of the sound.";
 static const wchar_t * theMessage_Cannot_compute_pitch = L"The pitch contour is not defined at the edge of the sound.";

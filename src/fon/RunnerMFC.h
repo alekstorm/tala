@@ -23,12 +23,8 @@
  * pb 2005/12/08
  */
 
-#ifndef _Editor_h_
-	#include "sys/Editor.h"
-#endif
-#ifndef _ExperimentMFC_h_
-	#include "ExperimentMFC.h"
-#endif
+#include "ExperimentMFC.h"
+#include "sys/Editor.h"
 
 class RunnerMFC : public Editor {
   public:

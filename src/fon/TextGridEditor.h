@@ -23,11 +23,11 @@
  * pb 2011/03/23
  */
 
-#include "TimeSoundAnalysisEditor.h"
 #include "SpellingChecker.h"
-#include "sys/Preferences.h"
 #include "TextGrid.h"
 #include "TextGridEditor_enums.h"
+#include "TimeSoundAnalysisEditor.h"
+#include "sys/Preferences.h"
 
 #define TEXT_HEIGHT  50
 

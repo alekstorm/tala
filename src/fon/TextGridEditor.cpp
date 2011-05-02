@@ -46,9 +46,9 @@
  */
 
 #include "TextGridEditor.h"
-#include "sys/EditorM.h"
-#include "SoundEditor.h"
+
 #include "Sound_and_Spectrogram.h"
+#include "SoundEditor.h"
 #include "TextGrid_Sound.h"
 
 #include "sys/enums_getText.h"

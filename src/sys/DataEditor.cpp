@@ -35,6 +35,12 @@
  * pb 2011/03/03 removed stringwa
  */
 
+#include "DataEditor.h"
+
+#include "Collection.h"
+#include "machine.h"
+#include "praatP.h"
+
 #define NAME_X  30
 #define TEXT_X  250
 #define BUTTON_X  250
@@ -44,11 +50,6 @@
 #define ROW_HEIGHT  31
 
 #define SCROLL_BAR_WIDTH  Machine_getScrollBarWidth ()
-
-#include "DataEditor.h"
-#include "EditorM.h"
-#include "Collection.h"
-#include "machine.h"
 
 /*static const char * typeStrings [] = { "none",
 	"byte", "short", "int", "long", "ubyte", "ushort", "uint", "ulong", "bool",

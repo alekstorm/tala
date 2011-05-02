@@ -23,8 +23,8 @@
  * pb 2011/03/23
  */
 
-#include "RealTierEditor.h"
 #include "DurationTier.h"
+#include "RealTierEditor.h"
 #include "Sound.h"
 
 class DurationTierEditor : public RealTierEditor {

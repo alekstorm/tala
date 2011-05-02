@@ -23,8 +23,8 @@
  * pb 2011/03/23
  */
 
-#include "TimeSoundEditor.h"
 #include "PointProcess.h"
+#include "TimeSoundEditor.h"
 
 class PointEditor : public TimeSoundEditor {
   public:

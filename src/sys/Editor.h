@@ -23,17 +23,11 @@
  * pb 2011/03/02
  */
 
-#ifndef _Collection_h_
-	#include "Collection.h"
-#endif
-#ifndef _Gui_h_
-	#include "Gui.h"
-#endif
-#ifndef _Graphics_h_
-	#include "Graphics.h"
-#endif
+#include "Collection.h"
 #include "Editor_enums.h"
-#include "sys/EditorM.h"
+#include "EditorM.h"
+#include "Gui.h"
+#include "Graphics.h"
 
 #define Editor_HIDDEN  (1 << 14)
 

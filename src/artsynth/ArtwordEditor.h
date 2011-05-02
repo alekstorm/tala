@@ -23,9 +23,9 @@
  * pb 2011/03/08
  */
 
+#include "Artword.h"
 #include "sys/Editor.h"
 #include "sys/Graphics.h"
-#include "Artword.h"
 
 class ArtwordEditor : public Editor {
   public:

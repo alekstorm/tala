@@ -45,14 +45,13 @@
  * pb 2011/03/23 C++
  */
 
-#include "TimeSoundEditor.h"
-#include "Sound_and_Spectrogram.h"
-#include "Pitch.h"
-#include "Intensity.h"
 #include "Formant.h"
+#include "Intensity.h"
+#include "Pitch.h"
 #include "PointProcess.h"
-
+#include "Sound_and_Spectrogram.h"
 #include "TimeSoundAnalysisEditor_enums.h"
+#include "TimeSoundEditor.h"
 
 struct FunctionEditor_spectrogram {
 	Spectrogram data; bool show;

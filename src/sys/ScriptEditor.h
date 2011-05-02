@@ -23,15 +23,10 @@
  * pb 2011/03/02
  */
 
-#ifndef _Script_h_
-	#include "Script.h"
-#endif
-#ifndef _TextEditor_h_
-	#include "TextEditor.h"
-#endif
-#ifndef _Interpreter_h_
-	#include "Interpreter.h"
-#endif
+#include "Script.h"
+#include "TextEditor.h"
+
+class Interpreter;
 
 int ScriptEditors_dirty (void);   /* Are there any modified and unsaved scripts? Ask before quitting the program. */
 

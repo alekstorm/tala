@@ -34,6 +34,7 @@
 
 #include "ScriptEditor.h"
 
+#include "Interpreter.h"
 #include "praatP.h"
 #include "UiHistory.h"
 #include "kar/longchar.h"

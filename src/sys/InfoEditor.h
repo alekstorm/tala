@@ -19,10 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef _Editor_h_
-	#include "Editor.h"
-#endif
-#include "UiFile.h"
+#include "Editor.h"
+
+class UiInfile;
+class UiOutfile;
 
 class InfoEditor : public Editor {
   public:

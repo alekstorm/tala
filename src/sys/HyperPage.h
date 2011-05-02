@@ -23,15 +23,9 @@
  * pb 2011/03/02
  */
 
-#ifndef _Editor_h_
-	#include "Editor.h"
-#endif
-#ifndef _Collection_h_
-	#include "Collection.h"
-#endif
-#ifndef _Graphics_h_
-	#include "Graphics.h"
-#endif
+#include "Editor.h"
+#include "Collection.h"
+#include "Graphics.h"
 
 #define HyperLink_members Data_members \
 	double x1DC, x2DC, y1DC, y2DC;

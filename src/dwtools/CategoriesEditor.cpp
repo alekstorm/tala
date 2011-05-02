@@ -34,10 +34,9 @@
  djmw 20110304 Thing_new
 */
 
-#define CategoriesEditor_TEXTMAXLENGTH 100
-
 #include "CategoriesEditor.h"
-//#include "Preferences.h"
+
+#define CategoriesEditor_TEXTMAXLENGTH 100
 
 wchar_t *CategoriesEditor_EMPTYLABEL = L"(empty)";
 
