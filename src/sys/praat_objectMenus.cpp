@@ -36,14 +36,15 @@
  * pb 2009/01/17 arguments to UiForm callbacks
  */
 
-#include <ctype.h>
+#include "ButtonEditor.h"
+#include "DataEditor.h"
 #include "praatP.h"
 #include "praat_script.h"
 #include "ScriptEditor.h"
-#include "ButtonEditor.h"
-#include "DataEditor.h"
 #include "site.h"
 #include "UiFile.h"
+
+#include <ctype.h>
 
 #define EDITOR  theCurrentPraatObjects -> list [IOBJECT]. editors
 

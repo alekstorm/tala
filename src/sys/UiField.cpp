@@ -17,8 +17,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <ctype.h>
+#include "Interpreter.h"
 #include "UiForm.h"
+
+#include <ctype.h>
 
 UiForm::UiField::UiField (int type, const wchar_t *name)
 	: _type(type),

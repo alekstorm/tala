@@ -37,6 +37,6 @@ libdwtools_a_SOURCES = Activation.c AffineTransform.c \
 	Table_extensions.c TableOfReal_and_SVD.c\
 	TableOfReal_extensions.c \
 	TableOfReal_and_Permutation.c \
-	TextGrid_extensions.c \
+	TextGrid_extensions.cpp \
 	VowelEditor.c \
 	praat_MDS_init.cpp praat_BSS_init.cpp praat_HMM_init.cpp praat_KlattGrid_init.cpp praat_David_init.cpp

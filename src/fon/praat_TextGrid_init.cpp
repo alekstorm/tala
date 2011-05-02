@@ -27,9 +27,10 @@
 #include "SpectrumEditor.h"
 #include "SpellingChecker.h"
 #include "TextGridEditor.h"
-#include "dwtools/TextGrid_extensions.h"
 #include "TextGrid_Sound.h"
 #include "WordList.h"
+#include "dwtools/TextGrid_extensions.h"
+#include "sys/UiFile.h"
 
 void praat_dia_timeRange (UiForm *dia);
 void praat_get_timeRange (UiForm *dia, double *tmin, double *tmax);

@@ -30,17 +30,19 @@
  djmw 20100511 FFNet query outputs
 */
 
-#include <math.h>
 #include "sys/praat.h"
-#include "dwtools/Discriminant.h"
-#include "dwtools/PCA.h"
-#include "dwtools/Minimizers.h"
+
 #include "FFNet_Eigen.h"
 #include "FFNet_Matrix.h"
 #include "FFNet_Pattern.h"
 #include "FFNet_Activation_Categories.h"
 #include "FFNet_Pattern_Activation.h"
 #include "FFNet_Pattern_Categories.h"
+#include "dwtools/Discriminant.h"
+#include "dwtools/PCA.h"
+#include "dwtools/Minimizers.h"
+
+#include <math.h>
 
 /* Routines to be removed sometime in the future:
 20040422, 2.4.04: FFNet_drawWeightsToLayer  use FFNet_drawWeights

@@ -47,12 +47,15 @@
  * pb 2010/12/17 dashed-dotted lines
  */
 
-#include "praatP.h"
-#include "Picture.h"
-#include "Printer.h"
-#include "machine.h"
+#include "praat.h"
+
 #include "Formula.h"
+#include "machine.h"
+#include "Picture.h"
+#include "praatP.h"
+#include "Printer.h"
 #include "UiFile.h"
+#include "UiHistory.h"
 
 static bool praat_mouseSelectsInnerViewport;
 

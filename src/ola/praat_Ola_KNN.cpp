@@ -23,12 +23,13 @@
  * pb 2010/12/28 in messages: typos, English, interpunction
  */
 
+#include "sys/praat.h"
+
 #include "KNN.h"
 #include "KNN_threads.h"
 #include "KNN_prune.h"
 #include "Pattern_to_Categories_cluster.h"
 #include "FeatureWeights.h"
-#include "sys/praat.h"
 
 static wchar_t *QUERY_BUTTON   = L"Query -";
 static wchar_t *MODIFY_BUTTON  = L"Modify -";

@@ -31,8 +31,9 @@
  * pb 2008/11/26 numberOfMotifWidgets
  */
 
-#include <time.h>
 #include "praatP.h"
+
+#include <time.h>
 
 static struct {
 	long batchSessions, interactiveSessions;

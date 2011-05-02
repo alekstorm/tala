@@ -19,9 +19,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "Editor.h"
-#include "Interpreter.h"
-#include "UiHistory.h"
+#include "Graphics.h"
+#include "Gui.h"
 
 #define MAXIMUM_NUMBER_OF_FIELDS  50
 #define MAXIMUM_NUMBER_OF_CONTINUE_BUTTONS  10
@@ -49,9 +48,9 @@
 
 /* Example of usage:
 {
-	static Any dia = NULL;
+	static void *dia = NULL;
 	if (dia == NULL) {
-		Any radio;
+		void *radio;
 		dia = create
 		  (topShell,   // The parent GuiObject of the dialog window.
 			L"Create a new person",   // The window title.
@@ -92,9 +91,10 @@
 	are restored to all items in the form.
 */
 
-#ifdef __cplusplus
-class Interpreter;
 class EditorCommand;
+class Interpreter;
+class UiHistory;
+typedef struct structOrdered * Ordered;
 
 class UiForm {
   public:
@@ -171,7 +171,7 @@ class UiForm {
 		const wchar_t *continue4, const wchar_t *continue5, const wchar_t *continue6,
 		const wchar_t *continue7, const wchar_t *continue8, const wchar_t *continue9,
 		const wchar_t *continue10,
-		int (*cancelCallback) (Any dia, void *closure));
+		int (*cancelCallback) (void *dia, void *closure));
 
 	/* The following three routines set values in widgets. */
 	/* Do not call from batch. */
@@ -238,8 +238,8 @@ class UiForm {
 	EditorCommand *_command;
 	GuiObject _parent, _shell, _dialog;
 	int (*_okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure);
-	int (*_applyCallback) (Any dia, void *closure);
-	int (*_cancelCallback) (Any dia, void *closure);
+	int (*_applyCallback) (void *dia, void *closure);
+	int (*_cancelCallback) (void *dia, void *closure);
 	void *_buttonClosure;
 	const wchar_t *_invokingButtonTitle, *_helpTitle;
 	int _numberOfContinueButtons, _defaultContinueButton, _cancelContinueButton, _clickedContinueButton;
@@ -257,7 +257,4 @@ class UiForm {
 	UiField * findField (const wchar_t *fieldName);
 	UiField * findField_check (const wchar_t *fieldName);
 };
-#else
-typedef struct UiForm UiForm;
-#endif
 #endif

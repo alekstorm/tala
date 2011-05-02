@@ -21,7 +21,6 @@
 
 #include "UiForm.h"
 
-#ifdef __cplusplus
 class UiFile : public UiForm {
   public:
 	UiFile (GuiObject parent, const wchar_t *title,
@@ -69,9 +68,4 @@ class UiOutfile : public UiFile {
 	int (*_allowExecutionHook) (void *closure);
 	void *_allowExecutionClosure;   /* I am owner (see destroy). */
 };
-#else
-typedef struct UiFile UiFile;
-typedef struct UiInfile UiInfile;
-typedef struct UiOutfile UiOutfile;
-#endif
 #endif

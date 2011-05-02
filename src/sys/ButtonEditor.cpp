@@ -29,9 +29,12 @@
  */
 
 #include "ButtonEditor.h"
-#include "praat_script.h"
-#include "EditorM.h"
+
 #include "machine.h"
+#include "praat_script.h"
+#include "UiHistory.h"
+
+#include "EditorM.h"
 
 #if defined (_WIN32)
 	#define BUTTON_WIDTH  72

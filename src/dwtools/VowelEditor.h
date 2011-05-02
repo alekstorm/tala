@@ -41,10 +41,6 @@
 	#include "sys/Editor.h"
 #endif
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
 #define Vowel_members Function_members \
 	PitchTier pt; \
 	FormantTier ft;
@@ -118,9 +114,5 @@ class VowelEditor : public Editor {
 	GuiObject _startInfo, _endInfo;
 	struct structF1F2Grid _grid;
 };
-
-#ifdef __cplusplus
-	}
-#endif
 
 #endif /* _VowelEditor_h_ */

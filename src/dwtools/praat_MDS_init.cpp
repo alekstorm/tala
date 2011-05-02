@@ -33,15 +33,17 @@
  djmw 20090818 Thing_recognizeClassesByName: added classAffineTransform, classScalarProduct, classWeight
 */
 
-#include <math.h>
-#include "dwsys/NUM2.h"
 #include "sys/praat.h"
-#include "MDS.h"
-#include "TableOfReal_extensions.h"
+
 #include "Configuration_and_Procrustes.h"
 #include "Configuration_AffineTransform.h"
 #include "Confusion.h"
+#include "MDS.h"
+#include "TableOfReal_extensions.h"
+#include "dwsys/NUM2.h"
 #include "sys/Formula.h"
+
+#include <math.h>
 
 void praat_TableOfReal_init (void *klas);
 

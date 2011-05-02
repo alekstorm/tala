@@ -26,17 +26,9 @@
 #include "praat.h"
 #include "Gui.h"
 
-#ifdef __cplusplus
 class Editor;
 class UiForm;
 class Interpreter;
-
-extern "C" {
-#else
-typedef struct Editor Editor;
-typedef struct UiForm UiForm;
-typedef struct Interpreter Interpreter;
-#endif
 
 int praat_addActionScript (const wchar_t *className1, int n1, const wchar_t *className2, int n2, const wchar_t *className3, int n3,
 	const wchar_t *title, const wchar_t *after, int depth, const wchar_t *script);
@@ -182,9 +174,6 @@ extern struct PraatP {
 	Any editor;   /* Scripting environment. */
 } praatP;
 
-#ifdef __cplusplus
-	}
-#endif
 #endif
 
 /* End of file praatP.h */

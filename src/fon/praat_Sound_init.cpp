@@ -23,13 +23,12 @@
 
 #include "sys/praat.h"
 
-#include "Ltas.h"
 #include "LongSound.h"
+#include "Ltas.h"
 #include "Manipulation.h"
 #include "ParamCurve.h"
 #include "Sound_and_Spectrogram.h"
 #include "Sound_and_Spectrum.h"
-#include "dwtools/Sound_extensions.h"
 #include "Sound_to_Cochleagram.h"
 #include "Sound_to_Formant.h"
 #include "Sound_to_Harmonicity.h"
@@ -40,7 +39,9 @@
 #include "SoundRecorder.h"
 #include "SpectrumEditor.h"
 #include "TextGrid_Sound.h"
+#include "dwtools/Sound_extensions.h"
 #include "mp3/mp3.h"
+#include "sys/UiFile.h"
 
 #ifndef LONG_MAX
 	#define LONG_MAX  2147483647

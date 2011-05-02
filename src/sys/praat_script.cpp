@@ -38,14 +38,15 @@
  * pb 2011/03/24 command no longer const
  */
 
-#include <ctype.h>
+#include "DemoEditor.h"
 #include "praatP.h"
 #include "praat_script.h"
 #include "sendpraat.h"
 #include "sendsocket.h"
-#include "UiPause.h"
-#include "DemoEditor.h"
 #include "UiFile.h"
+#include "UiPause.h"
+
+#include <ctype.h>
 
 static int praat_findObjectFromString (Interpreter *interpreter, const wchar_t *string) {
 	int IOBJECT;

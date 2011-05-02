@@ -28,8 +28,9 @@
  * pb 2010/07/29 removed GuiDialog_show
  */
 
-#include "praatP.h"
+#include "Gui.h"
 #include "Picture.h"
+#include "praatP.h"
 #include "praat_version.h"
 
 static void logo_defaultDraw (Graphics g) {

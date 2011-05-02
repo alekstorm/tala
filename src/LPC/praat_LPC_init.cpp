@@ -28,13 +28,11 @@
  djmw 20100212 Analysis window length is now "Window length"
 */
 
-#include <math.h>
 #include "sys/praat.h"
+
+#include "Cepstrum_and_Spectrum.h"
 #include "Cepstrumc.h"
-#include "dwtools/DTW.h"
 #include "LPC.h"
-#include "dwtools/MFCC.h"
-#include "dwtools/LFCC.h"
 #include "LPC_and_Cepstrumc.h"
 #include "LPC_and_Formant.h"
 #include "LPC_and_LFCC.h"
@@ -42,12 +40,16 @@
 #include "LPC_and_Tube.h"
 #include "LPC_to_Spectrogram.h"
 #include "LPC_to_Spectrum.h"
-#include "dwtools/MelFilter_and_MFCC.h"
 #include "Sound_and_LPC.h"
 #include "Sound_and_LPC_robust.h"
 #include "Sound_and_Cepstrum.h"
+#include "dwtools/DTW.h"
+#include "dwtools/LFCC.h"
+#include "dwtools/MelFilter_and_MFCC.h"
+#include "dwtools/MFCC.h"
 #include "dwtools/Sound_to_MFCC.h"
-#include "Cepstrum_and_Spectrum.h"
+
+#include <math.h>
 
 static wchar_t *DRAW_BUTTON    = L"Draw -";
 static wchar_t *QUERY_BUTTON   = L"Query -";

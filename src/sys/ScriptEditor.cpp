@@ -33,10 +33,13 @@
  */
 
 #include "ScriptEditor.h"
-#include "kar/longchar.h"
+
 #include "praatP.h"
-#include "EditorM.h"
+#include "UiHistory.h"
+#include "kar/longchar.h"
 #include "kar/UnicodeData.h"
+
+#include "EditorM.h"
 
 static Collection theScriptEditors; // FIXME
 

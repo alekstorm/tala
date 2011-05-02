@@ -28,6 +28,7 @@
 #include "OTMulti.h"
 #include "OTGrammarEditor.h"
 #include "OTMultiEditor.h"
+#include "sys/UiFile.h"
 
 /***** HELP *****/
 

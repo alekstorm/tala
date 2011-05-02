@@ -52,14 +52,17 @@
  * pb 2010/04/30 guard against leading nonbreaking spaces
  */
 
-#include <ctype.h>
 #include "Interpreter.h"
-#include "praatP.h"
-extern structMelderDir praatDir;
-#include "praat_script.h"
+
 #include "Formula.h"
+#include "praatP.h"
+#include "praat_script.h"
 #include "praat_version.h"
 #include "kar/UnicodeData.h"
+
+#include <ctype.h>
+
+extern structMelderDir praatDir;
 
 #define Interpreter_WORD 1
 #define Interpreter_REAL 2
@@ -79,12 +82,12 @@ InterpreterVariable::InterpreterVariable (const wchar_t *key)
 	: _stringValue(NULL),
 	  _numericValue(0.0) {
 	if (key [0] == 'e' && key [1] == '\0')
-		throw Exception ("You cannot use 'e' as the name of a variable (e is the constant 2.71...).");
+		//throw Exception ("You cannot use 'e' as the name of a variable (e is the constant 2.71...)."); // FIXME
 	if (key [0] == 'p' && key [1] == 'i' && key [2] == '\0')
-		throw Exception ("You cannot use 'pi' as the name of a variable (pi is the constant 3.14...).");
+		//throw Exception ("You cannot use 'pi' as the name of a variable (pi is the constant 3.14...).");
 	if (key [0] == 'u' && key [1] == 'n' && key [2] == 'd' && key [3] == 'e' && key [4] == 'f' && key [5] == 'i' &&
 		key [6] == 'n' && key [7] == 'e' && key [8] == 'd' && key [9] == '\0')
-		throw new Exception ("You cannot use 'undefined' as the name of a variable.");
+		//throw new Exception ("You cannot use 'undefined' as the name of a variable.");
 	_key = Melder_wcsdup_e (key);
 }
 

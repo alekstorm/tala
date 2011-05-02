@@ -31,7 +31,6 @@
 
 #define MAXNUM_ROWS  12
 
-#ifdef __cplusplus
 class DataEditor;
 
 class DataSubEditor : public Editor {
@@ -136,14 +135,6 @@ class DataEditor : public ClassEditor {
 
 	Collection _children;
 };
-#else
-typedef struct DataSubEditor DataSubEditor;
-typedef struct VectorEditor VectorEditor;
-typedef struct MatrixEditor MatrixEditor;
-typedef struct StructEditor StructEditor;
-typedef struct ClassEditor ClassEditor;
-typedef struct DataEditor *DataEditor;
-#endif
 
 /* End of file DataEditor.h */
 #endif

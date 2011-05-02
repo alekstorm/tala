@@ -23,20 +23,16 @@
  * pb 2011/03/02
  */
 
-#include "Editor.h"
 #include "Preferences.h"
-#include "UiFile.h"
+#include "Gui.h"
 
-#ifdef __cplusplus
 #include <stdexcept>
 
-class Exception : public std::runtime_error {
-public:
-	Exception(const char *msg) : std::runtime_error(msg) {}
-};
-
-	extern "C" {
-#endif
+class Editor;
+class Interpreter;
+class UiForm;
+class UiInfile;
+class UiOutfile;
 
 /* The explanations in this header file assume
 	that you put your extra commands in praat_Sybil.c
@@ -266,6 +262,42 @@ void praat_name2 (wchar_t *name, void *klas1, void *klas2);
 	This is because END updates the selection if an object was created.
  */
 
+#undef FORM
+#undef REAL
+#undef REAL_OR_UNDEFINED
+#undef POSITIVE
+#undef INTEGER
+#undef NATURAL
+#undef WORD
+#undef SENTENCE
+#undef COLOUR
+#undef CHANNEL
+#undef BOOLEAN
+#undef LABEL
+#undef TEXTFIELD
+#undef RADIO
+#undef RADIOBUTTON
+#undef OPTIONMENU
+#undef OPTION
+#undef RADIOBUTTONS_ENUM
+#undef OPTIONS_ENUM
+#undef RADIO_ENUM
+#undef OPTIONMENU_ENUM
+#undef LIST
+#undef OK
+#undef SET_REAL
+#undef SET_INTEGER
+#undef SET_STRING
+#undef DO
+#undef END
+#undef DIRECT
+#undef FORM_WRITE
+#undef DO_WRITE
+#undef GET_REAL
+#undef GET_INTEGER
+#undef GET_STRING
+#undef GET_FILE
+
 #define FORM(proc,name,helpTitle) \
 	static int DO_##proc (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *buttonClosure) \
 	{ static UiForm *dia; if (dia == NULL) { UiForm::UiField *radio = NULL; (void) radio; \
@@ -346,11 +378,7 @@ static int DO_##proc (UiForm *sendingForm, const wchar_t *sendingString, Interpr
 #define GET_REAL(name)  dia->getReal (name)
 #define GET_INTEGER(name)  dia->getInteger (name)
 #define GET_STRING(name)  dia->getString (name)
-#ifdef __cplusplus
-	#define GET_ENUM(enum,name)  (enum) enum##_getValue (GET_STRING (name))
-#else
-	#define GET_ENUM(enum,name)  enum##_getValue (GET_STRING (name))
-#endif
+#define GET_ENUM(enum,name)  (enum) enum##_getValue (GET_STRING (name))
 #define GET_COLOUR(name)  dia->getColour (name)
 #define GET_FILE(name)  dia->getFile (name)
 #define REQUIRE(c,t)  if (! (c)) return Melder_error1 (t);
@@ -444,8 +472,6 @@ void praat_updateSelection (void);
 
 void praat_addCommandsToEditor (Editor *me);
 
-#ifdef __cplusplus
-	}
 #define iam_LOOP(klas)  klas me = static_cast<klas> (OBJECT)
 #define iam_ONLY(klas)  klas me = static_cast<klas> (ONLY (class##klas))
 #define thouart_ONLY(klas)  klas thee = static_cast<klas> (ONLY (class##klas))
@@ -478,7 +504,6 @@ static inline void praat_newWithFile (void *newData, const wchar *s1, const wcha
 	{ praat_newWithFile4 (newData, s1, s2, s3, s4, file); therror }
 static inline void praat_newWithFile (void *newData, const wchar *s1, const wchar *s2, const wchar *s3, const wchar *s4, const wchar *s5,
 	MelderFile file) { praat_newWithFile5 (newData, s1, s2, s3, s4, s5, file); therror }
-#endif
 #endif
 
 /* End of file praat.h */

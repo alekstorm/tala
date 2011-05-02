@@ -32,9 +32,10 @@
  * bp 2010/07/26 split off GuiFileSelect.c
  */
 
-#include "UiP.h"
-#include "Editor.h"
 #include "UiFile.h"
+
+#include "Editor.h"
+#include "UiHistory.h"
 
 UiFile::UiFile (GuiObject parent, const wchar_t *title,
 	int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure,

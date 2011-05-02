@@ -50,8 +50,21 @@
  * pb 2010/12/08 can read Collections created from multiple objects read from one file (e.g. a labelled sound file)
  */
 
+#include "praat.h"
+
+#include "HyperPage.h"
+#include "machine.h"
 #include "melder.h"
+#include "praatP.h"
+#include "praat_script.h"
+#include "Printer.h"
+#include "ScriptEditor.h"
+#include "site.h"
+#include "Strings.h"
+#include "UiFile.h"
+#include "UiHistory.h"
 #include "dwsys/NUMmachar.h"
+
 #include <ctype.h>
 #include <stdarg.h>
 #if defined (UNIX) || defined (macintosh)
@@ -63,17 +76,6 @@
 #if defined (UNIX) || defined __MWERKS__
 	#include <unistd.h>
 #endif
-
-#include "praat.h"
-#include "praatP.h"
-#include "praat_script.h"
-#include "site.h"
-#include "machine.h"
-#include "Printer.h"
-#include "ScriptEditor.h"
-#include "Strings.h"
-#include "HyperPage.h"
-#include "UiFile.h"
 
 #if gtk
 	#include <gdk/gdkx.h>

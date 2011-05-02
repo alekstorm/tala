@@ -23,10 +23,9 @@
 
 #include "sys/praat.h"
 
-#include "fon/IntensityTierEditor.h"
 #include "KlattGridEditors.h"
 #include "KlattTable.h"
-
+#include "fon/IntensityTierEditor.h"
 
 /******************* KlattGrid  *********************************/
 

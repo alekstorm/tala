@@ -17,9 +17,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <wctype.h>
 #include "UiForm.h"
+
+#include "Editor.h"
+#include "Interpreter.h"
 #include "machine.h"
+#include "UiHistory.h"
+
+#include <wctype.h>
 
 UiHistory UiForm::history;
 int (*UiForm::theAllowExecutionHookHint) (void *closure);

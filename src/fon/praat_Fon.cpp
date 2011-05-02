@@ -26,7 +26,6 @@
 #include "AmplitudeTier.h"
 #include "AmplitudeTierEditor.h"
 #include "Cochleagram_and_Excitation.h"
-#include "stat/Distributions_and_Strings.h"
 #include "Distributions_and_Transition.h"
 #include "DurationTierEditor.h"
 #include "Excitation_to_Formant.h"
@@ -63,12 +62,14 @@
 #include "Spectrum_to_Formant.h"
 #include "SpectrumEditor.h"
 #include "SpellingChecker.h"
-#include "sys/StringsEditor.h"
-#include "stat/Table.h"
 #include "TextGrid.h"
 #include "VocalTract.h"
 #include "VoiceAnalysis.h"
 #include "WordList.h"
+#include "stat/Distributions_and_Strings.h"
+#include "stat/Table.h"
+#include "sys/StringsEditor.h"
+#include "sys/UiFile.h"
 
 static const wchar_t *STRING_FROM_TIME_SECONDS = L"left Time range (s)";
 static const wchar_t *STRING_TO_TIME_SECONDS = L"right Time range (s)";

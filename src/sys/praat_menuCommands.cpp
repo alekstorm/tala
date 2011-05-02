@@ -28,8 +28,10 @@
  * pb 2011/01/02 GTK: allow submenus even from scripts
  */
 
+#include "Editor.h"
 #include "praatP.h"
 #include "praat_script.h"
+#include "UiHistory.h"
 
 #define praat_MAXNUM_FIXED_COMMANDS  1000
 static long theNumberOfCommands = 0;

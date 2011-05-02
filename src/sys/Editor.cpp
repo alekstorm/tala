@@ -34,18 +34,23 @@
  * pb 2010/07/29 removed GuiWindow_show
  */
 
-#include <time.h>
-#include "praat.h"
-#include "ScriptEditor.h"
+#include "Editor.h"
+
 #include "machine.h"
-#include "EditorM.h"
+#include "praat.h"
 #include "praat_script.h"
 #include "Preferences.h"
+#include "ScriptEditor.h"
+#include "UiHistory.h"
 
 #include "enums_getText.h"
 #include "Editor_enums.h"
 #include "enums_getValue.h"
 #include "Editor_enums.h"
+
+#include "EditorM.h"
+
+#include <time.h>
 
 static void commonCallback (GUI_ARGS) {
 	EditorCommand *cmd = (EditorCommand *)void_me;

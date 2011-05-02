@@ -25,11 +25,12 @@
 
 #include "Distributions_and_Strings.h"
 #include "LogisticRegression.h"
-#include "fon/Matrix.h"
 #include "PairDistribution.h"
+#include "fon/Matrix.h"
+#include "kar/UnicodeData.h"
 #include "stat/Table.h"
 #include "stat/TableEditor.h"
-#include "kar/UnicodeData.h"
+#include "sys/UiFile.h"
 
 static wchar_t formatBuffer [32] [40];
 static int formatIndex = 0;

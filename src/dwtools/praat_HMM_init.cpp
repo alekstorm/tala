@@ -22,6 +22,7 @@
 */
 
 #include "sys/praat.h"
+
 #include "GaussianMixture.h"
 #include "HMM.h"
 #include "Strings_extensions.h"

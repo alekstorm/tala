@@ -31,10 +31,11 @@
  * pb 2009/12/22 invokingButtonTitle
  */
 
+#include "machine.h"
 #include "praatP.h"
 #include "praat_script.h"
+#include "UiHistory.h"
 #include "kar/longchar.h"
-#include "machine.h"
 
 #define BUTTON_WIDTH  240
 

@@ -28,6 +28,8 @@
  */
 
 #include "DemoEditor.h"
+
+#include "Interpreter.h"
 #include "machine.h"
 #include "praatP.h"
 #include "kar/UnicodeData.h"

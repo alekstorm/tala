@@ -32,13 +32,10 @@
 #ifndef _Graphics_h_
 	#include "Graphics.h"
 #endif
-#include "Interpreter.h"
-#include "UiForm.h"
 #include "Editor_enums.h"
 
 #define Editor_HIDDEN  (1 << 14)
 
-#ifdef __cplusplus
 class Interpreter;
 class UiForm;
 class EditorMenu;
@@ -165,9 +162,6 @@ class Editor {
   private:
 	void createMenus ();
 };
-#else
-typedef struct Editor Editor;
-#endif
 
 #endif
 /* End of file Editor.h */
