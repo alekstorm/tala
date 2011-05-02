@@ -1,0 +1,17 @@
+*.o
+*.a
+*.in
+*~
+.deps/
+a
+Makefile
+/aclocal.m4
+/autom4te.cache/
+/config.*
+/configure
+/depcomp
+/install-sh
+/missing
+/notes
+/stamp-h1
+/src/praat
