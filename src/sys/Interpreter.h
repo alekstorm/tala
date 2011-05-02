@@ -23,17 +23,17 @@
  * pb 2011/03/02
  */
 
-#ifndef _Collection_h_
-	#include "Collection.h"
-#endif
-#ifndef _Gui_h_
-	#include "Gui.h"
-#endif
-#ifndef _Formula_h_
-	#include "Formula.h"
-#endif
+#include "Collection.h"
+#include "Formula.h"
+#include "Gui.h"
+
+#define Interpreter_MAXNUM_PARAMETERS  400
+#define Interpreter_MAXNUM_LABELS  1000
+#define Interpreter_MAX_CALL_DEPTH  50
 
 #ifdef __cplusplus
+class UiForm;
+
 class InterpreterVariable {
   public:
 	InterpreterVariable (const wchar_t *key);
@@ -44,13 +44,7 @@ class InterpreterVariable {
 	struct Formula_NumericArray _numericArrayValue;
 };
 
-#define Interpreter_MAXNUM_PARAMETERS  400
-#define Interpreter_MAXNUM_LABELS  1000
-#define Interpreter_MAX_CALL_DEPTH  50
-
-class UiForm;
-
-class Interpreter { // : protected Thing
+class Interpreter {
   public:
 	Interpreter (wchar_t *environmentName);
 	virtual ~Interpreter();
@@ -59,6 +53,7 @@ class Interpreter { // : protected Thing
 	virtual UiForm * createForm (GuiObject parent, const wchar_t *fileName, int (*okCallback) (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *closure), void *okClosure);
 	virtual int getArgumentsFromDialog (UiForm *dialog);
 	virtual int getArgumentsFromString (const wchar_t *arguments);
+
 	virtual int run (wchar_t *text);   /* Destroys 'text'. */
 	virtual void stop ();   // Can be called from any procedure called deep-down by the interpreter. Will stop before next line.
 
@@ -67,9 +62,6 @@ class Interpreter { // : protected Thing
 	virtual int stringExpression (const wchar_t *expression, wchar_t **value);
 	virtual int numericArrayExpression (const wchar_t *expression, struct Formula_NumericArray *value);
 	virtual int anyExpression (const wchar_t *expression, struct Formula_Result *result);
-
-	virtual int addNumericVariable (const wchar_t *key, double value);
-	virtual InterpreterVariable* addStringVariable (const wchar_t *key, const wchar_t *value);
 
 	virtual InterpreterVariable* hasVariable (const wchar_t *key);
 	virtual InterpreterVariable* lookUpVariable (const wchar_t *key);
@@ -87,17 +79,18 @@ class Interpreter { // : protected Thing
 	bool _running, _stopped;
 
   private:
+	int addNumericVariable (const wchar_t *key, double value);
+	InterpreterVariable* addStringVariable (const wchar_t *key, const wchar_t *value);
+
 	static bool isCommand (const wchar_t *p);
 
 	long lookupLabel (const wchar_t *labelName);
 	void parameterToVariable (int type, const wchar_t *in_parameter, int ipar);
 };
+
+	extern "C" {
 #else
 typedef struct Interpreter Interpreter;
-#endif
-
-#ifdef __cplusplus
-	extern "C" {
 #endif
 
 int Melder_includeIncludeFiles (wchar_t **text);
