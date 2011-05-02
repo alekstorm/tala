@@ -63,7 +63,6 @@
  djmw 20100511 Categories_getNumberOfCategories
 */
 
-#include "sys/praat.h"
 #include "dwsys/NUM2.h"
 #include "dwsys/NUMlapack.h"
 #include "dwsys/NUMmachar.h"
@@ -124,6 +123,8 @@
 #include "LPC/Cepstrum_and_Spectrum.h"
 
 extern machar_Table NUMfpp;
+
+#include "sys/praat.h"
 
 static wchar_t *QUERY_BUTTON   = L"Query -";
 static wchar_t *DRAW_BUTTON    = L"Draw -";

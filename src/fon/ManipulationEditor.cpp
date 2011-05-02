@@ -188,7 +188,7 @@ int ManipulationEditor::getDurationArea (double *ymin, double *ymax) {
 /***** FILE MENU *****/
 
 #define menu_cb_extract_common(menu_cb,obj) \
-static int menu_cb (EDITOR_ARGS) { \
+int ManipulationEditor::menu_cb (EDITOR_ARGS) { \
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me; \
 	Manipulation ana = (Manipulation) editor->_data; \
 	if (! ana -> obj) return 0; \
@@ -204,7 +204,7 @@ menu_cb_extract_common (menu_cb_extractPulses, pulses)
 menu_cb_extract_common (menu_cb_extractPitchTier, pitch)
 menu_cb_extract_common (menu_cb_extractDurationTier, duration)
 
-static int menu_cb_extractManipulatedSound (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_extractManipulatedSound (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	if (editor->_publishCallback) {
@@ -241,7 +241,7 @@ void ManipulationEditor::restore () {
 
 /***** PULSES MENU *****/
 
-static int menu_cb_removePulses (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_removePulses (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;	
 	Manipulation ana = (Manipulation) editor->_data;
 	if (! ana -> pulses) return 0;
@@ -255,7 +255,7 @@ static int menu_cb_removePulses (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPulseAtCursor (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_addPulseAtCursor (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	if (! ana -> pulses) return 0;
@@ -266,7 +266,7 @@ static int menu_cb_addPulseAtCursor (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPulseAt (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_addPulseAt (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Add pulse", 0)
 		REAL (L"Position (s)", L"0.0")
@@ -284,7 +284,7 @@ static int menu_cb_addPulseAt (EDITOR_ARGS) {
 
 /***** PITCH MENU *****/
 
-static int menu_cb_removePitchPoints (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_removePitchPoints (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	if (! ana -> pitch) return 0;
@@ -298,7 +298,7 @@ static int menu_cb_removePitchPoints (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPitchPointAtCursor (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_addPitchPointAtCursor (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	if (! ana -> pitch) return 0;
@@ -309,7 +309,7 @@ static int menu_cb_addPitchPointAtCursor (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPitchPointAtSlice (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_addPitchPointAtSlice (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	PointProcess pulses = ana -> pulses;
@@ -349,7 +349,7 @@ static int menu_cb_addPitchPointAtSlice (EDITOR_ARGS) {
 	return 1;
 }	
 
-static int menu_cb_addPitchPointAt (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_addPitchPointAt (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Add pitch point", 0)
 		REAL (L"Time (s)", L"0.0")
@@ -367,7 +367,7 @@ static int menu_cb_addPitchPointAt (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_stylizePitch (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_stylizePitch (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Stylize pitch", L"PitchTier: Stylize...")
 		REAL (L"Frequency resolution", L"2.0")
@@ -388,7 +388,7 @@ static int menu_cb_stylizePitch (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_stylizePitch_2st (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_stylizePitch_2st (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	if (! ana -> pitch) return 0;
@@ -399,7 +399,7 @@ static int menu_cb_stylizePitch_2st (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_interpolateQuadratically (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_interpolateQuadratically (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Interpolate quadratically", 0)
 		NATURAL (L"Number of points per parabola", L"4")
@@ -417,7 +417,7 @@ static int menu_cb_interpolateQuadratically (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_interpolateQuadratically_4pts (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_interpolateQuadratically_4pts (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	if (! ana -> pitch) return 0;
@@ -428,7 +428,7 @@ static int menu_cb_interpolateQuadratically_4pts (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_shiftPitchFrequencies (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_shiftPitchFrequencies (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Shift pitch frequencies", 0)
 		REAL (L"Frequency shift", L"-20.0")
@@ -457,7 +457,7 @@ static int menu_cb_shiftPitchFrequencies (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_multiplyPitchFrequencies (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_multiplyPitchFrequencies (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Multiply pitch frequencies", 0)
 		POSITIVE (L"Factor", L"1.2")
@@ -473,7 +473,7 @@ static int menu_cb_multiplyPitchFrequencies (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_setPitchRange (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_setPitchRange (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Set pitch range", 0)
 		/* BUG: should include Minimum */
@@ -489,7 +489,7 @@ static int menu_cb_setPitchRange (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_setPitchUnits (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_setPitchUnits (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Set pitch units", 0)
 		RADIO_ENUM (L"Pitch units", kManipulationEditor_pitchUnits, DEFAULT)
@@ -516,7 +516,7 @@ static int menu_cb_setPitchUnits (EDITOR_ARGS) {
 
 /***** DURATION MENU *****/
 
-static int menu_cb_setDurationRange (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_setDurationRange (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Set duration range", 0)
 		REAL (L"Minimum", L"0.25")
@@ -544,7 +544,7 @@ static int menu_cb_setDurationRange (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_setDraggingStrategy (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_setDraggingStrategy (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Set dragging strategy", L"ManipulationEditor")
 		RADIO_ENUM (L"Dragging strategy", kManipulationEditor_draggingStrategy, DEFAULT)
@@ -555,7 +555,7 @@ static int menu_cb_setDraggingStrategy (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_removeDurationPoints (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_removeDurationPoints (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	if (! ana -> duration) return 0;
@@ -569,7 +569,7 @@ static int menu_cb_removeDurationPoints (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addDurationPointAtCursor (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_addDurationPointAtCursor (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	if (! ana -> duration) return 0;
@@ -580,7 +580,7 @@ static int menu_cb_addDurationPointAtCursor (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addDurationPointAt (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_addDurationPointAt (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	EDITOR_FORM (L"Add duration point", 0)
 		REAL (L"Time (s)", L"0.0");
@@ -597,7 +597,7 @@ static int menu_cb_addDurationPointAt (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_newDuration (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_newDuration (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	editor->save (L"New duration");
@@ -608,7 +608,7 @@ static int menu_cb_newDuration (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_forgetDuration (EDITOR_ARGS) {
+int ManipulationEditor::menu_cb_forgetDuration (EDITOR_ARGS) {
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me;
 	Manipulation ana = (Manipulation) editor->_data;
 	forget (ana -> duration);
@@ -617,11 +617,11 @@ static int menu_cb_forgetDuration (EDITOR_ARGS) {
 	return 1;
 }
 	
-static int menu_cb_ManipulationEditorHelp (EDITOR_ARGS) { Melder_help (L"ManipulationEditor"); return 1; }
-static int menu_cb_ManipulationHelp (EDITOR_ARGS) { Melder_help (L"Manipulation"); return 1; }
+int ManipulationEditor::menu_cb_ManipulationEditorHelp (EDITOR_ARGS) { Melder_help (L"ManipulationEditor"); return 1; }
+int ManipulationEditor::menu_cb_ManipulationHelp (EDITOR_ARGS) { Melder_help (L"Manipulation"); return 1; }
 
 #define menu_cb_Synth_common(menu_cb,meth) \
-static int menu_cb (EDITOR_ARGS) { \
+int ManipulationEditor::menu_cb (EDITOR_ARGS) { \
 	ManipulationEditor *editor = (ManipulationEditor *)editor_me; \
 	prefs_synthesisMethod = editor->_synthesisMethod = meth; \
 	editor->updateMenus (); \

@@ -25,6 +25,7 @@
 
 #include "sys/Editor.h"
 #include "sys/Graphics.h"
+#include "sys/EditorM.h"
 #include "Function.h"
 
 #define FunctionEditor_UPDATE_NEEDED  1
@@ -252,9 +253,55 @@ class FunctionEditor : public Editor {
 	int _numberOfMarkers;
 
   private:
+	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
+	static void gui_checkbutton_cb_group (I, GuiCheckButtonEvent event);
+	static int menu_cb_preferences (EDITOR_ARGS);
+	static int menu_cb_getB (EDITOR_ARGS);
+	static int menu_cb_getCursor (EDITOR_ARGS);
+	static int menu_cb_getE (EDITOR_ARGS);
+	static int menu_cb_getSelectionDuration (EDITOR_ARGS);
+	static int menu_cb_zoom (EDITOR_ARGS);
+	static void gui_button_cb_showAll (I, GuiButtonEvent event);
+	static void gui_button_cb_zoomIn (I, GuiButtonEvent event);
+	static void gui_button_cb_zoomOut (I, GuiButtonEvent event);
+	static void gui_button_cb_zoomToSelection (I, GuiButtonEvent event);
+	static void gui_button_cb_zoomBack (I, GuiButtonEvent event);
+	static int menu_cb_showAll (EDITOR_ARGS);
+	static int menu_cb_zoomIn (EDITOR_ARGS);
+	static int menu_cb_zoomOut (EDITOR_ARGS);
+	static int menu_cb_zoomToSelection (EDITOR_ARGS);
+	static int menu_cb_zoomBack (EDITOR_ARGS);
+	static int menu_cb_play (EDITOR_ARGS);
+	static int menu_cb_playOrStop (EDITOR_ARGS);
+	static int menu_cb_playWindow (EDITOR_ARGS);
+	static int menu_cb_interruptPlaying (EDITOR_ARGS);
+	static int menu_cb_select (EDITOR_ARGS);
+	static int menu_cb_moveCursorToB (EDITOR_ARGS);
+	static int menu_cb_moveCursorToE (EDITOR_ARGS);
+	static int menu_cb_moveCursorTo (EDITOR_ARGS);
+	static int menu_cb_moveCursorBy (EDITOR_ARGS);
+	static int menu_cb_moveBby (EDITOR_ARGS);
+	static int menu_cb_moveEby (EDITOR_ARGS);
+	static int menu_cb_pageUp (EDITOR_ARGS);
+	static int menu_cb_pageDown (EDITOR_ARGS);
+	static int menu_cb_selectEarlier (EDITOR_ARGS);
+	static int menu_cb_selectLater (EDITOR_ARGS);
+	static int menu_cb_moveBleft (EDITOR_ARGS);
+	static int menu_cb_moveBright (EDITOR_ARGS);
+	static int menu_cb_moveEleft (EDITOR_ARGS);
+	static int menu_cb_moveEright (EDITOR_ARGS);
+	#if gtk
+	static void gui_cb_scroll (GtkRange *rng, gpointer void_me);
+	#else
+	static void gui_cb_scroll (GUI_ARGS);
+	#endif
+	static int menu_cb_intro (EDITOR_ARGS);
+	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
+	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
+	static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event);
+
 	void createMenus ();
 	void createChildren ();
 };
-
 /* End of file FunctionEditor.h */
 #endif

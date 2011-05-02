@@ -34,7 +34,7 @@ AmplitudeTierEditor::AmplitudeTierEditor (GuiObject parent, const wchar_t *title
 	createMenus ();
 }
 
-static int menu_cb_AmplitudeTierHelp (EDITOR_ARGS) { Melder_help (L"AmplitudeTier"); return 1; }
+int AmplitudeTierEditor::menu_cb_AmplitudeTierHelp (EDITOR_ARGS) { Melder_help (L"AmplitudeTier"); return 1; }
 
 void AmplitudeTierEditor::createMenus () {
 	EditorMenu *menu = getMenu(L"Help");

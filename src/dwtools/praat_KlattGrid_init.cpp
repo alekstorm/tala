@@ -21,11 +21,11 @@
 	djmw 20090420
 */
 
-#include "sys/praat.h"
-
 #include "KlattGridEditors.h"
 #include "KlattTable.h"
 #include "fon/IntensityTierEditor.h"
+
+#include "sys/praat.h"
 
 /******************* KlattGrid  *********************************/
 

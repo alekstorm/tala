@@ -113,18 +113,18 @@ EditorCommand * EditorMenu::addCommand (const wchar_t *itemTitle, long flags,
 
 /********** Editor **********/
 
-static void gui_window_cb_goAway (void *editor) {
+void Editor::gui_window_cb_goAway (void *editor) {
 	((Editor *)editor)->goAway ();
 }
 
-static int menu_cb_newScript (EDITOR_ARGS) {
+int Editor::menu_cb_newScript (EDITOR_ARGS) {
 	ScriptEditor::createFromText (editor_me->_parent, editor_me, NULL);
 end:
 	iferror return 0;
 	return 1;
 }
 
-static int menu_cb_openScript (EDITOR_ARGS) {
+int Editor::menu_cb_openScript (EDITOR_ARGS) {
 	ScriptEditor *scriptEditor = ScriptEditor::createFromText (editor_me->_parent, editor_me, NULL);
 	scriptEditor->showOpen ();
 end:
@@ -132,7 +132,7 @@ end:
 	return 1;
 }
 
-static int menu_cb_close (EDITOR_ARGS) {
+int Editor::menu_cb_close (EDITOR_ARGS) {
 	editor_me->goAway ();
 	return 1;
 }
@@ -374,7 +374,7 @@ void Editor::restore () {
 		Thing_swap (_data, _previousData);
 }
 
-static int menu_cb_undo (EDITOR_ARGS) {
+int Editor::menu_cb_undo (EDITOR_ARGS) {
 	editor_me->restore ();
 	if (wcsnequ (editor_me->_undoText, L"Undo", 4)) editor_me->_undoText [0] = 'R', editor_me->_undoText [1] = 'e';
 	else if (wcsnequ (editor_me->_undoText, L"Redo", 4)) editor_me->_undoText [0] = 'U', editor_me->_undoText [1] = 'n';
@@ -396,7 +396,7 @@ static int menu_cb_undo (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_settingsReport (EDITOR_ARGS) {
+int Editor::menu_cb_settingsReport (EDITOR_ARGS) {
 	Melder_clearInfo ();
 	MelderInfo_open (); // FIXME object id like in Thing.c
 	editor_me->info ();
@@ -404,7 +404,7 @@ static int menu_cb_settingsReport (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_info (EDITOR_ARGS) {
+int Editor::menu_cb_info (EDITOR_ARGS) {
 	if (editor_me->_data) Thing_info (editor_me->_data);
 	return 1;
 }

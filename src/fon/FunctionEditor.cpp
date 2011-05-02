@@ -37,7 +37,6 @@
 #include "FunctionEditor.h"
 #include "sys/machine.h"
 #include "sys/Preferences.h"
-#include "sys/EditorM.h"
 
 #define maximumScrollBarValue  2000000000
 #define RELATIVE_PAGE_INCREMENT  0.8
@@ -84,7 +83,7 @@ static int group_equalDomain (double tmin, double tmax) {
 	return 0;   /* Should not occur. */
 }
 
-static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
+void FunctionEditor::gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	if (editor->_graphics == NULL) return;   // Could be the case in the very beginning.
 	Graphics_setWsViewport (editor->_graphics, 0, event -> width, 0, event -> height);
@@ -103,7 +102,7 @@ static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
 	preferences.shellHeight = GuiObject_getHeight (editor->_shell);
 }
 
-static void gui_checkbutton_cb_group (I, GuiCheckButtonEvent event) {
+void FunctionEditor::gui_checkbutton_cb_group (I, GuiCheckButtonEvent event) {
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	(void) event;
 	int i;
@@ -482,7 +481,7 @@ void FunctionEditor::info () {
 
 /********** FILE MENU **********/
 
-static int menu_cb_preferences (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_preferences (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	EDITOR_FORM (L"Preferences", 0)
 		BOOLEAN (L"Synchronize zoom and scroll", 1)
@@ -518,22 +517,22 @@ void FunctionEditor::do_pictureSelection (EditorCommand *cmd) {
 
 /********** QUERY MENU **********/
 
-static int menu_cb_getB (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_getB (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	Melder_informationReal (editor->_startSelection, editor->format_units ());
 	return 1;
 }
-static int menu_cb_getCursor (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_getCursor (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	Melder_informationReal (0.5 * (editor->_startSelection + editor->_endSelection), editor->format_units ());
 	return 1;
 }
-static int menu_cb_getE (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_getE (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	Melder_informationReal (editor->_endSelection, editor->format_units ());
 	return 1;
 }
-static int menu_cb_getSelectionDuration (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_getSelectionDuration (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	Melder_informationReal (editor->_endSelection - editor->_startSelection, editor->format_units ());
 	return 1;
@@ -541,7 +540,7 @@ static int menu_cb_getSelectionDuration (EDITOR_ARGS) {
 
 /********** VIEW MENU **********/
 
-static int menu_cb_zoom (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_zoom (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	EDITOR_FORM (L"Zoom", 0)
 		REAL (L"From", L"0.0")
@@ -574,7 +573,7 @@ void FunctionEditor::do_showAll () {
 	}
 }
 
-static void gui_button_cb_showAll (I, GuiButtonEvent event) {
+void FunctionEditor::gui_button_cb_showAll (I, GuiButtonEvent event) {
 	(void) event;
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	editor->do_showAll ();
@@ -592,7 +591,7 @@ void FunctionEditor::do_zoomIn () {
 	}
 }
 
-static void gui_button_cb_zoomIn (I, GuiButtonEvent event) {
+void FunctionEditor::gui_button_cb_zoomIn (I, GuiButtonEvent event) {
 	(void) event;
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	editor->do_zoomIn ();
@@ -615,7 +614,7 @@ void FunctionEditor::do_zoomOut () {
 	}
 }
 
-static void gui_button_cb_zoomOut (I, GuiButtonEvent event) {
+void FunctionEditor::gui_button_cb_zoomOut (I, GuiButtonEvent event) {
 	(void) event;
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	editor->do_zoomOut ();
@@ -637,7 +636,7 @@ void FunctionEditor::do_zoomToSelection () {
 	}
 }
 
-static void gui_button_cb_zoomToSelection (I, GuiButtonEvent event) {
+void FunctionEditor::gui_button_cb_zoomToSelection (I, GuiButtonEvent event) {
 	(void) event;
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	editor->do_zoomToSelection ();
@@ -656,43 +655,43 @@ void FunctionEditor::do_zoomBack () {
 	}
 }
 
-static void gui_button_cb_zoomBack (I, GuiButtonEvent event) {
+void FunctionEditor::gui_button_cb_zoomBack (I, GuiButtonEvent event) {
 	(void) event;
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	editor->do_zoomBack ();
 }
 
-static int menu_cb_showAll (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_showAll (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->do_showAll ();
 	return 1;
 }
 
-static int menu_cb_zoomIn (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_zoomIn (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->do_zoomIn ();
 	return 1;
 }
 
-static int menu_cb_zoomOut (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_zoomOut (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->do_zoomOut ();
 	return 1;
 }
 
-static int menu_cb_zoomToSelection (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_zoomToSelection (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->do_zoomToSelection ();
 	return 1;
 }
 
-static int menu_cb_zoomBack (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_zoomBack (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->do_zoomBack ();
 	return 1;
 }
 
-static int menu_cb_play (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_play (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	EDITOR_FORM (L"Play", 0)
 		REAL (L"From", L"0.0")
@@ -706,7 +705,7 @@ static int menu_cb_play (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_playOrStop (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_playOrStop (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	if (MelderAudio_isPlaying) {
 		MelderAudio_stopPlaying (MelderAudio_EXPLICIT);
@@ -723,7 +722,7 @@ static int menu_cb_playOrStop (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_playWindow (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_playWindow (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	MelderAudio_stopPlaying (MelderAudio_IMPLICIT);
 	editor->_playingCursor = TRUE;
@@ -731,14 +730,14 @@ static int menu_cb_playWindow (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_interruptPlaying (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_interruptPlaying (EDITOR_ARGS) {
 	MelderAudio_stopPlaying (MelderAudio_IMPLICIT);
 	return 1;
 }
 
 /********** SELECT MENU **********/
 
-static int menu_cb_select (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_select (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	EDITOR_FORM (L"Select", 0)
 		REAL (L"Start of selection", L"0.0")
@@ -764,7 +763,7 @@ static int menu_cb_select (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_moveCursorToB (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveCursorToB (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->_endSelection = editor->_startSelection;
 	editor->updateText ();
@@ -773,7 +772,7 @@ static int menu_cb_moveCursorToB (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_moveCursorToE (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveCursorToE (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->_startSelection = editor->_endSelection;
 	editor->updateText ();
@@ -782,7 +781,7 @@ static int menu_cb_moveCursorToE (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_moveCursorTo (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveCursorTo (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	EDITOR_FORM (L"Move cursor to", 0)
 		REAL (L"Position", L"0.0")
@@ -799,7 +798,7 @@ static int menu_cb_moveCursorTo (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_moveCursorBy (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveCursorBy (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	EDITOR_FORM (L"Move cursor by", 0)
 		REAL (L"Distance", L"0.05")
@@ -815,7 +814,7 @@ static int menu_cb_moveCursorBy (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_moveBby (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveBby (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	EDITOR_FORM (L"Move start of selection by", 0)
 		REAL (L"Distance", L"0.05")
@@ -836,7 +835,7 @@ static int menu_cb_moveBby (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_moveEby (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveEby (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	EDITOR_FORM (L"Move end of selection by", 0)
 		REAL (L"Distance", L"0.05")
@@ -878,13 +877,13 @@ void FunctionEditor::shift (double shift) {
 	marksChanged ();
 }
 
-static int menu_cb_pageUp (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_pageUp (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->shift (-RELATIVE_PAGE_INCREMENT * (editor->_endWindow - editor->_startWindow));
 	return 1;
 }
 
-static int menu_cb_pageDown (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_pageDown (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->shift (+RELATIVE_PAGE_INCREMENT * (editor->_endWindow - editor->_startWindow));
 	return 1;
@@ -900,7 +899,7 @@ void FunctionEditor::scrollToView (double t) {
 	}
 }
 
-static int menu_cb_selectEarlier (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_selectEarlier (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->_startSelection -= editor->_arrowScrollStep;
 	if (editor->_startSelection < editor->_tmin + 1e-12)
@@ -912,7 +911,7 @@ static int menu_cb_selectEarlier (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_selectLater (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_selectLater (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->_startSelection += editor->_arrowScrollStep;
 	if (editor->_startSelection > editor->_tmax - 1e-12)
@@ -924,7 +923,7 @@ static int menu_cb_selectLater (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_moveBleft (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveBleft (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->_startSelection -= editor->_arrowScrollStep;
 	if (editor->_startSelection < editor->_tmin + 1e-12)
@@ -933,7 +932,7 @@ static int menu_cb_moveBleft (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_moveBright (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveBright (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->_startSelection += editor->_arrowScrollStep;
 	if (editor->_startSelection > editor->_tmax - 1e-12)
@@ -947,7 +946,7 @@ static int menu_cb_moveBright (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_moveEleft (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveEleft (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->_endSelection -= editor->_arrowScrollStep;
 	if (editor->_endSelection < editor->_tmin + 1e-12)
@@ -961,7 +960,7 @@ static int menu_cb_moveEleft (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_moveEright (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_moveEright (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	editor->_endSelection += editor->_arrowScrollStep;
 	if (editor->_endSelection > editor->_tmax - 1e-12)
@@ -973,7 +972,7 @@ static int menu_cb_moveEright (EDITOR_ARGS) {
 /********** GUI CALLBACKS **********/
 
 #if gtk
-static void gui_cb_scroll (GtkRange *rng, gpointer void_me) {
+void FunctionEditor::gui_cb_scroll (GtkRange *rng, gpointer void_me) {
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	if (editor->_graphics == NULL) return;   // ignore events during creation
 	double value = gtk_range_get_value (GTK_RANGE (rng));
@@ -999,7 +998,7 @@ static void gui_cb_scroll (GtkRange *rng, gpointer void_me) {
 	}
 }
 #else
-static void gui_cb_scroll (GUI_ARGS) {
+void FunctionEditor::gui_cb_scroll (GUI_ARGS) {
 	GUI_IAM (FunctionEditor);
 	if (_graphics == NULL) return;   // ignore events during creation
 	int value, slider, incr, pincr;
@@ -1027,7 +1026,7 @@ static void gui_cb_scroll (GUI_ARGS) {
 }
 #endif
 
-static int menu_cb_intro (EDITOR_ARGS) {
+int FunctionEditor::menu_cb_intro (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
 	Melder_help (L"Intro");
 	return 1;
@@ -1088,7 +1087,7 @@ void FunctionEditor::createMenus () {
 	menu->addCommand (L"Intro", 0, menu_cb_intro);
 }
 
-static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
+void FunctionEditor::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	(void) event;
 	if (editor->_graphics == NULL) return;   // Could be the case in the very beginning.
@@ -1096,7 +1095,7 @@ static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 		editor->drawNow ();
 }
 
-static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
+void FunctionEditor::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	if (editor->_graphics == NULL) return;   // Could be the case in the very beginning.
 	if (gtk && event -> type != BUTTON_PRESS) return;
@@ -1158,7 +1157,7 @@ static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	}
 }
 
-static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {
+void FunctionEditor::gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	if (editor->_graphics == NULL) return;   // Could be the case in the very beginning.
 	editor->key (event -> key);

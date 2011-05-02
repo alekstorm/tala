@@ -27,6 +27,7 @@
 
 #include "dwsys/Command.h"
 #include "sys/Editor.h"
+#include "sys/EditorM.h"
 #include "Categories.h"
 
 class CategoriesEditor : public Editor {
@@ -49,6 +50,20 @@ class CategoriesEditor : public Editor {
 	int _position;
 	GuiObject _list, _text, _outOfView, _undo, _redo;
 	GuiObject _remove, _insert, _insertAtEnd, _replace, _moveUp, _moveDown;
+
+  private:
+	static int menu_cb_help (EDITOR_ARGS);
+	static void gui_button_cb_remove (I, GuiButtonEvent event);
+	static void gui_button_cb_insert (I, GuiButtonEvent event);
+	static void gui_button_cb_insertAtEnd (I, GuiButtonEvent event);
+	static void gui_button_cb_replace (I, GuiButtonEvent event);
+	static void gui_button_cb_moveUp (I, GuiButtonEvent event);
+	static void gui_button_cb_moveDown (I, GuiButtonEvent event);
+	static void gui_cb_scroll (GUI_ARGS);
+	static void gui_list_cb_double_click (void *void_me, GuiListEvent event);
+	static void gui_list_cb_extended (void *void_me, GuiListEvent event);
+	static void gui_button_cb_undo (I, GuiButtonEvent event);
+	static void gui_button_cb_redo (I, GuiButtonEvent event);
 };
 
 #endif /* _CategoriesEditor_h_ */

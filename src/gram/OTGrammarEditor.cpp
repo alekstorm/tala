@@ -39,7 +39,7 @@ OTGrammarEditor::OTGrammarEditor (GuiObject parent, const wchar_t *title, OTGram
 	_data = ot;
 }
 
-static int menu_cb_evaluate (EDITOR_ARGS) {
+int OTGrammarEditor::menu_cb_evaluate (EDITOR_ARGS) {
 	OTGrammarEditor *editor = (OTGrammarEditor *)editor_me;
 	EDITOR_FORM (L"Evaluate", 0)
 		REAL (L"Noise", L"2.0")
@@ -52,7 +52,7 @@ static int menu_cb_evaluate (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_evaluate_noise_2_0 (EDITOR_ARGS) {
+int OTGrammarEditor::menu_cb_evaluate_noise_2_0 (EDITOR_ARGS) {
 	OTGrammarEditor *editor = (OTGrammarEditor *)editor_me;
 	editor->save (L"Evaluate (noise 2.0)");
 	OTGrammar_newDisharmonies ((OTGrammar) editor->_data, 2.0);
@@ -61,7 +61,7 @@ static int menu_cb_evaluate_noise_2_0 (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_evaluate_tinyNoise (EDITOR_ARGS) {
+int OTGrammarEditor::menu_cb_evaluate_tinyNoise (EDITOR_ARGS) {
 	OTGrammarEditor *editor = (OTGrammarEditor *)editor_me;
 	editor->save (L"Evaluate (tiny noise)");
 	OTGrammar_newDisharmonies ((OTGrammar) editor->_data, 1e-9);
@@ -70,7 +70,7 @@ static int menu_cb_evaluate_tinyNoise (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_evaluate_zeroNoise (EDITOR_ARGS) {
+int OTGrammarEditor::menu_cb_evaluate_zeroNoise (EDITOR_ARGS) {
 	OTGrammarEditor *editor = (OTGrammarEditor *)editor_me;
 	editor->save (L"Evaluate (zero noise)");
 	OTGrammar_newDisharmonies ((OTGrammar) editor->_data, 0.0);
@@ -79,7 +79,7 @@ static int menu_cb_evaluate_zeroNoise (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_editConstraint (EDITOR_ARGS) {
+int OTGrammarEditor::menu_cb_editConstraint (EDITOR_ARGS) {
 	OTGrammarEditor *editor = (OTGrammarEditor *)editor_me;
 	EDITOR_FORM (L"Edit constraint", 0)
 		LABEL (L"constraint", L"");
@@ -108,7 +108,7 @@ static int menu_cb_editConstraint (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_learnOne (EDITOR_ARGS) {
+int OTGrammarEditor::menu_cb_learnOne (EDITOR_ARGS) {
 	OTGrammarEditor *editor = (OTGrammarEditor *)editor_me;
 	EDITOR_FORM (L"Learn one", L"OTGrammar: Learn one...")
 		LABEL (L"", L"Underlying form:")
@@ -132,7 +132,7 @@ static int menu_cb_learnOne (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_learnOneFromPartialOutput (EDITOR_ARGS) {
+int OTGrammarEditor::menu_cb_learnOneFromPartialOutput (EDITOR_ARGS) {
 	OTGrammarEditor *editor = (OTGrammarEditor *)editor_me;
 	EDITOR_FORM (L"Learn one from partial adult output", 0)
 		LABEL (L"", L"Partial adult surface form (e.g. overt form):")
@@ -155,7 +155,7 @@ static int menu_cb_learnOneFromPartialOutput (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_removeConstraint (EDITOR_ARGS) {
+int OTGrammarEditor::menu_cb_removeConstraint (EDITOR_ARGS) {
 	OTGrammarEditor *editor = (OTGrammarEditor *)editor_me;
 	OTGrammar ot = (OTGrammar) editor->_data;
 	OTGrammarConstraint constraint;
@@ -168,7 +168,7 @@ static int menu_cb_removeConstraint (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_resetAllRankings (EDITOR_ARGS) {
+int OTGrammarEditor::menu_cb_resetAllRankings (EDITOR_ARGS) {
 	OTGrammarEditor *editor = (OTGrammarEditor *)editor_me;
 	EDITOR_FORM (L"Reset all rankings", 0)
 		REAL (L"Ranking", L"100.0")
@@ -181,9 +181,9 @@ static int menu_cb_resetAllRankings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_OTGrammarEditor_help (EDITOR_ARGS) { OTGrammarEditor *editor = (OTGrammarEditor *)editor_me; Melder_help (L"OTGrammarEditor"); return 1; }
-static int menu_cb_OTGrammar_help (EDITOR_ARGS) { OTGrammarEditor *editor = (OTGrammarEditor *)editor_me; Melder_help (L"OTGrammar"); return 1; }
-static int menu_cb_OTLearningTutorial (EDITOR_ARGS) { OTGrammarEditor *editor = (OTGrammarEditor *)editor_me; Melder_help (L"OT learning"); return 1; }
+int OTGrammarEditor::menu_cb_OTGrammarEditor_help (EDITOR_ARGS) { OTGrammarEditor *editor = (OTGrammarEditor *)editor_me; Melder_help (L"OTGrammarEditor"); return 1; }
+int OTGrammarEditor::menu_cb_OTGrammar_help (EDITOR_ARGS) { OTGrammarEditor *editor = (OTGrammarEditor *)editor_me; Melder_help (L"OTGrammar"); return 1; }
+int OTGrammarEditor::menu_cb_OTLearningTutorial (EDITOR_ARGS) { OTGrammarEditor *editor = (OTGrammarEditor *)editor_me; Melder_help (L"OT learning"); return 1; }
 
 void OTGrammarEditor::createMenus () {
 	EditorMenu *menu = getMenu (L"Edit");

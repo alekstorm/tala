@@ -21,8 +21,6 @@
  * pb 2010/12/08
  */
 
-#include "sys/praat.h"
-
 #include "Pitch_AnyTier_to_PitchTier.h"
 #include "SpectrumEditor.h"
 #include "SpellingChecker.h"
@@ -31,6 +29,8 @@
 #include "WordList.h"
 #include "dwtools/TextGrid_extensions.h"
 #include "sys/UiFile.h"
+
+#include "sys/praat.h"
 
 void praat_dia_timeRange (UiForm *dia);
 void praat_get_timeRange (UiForm *dia, double *tmin, double *tmax);

@@ -105,7 +105,7 @@ static struct {
 	{ 1, 26, 26, 44100 };
 #endif
 
-static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
+void SoundRecorder::gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	if (soundRecorder->_graphics == NULL) return;   // Could be the case in the very beginning.
 	Graphics_setWsViewport (soundRecorder->_graphics, 0, event -> width, 0, event -> height);
@@ -851,7 +851,7 @@ static int portaudioStreamCallback (
 	return paContinue;
 }
 
-static void gui_button_cb_record (I, GuiButtonEvent event) {
+void SoundRecorder::gui_button_cb_record (I, GuiButtonEvent event) {
 	(void) event;
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	if (soundRecorder->_recording) return;
@@ -910,13 +910,13 @@ end:
 	iferror { soundRecorder->_recording = false; Melder_flushError ("Cannot record."); }
 }
 
-static void gui_button_cb_stop (I, GuiButtonEvent event) {
+void SoundRecorder::gui_button_cb_stop (I, GuiButtonEvent event) {
 	(void) event;
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	soundRecorder->stopRecording ();
 }
 
-static void gui_button_cb_play (I, GuiButtonEvent event) {
+void SoundRecorder::gui_button_cb_play (I, GuiButtonEvent event) {
 	(void) event;
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	if (soundRecorder->_recording || soundRecorder->_nsamp == 0) return;
@@ -953,20 +953,20 @@ void SoundRecorder::publish () {
 		_publishCallback (this, _publishClosure, sound);
 }
 
-static void gui_button_cb_cancel (I, GuiButtonEvent event) {
+void SoundRecorder::gui_button_cb_cancel (I, GuiButtonEvent event) {
 	(void) event;
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	soundRecorder->stopRecording ();
 	forget (soundRecorder);
 }
 
-static void gui_button_cb_apply (I, GuiButtonEvent event) {
+void SoundRecorder::gui_button_cb_apply (I, GuiButtonEvent event) {
 	(void) event;
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	soundRecorder->stopRecording ();
 	soundRecorder->publish ();
 }
-static void gui_cb_apply (GuiObject widget, XtPointer void_me, XtPointer call) {
+void SoundRecorder::gui_cb_apply (GuiObject widget, XtPointer void_me, XtPointer call) {
 	(void) widget;
 	(void) call;
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
@@ -974,7 +974,7 @@ static void gui_cb_apply (GuiObject widget, XtPointer void_me, XtPointer call) {
 	soundRecorder->publish ();
 }
 
-static void gui_button_cb_ok (I, GuiButtonEvent event) {
+void SoundRecorder::gui_button_cb_ok (I, GuiButtonEvent event) {
 	(void) event;
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	soundRecorder->stopRecording ();
@@ -1225,7 +1225,7 @@ int SoundRecorder::initialize () {
 	return 1;
 }
 
-static void gui_radiobutton_cb_input (I, GuiRadioButtonEvent event) {
+void SoundRecorder::gui_radiobutton_cb_input (I, GuiRadioButtonEvent event) {
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	theControlPanel. inputSource = 1;   // Default.
 	Melder_assert (event -> toggle != NULL);
@@ -1271,7 +1271,7 @@ static void gui_radiobutton_cb_input (I, GuiRadioButtonEvent event) {
 	}
 }
 
-static void gui_radiobutton_cb_fsamp (I, GuiRadioButtonEvent event) {
+void SoundRecorder::gui_radiobutton_cb_fsamp (I, GuiRadioButtonEvent event) {
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	if (soundRecorder->_recording) return;
 	double fsamp = NUMundefined;
@@ -1569,7 +1569,7 @@ end:
 	return 1;
 }
 
-static int menu_cb_writeWav (EDITOR_ARGS) {
+int SoundRecorder::menu_cb_writeWav (EDITOR_ARGS) {
 	SoundRecorder *soundRecorder = (SoundRecorder *)editor_me;
 	EDITOR_FORM_WRITE (L"Save as WAV file", 0)
 		wchar_t *name = GuiText_getString (soundRecorder->_soundName);
@@ -1580,7 +1580,7 @@ static int menu_cb_writeWav (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_writeAifc (EDITOR_ARGS) {
+int SoundRecorder::menu_cb_writeAifc (EDITOR_ARGS) {
 	SoundRecorder *soundRecorder = (SoundRecorder *)editor_me;
 	EDITOR_FORM_WRITE (L"Save as AIFC file", 0)
 		wchar_t *name = GuiText_getString (soundRecorder->_soundName);
@@ -1591,7 +1591,7 @@ static int menu_cb_writeAifc (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_writeNextSun (EDITOR_ARGS) {
+int SoundRecorder::menu_cb_writeNextSun (EDITOR_ARGS) {
 	SoundRecorder *soundRecorder = (SoundRecorder *)editor_me;
 	EDITOR_FORM_WRITE (L"Save as NeXT/Sun file", 0)
 		wchar_t *name = GuiText_getString (soundRecorder->_soundName);
@@ -1602,7 +1602,7 @@ static int menu_cb_writeNextSun (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_writeNist (EDITOR_ARGS) {
+int SoundRecorder::menu_cb_writeNist (EDITOR_ARGS) {
 	SoundRecorder *soundRecorder = (SoundRecorder *)editor_me;
 	EDITOR_FORM_WRITE (L"Save as NIST file", 0)
 		wchar_t *name = GuiText_getString (soundRecorder->_soundName);
@@ -1613,7 +1613,7 @@ static int menu_cb_writeNist (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_SoundRecorder_help (EDITOR_ARGS) { Melder_help (L"SoundRecorder"); return 1; }
+int SoundRecorder::menu_cb_SoundRecorder_help (EDITOR_ARGS) { Melder_help (L"SoundRecorder"); return 1; }
 
 void SoundRecorder::createMenus () {
 	EditorMenu *menu = getMenu (L"File");

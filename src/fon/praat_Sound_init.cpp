@@ -21,8 +21,6 @@
  * pb 2010/12/08
  */
 
-#include "sys/praat.h"
-
 #include "LongSound.h"
 #include "Ltas.h"
 #include "Manipulation.h"
@@ -42,6 +40,8 @@
 #include "dwtools/Sound_extensions.h"
 #include "mp3/mp3.h"
 #include "sys/UiFile.h"
+
+#include "sys/praat.h"
 
 #ifndef LONG_MAX
 	#define LONG_MAX  2147483647

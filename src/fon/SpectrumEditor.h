@@ -53,6 +53,15 @@ class SpectrumEditor : public FunctionEditor {
 	double _minimum, _maximum, _cursorHeight;
 	double _bandSmoothing, _dynamicRange;
 	GuiObject _publishBandButton, _publishSoundButton;
+
+  private:
+	static int menu_cb_publishBand (EDITOR_ARGS);
+	static int menu_cb_publishSound (EDITOR_ARGS);
+	static int menu_cb_passBand (EDITOR_ARGS);
+	static int menu_cb_stopBand (EDITOR_ARGS);
+	static int menu_cb_setDynamicRange (EDITOR_ARGS);
+	static int menu_cb_help_SpectrumEditor (EDITOR_ARGS);
+	static int menu_cb_help_Spectrum (EDITOR_ARGS);
 };
 
 /* End of file SpectrumEditor.h */

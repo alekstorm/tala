@@ -61,6 +61,12 @@ class RealTierEditor : public TimeSoundEditor {
 	virtual void play (double tmin, double tmax);
 
 	double _ymin, _ymax, _ycursor;
+
+  private:
+	static int menu_cb_removePoints (EDITOR_ARGS);
+	static int menu_cb_addPointAtCursor (EDITOR_ARGS);
+	static int menu_cb_addPointAt (EDITOR_ARGS);
+	static int menu_cb_setRange (EDITOR_ARGS);
 };
 
 /* End of file RealTierEditor.h */

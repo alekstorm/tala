@@ -21,8 +21,6 @@
  * pb 2010/10/19
  */
 
-#include "sys/praat.h"
-
 #include "AmplitudeTier.h"
 #include "AmplitudeTierEditor.h"
 #include "Cochleagram_and_Excitation.h"
@@ -70,6 +68,8 @@
 #include "stat/Table.h"
 #include "sys/StringsEditor.h"
 #include "sys/UiFile.h"
+
+#include "sys/praat.h"
 
 static const wchar_t *STRING_FROM_TIME_SECONDS = L"left Time range (s)";
 static const wchar_t *STRING_TO_TIME_SECONDS = L"right Time range (s)";

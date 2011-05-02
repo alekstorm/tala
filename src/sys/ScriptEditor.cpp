@@ -93,7 +93,7 @@ void ScriptEditor::goAway () {
 	TextEditor::goAway ();
 }
 
-static int args_ok (UiForm *sendingForm, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified_dummy, I) {
+int ScriptEditor::args_ok (UiForm *sendingForm, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified_dummy, I) {
 	(void) sendingString_dummy;
 	(void) interpreter_dummy;
 	(void) invokingButtonTitle;
@@ -144,7 +144,7 @@ void ScriptEditor::run (wchar_t **text) {
 	}
 }
 
-static int menu_cb_run (EDITOR_ARGS) {
+int ScriptEditor::menu_cb_run (EDITOR_ARGS) {
 	ScriptEditor *editor = (ScriptEditor *)editor;
 	if (editor->_interpreter -> _running)
 		return Melder_error1 (L"The script is already running (paused). Please close or continue the pause or demo window.");
@@ -154,7 +154,7 @@ static int menu_cb_run (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_runSelection (EDITOR_ARGS) {
+int ScriptEditor::menu_cb_runSelection (EDITOR_ARGS) {
 	ScriptEditor *editor = (ScriptEditor *)editor;
 	if (editor->_interpreter -> _running)
 		return Melder_error1 (L"The script is already running (paused). Please close or continue the pause or demo window.");
@@ -167,7 +167,7 @@ static int menu_cb_runSelection (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addToMenu (EDITOR_ARGS) {
+int ScriptEditor::menu_cb_addToMenu (EDITOR_ARGS) {
 	ScriptEditor *editor = (ScriptEditor *)editor;
 	EDITOR_FORM (L"Add to menu", L"Add to fixed menu...")
 		WORD (L"Window", L"?")
@@ -191,7 +191,7 @@ static int menu_cb_addToMenu (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_addToFixedMenu (EDITOR_ARGS) {
+int ScriptEditor::menu_cb_addToFixedMenu (EDITOR_ARGS) {
 	ScriptEditor *editor = (ScriptEditor *)editor;
 	EDITOR_FORM (L"Add to fixed menu", L"Add to fixed menu...");
 		RADIO (L"Window", 1)
@@ -216,7 +216,7 @@ static int menu_cb_addToFixedMenu (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_addToDynamicMenu (EDITOR_ARGS) {
+int ScriptEditor::menu_cb_addToDynamicMenu (EDITOR_ARGS) {
 	ScriptEditor *editor = (ScriptEditor *)editor;
 	EDITOR_FORM (L"Add to dynamic menu", L"Add to dynamic menu...")
 		WORD (L"Class 1", L"Sound")
@@ -244,13 +244,13 @@ static int menu_cb_addToDynamicMenu (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_clearHistory (EDITOR_ARGS) {
+int ScriptEditor::menu_cb_clearHistory (EDITOR_ARGS) {
 	ScriptEditor *editor = (ScriptEditor *)editor;
 	UiForm::history.clear ();
 	return 1;
 }
 
-static int menu_cb_pasteHistory (EDITOR_ARGS) {
+int ScriptEditor::menu_cb_pasteHistory (EDITOR_ARGS) {
 	ScriptEditor *editor = (ScriptEditor *)editor;
 	wchar_t *history = UiForm::history.get ();
 	if (history == NULL || history [0] == '\0')
@@ -274,7 +274,7 @@ static int menu_cb_pasteHistory (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_expandIncludeFiles (EDITOR_ARGS) {
+int ScriptEditor::menu_cb_expandIncludeFiles (EDITOR_ARGS) {
 	ScriptEditor *editor = (ScriptEditor *)editor;
 	structMelderFile file = { 0 };
 	wchar_t *text = GuiText_getString (editor->_textWidget);
@@ -290,16 +290,16 @@ end:
 	return 1;
 }
 
-static int menu_cb_AboutScriptEditor (EDITOR_ARGS) { Melder_help (L"ScriptEditor"); return 1; }
-static int menu_cb_ScriptingTutorial (EDITOR_ARGS) { Melder_help (L"Scripting"); return 1; }
-static int menu_cb_ScriptingExamples (EDITOR_ARGS) { Melder_help (L"Scripting examples"); return 1; }
-static int menu_cb_PraatScript (EDITOR_ARGS) { Melder_help (L"Praat script"); return 1; }
-static int menu_cb_FormulasTutorial (EDITOR_ARGS) { Melder_help (L"Formulas"); return 1; }
-static int menu_cb_DemoWindow (EDITOR_ARGS) { Melder_help (L"Demo window"); return 1; }
-static int menu_cb_TheHistoryMechanism (EDITOR_ARGS) { Melder_help (L"History mechanism"); return 1; }
-static int menu_cb_InitializationScripts (EDITOR_ARGS) { Melder_help (L"Initialization script"); return 1; }
-static int menu_cb_AddingToAFixedMenu (EDITOR_ARGS) { Melder_help (L"Add to fixed menu..."); return 1; }
-static int menu_cb_AddingToADynamicMenu (EDITOR_ARGS) { Melder_help (L"Add to dynamic menu..."); return 1; }
+int ScriptEditor::menu_cb_AboutScriptEditor (EDITOR_ARGS) { Melder_help (L"ScriptEditor"); return 1; }
+int ScriptEditor::menu_cb_ScriptingTutorial (EDITOR_ARGS) { Melder_help (L"Scripting"); return 1; }
+int ScriptEditor::menu_cb_ScriptingExamples (EDITOR_ARGS) { Melder_help (L"Scripting examples"); return 1; }
+int ScriptEditor::menu_cb_PraatScript (EDITOR_ARGS) { Melder_help (L"Praat script"); return 1; }
+int ScriptEditor::menu_cb_FormulasTutorial (EDITOR_ARGS) { Melder_help (L"Formulas"); return 1; }
+int ScriptEditor::menu_cb_DemoWindow (EDITOR_ARGS) { Melder_help (L"Demo window"); return 1; }
+int ScriptEditor::menu_cb_TheHistoryMechanism (EDITOR_ARGS) { Melder_help (L"History mechanism"); return 1; }
+int ScriptEditor::menu_cb_InitializationScripts (EDITOR_ARGS) { Melder_help (L"Initialization script"); return 1; }
+int ScriptEditor::menu_cb_AddingToAFixedMenu (EDITOR_ARGS) { Melder_help (L"Add to fixed menu..."); return 1; }
+int ScriptEditor::menu_cb_AddingToADynamicMenu (EDITOR_ARGS) { Melder_help (L"Add to dynamic menu..."); return 1; }
 
 void ScriptEditor::createMenus () {
 	EditorMenu *menu = getMenu (L"File");

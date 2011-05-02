@@ -48,6 +48,9 @@ class IntensityTierEditor : public RealTierEditor {
 
 	virtual void createMenus ();
 	virtual void play (double tmin, double tmax);
+
+  private:
+	static int menu_cb_IntensityTierHelp (EDITOR_ARGS);
 };
 
 /* End of file IntensityTierEditor.h */

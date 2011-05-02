@@ -67,7 +67,7 @@ HyperLink HyperLink_create (const wchar_t *name, double x1DC, double x2DC, doubl
 
 /********** class HyperPage **********/
 
-static void gui_drawingarea_cb_resize (void *void_me, GuiDrawingAreaResizeEvent event) {
+void HyperPage::gui_drawingarea_cb_resize (void *void_me, GuiDrawingAreaResizeEvent event) {
 	HyperPage *editor= (HyperPage *)void_me;
 	if (editor->_g == NULL) return;
 	Graphics_setWsViewport (editor->_g, 0, event -> width, 0, event -> height);
@@ -78,7 +78,7 @@ static void gui_drawingarea_cb_resize (void *void_me, GuiDrawingAreaResizeEvent 
 }
 
 #if gtk
-static void gui_cb_verticalScroll (GtkRange *rng, gpointer void_me) {
+void HyperPage::gui_cb_verticalScroll (GtkRange *rng, gpointer void_me) {
 	HyperPage *editor= (HyperPage *)void_me;
 	double value = gtk_range_get_value (GTK_RANGE (rng));
 	if (value != editor->_top) {
@@ -90,7 +90,7 @@ static void gui_cb_verticalScroll (GtkRange *rng, gpointer void_me) {
 	}
 }
 #else
-static void gui_cb_verticalScroll (GUI_ARGS) {
+void HyperPage::gui_cb_verticalScroll (GUI_ARGS) {
 	int value, sliderSize, incr, pincr;
 	#if gtk
 		double value = gtk_range_get_value (GTK_RANGE (w));
@@ -678,7 +678,7 @@ static void print (void *void_me, Graphics graphics) {
 	editor->_printing = FALSE;
 }
 
-static void gui_drawingarea_cb_expose (void *void_me, GuiDrawingAreaExposeEvent event) {
+void HyperPage::gui_drawingarea_cb_expose (void *void_me, GuiDrawingAreaExposeEvent event) {
 	(void) event;
 	HyperPage *editor= (HyperPage *)void_me;
 	if (editor->_g == NULL) return;   // Could be the case in the very beginning.
@@ -696,7 +696,7 @@ static void gui_drawingarea_cb_expose (void *void_me, GuiDrawingAreaExposeEvent 
 	}
 }
 
-static void gui_drawingarea_cb_click (void *void_me, GuiDrawingAreaClickEvent event) {
+void HyperPage::gui_drawingarea_cb_click (void *void_me, GuiDrawingAreaClickEvent event) {
 	HyperPage *editor= (HyperPage *)void_me;
 	if (editor->_g == NULL) return;   // Could be the case in the very beginning.
 	if (gtk && event -> type != BUTTON_PRESS) return;
@@ -714,19 +714,19 @@ static void gui_drawingarea_cb_click (void *void_me, GuiDrawingAreaClickEvent ev
 	}
 }
 
-static int menu_cb_postScriptSettings (EDITOR_ARGS) {
+int HyperPage::menu_cb_postScriptSettings (EDITOR_ARGS) {
 	Printer_postScriptSettings ();
 	return 1;
 }
 
 #ifdef macintosh
-static int menu_cb_pageSetup (EDITOR_ARGS) {
+int HyperPage::menu_cb_pageSetup (EDITOR_ARGS) {
 	Printer_pageSetup ();
 	return 1;
 }
 #endif
 
-static int menu_cb_print (EDITOR_ARGS) {
+int HyperPage::menu_cb_print (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	EDITOR_FORM (L"Print", 0)
 		SENTENCE (L"Left or inside header", L"")
@@ -754,7 +754,7 @@ static int menu_cb_print (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_font (EDITOR_ARGS) {
+int HyperPage::menu_cb_font (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	EDITOR_FORM (L"Font", 0)
 		RADIO (L"Font", 1)
@@ -783,13 +783,13 @@ void HyperPage::setFontSize (int fontSize) {
 	updateSizeMenu ();
 }
 
-static int menu_cb_10 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (10); return 1; }
-static int menu_cb_12 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (12); return 1; }
-static int menu_cb_14 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (14); return 1; }
-static int menu_cb_18 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (18); return 1; }
-static int menu_cb_24 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (24); return 1; }
+int HyperPage::menu_cb_10 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (10); return 1; }
+int HyperPage::menu_cb_12 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (12); return 1; }
+int HyperPage::menu_cb_14 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (14); return 1; }
+int HyperPage::menu_cb_18 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (18); return 1; }
+int HyperPage::menu_cb_24 (EDITOR_ARGS) { ((HyperPage *)editor_me)->setFontSize (24); return 1; }
 
-static int menu_cb_fontSize (EDITOR_ARGS) {
+int HyperPage::menu_cb_fontSize (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	EDITOR_FORM (L"Font size", 0)
 		NATURAL (L"Font size (points)", L"12")
@@ -800,7 +800,7 @@ static int menu_cb_fontSize (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_searchForPage (EDITOR_ARGS) {
+int HyperPage::menu_cb_searchForPage (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	EDITOR_FORM (L"Search for page", 0)
 		TEXTFIELD (L"Page", L"a")
@@ -869,7 +869,7 @@ void HyperPage::updateVerticalScrollBar ()
 	_history [_historyPointer]. top = 0/*_top*/;
 }
 
-static int menu_cb_pageUp (EDITOR_ARGS) {
+int HyperPage::menu_cb_pageUp (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	int value, sliderSize, incr, pincr;
 	if (! editor->_verticalScrollBar) return 0;
@@ -892,7 +892,7 @@ static int menu_cb_pageUp (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_pageDown (EDITOR_ARGS) {
+int HyperPage::menu_cb_pageDown (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	int value, sliderSize, incr, pincr;
 	if (! editor->_verticalScrollBar) return 0;
@@ -931,13 +931,13 @@ int HyperPage::do_back () {
 	return 1;
 }
 
-static int menu_cb_back (EDITOR_ARGS) {
+int HyperPage::menu_cb_back (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	if (! editor->do_back ()) return 0;
 	return 1;
 }
 
-static void gui_button_cb_back (void *void_me, GuiButtonEvent event) {
+void HyperPage::gui_button_cb_back (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	HyperPage *editor= (HyperPage *)void_me;
 	if (! editor->do_back ()) Melder_flushError (NULL);
@@ -961,13 +961,13 @@ int HyperPage::do_forth () {
 	return 1;
 }
 
-static int menu_cb_forth (EDITOR_ARGS) {
+int HyperPage::menu_cb_forth (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	if (! editor->do_forth ()) return 0;
 	return 1;
 }
 
-static void gui_button_cb_forth (void *void_me, GuiButtonEvent event) {
+void HyperPage::gui_button_cb_forth (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	HyperPage *editor= (HyperPage *)void_me;
 	if (! editor->do_forth ()) Melder_flushError (NULL);
@@ -1003,14 +1003,14 @@ void HyperPage::createMenus () {
 	menu->addCommand (L"Font...", 0, menu_cb_font);
 }
 
-static void gui_button_cb_previousPage (void *void_me, GuiButtonEvent event) {
+void HyperPage::gui_button_cb_previousPage (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	HyperPage *editor= (HyperPage *)void_me;
 	editor->goToPage_i (editor->getCurrentPageNumber () > 1 ?
 		editor->getCurrentPageNumber () - 1 : editor->getNumberOfPages ());
 }
 
-static void gui_button_cb_nextPage (void *void_me, GuiButtonEvent event) {
+void HyperPage::gui_button_cb_nextPage (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	HyperPage *editor= (HyperPage *)void_me;
 	editor->goToPage_i (editor->getCurrentPageNumber () < editor->getNumberOfPages () ?

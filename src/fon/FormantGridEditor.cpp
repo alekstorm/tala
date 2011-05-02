@@ -79,7 +79,7 @@ FormantGridEditor::FormantGridEditor (GuiObject parent, const wchar_t *title, Fo
 
 /********** MENU COMMANDS **********/
 
-static int menu_cb_removePoints (EDITOR_ARGS) {
+int FormantGridEditor::menu_cb_removePoints (EDITOR_ARGS) {
 	FormantGridEditor *editor = (FormantGridEditor *)editor_me;
 	editor->save (L"Remove point(s)");
 	FormantGrid grid = (FormantGrid) editor->_data;
@@ -94,7 +94,7 @@ static int menu_cb_removePoints (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPointAtCursor (EDITOR_ARGS) {
+int FormantGridEditor::menu_cb_addPointAtCursor (EDITOR_ARGS) {
 	FormantGridEditor *editor = (FormantGridEditor *)editor_me;
 	editor->save (L"Add point");
 	FormantGrid grid = (FormantGrid) editor->_data;
@@ -106,7 +106,7 @@ static int menu_cb_addPointAtCursor (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPointAt (EDITOR_ARGS) {
+int FormantGridEditor::menu_cb_addPointAt (EDITOR_ARGS) {
 	FormantGridEditor *editor = (FormantGridEditor *)editor_me;
 	EDITOR_FORM (L"Add point", 0)
 		REAL (L"Time (s)", L"0.0")
@@ -125,7 +125,7 @@ static int menu_cb_addPointAt (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_setFormantRange (EDITOR_ARGS) {
+int FormantGridEditor::menu_cb_setFormantRange (EDITOR_ARGS) {
 	FormantGridEditor *editor = (FormantGridEditor *)editor_me;
 	EDITOR_FORM (L"Set formant range", 0)
 		REAL (L"Minimum formant (Hz)", L"0.0")
@@ -140,7 +140,7 @@ static int menu_cb_setFormantRange (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_setBandwidthRange (EDITOR_ARGS) {
+int FormantGridEditor::menu_cb_setBandwidthRange (EDITOR_ARGS) {
 	FormantGridEditor *editor = (FormantGridEditor *)editor_me;
 	EDITOR_FORM (L"Set bandwidth range", 0)
 		REAL (L"Minimum bandwidth (Hz)", L"0.0")
@@ -155,7 +155,7 @@ static int menu_cb_setBandwidthRange (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_showBandwidths (EDITOR_ARGS) {
+int FormantGridEditor::menu_cb_showBandwidths (EDITOR_ARGS) {
 	FormantGridEditor *editor = (FormantGridEditor *)editor_me;
 	editor->_editingBandwidths = ! editor->_editingBandwidths;
 	editor->redraw ();
@@ -174,16 +174,16 @@ int FormantGridEditor::selectFormantOrBandwidth (long iformant) {
 	return 1;
 }
 
-static int menu_cb_selectFirst (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (1); }
-static int menu_cb_selectSecond (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (2); }
-static int menu_cb_selectThird (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (3); }
-static int menu_cb_selectFourth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (4); }
-static int menu_cb_selectFifth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (5); }
-static int menu_cb_selectSixth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (6); }
-static int menu_cb_selectSeventh (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (7); }
-static int menu_cb_selectEighth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (8); }
-static int menu_cb_selectNinth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (9); }
-static int menu_cb_selectFormantOrBandwidth (EDITOR_ARGS) {
+int FormantGridEditor::menu_cb_selectFirst (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (1); }
+int FormantGridEditor::menu_cb_selectSecond (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (2); }
+int FormantGridEditor::menu_cb_selectThird (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (3); }
+int FormantGridEditor::menu_cb_selectFourth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (4); }
+int FormantGridEditor::menu_cb_selectFifth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (5); }
+int FormantGridEditor::menu_cb_selectSixth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (6); }
+int FormantGridEditor::menu_cb_selectSeventh (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (7); }
+int FormantGridEditor::menu_cb_selectEighth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (8); }
+int FormantGridEditor::menu_cb_selectNinth (EDITOR_ARGS) { FormantGridEditor *editor = (FormantGridEditor *)editor_me; return editor->selectFormantOrBandwidth (9); }
+int FormantGridEditor::menu_cb_selectFormantOrBandwidth (EDITOR_ARGS) {
 	FormantGridEditor *editor = (FormantGridEditor *)editor_me;
 	EDITOR_FORM (L"Select formant or bandwidth", 0)
 		NATURAL (L"Formant number", L"1")
@@ -195,7 +195,7 @@ static int menu_cb_selectFormantOrBandwidth (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_pitchSettings (EDITOR_ARGS) {
+int FormantGridEditor::menu_cb_pitchSettings (EDITOR_ARGS) {
 	FormantGridEditor *editor = (FormantGridEditor *)editor_me;
 	EDITOR_FORM (L"Source pitch settings", 0)
 		LABEL (L"", L"These settings apply to the pitch curve")

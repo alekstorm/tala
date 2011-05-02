@@ -38,6 +38,19 @@ class OTGrammarEditor : public HyperPage {
 	long _selected;
 
   private:
+	static int menu_cb_evaluate (EDITOR_ARGS);
+	static int menu_cb_evaluate_noise_2_0 (EDITOR_ARGS);
+	static int menu_cb_evaluate_tinyNoise (EDITOR_ARGS);
+	static int menu_cb_evaluate_zeroNoise (EDITOR_ARGS);
+	static int menu_cb_editConstraint (EDITOR_ARGS);
+	static int menu_cb_learnOne (EDITOR_ARGS);
+	static int menu_cb_learnOneFromPartialOutput (EDITOR_ARGS);
+	static int menu_cb_removeConstraint (EDITOR_ARGS);
+	static int menu_cb_resetAllRankings (EDITOR_ARGS);
+	static int menu_cb_OTGrammarEditor_help (EDITOR_ARGS);
+	static int menu_cb_OTGrammar_help (EDITOR_ARGS);
+	static int menu_cb_OTLearningTutorial (EDITOR_ARGS);
+
 	void createMenus ();
 };
 

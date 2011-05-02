@@ -45,6 +45,14 @@ class ButtonEditor : public HyperPage {
 
 	int _show;
 	GuiObject _button1, _button2, _button3, _button4, _button5;
+
+  private:
+	static void gui_radiobutton_cb_objects (I, GuiRadioButtonEvent event);
+	static void gui_radiobutton_cb_picture (I, GuiRadioButtonEvent event);
+	static void gui_radiobutton_cb_editors (I, GuiRadioButtonEvent event);
+	static void gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event);
+	static void gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event);
+	static int menu_cb_ButtonEditorHelp (EDITOR_ARGS);
 };
 
 /* End of file ButtonEditor.h */

@@ -49,6 +49,10 @@ class PitchTierEditor : public RealTierEditor {
 
 	virtual void createMenus ();
 	virtual void play (double tmin, double tmax);
+
+  private:
+	static int menu_cb_PitchTierEditorHelp (EDITOR_ARGS);
+	static int menu_cb_PitchTierHelp (EDITOR_ARGS);
 };
 
 /* End of file PitchTierEditor.h */

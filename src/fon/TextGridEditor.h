@@ -94,6 +94,74 @@ class TextGridEditor : public TimeSoundAnalysisEditor {
 	enum kTextGridEditor_showNumberOf _showNumberOf;
 	enum kMelder_string _greenMethod;
 	GuiObject _extractSelectedTextGridPreserveTimesButton, _extractSelectedTextGridTimeFromZeroButton, _writeSelectedTextGridButton;
+
+  private:
+	static int menu_cb_ExtractSelectedTextGrid_preserveTimes (EDITOR_ARGS);
+	static int menu_cb_ExtractSelectedTextGrid_timeFromZero (EDITOR_ARGS);
+	static int menu_cb_WriteSelectionToTextFile (EDITOR_ARGS);
+	static int menu_cb_WriteToTextFile (EDITOR_ARGS);
+	static int menu_cb_DrawVisibleTextGrid (EDITOR_ARGS);
+	static int menu_cb_DrawVisibleSoundAndTextGrid (EDITOR_ARGS);
+#ifndef macintosh
+	static int menu_cb_Cut (EDITOR_ARGS);
+	static int menu_cb_Copy (EDITOR_ARGS);
+	static int menu_cb_Paste (EDITOR_ARGS);
+	static int menu_cb_Erase (EDITOR_ARGS);
+#endif
+	static int menu_cb_Genericize (EDITOR_ARGS);
+	static int menu_cb_Nativize (EDITOR_ARGS);
+	static int menu_cb_GetStartingPointOfInterval (EDITOR_ARGS);
+	static int menu_cb_GetEndPointOfInterval (EDITOR_ARGS);
+	static int menu_cb_GetLabelOfInterval (EDITOR_ARGS);
+	static int menu_cb_SelectPreviousTier (EDITOR_ARGS);
+	static int menu_cb_SelectNextTier (EDITOR_ARGS);
+	static int menu_cb_SelectPreviousInterval (EDITOR_ARGS);
+	static int menu_cb_SelectNextInterval (EDITOR_ARGS);
+	static int menu_cb_ExtendSelectPreviousInterval (EDITOR_ARGS);
+	static int menu_cb_ExtendSelectNextInterval (EDITOR_ARGS);
+	static int menu_cb_MoveBtoZero (EDITOR_ARGS);
+	static int menu_cb_MoveCursorToZero (EDITOR_ARGS);
+	static int menu_cb_MoveEtoZero (EDITOR_ARGS);
+	static int menu_cb_DrawTextGridAndPitch (EDITOR_ARGS);
+	static int menu_cb_InsertIntervalOnTier1 (EDITOR_ARGS);
+	static int menu_cb_InsertIntervalOnTier2 (EDITOR_ARGS);
+	static int menu_cb_InsertIntervalOnTier3 (EDITOR_ARGS);
+	static int menu_cb_InsertIntervalOnTier4 (EDITOR_ARGS);
+	static int menu_cb_InsertIntervalOnTier5 (EDITOR_ARGS);
+	static int menu_cb_InsertIntervalOnTier6 (EDITOR_ARGS);
+	static int menu_cb_InsertIntervalOnTier7 (EDITOR_ARGS);
+	static int menu_cb_InsertIntervalOnTier8 (EDITOR_ARGS);
+	static int menu_cb_RemovePointOrBoundary (EDITOR_ARGS);
+	static int menu_cb_MoveToB (EDITOR_ARGS);
+	static int menu_cb_MoveToE (EDITOR_ARGS);
+	static int menu_cb_MoveToZero (EDITOR_ARGS);
+	static int menu_cb_InsertOnSelectedTier (EDITOR_ARGS);
+	static int menu_cb_InsertOnTier1 (EDITOR_ARGS);
+	static int menu_cb_InsertOnTier2 (EDITOR_ARGS);
+	static int menu_cb_InsertOnTier3 (EDITOR_ARGS);
+	static int menu_cb_InsertOnTier4 (EDITOR_ARGS);
+	static int menu_cb_InsertOnTier5 (EDITOR_ARGS);
+	static int menu_cb_InsertOnTier6 (EDITOR_ARGS);
+	static int menu_cb_InsertOnTier7 (EDITOR_ARGS);
+	static int menu_cb_InsertOnTier8 (EDITOR_ARGS);
+	static int menu_cb_InsertOnAllTiers (EDITOR_ARGS);
+	static int menu_cb_Find (EDITOR_ARGS);
+	static int menu_cb_FindAgain (EDITOR_ARGS);
+	static int menu_cb_CheckSpelling (EDITOR_ARGS);
+	static int menu_cb_CheckSpellingInInterval (EDITOR_ARGS);
+	static int menu_cb_AddToUserDictionary (EDITOR_ARGS);
+	static int menu_cb_RenameTier (EDITOR_ARGS);
+	static int menu_cb_PublishTier (EDITOR_ARGS);
+	static int menu_cb_RemoveAllTextFromTier (EDITOR_ARGS);
+	static int menu_cb_RemoveTier (EDITOR_ARGS);
+	static int menu_cb_AddIntervalTier (EDITOR_ARGS);
+	static int menu_cb_AddPointTier (EDITOR_ARGS);
+	static int menu_cb_DuplicateTier (EDITOR_ARGS);
+	static int menu_cb_TextGridEditorHelp (EDITOR_ARGS);
+	static int menu_cb_AboutSpecialSymbols (EDITOR_ARGS);
+	static int menu_cb_PhoneticSymbols (EDITOR_ARGS);
+	static int menu_cb_AboutTextStyles (EDITOR_ARGS);
+	static void gui_text_cb_change (I, GuiTextEvent event);
 };
 
 /* End of file TextGridEditor.h */

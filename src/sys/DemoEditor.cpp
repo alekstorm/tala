@@ -38,7 +38,7 @@ DemoEditor *DemoEditor::theDemoEditor = NULL;
 
 /***** DemoEditor methods *****/
 
-static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
+void DemoEditor::gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
 	DemoEditor *demoEditor = (DemoEditor *)void_me;
 	if (demoEditor->_graphics == NULL) return;   // Could be the case in the very beginning.
 	Dimension marginWidth = 0, marginHeight = 0;
@@ -90,7 +90,7 @@ void DemoEditor::goAway () {
 	// FIXME
 }
 
-static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
+void DemoEditor::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	DemoEditor *demoEditor = (DemoEditor *)void_me;
 	(void) event;
 	if (demoEditor->_graphics == NULL) return;   // Could be the case in the very beginning.
@@ -106,7 +106,7 @@ static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	Graphics_play (demoEditor->_graphics, demoEditor->_graphics);
 }
 
-static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
+void DemoEditor::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	DemoEditor *demoEditor = (DemoEditor *)void_me;
 	if (demoEditor->_graphics == NULL) return;   // Could be the case in the very beginning.
 	if (gtk && event -> type != BUTTON_PRESS) return;
@@ -121,7 +121,7 @@ static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	demoEditor->_extraControlKeyPressed = event -> extraControlKeyPressed;
 }
 
-static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {
+void DemoEditor::gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {
 	DemoEditor *demoEditor = (DemoEditor *)void_me;
 	if (demoEditor->_graphics == NULL) return;   // Could be the case in the very beginning.
 	demoEditor->_clicked = false;

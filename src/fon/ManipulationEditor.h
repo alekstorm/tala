@@ -69,6 +69,47 @@ class ManipulationEditor : public FunctionEditor {
 	struct { enum kManipulationEditor_pitchUnits units; enum kManipulationEditor_draggingStrategy draggingStrategy; double minimum, minPeriodic, maximum, cursor; } _pitchTier;
 	struct { double minimum, maximum, cursor;  } _duration;
 	Graphics_Viewport _inset;
+
+  private:
+	static int menu_cb_extractOriginalSound (EDITOR_ARGS);
+	static int menu_cb_extractPulses (EDITOR_ARGS);
+	static int menu_cb_extractPitchTier (EDITOR_ARGS);
+	static int menu_cb_extractDurationTier (EDITOR_ARGS);
+	static int menu_cb_extractManipulatedSound (EDITOR_ARGS);
+	static int menu_cb_removePulses (EDITOR_ARGS);
+	static int menu_cb_addPulseAtCursor (EDITOR_ARGS);
+	static int menu_cb_addPulseAt (EDITOR_ARGS);
+	static int menu_cb_removePitchPoints (EDITOR_ARGS);
+	static int menu_cb_addPitchPointAtCursor (EDITOR_ARGS);
+	static int menu_cb_addPitchPointAtSlice (EDITOR_ARGS);
+	static int menu_cb_addPitchPointAt (EDITOR_ARGS);
+	static int menu_cb_stylizePitch (EDITOR_ARGS);
+	static int menu_cb_stylizePitch_2st (EDITOR_ARGS);
+	static int menu_cb_interpolateQuadratically (EDITOR_ARGS);
+	static int menu_cb_interpolateQuadratically_4pts (EDITOR_ARGS);
+	static int menu_cb_shiftPitchFrequencies (EDITOR_ARGS);
+	static int menu_cb_multiplyPitchFrequencies (EDITOR_ARGS);
+	static int menu_cb_setPitchRange (EDITOR_ARGS);
+	static int menu_cb_setPitchUnits (EDITOR_ARGS);
+	static int menu_cb_setDurationRange (EDITOR_ARGS);
+	static int menu_cb_setDraggingStrategy (EDITOR_ARGS);
+	static int menu_cb_removeDurationPoints (EDITOR_ARGS);
+	static int menu_cb_addDurationPointAtCursor (EDITOR_ARGS);
+	static int menu_cb_addDurationPointAt (EDITOR_ARGS);
+	static int menu_cb_newDuration (EDITOR_ARGS);
+	static int menu_cb_forgetDuration (EDITOR_ARGS);
+	static int menu_cb_ManipulationEditorHelp (EDITOR_ARGS);
+	static int menu_cb_ManipulationHelp (EDITOR_ARGS);
+	static int menu_cb_Synth_Pulses (EDITOR_ARGS);
+	static int menu_cb_Synth_Pulses_hum (EDITOR_ARGS);
+	static int menu_cb_Synth_Pulses_Lpc (EDITOR_ARGS);
+	static int menu_cb_Synth_Pitch (EDITOR_ARGS);
+	static int menu_cb_Synth_Pitch_hum (EDITOR_ARGS);
+	static int menu_cb_Synth_Pulses_Pitch (EDITOR_ARGS);
+	static int menu_cb_Synth_Pulses_Pitch_hum (EDITOR_ARGS);
+	static int menu_cb_Synth_OverlapAdd_nodur (EDITOR_ARGS);
+	static int menu_cb_Synth_OverlapAdd (EDITOR_ARGS);
+	static int menu_cb_Synth_Pitch_Lpc (EDITOR_ARGS);
 };
 
 /* End of file ManipulationEditor.h */

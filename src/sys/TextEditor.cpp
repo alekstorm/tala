@@ -60,30 +60,7 @@ TextEditor::TextEditor (GuiObject parent, const wchar_t *initialText)
 	createMenus ();
 }
 
-int menu_cb_saveAs (EDITOR_ARGS); // FIXME
-
-static int cb_open_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *void_me) {
-	(void) sendingString;
-	(void) interpreter;
-	(void) invokingButtonTitle;
-	(void) modified;
-	TextEditor *editor = (TextEditor *)void_me;
-	MelderFile file = ((UiFile *)sendingForm)->getFile ();
-	if (! editor->openDocument (file)) return 0;
-	return 1;
-}
-
-void cb_showOpen (EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
-	TextEditor *editor = (TextEditor *) cmd -> _editor;
-	(void) sendingForm;
-	(void) sendingString;
-	(void) interpreter;
-	if (! editor->_openDialog)
-		editor->_openDialog = new UiInfile (editor->_dialog, L"Open", cb_open_ok, editor, NULL, NULL, false);
-	editor->_openDialog -> do_ ();
-}
-
-static void gui_button_cb_saveAndOpen (void *void_me, GuiButtonEvent event) {
+void TextEditor::gui_button_cb_saveAndOpen (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	EditorCommand *cmd = (EditorCommand *) void_me;
 	TextEditor *editor = (TextEditor *) cmd -> _editor;
@@ -96,14 +73,14 @@ static void gui_button_cb_saveAndOpen (void *void_me, GuiButtonEvent event) {
 	}
 }
 
-static void gui_button_cb_cancelOpen (void *void_me, GuiButtonEvent event) {
+void TextEditor::gui_button_cb_cancelOpen (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	EditorCommand *cmd = (EditorCommand *) void_me;
 	TextEditor *editor = (TextEditor *) cmd -> _editor;
 	GuiObject_hide (editor->_dirtyOpenDialog);
 }
 
-static void gui_button_cb_discardAndOpen (void *void_me, GuiButtonEvent event) {
+void TextEditor::gui_button_cb_discardAndOpen (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	EditorCommand *cmd = (EditorCommand *) void_me;
 	TextEditor *editor = (TextEditor *) cmd -> _editor;
@@ -111,7 +88,7 @@ static void gui_button_cb_discardAndOpen (void *void_me, GuiButtonEvent event) {
 	cb_showOpen (cmd, NULL, NULL, NULL);
 }
 
-static int menu_cb_open (EDITOR_ARGS) {
+int TextEditor::menu_cb_open (EDITOR_ARGS) {
 	TextEditor *editor = (TextEditor *)editor_me;
 	if (editor->_dirty) {
 		if (editor->_dirtyOpenDialog == NULL) {
@@ -144,7 +121,7 @@ static int menu_cb_open (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_save (EDITOR_ARGS) {
+int TextEditor::menu_cb_save (EDITOR_ARGS) {
 	TextEditor *editor = (TextEditor *)editor_me;
 	if (editor->_name) {
 		if (! editor->saveDocument (& editor->_file)) return 0;
@@ -154,7 +131,7 @@ static int menu_cb_save (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_reopen (EDITOR_ARGS) {
+int TextEditor::menu_cb_reopen (EDITOR_ARGS) {
 	TextEditor *editor = (TextEditor *)editor_me;
 	if (editor->_name) {
 		if (! editor->openDocument (& editor->_file)) return 0;
@@ -164,7 +141,7 @@ static int menu_cb_reopen (EDITOR_ARGS) {
 	return 1;
 }
 
-static void gui_button_cb_saveAndNew (void *void_me, GuiButtonEvent event) {
+void TextEditor::gui_button_cb_saveAndNew (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	EditorCommand *cmd = (EditorCommand *) void_me;
 	TextEditor *editor = (TextEditor *) cmd -> _editor;
@@ -177,14 +154,14 @@ static void gui_button_cb_saveAndNew (void *void_me, GuiButtonEvent event) {
 	}
 }
 
-static void gui_button_cb_cancelNew (void *void_me, GuiButtonEvent event) {
+void TextEditor::gui_button_cb_cancelNew (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	EditorCommand *cmd = (EditorCommand *) void_me;
 	TextEditor *editor = (TextEditor *) cmd -> _editor;
 	GuiObject_hide (editor->_dirtyNewDialog);
 }
 
-static void gui_button_cb_discardAndNew (void *void_me, GuiButtonEvent event) {
+void TextEditor::gui_button_cb_discardAndNew (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	EditorCommand *cmd = (EditorCommand *) void_me;
 	TextEditor *editor = (TextEditor *) cmd -> _editor;
@@ -192,7 +169,7 @@ static void gui_button_cb_discardAndNew (void *void_me, GuiButtonEvent event) {
 	editor->newDocument ();
 }
 
-static void gui_button_cb_saveAndClose (void *void_me, GuiButtonEvent event) {
+void TextEditor::gui_button_cb_saveAndClose (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	InfoEditor *editor = (InfoEditor *)void_me;
 	GuiObject_hide (editor->_dirtyCloseDialog);
@@ -204,13 +181,13 @@ static void gui_button_cb_saveAndClose (void *void_me, GuiButtonEvent event) {
 	}
 }
 
-static void gui_button_cb_cancelClose (void *void_me, GuiButtonEvent event) {
+void TextEditor::gui_button_cb_cancelClose (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	InfoEditor *editor = (InfoEditor *)void_me;
 	GuiObject_hide (editor->_dirtyCloseDialog);
 }
 
-static void gui_button_cb_discardAndClose (void *void_me, GuiButtonEvent event) {
+void TextEditor::gui_button_cb_discardAndClose (void *void_me, GuiButtonEvent event) {
 	(void) event;
 	InfoEditor *editor = (InfoEditor *)void_me;
 	GuiObject_hide (editor->_dirtyCloseDialog);
@@ -248,7 +225,7 @@ void TextEditor::menu_new (EditorCommand *cmd) {
 		InfoEditor::menu_new (cmd);
 }
 
-static int menu_cb_new (EDITOR_ARGS) {
+int TextEditor::menu_cb_new (EDITOR_ARGS) {
 	((InfoEditor *)editor_me)->menu_new (cmd);
 	return 1;
 }

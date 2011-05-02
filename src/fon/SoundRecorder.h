@@ -183,6 +183,23 @@ class SoundRecorder : public Editor {
 #else
 	int _fd;
 #endif
+
+  private:
+	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
+	static void gui_button_cb_record (I, GuiButtonEvent event);
+	static void gui_button_cb_stop (I, GuiButtonEvent event);
+	static void gui_button_cb_play (I, GuiButtonEvent event);
+	static void gui_button_cb_cancel (I, GuiButtonEvent event);
+	static void gui_button_cb_apply (I, GuiButtonEvent event);
+	static void gui_cb_apply (GuiObject widget, XtPointer void_me, XtPointer call);
+	static void gui_button_cb_ok (I, GuiButtonEvent event);
+	static void gui_radiobutton_cb_input (I, GuiRadioButtonEvent event);
+	static void gui_radiobutton_cb_fsamp (I, GuiRadioButtonEvent event);
+	static int menu_cb_writeWav (EDITOR_ARGS);
+	static int menu_cb_writeAifc (EDITOR_ARGS);
+	static int menu_cb_writeNextSun (EDITOR_ARGS);
+	static int menu_cb_writeNist (EDITOR_ARGS);
+	static int menu_cb_SoundRecorder_help (EDITOR_ARGS);
 };
 
 /* End of file SoundRecorder.h */

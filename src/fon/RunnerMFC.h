@@ -52,6 +52,12 @@ class RunnerMFC : public Editor {
 	long _iexperiment;
 	Graphics _graphics;
 	long _numberOfReplays;
+
+  private:
+	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
+	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
+	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
+	static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event);
 };
 
 /* End of file RunnerMFC.h */

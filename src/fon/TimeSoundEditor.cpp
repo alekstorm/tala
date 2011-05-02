@@ -96,7 +96,7 @@ void TimeSoundEditor::info () {
 
 /***** FILE MENU *****/
 
-static int menu_cb_DrawVisibleSound (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_DrawVisibleSound (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM (L"Draw visible sound", 0)
 		editor->form_pictureWindow (cmd);
@@ -138,7 +138,7 @@ static int menu_cb_DrawVisibleSound (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_DrawSelectedSound (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_DrawSelectedSound (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM (L"Draw selected sound", 0)
 		editor->form_pictureWindow (cmd);
@@ -193,17 +193,17 @@ int TimeSoundEditor::do_ExtractSelectedSound (bool preserveTimes) {
 	return 1;
 }
 
-static int menu_cb_ExtractSelectedSound_timeFromZero (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_ExtractSelectedSound_timeFromZero (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	return editor->do_ExtractSelectedSound (FALSE);
 }
 
-static int menu_cb_ExtractSelectedSound_preserveTimes (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_ExtractSelectedSound_preserveTimes (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	return editor->do_ExtractSelectedSound (TRUE);
 }
 
-static int menu_cb_ExtractSelectedSound_windowed (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_ExtractSelectedSound_windowed (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM (L"Extract selected sound (windowed)", 0)
 		WORD (L"Name", L"slice")
@@ -262,7 +262,7 @@ int TimeSoundEditor::do_write (MelderFile file, int format) {
 	return 0;
 }
 
-static int menu_cb_WriteWav (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_WriteWav (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as WAV file", 0)
 		swprintf (defaultName, 300, L"%ls.wav", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
@@ -271,7 +271,7 @@ static int menu_cb_WriteWav (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_WriteAiff (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_WriteAiff (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as AIFF file", 0)
 		swprintf (defaultName, 300, L"%ls.aiff", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
@@ -280,7 +280,7 @@ static int menu_cb_WriteAiff (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_WriteAifc (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_WriteAifc (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as AIFC file", 0)
 		swprintf (defaultName, 300, L"%ls.aifc", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
@@ -289,7 +289,7 @@ static int menu_cb_WriteAifc (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_WriteNextSun (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_WriteNextSun (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as NeXT/Sun file", 0)
 		swprintf (defaultName, 300, L"%ls.au", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
@@ -298,7 +298,7 @@ static int menu_cb_WriteNextSun (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_WriteNist (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_WriteNist (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as NIST file", 0)
 		swprintf (defaultName, 300, L"%ls.nist", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
@@ -307,7 +307,7 @@ static int menu_cb_WriteNist (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_WriteFlac (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_WriteFlac (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	EDITOR_FORM_WRITE (L"Save selected sound as FLAC file", 0)
 		swprintf (defaultName, 300, L"%ls.flac", editor->_longSound.data ? editor->_longSound.data -> name : editor->_sound.data -> name);
@@ -318,13 +318,13 @@ static int menu_cb_WriteFlac (EDITOR_ARGS) {
 
 /********** QUERY MENU **********/
 
-static int menu_cb_SoundInfo (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_SoundInfo (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	Thing_info (editor->_sound.data);
 	return 1;
 }
 
-static int menu_cb_LongSoundInfo (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_LongSoundInfo (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	Thing_info (editor->_longSound.data);
 	return 1;
@@ -332,7 +332,7 @@ static int menu_cb_LongSoundInfo (EDITOR_ARGS) {
 
 /********** VIEW MENU **********/
 
-static int menu_cb_autoscaling (EDITOR_ARGS) {
+int TimeSoundEditor::menu_cb_autoscaling (EDITOR_ARGS) {
 	TimeSoundEditor *editor = (TimeSoundEditor *)editor_me;
 	preferences.sound.autoscaling = editor->_sound.autoscaling = ! editor->_sound.autoscaling;
 	editor->redraw ();

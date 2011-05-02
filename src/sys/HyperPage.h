@@ -123,6 +123,37 @@ class HyperPage : public Editor {
 	virtual void updateSizeMenu ();
 	virtual void createVerticalScrollBar (GuiObject parent);
 	virtual void createChildren ();
+
+  private:
+	static void gui_drawingarea_cb_resize (void *void_me, GuiDrawingAreaResizeEvent event);
+	#if gtk
+	static void gui_cb_verticalScroll (GtkRange *rng, gpointer void_me);
+	#else
+	static void gui_cb_verticalScroll (GUI_ARGS);
+	#endif
+	static void gui_drawingarea_cb_expose (void *void_me, GuiDrawingAreaExposeEvent event);
+	static void gui_drawingarea_cb_click (void *void_me, GuiDrawingAreaClickEvent event);
+	static int menu_cb_postScriptSettings (EDITOR_ARGS);
+	#ifdef macintosh
+	static int menu_cb_pageSetup (EDITOR_ARGS);
+	#endif
+	static int menu_cb_print (EDITOR_ARGS);
+	static int menu_cb_font (EDITOR_ARGS);
+	static int menu_cb_10 (EDITOR_ARGS);
+	static int menu_cb_12 (EDITOR_ARGS);
+	static int menu_cb_14 (EDITOR_ARGS);
+	static int menu_cb_18 (EDITOR_ARGS);
+	static int menu_cb_24 (EDITOR_ARGS);
+	static int menu_cb_fontSize (EDITOR_ARGS);
+	static int menu_cb_searchForPage (EDITOR_ARGS);
+	static int menu_cb_pageUp (EDITOR_ARGS);
+	static int menu_cb_pageDown (EDITOR_ARGS);
+	static int menu_cb_back (EDITOR_ARGS);
+	static void gui_button_cb_back (void *void_me, GuiButtonEvent event);
+	static int menu_cb_forth (EDITOR_ARGS);
+	static void gui_button_cb_forth (void *void_me, GuiButtonEvent event);
+	static void gui_button_cb_previousPage (void *void_me, GuiButtonEvent event);
+	static void gui_button_cb_nextPage (void *void_me, GuiButtonEvent event);
 };
 
 /* End of file HyperPage.h */

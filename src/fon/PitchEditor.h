@@ -36,6 +36,18 @@ class PitchEditor : public FunctionEditor {
 	virtual void draw ();
 	virtual void play (double tmin, double tmax);
 	virtual int click (double xWC, double yWC, int dummy);
+
+  private:
+	static int menu_cb_setCeiling (EDITOR_ARGS);
+	static int menu_cb_pathFinder (EDITOR_ARGS);
+	static int menu_cb_getPitch (EDITOR_ARGS);
+	static int menu_cb_octaveUp (EDITOR_ARGS);
+	static int menu_cb_fifthUp (EDITOR_ARGS);
+	static int menu_cb_fifthDown (EDITOR_ARGS);
+	static int menu_cb_octaveDown (EDITOR_ARGS);
+	static int menu_cb_voiceless (EDITOR_ARGS);
+	static int menu_cb_PitchEditorHelp (EDITOR_ARGS);
+	static int menu_cb_PitchHelp (EDITOR_ARGS);
 };
 
 /* End of file PitchEditor.h */

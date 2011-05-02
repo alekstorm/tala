@@ -49,7 +49,7 @@ RealTierEditor::RealTierEditor (GuiObject parent, const wchar_t *title, RealTier
 
 /********** MENU COMMANDS **********/
 
-static int menu_cb_removePoints (EDITOR_ARGS) {
+int RealTierEditor::menu_cb_removePoints (EDITOR_ARGS) {
 	RealTierEditor *editor = (RealTierEditor *)editor_me;
 	editor->save (L"Remove point(s)");
 	if (editor->_startSelection == editor->_endSelection)
@@ -62,7 +62,7 @@ static int menu_cb_removePoints (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPointAtCursor (EDITOR_ARGS) {
+int RealTierEditor::menu_cb_addPointAtCursor (EDITOR_ARGS) {
 	RealTierEditor *editor = (RealTierEditor *)editor_me;
 	if (NUMdefined (editor->minimumLegalValue ()) && editor->_ycursor < editor->minimumLegalValue ())
 		return Melder_error4 (L"Cannot add a point below ", Melder_double (editor->minimumLegalValue ()), editor->rightTickUnits (), L".");
@@ -76,7 +76,7 @@ static int menu_cb_addPointAtCursor (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPointAt (EDITOR_ARGS) {
+int RealTierEditor::menu_cb_addPointAt (EDITOR_ARGS) {
 	RealTierEditor *editor = (RealTierEditor *)editor_me;
 	EDITOR_FORM (L"Add point", 0)
 		REAL (L"Time (s)", L"0.0")
@@ -98,7 +98,7 @@ static int menu_cb_addPointAt (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_setRange (EDITOR_ARGS) {
+int RealTierEditor::menu_cb_setRange (EDITOR_ARGS) {
 	RealTierEditor *editor = (RealTierEditor *)editor_me;
 	EDITOR_FORM (editor->setRangeTitle (), 0)
 		REAL (editor->yminText (), editor->defaultYminText ())

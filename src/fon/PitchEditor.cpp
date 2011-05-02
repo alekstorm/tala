@@ -50,7 +50,7 @@ PitchEditor::PitchEditor (GuiObject parent, const wchar_t *title, Pitch pitch)
 
 /********** MENU COMMANDS **********/
 
-static int menu_cb_setCeiling (EDITOR_ARGS) {
+int PitchEditor::menu_cb_setCeiling (EDITOR_ARGS) {
 	PitchEditor *editor = (PitchEditor *)editor_me;
 	EDITOR_FORM (L"Change ceiling", 0)
 		POSITIVE (L"Ceiling (Hertz)", L"600")
@@ -66,7 +66,7 @@ static int menu_cb_setCeiling (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_pathFinder (EDITOR_ARGS) {
+int PitchEditor::menu_cb_pathFinder (EDITOR_ARGS) {
 	PitchEditor *editor = (PitchEditor *)editor_me;
 	EDITOR_FORM (L"Path finder", 0)
 		REAL (L"Silence threshold", L"0.03")
@@ -91,7 +91,7 @@ static int menu_cb_pathFinder (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_getPitch (EDITOR_ARGS) {
+int PitchEditor::menu_cb_getPitch (EDITOR_ARGS) {
 	PitchEditor *editor = (PitchEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) {
 		Melder_informationReal (Pitch_getValueAtTime ((Pitch) editor->_data, editor->_startSelection, kPitch_unit_HERTZ, 1), L"Hertz");
@@ -101,7 +101,7 @@ static int menu_cb_getPitch (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_octaveUp (EDITOR_ARGS) {
+int PitchEditor::menu_cb_octaveUp (EDITOR_ARGS) {
 	PitchEditor *editor = (PitchEditor *)editor_me;
 	Pitch pitch = (Pitch) editor->_data;
 	editor->save (L"Octave up");
@@ -111,7 +111,7 @@ static int menu_cb_octaveUp (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_fifthUp (EDITOR_ARGS) {
+int PitchEditor::menu_cb_fifthUp (EDITOR_ARGS) {
 	PitchEditor *editor = (PitchEditor *)editor_me;
 	Pitch pitch = (Pitch) editor->_data;
 	editor->save (L"Fifth up");
@@ -121,7 +121,7 @@ static int menu_cb_fifthUp (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_fifthDown (EDITOR_ARGS) {
+int PitchEditor::menu_cb_fifthDown (EDITOR_ARGS) {
 	PitchEditor *editor = (PitchEditor *)editor_me;
 	Pitch pitch = (Pitch) editor->_data;
 	editor->save (L"Fifth down");
@@ -131,7 +131,7 @@ static int menu_cb_fifthDown (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_octaveDown (EDITOR_ARGS) {
+int PitchEditor::menu_cb_octaveDown (EDITOR_ARGS) {
 	PitchEditor *editor = (PitchEditor *)editor_me;
 	Pitch pitch = (Pitch) editor->_data;
 	editor->save (L"Octave down");
@@ -141,7 +141,7 @@ static int menu_cb_octaveDown (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_voiceless (EDITOR_ARGS) {
+int PitchEditor::menu_cb_voiceless (EDITOR_ARGS) {
 	PitchEditor *editor = (PitchEditor *)editor_me;
 	Pitch pitch = (Pitch) editor->_data;
 	long ileft = Sampled_xToHighIndex (pitch, editor->_startSelection), i, cand;
@@ -164,8 +164,8 @@ static int menu_cb_voiceless (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_PitchEditorHelp (EDITOR_ARGS) { Melder_help (L"PitchEditor"); return 1; }
-static int menu_cb_PitchHelp (EDITOR_ARGS) { Melder_help (L"Pitch"); return 1; }
+int PitchEditor::menu_cb_PitchEditorHelp (EDITOR_ARGS) { Melder_help (L"PitchEditor"); return 1; }
+int PitchEditor::menu_cb_PitchHelp (EDITOR_ARGS) { Melder_help (L"Pitch"); return 1; }
 
 void PitchEditor::createMenus () {
 	EditorMenu *menu = getMenu (L"Edit");

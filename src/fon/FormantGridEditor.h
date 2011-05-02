@@ -56,6 +56,25 @@ class FormantGridEditor : public FunctionEditor {
 	double _formantFloor, _formantCeiling, _bandwidthFloor, _bandwidthCeiling, _ycursor;
 	struct FormantGridEditor_Play _play;
 	struct FormantGridEditor_Source _source;
+
+  private:
+	static int menu_cb_removePoints (EDITOR_ARGS);
+	static int menu_cb_addPointAtCursor (EDITOR_ARGS);
+	static int menu_cb_addPointAt (EDITOR_ARGS);
+	static int menu_cb_setFormantRange (EDITOR_ARGS);
+	static int menu_cb_setBandwidthRange (EDITOR_ARGS);
+	static int menu_cb_showBandwidths (EDITOR_ARGS);
+	static int menu_cb_selectFirst (EDITOR_ARGS);
+	static int menu_cb_selectSecond (EDITOR_ARGS);
+	static int menu_cb_selectThird (EDITOR_ARGS);
+	static int menu_cb_selectFourth (EDITOR_ARGS);
+	static int menu_cb_selectFifth (EDITOR_ARGS);
+	static int menu_cb_selectSixth (EDITOR_ARGS);
+	static int menu_cb_selectSeventh (EDITOR_ARGS);
+	static int menu_cb_selectEighth (EDITOR_ARGS);
+	static int menu_cb_selectNinth (EDITOR_ARGS);
+	static int menu_cb_selectFormantOrBandwidth (EDITOR_ARGS);
+	static int menu_cb_pitchSettings (EDITOR_ARGS);
 };
 
 /* End of file FormantGridEditor.h */

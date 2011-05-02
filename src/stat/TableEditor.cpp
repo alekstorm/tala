@@ -39,13 +39,13 @@
 
 #if gtk
 	#define gui_cb_scroll(name, var) \
-		void gui_cb_ ## name ## Scroll(GtkRange *rng, gpointer void_me) { \
+		void TableEditor::gui_cb_ ## name ## Scroll(GtkRange *rng, gpointer void_me) { \
 			TableEditor *editor = (TableEditor *)void_me; \
 			double var = gtk_range_get_value(rng); \
 			do
 #elif motif
 	#define gui_cb_scroll(name, var) \
-		void gui_cb_ ## name ## Scroll(GUI_ARGS) { \
+		void TableEditor::gui_cb_ ## name ## Scroll(GUI_ARGS) { \
 			TableEditor *editor = (TableEditor *)void_me; \
 			int var; \
 			{ int slider, incr, pincr; \
@@ -54,14 +54,14 @@
 #endif
 #define gui_cb_scroll_end while (0); }
 
-static gui_cb_scroll(horizontal, value) {
+gui_cb_scroll(horizontal, value) {
 	if ((int)value != editor->_leftColumn) {
 		editor->_leftColumn = value;
 		editor->draw ();
 	}
 } gui_cb_scroll_end
 
-static gui_cb_scroll(vertical, value) {
+gui_cb_scroll(vertical, value) {
 	if ((int)value != editor->_topRow) {
 		editor->_topRow = value;
 		editor->draw ();
@@ -69,7 +69,7 @@ static gui_cb_scroll(vertical, value) {
 } gui_cb_scroll_end
 
 #if gtk
-static gboolean gui_cb_drawing_area_scroll(GuiObject w, GdkEventScroll *event, gpointer void_me) {
+gboolean TableEditor::gui_cb_drawing_area_scroll(GuiObject w, GdkEventScroll *event, gpointer void_me) {
 	TableEditor *editor = (TableEditor *)void_me;
 	double hv = gtk_range_get_value(GTK_RANGE(editor->_horizontalScrollBar));
 	double hi = gtk_range_get_adjustment(GTK_RANGE(editor->_horizontalScrollBar))->step_increment;
@@ -168,22 +168,22 @@ void TableEditor::dataChanged () {
 /********** EDIT MENU **********/
 
 #ifndef macintosh
-static int menu_cb_Cut (EDITOR_ARGS) {
+int TableEditor::menu_cb_Cut (EDITOR_ARGS) {
 	TableEditor *editor = (TableEditor *)editor;
 	GuiText_cut (editor->_text);
 	return 1;
 }
-static int menu_cb_Copy (EDITOR_ARGS) {
+int TableEditor::menu_cb_Copy (EDITOR_ARGS) {
 	TableEditor *editor = (TableEditor *)editor;
 	GuiText_copy (editor->_text);
 	return 1;
 }
-static int menu_cb_Paste (EDITOR_ARGS) {
+int TableEditor::menu_cb_Paste (EDITOR_ARGS) {
 	TableEditor *editor = (TableEditor *)editor;
 	GuiText_paste (editor->_text);
 	return 1;
 }
-static int menu_cb_Erase (EDITOR_ARGS) {
+int TableEditor::menu_cb_Erase (EDITOR_ARGS) {
 	TableEditor *editor = (TableEditor *)editor;
 	GuiText_remove (editor->_text);
 	return 1;
@@ -194,7 +194,7 @@ static int menu_cb_Erase (EDITOR_ARGS) {
 
 /********** HELP MENU **********/
 
-static int menu_cb_TableEditorHelp (EDITOR_ARGS) {
+int TableEditor::menu_cb_TableEditorHelp (EDITOR_ARGS) {
 	Melder_help (L"TableEditor");
 	return 1;
 }
@@ -288,21 +288,21 @@ int TableEditor::click (double xclick, double yWC, int shiftKeyPressed) {
 	return 1;
 }
 
-static void gui_text_cb_change (I, GuiTextEvent event) {
+void TableEditor::gui_text_cb_change (I, GuiTextEvent event) {
 	TableEditor *editor = (TableEditor *)void_me;
 	(void) event;
 	Table table = static_cast<Table> (editor->_data);
 	editor->broadcastChange ();
 }
 
-static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
+void TableEditor::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	TableEditor *editor = (TableEditor *)void_me;
 	(void) event;
 	if (editor->_graphics == NULL) return;
 	editor->draw ();
 }
 
-static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
+void TableEditor::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	TableEditor *editor = (TableEditor *)void_me;
 	if (editor->_graphics == NULL) return;
 	if (gtk && event -> type != BUTTON_PRESS) return;
@@ -311,7 +311,7 @@ static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	// TODO: implement selection
 }
 
-static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
+void TableEditor::gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
 	TableEditor *editor = (TableEditor *)void_me;
 	if (editor->_graphics == NULL) return;
 	Graphics_updateWs (editor->_graphics);

@@ -21,10 +21,10 @@
  * pb 2011/03/23
  */
 
-#include "sys/praat.h"
-
 #include "ExperimentMFC.h"
 #include "RunnerMFC.h"
+
+#include "sys/praat.h"
 
 /***** CATEGORIES *****/
 

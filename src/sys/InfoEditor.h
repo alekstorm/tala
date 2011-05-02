@@ -60,8 +60,35 @@ class InfoEditor : public Editor {
   protected:
 	virtual void goAway ();
 	virtual void updateSizeMenu ();
-	virtual void createMenus ();
-	virtual void createChildren ();
+	static int menu_cb_saveAs (EDITOR_ARGS); // FIXME
+	static void cb_showOpen (EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter);
+
+  private:
+	static int cb_open_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *void_me);
+	static int cb_saveAs_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I);
+	static int menu_cb_clear (EDITOR_ARGS);
+	static int menu_cb_undo (EDITOR_ARGS);
+	static int menu_cb_redo (EDITOR_ARGS);
+	static int menu_cb_cut (EDITOR_ARGS);
+	static int menu_cb_copy (EDITOR_ARGS);
+	static int menu_cb_paste (EDITOR_ARGS);
+	static int menu_cb_erase (EDITOR_ARGS);
+	static int menu_cb_find (EDITOR_ARGS);
+	static int menu_cb_findAgain (EDITOR_ARGS);
+	static int menu_cb_replace (EDITOR_ARGS);
+	static int menu_cb_replaceAgain (EDITOR_ARGS);
+	static int menu_cb_whereAmI (EDITOR_ARGS);
+	static int menu_cb_goToLine (EDITOR_ARGS);
+	static int menu_cb_convertToCString (EDITOR_ARGS);
+	static int menu_cb_10 (EDITOR_ARGS);
+	static int menu_cb_12 (EDITOR_ARGS);
+	static int menu_cb_14 (EDITOR_ARGS);
+	static int menu_cb_18 (EDITOR_ARGS);
+	static int menu_cb_24 (EDITOR_ARGS);
+	static int menu_cb_fontSize (EDITOR_ARGS);
+
+	void createMenus ();
+	void createChildren ();
 };
 
 /* End of file InfoEditor.h */

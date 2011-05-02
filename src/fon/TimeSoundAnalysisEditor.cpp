@@ -132,12 +132,12 @@ static struct { struct {
 	struct { bool garnish; } intensity;
 	struct { bool garnish; } formant;
 	struct { bool garnish; } pulses;
-} picture; } prefs = { { true, true, true, true, true } };
-/*prefs.picture.spectrogram.garnish = true;
-prefs.picture.pitch.garnish = true;
-prefs.picture.intensity.garnish = true;
-prefs.picture.formant.garnish = true;
-prefs.picture.pulses.garnish = true;*/
+} picture; } _prefs = { { true, true, true, true, true } };
+/*_prefs.picture.spectrogram.garnish = true;
+_prefs.picture.pitch.garnish = true;
+_prefs.picture.intensity.garnish = true;
+_prefs.picture.formant.garnish = true;
+_prefs.picture.pulses.garnish = true;*/
 
 static struct {
 	double longestAnalysis;
@@ -341,7 +341,7 @@ int TimeSoundAnalysisEditor::makeQueriable (int allowCursor, double *tmin, doubl
 	return FunctionEditor_PART_SELECTION;
 }
 
-static int menu_cb_logSettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_logSettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Log settings", L"Log files")
 		OPTIONMENU (L"Write log 1 to", 3)
@@ -393,8 +393,8 @@ int TimeSoundAnalysisEditor::do_deleteLogFile (int which) {
 	MelderFile_delete (& file);
 	return 1;
 }
-static int menu_cb_deleteLogFile1 (EDITOR_ARGS) { TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_deleteLogFile (0); }
-static int menu_cb_deleteLogFile2 (EDITOR_ARGS) { TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_deleteLogFile (1); }
+int TimeSoundAnalysisEditor::menu_cb_deleteLogFile1 (EDITOR_ARGS) { TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_deleteLogFile (0); }
+int TimeSoundAnalysisEditor::menu_cb_deleteLogFile2 (EDITOR_ARGS) { TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_deleteLogFile (1); }
 
 int TimeSoundAnalysisEditor::do_log (int which) {
 	wchar_t format [1000], *p;
@@ -523,19 +523,19 @@ int TimeSoundAnalysisEditor::do_log (int which) {
 	return 1;
 }
 
-static int menu_cb_log1 (EDITOR_ARGS) { TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_log (0); }
-static int menu_cb_log2 (EDITOR_ARGS) { TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_log (1); }
+int TimeSoundAnalysisEditor::menu_cb_log1 (EDITOR_ARGS) { TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_log (0); }
+int TimeSoundAnalysisEditor::menu_cb_log2 (EDITOR_ARGS) { TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_log (1); }
 
-static int menu_cb_logScript3 (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_logScript3 (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	return DO_RunTheScriptFromAnyAddedEditorCommand (editor, preferences.logScript3);
 }
-static int menu_cb_logScript4 (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_logScript4 (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	return DO_RunTheScriptFromAnyAddedEditorCommand (editor, preferences.logScript4);
 }
 
-static int menu_cb_showAnalyses (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_showAnalyses (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Show analyses", 0)
 		BOOLEAN (L"Show spectrogram", 1)
@@ -562,7 +562,7 @@ static int menu_cb_showAnalyses (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_timeStepSettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_timeStepSettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Time step settings", L"Time step settings...")
 		OPTIONMENU_ENUM (L"Time step strategy", kTimeSoundAnalysisEditor_timeStepStrategy, DEFAULT)
@@ -590,7 +590,7 @@ static int menu_cb_timeStepSettings (EDITOR_ARGS) {
 
 /***** SPECTROGRAM MENU *****/
 
-static int menu_cb_showSpectrogram (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_showSpectrogram (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	preferences.spectrogram.show = editor->_spectrogram.show = ! editor->_spectrogram.show;
 	GuiMenuItem_check (editor->_spectrogramToggle, editor->_spectrogram.show);   // in case we're called from a script
@@ -598,7 +598,7 @@ static int menu_cb_showSpectrogram (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_spectrogramSettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_spectrogramSettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Spectrogram settings", L"Intro 3.2. Configuring the spectrogram")
 		REAL (L"left View range (Hz)", L"0.0")
@@ -635,7 +635,7 @@ static int menu_cb_spectrogramSettings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_advancedSpectrogramSettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_advancedSpectrogramSettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Advanced spectrogram settings", L"Advanced spectrogram settings...")
 		LABEL (L"", L"Time and frequency resolutions:")
@@ -672,13 +672,13 @@ static int menu_cb_advancedSpectrogramSettings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_getFrequency (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getFrequency (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	Melder_informationReal (editor->_spectrogram.cursor, L"Hertz");
 	return 1;
 }
 
-static int menu_cb_getSpectralPowerAtCursorCross (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getSpectralPowerAtCursorCross (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax;
 	int part = editor->makeQueriable (TRUE, & tmin, & tmax); iferror return 0;
@@ -697,7 +697,7 @@ static int menu_cb_getSpectralPowerAtCursorCross (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_moveFrequencyCursorTo (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_moveFrequencyCursorTo (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	if (! editor->_spectrogram.show)
 		return Melder_error1 (L"No spectrogram is visible.\nFirst choose \"Show spectrogram\" from the Spectrum menu.");
@@ -726,7 +726,7 @@ Sound TimeSoundAnalysisEditor::extractSound (double tmin, double tmax) {
 	return sound;
 }
 
-static int menu_cb_extractVisibleSpectrogram (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_extractVisibleSpectrogram (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	Spectrogram publish;
 	if (! editor->_spectrogram.show)
@@ -742,7 +742,7 @@ static int menu_cb_extractVisibleSpectrogram (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_viewSpectralSlice (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_viewSpectralSlice (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double start = editor->_startSelection == editor->_endSelection ?
 		editor->_spectrogram.windowShape == 5 ? editor->_startSelection - editor->_spectrogram.windowLength :
@@ -773,7 +773,7 @@ static int menu_cb_viewSpectralSlice (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_paintVisibleSpectrogram (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_paintVisibleSpectrogram (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Paint visible spectrogram", 0)
 		editor->form_pictureWindow (cmd);
@@ -784,12 +784,12 @@ static int menu_cb_paintVisibleSpectrogram (EDITOR_ARGS) {
 		editor->ok_pictureWindow (cmd);
 		editor->ok_pictureMargins (cmd);
 		editor->ok_pictureSelection (cmd);
-		SET_INTEGER (L"Garnish", prefs.picture.spectrogram.garnish);
+		SET_INTEGER (L"Garnish", _prefs.picture.spectrogram.garnish);
 	EDITOR_DO
 		editor->do_pictureWindow (cmd);
 		editor->do_pictureMargins (cmd);
 		editor->do_pictureSelection (cmd);
-		prefs.picture.spectrogram.garnish = GET_INTEGER (L"Garnish");
+		_prefs.picture.spectrogram.garnish = GET_INTEGER (L"Garnish");
 		if (! editor->_spectrogram.show)
 			return Melder_error1 (L"No spectrogram is visible.\nFirst choose \"Show spectrogram\" from the Spectrum menu.");
 		if (! editor->_spectrogram.data) {
@@ -799,7 +799,7 @@ static int menu_cb_paintVisibleSpectrogram (EDITOR_ARGS) {
 		editor->openPraatPicture ();
 		Spectrogram_paint (editor->_spectrogram.data, editor->_pictureGraphics, editor->_startWindow, editor->_endWindow, editor->_spectrogram.viewFrom, editor->_spectrogram.viewTo,
 			editor->_spectrogram.maximum, editor->_spectrogram.autoscaling, editor->_spectrogram.dynamicRange, editor->_spectrogram.preemphasis,
-			editor->_spectrogram.dynamicCompression, prefs.picture.spectrogram.garnish);
+			editor->_spectrogram.dynamicCompression, _prefs.picture.spectrogram.garnish);
 		editor->garnish ();
 		editor->closePraatPicture ();
 	EDITOR_END
@@ -807,7 +807,7 @@ static int menu_cb_paintVisibleSpectrogram (EDITOR_ARGS) {
 
 /***** PITCH MENU *****/
 
-static int menu_cb_showPitch (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_showPitch (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	preferences.pitch.show = editor->_pitch.show = ! editor->_pitch.show;
 	GuiMenuItem_check (editor->_pitchToggle, editor->_pitch.show);   // in case we're called from a script
@@ -815,7 +815,7 @@ static int menu_cb_showPitch (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_pitchSettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_pitchSettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Pitch settings", L"Intro 4.2. Configuring the pitch contour")
 		POSITIVE (L"left Pitch range (Hz)", L"75.0")
@@ -860,7 +860,7 @@ static int menu_cb_pitchSettings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_advancedPitchSettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_advancedPitchSettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Advanced pitch settings", L"Advanced pitch settings...")
 		LABEL (L"", L"Make view range different from analysis range:")
@@ -903,7 +903,7 @@ static int menu_cb_advancedPitchSettings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_pitchListing (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_pitchListing (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax;
 	int part = editor->makeQueriable (TRUE, & tmin, & tmax); iferror return 0;
@@ -933,7 +933,7 @@ static int menu_cb_pitchListing (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_getPitch (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getPitch (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax;
 	int part = editor->makeQueriable (TRUE, & tmin, & tmax); iferror return 0;
@@ -957,7 +957,7 @@ static int menu_cb_getPitch (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_getMinimumPitch (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getMinimumPitch (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax, f0;
 	int part = editor->makeQueriable (FALSE, & tmin, & tmax); iferror return 0;
@@ -974,7 +974,7 @@ static int menu_cb_getMinimumPitch (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_getMaximumPitch (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getMaximumPitch (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax, f0;
 	int part = editor->makeQueriable (FALSE, & tmin, & tmax); iferror return 0;
@@ -991,7 +991,7 @@ static int menu_cb_getMaximumPitch (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_moveCursorToMinimumPitch (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_moveCursorToMinimumPitch (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	if (! editor->_pitch.show)
 		return Melder_error1 (L"No pitch contour is visible.\nFirst choose \"Show pitch\" from the View menu.");
@@ -1013,7 +1013,7 @@ static int menu_cb_moveCursorToMinimumPitch (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_moveCursorToMaximumPitch (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_moveCursorToMaximumPitch (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	if (! editor->_pitch.show)
 		return Melder_error1 (L"No pitch contour is visible.\nFirst choose \"Show pitch\" from the View menu.");
@@ -1035,7 +1035,7 @@ static int menu_cb_moveCursorToMaximumPitch (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_extractVisiblePitchContour (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_extractVisiblePitchContour (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	if (! editor->_pitch.show)
 		return Melder_error1 (L"No pitch contour is visible.\nFirst choose \"Show pitch\" from the Pitch menu.");
@@ -1050,7 +1050,7 @@ static int menu_cb_extractVisiblePitchContour (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_drawVisiblePitchContour (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_drawVisiblePitchContour (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Draw visible pitch contour", 0)
 		editor->form_pictureWindow (cmd);
@@ -1064,13 +1064,13 @@ static int menu_cb_drawVisiblePitchContour (EDITOR_ARGS) {
 		SET_INTEGER (L"Speckle", editor->_pitch.picture.speckle);
 		editor->ok_pictureMargins (cmd);
 		editor->ok_pictureSelection (cmd);
-		SET_INTEGER (L"Garnish", prefs.picture.pitch.garnish);
+		SET_INTEGER (L"Garnish", _prefs.picture.pitch.garnish);
 	EDITOR_DO
 		editor->do_pictureWindow (cmd);
 		preferences.pitch.picture.speckle = editor->_pitch.picture.speckle = GET_INTEGER (L"Speckle");
 		editor->do_pictureMargins (cmd);
 		editor->do_pictureSelection (cmd);
-		prefs.picture.pitch.garnish = GET_INTEGER (L"Garnish");
+		_prefs.picture.pitch.garnish = GET_INTEGER (L"Garnish");
 		if (! editor->_pitch.show)
 			return Melder_error1 (L"No pitch contour is visible.\nFirst choose \"Show pitch\" from the Pitch menu.");
 		if (! editor->_pitch.data) {
@@ -1085,7 +1085,7 @@ static int menu_cb_drawVisiblePitchContour (EDITOR_ARGS) {
 		double pitchViewFrom_overt = editor->_pitch.viewFrom < editor->_pitch.viewTo ? editor->_pitch.viewFrom : pitchFloor_overt;
 		double pitchViewTo_overt = editor->_pitch.viewFrom < editor->_pitch.viewTo ? editor->_pitch.viewTo : pitchCeiling_overt;
 		Pitch_draw (editor->_pitch.data, editor->_pictureGraphics, editor->_startWindow, editor->_endWindow, pitchViewFrom_overt, pitchViewTo_overt,
-			prefs.picture.pitch.garnish, GET_INTEGER (L"Speckle"), editor->_pitch.unit);
+			_prefs.picture.pitch.garnish, GET_INTEGER (L"Speckle"), editor->_pitch.unit);
 		editor->garnish ();
 		editor->closePraatPicture ();
 	EDITOR_END
@@ -1093,7 +1093,7 @@ static int menu_cb_drawVisiblePitchContour (EDITOR_ARGS) {
 
 /***** INTENSITY MENU *****/
 
-static int menu_cb_showIntensity (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_showIntensity (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	preferences.intensity.show = editor->_intensity.show = ! editor->_intensity.show;
 	GuiMenuItem_check (editor->_intensityToggle, editor->_intensity.show);   // in case we're called from a script
@@ -1101,7 +1101,7 @@ static int menu_cb_showIntensity (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_intensitySettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_intensitySettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Intensity settings", L"Intro 6.2. Configuring the intensity contour")
 		REAL (L"left View range (dB)", L"50.0")
@@ -1130,7 +1130,7 @@ static int menu_cb_intensitySettings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_extractVisibleIntensityContour (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_extractVisibleIntensityContour (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	Intensity publish;
 	if (! editor->_intensity.show)
@@ -1146,7 +1146,7 @@ static int menu_cb_extractVisibleIntensityContour (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_drawVisibleIntensityContour (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_drawVisibleIntensityContour (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Draw visible intensity contour", 0)
 		editor->form_pictureWindow (cmd);
@@ -1157,12 +1157,12 @@ static int menu_cb_drawVisibleIntensityContour (EDITOR_ARGS) {
 		editor->ok_pictureWindow (cmd);
 		editor->ok_pictureMargins (cmd);
 		editor->ok_pictureSelection (cmd);
-		SET_INTEGER (L"Garnish", prefs.picture.intensity.garnish);
+		SET_INTEGER (L"Garnish", _prefs.picture.intensity.garnish);
 	EDITOR_DO
 		editor->do_pictureWindow (cmd);
 		editor->do_pictureMargins (cmd);
 		editor->do_pictureSelection (cmd);
-		prefs.picture.intensity.garnish = GET_INTEGER (L"Garnish");
+		_prefs.picture.intensity.garnish = GET_INTEGER (L"Garnish");
 		if (! editor->_intensity.show)
 			return Melder_error1 (L"No intensity contour is visible.\nFirst choose \"Show intensity\" from the Intensity menu.");
 		if (! editor->_intensity.data) {
@@ -1171,13 +1171,13 @@ static int menu_cb_drawVisibleIntensityContour (EDITOR_ARGS) {
 		}
 		editor->openPraatPicture ();
 		Intensity_draw (editor->_intensity.data, editor->_pictureGraphics, editor->_startWindow, editor->_endWindow, editor->_intensity.viewFrom, editor->_intensity.viewTo,
-			prefs.picture.intensity.garnish);
+			_prefs.picture.intensity.garnish);
 		editor->garnish ();
 		editor->closePraatPicture ();
 	EDITOR_END
 }
 
-static int menu_cb_intensityListing (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_intensityListing (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax;
 	int part = editor->makeQueriable (TRUE, & tmin, & tmax); iferror return 0;
@@ -1205,7 +1205,7 @@ static int menu_cb_intensityListing (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_getIntensity (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getIntensity (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax;
 	int part = editor->makeQueriable (TRUE, & tmin, & tmax); iferror return 0;
@@ -1225,7 +1225,7 @@ static int menu_cb_getIntensity (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_getMinimumIntensity (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getMinimumIntensity (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax;
 	int part = editor->makeQueriable (FALSE, & tmin, & tmax); iferror return 0;
@@ -1240,7 +1240,7 @@ static int menu_cb_getMinimumIntensity (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_getMaximumIntensity (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getMaximumIntensity (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax;
 	int part = editor->makeQueriable (FALSE, & tmin, & tmax); iferror return 0;
@@ -1257,7 +1257,7 @@ static int menu_cb_getMaximumIntensity (EDITOR_ARGS) {
 
 /***** FORMANT MENU *****/
 
-static int menu_cb_showFormants (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_showFormants (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	preferences.formant.show = editor->_formant.show = ! editor->_formant.show;
 	GuiMenuItem_check (editor->_formantToggle, editor->_formant.show);   // in case we're called from a script
@@ -1265,7 +1265,7 @@ static int menu_cb_showFormants (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_formantSettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_formantSettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Formant settings", L"Intro 5.2. Configuring the formant contours")
 		POSITIVE (L"Maximum formant (Hz)", L"5500.0")
@@ -1302,7 +1302,7 @@ static int menu_cb_formantSettings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_advancedFormantSettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_advancedFormantSettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Advanced formant settings", L"Advanced formant settings...")
 		RADIO_ENUM (L"Method", kTimeSoundAnalysisEditor_formant_analysisMethod, BURG)
@@ -1318,7 +1318,7 @@ static int menu_cb_advancedFormantSettings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_extractVisibleFormantContour (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_extractVisibleFormantContour (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	Formant publish;
 	if (! editor->_formant.show)
@@ -1334,7 +1334,7 @@ static int menu_cb_extractVisibleFormantContour (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_drawVisibleFormantContour (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_drawVisibleFormantContour (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Draw visible formant contour", 0)
 		editor->form_pictureWindow (cmd);
@@ -1345,12 +1345,12 @@ static int menu_cb_drawVisibleFormantContour (EDITOR_ARGS) {
 		editor->ok_pictureWindow (cmd);
 		editor->ok_pictureMargins (cmd);
 		editor->ok_pictureSelection (cmd);
-		SET_INTEGER (L"Garnish", prefs.picture.formant.garnish);
+		SET_INTEGER (L"Garnish", _prefs.picture.formant.garnish);
 	EDITOR_DO
 		editor->do_pictureWindow (cmd);
 		editor->do_pictureMargins (cmd);
 		editor->do_pictureSelection (cmd);
-		prefs.picture.formant.garnish = GET_INTEGER (L"Garnish");
+		_prefs.picture.formant.garnish = GET_INTEGER (L"Garnish");
 		if (! editor->_formant.show)
 			return Melder_error1 (L"No formant contour is visible.\nFirst choose \"Show formant\" from the Formant menu.");
 		if (! editor->_formant.data) {
@@ -1360,13 +1360,13 @@ static int menu_cb_drawVisibleFormantContour (EDITOR_ARGS) {
 		editor->openPraatPicture ();
 		Formant_drawSpeckles (editor->_formant.data, editor->_pictureGraphics, editor->_startWindow, editor->_endWindow,
 			editor->_spectrogram.viewTo, editor->_formant.dynamicRange,
-			prefs.picture.formant.garnish);
+			_prefs.picture.formant.garnish);
 		editor->garnish ();
 		editor->closePraatPicture ();
 	EDITOR_END
 }
 
-static int menu_cb_formantListing (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_formantListing (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	double tmin, tmax;
 	int part = editor->makeQueriable (TRUE, & tmin, & tmax); iferror return 0;
@@ -1438,24 +1438,24 @@ int TimeSoundAnalysisEditor::do_getBandwidth (int iformant) {
 	}
 	return 1;
 }
-static int menu_cb_getFirstFormant (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getFirstFormant (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_getFormant (1); }
-static int menu_cb_getFirstBandwidth (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getFirstBandwidth (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_getBandwidth (1); }
-static int menu_cb_getSecondFormant (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getSecondFormant (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_getFormant (2); }
-static int menu_cb_getSecondBandwidth (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getSecondBandwidth (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_getBandwidth (2); }
-static int menu_cb_getThirdFormant (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getThirdFormant (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_getFormant (3); }
-static int menu_cb_getThirdBandwidth (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getThirdBandwidth (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_getBandwidth (3); }
-static int menu_cb_getFourthFormant (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getFourthFormant (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_getFormant (4); }
-static int menu_cb_getFourthBandwidth (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getFourthBandwidth (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me; return editor->do_getBandwidth (4); }
 
-static int menu_cb_getFormant (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getFormant (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Get formant", 0)
 		NATURAL (L"Formant number", L"5")
@@ -1465,7 +1465,7 @@ static int menu_cb_getFormant (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_getBandwidth (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_getBandwidth (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Get bandwidth", 0)
 		NATURAL (L"Formant number", L"5")
@@ -1477,7 +1477,7 @@ static int menu_cb_getBandwidth (EDITOR_ARGS) {
 
 /***** PULSE MENU *****/
 
-static int menu_cb_showPulses (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_showPulses (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	preferences.pulses.show = editor->_pulses.show = ! editor->_pulses.show;
 	GuiMenuItem_check (editor->_pulsesToggle, editor->_pulses.show);   // in case we're called from a script
@@ -1485,7 +1485,7 @@ static int menu_cb_showPulses (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_advancedPulsesSettings (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_advancedPulsesSettings (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Advanced pulses settings", L"Advanced pulses settings...")
 		POSITIVE (L"Maximum period factor", L"1.3")
@@ -1501,7 +1501,7 @@ static int menu_cb_advancedPulsesSettings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_extractVisiblePulses (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_extractVisiblePulses (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	Pitch publish;
 	if (! editor->_pulses.show)
@@ -1517,7 +1517,7 @@ static int menu_cb_extractVisiblePulses (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_drawVisiblePulses (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_drawVisiblePulses (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	EDITOR_FORM (L"Draw visible pulses", 0)
 		editor->form_pictureWindow (cmd);
@@ -1528,12 +1528,12 @@ static int menu_cb_drawVisiblePulses (EDITOR_ARGS) {
 		editor->ok_pictureWindow (cmd);
 		editor->ok_pictureMargins (cmd);
 		editor->ok_pictureSelection (cmd);
-		SET_INTEGER (L"Garnish", prefs.picture.pulses.garnish);
+		SET_INTEGER (L"Garnish", _prefs.picture.pulses.garnish);
 	EDITOR_DO
 		editor->do_pictureWindow (cmd);
 		editor->do_pictureMargins (cmd);
 		editor->do_pictureSelection (cmd);
-		prefs.picture.pulses.garnish = GET_INTEGER (L"Garnish");
+		_prefs.picture.pulses.garnish = GET_INTEGER (L"Garnish");
 		if (! editor->_pulses.show)
 			return Melder_error1 (L"No pulses are visible.\nFirst choose \"Show pulses\" from the Pulses menu.");
 		if (! editor->_pulses.data) {
@@ -1542,13 +1542,13 @@ static int menu_cb_drawVisiblePulses (EDITOR_ARGS) {
 		}
 		editor->openPraatPicture ();
 		PointProcess_draw (editor->_pulses.data, editor->_pictureGraphics, editor->_startWindow, editor->_endWindow,
-			prefs.picture.pulses.garnish);
+			_prefs.picture.pulses.garnish);
 		editor->garnish ();
 		editor->closePraatPicture ();
 	EDITOR_END
 }
 
-static int menu_cb_voiceReport (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_voiceReport (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	time_t today = time (NULL);
 	Sound sound = NULL;
@@ -1575,7 +1575,7 @@ static int menu_cb_voiceReport (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_pulseListing (EDITOR_ARGS) {
+int TimeSoundAnalysisEditor::menu_cb_pulseListing (EDITOR_ARGS) {
 	TimeSoundAnalysisEditor *editor = (TimeSoundAnalysisEditor *)editor_me;
 	long i, i1, i2;
 	double tmin, tmax;

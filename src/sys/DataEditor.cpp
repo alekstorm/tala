@@ -141,7 +141,7 @@ Data_Description DataSubEditor::findNumberUse (const wchar_t *number) {
 	return NULL;
 }
 
-static void gui_button_cb_change (I, GuiButtonEvent event) {
+void DataSubEditor::gui_button_cb_change (I, GuiButtonEvent event) {
 	(void) event;
 	DataSubEditor *editor = (DataSubEditor *)void_me;
 	int i;   // has to be declared here
@@ -277,12 +277,12 @@ error:
 	Melder_flushError (NULL);
 }
 
-static void gui_button_cb_cancel (I, GuiButtonEvent event) {
+void DataSubEditor::gui_button_cb_cancel (I, GuiButtonEvent event) {
 	(void) event;
 	((DataSubEditor *)void_me)->update ();
 }
 
-static void gui_cb_scroll (GUI_ARGS) {
+void DataSubEditor::gui_cb_scroll (GUI_ARGS) {
 	DataSubEditor *editor = (DataSubEditor *)void_me;
 	int value, slider, incr, pincr;
 	#if motif
@@ -292,7 +292,7 @@ static void gui_cb_scroll (GUI_ARGS) {
 	editor->update ();
 }
 
-static void gui_button_cb_open (I, GuiButtonEvent event) {
+void DataSubEditor::gui_button_cb_open (I, GuiButtonEvent event) {
 	DataSubEditor *editor = (DataSubEditor *)void_me;
 	int ifield = 0;
 	static MelderString name = { 0 };
@@ -410,7 +410,7 @@ void DataSubEditor::createChildren () {
 	GuiObject_show (form);
 }
 
-static int menu_cb_help (EDITOR_ARGS) { Melder_help (L"Inspect"); return 1; }
+int DataSubEditor::menu_cb_help (EDITOR_ARGS) { Melder_help (L"Inspect"); return 1; }
 
 void DataSubEditor::createMenus () {
 	EditorMenu *menu = getMenu (L"Help");

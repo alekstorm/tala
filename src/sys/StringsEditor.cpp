@@ -34,7 +34,7 @@ StringsEditor::StringsEditor (GuiObject parent, const wchar_t *title, Any data)
 	updateList ();
 }
 
-static int menu_cb_help (EDITOR_ARGS) {
+int StringsEditor::menu_cb_help (EDITOR_ARGS) {
 	Melder_help (L"StringsEditor");
 	return 1;
 }
@@ -51,7 +51,7 @@ void StringsEditor::updateList () {
 		GuiList_insertItem (_list, strings -> strings [i], 0);
 }
 
-static void gui_button_cb_insert (I, GuiButtonEvent event) {
+void StringsEditor::gui_button_cb_insert (I, GuiButtonEvent event) {
 	(void) event;
 	StringsEditor *stringsEditor = (StringsEditor *)void_me;
 	Strings strings = (structStrings*)stringsEditor->_data;
@@ -79,7 +79,7 @@ static void gui_button_cb_insert (I, GuiButtonEvent event) {
 	stringsEditor->broadcastChange ();
 }
 
-static void gui_button_cb_append (I, GuiButtonEvent event) {
+void StringsEditor::gui_button_cb_append (I, GuiButtonEvent event) {
 	(void) event;
 	StringsEditor *stringsEditor = (StringsEditor *)void_me;
 	Strings strings = (structStrings*)stringsEditor->_data;
@@ -101,7 +101,7 @@ static void gui_button_cb_append (I, GuiButtonEvent event) {
 	stringsEditor->broadcastChange ();
 }
 
-static void gui_button_cb_remove (I, GuiButtonEvent event) {
+void StringsEditor::gui_button_cb_remove (I, GuiButtonEvent event) {
 	(void) event;
 	StringsEditor *stringsEditor = (StringsEditor *)void_me;
 	long numberOfSelected, *selected = GuiList_getSelectedPositions (stringsEditor->_list, & numberOfSelected);
@@ -113,7 +113,7 @@ static void gui_button_cb_remove (I, GuiButtonEvent event) {
 	stringsEditor->broadcastChange ();
 }
 
-static void gui_button_cb_replace (I, GuiButtonEvent event) {
+void StringsEditor::gui_button_cb_replace (I, GuiButtonEvent event) {
 	(void) event;
 	StringsEditor *stringsEditor = (StringsEditor *)void_me;
 	Strings strings = (structStrings*)stringsEditor->_data;
@@ -127,7 +127,7 @@ static void gui_button_cb_replace (I, GuiButtonEvent event) {
 	stringsEditor->broadcastChange ();
 }
 
-static void gui_list_cb_doubleClick (GuiObject widget, void *void_me, long item) {
+void StringsEditor::gui_list_cb_doubleClick (GuiObject widget, void *void_me, long item) {
 	(void) widget;
 	StringsEditor *stringsEditor = (StringsEditor *)void_me;
 	Strings strings = (structStrings*)stringsEditor->_data;

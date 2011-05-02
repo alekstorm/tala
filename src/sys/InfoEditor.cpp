@@ -72,8 +72,6 @@ InfoEditor::InfoEditor (GuiObject parent, const wchar_t *initialText)
 	}
 }
 
-void cb_showOpen (EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter); // FIXME
-
 InfoEditor::~InfoEditor () {
 	forget (_openDialog);
 	forget (_saveDialog);
@@ -138,12 +136,12 @@ void InfoEditor::menu_new (EditorCommand *cmd) {
 	newDocument ();
 }
 
-static int menu_cb_clear (EDITOR_ARGS) {
+int InfoEditor::menu_cb_clear (EDITOR_ARGS) {
 	((InfoEditor *)editor_me)->clear ();
 	return 1;
 }
 
-static int cb_saveAs_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
+int InfoEditor::cb_saveAs_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I) {
 	InfoEditor *editor = (InfoEditor *)void_me;
 	(void) sendingString;
 	(void) interpreter;
@@ -154,7 +152,7 @@ static int cb_saveAs_ok (UiForm *sendingForm, const wchar_t *sendingString, Inte
 	return 1;
 }
 
-int menu_cb_saveAs (EDITOR_ARGS) {
+int InfoEditor::menu_cb_saveAs (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	wchar_t defaultName [300];
 	if (! editor->_saveDialog)
@@ -168,37 +166,37 @@ void InfoEditor::goAway () {
 	closeDocument ();
 }
 
-static int menu_cb_undo (EDITOR_ARGS) {
+int InfoEditor::menu_cb_undo (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	GuiText_undo (editor->_textWidget);
 	return 1;
 }
 
-static int menu_cb_redo (EDITOR_ARGS) {
+int InfoEditor::menu_cb_redo (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	GuiText_redo (editor->_textWidget);
 	return 1;
 }
 
-static int menu_cb_cut (EDITOR_ARGS) {
+int InfoEditor::menu_cb_cut (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	GuiText_cut (editor->_textWidget);  // use ((XmAnyCallbackStruct *) call) -> event -> xbutton. time
 	return 1;
 }
 
-static int menu_cb_copy (EDITOR_ARGS) {
+int InfoEditor::menu_cb_copy (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	GuiText_copy (editor->_textWidget);
 	return 1;
 }
 
-static int menu_cb_paste (EDITOR_ARGS) {
+int InfoEditor::menu_cb_paste (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	GuiText_paste (editor->_textWidget);
 	return 1;
 }
 
-static int menu_cb_erase (EDITOR_ARGS) {
+int InfoEditor::menu_cb_erase (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	GuiText_remove (editor->_textWidget);
 	return 1;
@@ -280,7 +278,7 @@ void InfoEditor::do_replace () {
 	#endif
 }
 
-static int menu_cb_find (EDITOR_ARGS) {
+int InfoEditor::menu_cb_find (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	EDITOR_FORM (L"Find", 0)
 		LABEL (L"", L"Find:")
@@ -294,13 +292,13 @@ static int menu_cb_find (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_findAgain (EDITOR_ARGS) {
+int InfoEditor::menu_cb_findAgain (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	editor->do_find ();
 	return 1;
 }
 
-static int menu_cb_replace (EDITOR_ARGS) {
+int InfoEditor::menu_cb_replace (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	EDITOR_FORM (L"Find", 0)
 		LABEL (L"", L"This is a \"slow\" find-and-replace method;")
@@ -324,13 +322,13 @@ static int menu_cb_replace (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_replaceAgain (EDITOR_ARGS) {
+int InfoEditor::menu_cb_replaceAgain (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	editor->do_replace ();
 	return 1;
 }
 
-static int menu_cb_whereAmI (EDITOR_ARGS) {
+int InfoEditor::menu_cb_whereAmI (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	long numberOfLinesLeft, numberOfLinesRight;
 	if (! editor->getSelectedLines (& numberOfLinesLeft, & numberOfLinesRight)) {
@@ -344,7 +342,7 @@ static int menu_cb_whereAmI (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_goToLine (EDITOR_ARGS) {
+int InfoEditor::menu_cb_goToLine (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	EDITOR_FORM (L"Go to line", 0)
 		NATURAL (L"Line", L"1")
@@ -381,7 +379,7 @@ static int menu_cb_goToLine (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_convertToCString (EDITOR_ARGS) {
+int InfoEditor::menu_cb_convertToCString (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	wchar_t *text = GuiText_getString (editor->_textWidget);
 	wchar_t buffer [2] = L" ";
@@ -431,12 +429,12 @@ void InfoEditor::setFontSize (int fontSize) {
 	updateSizeMenu ();
 }
 
-static int menu_cb_10 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (10); return 1; }
-static int menu_cb_12 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (12); return 1; }
-static int menu_cb_14 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (14); return 1; }
-static int menu_cb_18 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (18); return 1; }
-static int menu_cb_24 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (24); return 1; }
-static int menu_cb_fontSize (EDITOR_ARGS) {
+int InfoEditor::menu_cb_10 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (10); return 1; }
+int InfoEditor::menu_cb_12 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (12); return 1; }
+int InfoEditor::menu_cb_14 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (14); return 1; }
+int InfoEditor::menu_cb_18 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (18); return 1; }
+int InfoEditor::menu_cb_24 (EDITOR_ARGS) { ((InfoEditor *)editor_me)->setFontSize (24); return 1; }
+int InfoEditor::menu_cb_fontSize (EDITOR_ARGS) {
 	InfoEditor *editor = (InfoEditor *)editor_me;
 	EDITOR_FORM (L"Text window: Font size", 0)
 		NATURAL (L"Font size (points)", L"12")
@@ -488,6 +486,27 @@ static void gui_text_cb_change (void *void_me, GuiTextEvent event) {
 		editor->_dirty = TRUE;
 		editor->nameChanged ();
 	}
+}
+
+int InfoEditor::cb_open_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *void_me) {
+	(void) sendingString;
+	(void) interpreter;
+	(void) invokingButtonTitle;
+	(void) modified;
+	InfoEditor *editor = (InfoEditor *)void_me;
+	MelderFile file = ((UiFile *)sendingForm)->getFile ();
+	if (! editor->openDocument (file)) return 0;
+	return 1;
+}
+
+void InfoEditor::cb_showOpen (EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter) {
+	InfoEditor *editor = (InfoEditor *) cmd -> _editor;
+	(void) sendingForm;
+	(void) sendingString;
+	(void) interpreter;
+	if (! editor->_openDialog)
+		editor->_openDialog = new UiInfile (editor->_dialog, L"Open", cb_open_ok, editor, NULL, NULL, false);
+	editor->_openDialog -> do_ ();
 }
 
 void InfoEditor::createChildren () {

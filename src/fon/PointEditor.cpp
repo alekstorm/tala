@@ -53,84 +53,84 @@ PointEditor::~PointEditor () {
 
 /********** MENU COMMANDS **********/
 
-static int menu_cb_getJitter_local (EDITOR_ARGS) {
+int PointEditor::menu_cb_getJitter_local (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure jitter, make a selection first.");
 	Melder_informationReal (PointProcess_getJitter_local ((PointProcess) editor->_data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3), NULL);
 	return 1;
 }
 
-static int menu_cb_getJitter_local_absolute (EDITOR_ARGS) {
+int PointEditor::menu_cb_getJitter_local_absolute (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure jitter, make a selection first.");
 	Melder_informationReal (PointProcess_getJitter_local_absolute ((PointProcess) editor->_data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3), L"seconds");
 	return 1;
 }
 
-static int menu_cb_getJitter_rap (EDITOR_ARGS) {
+int PointEditor::menu_cb_getJitter_rap (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure jitter, make a selection first.");
 	Melder_informationReal (PointProcess_getJitter_rap ((PointProcess) editor->_data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3), NULL);
 	return 1;
 }
 
-static int menu_cb_getJitter_ppq5 (EDITOR_ARGS) {
+int PointEditor::menu_cb_getJitter_ppq5 (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure jitter, make a selection first.");
 	Melder_informationReal (PointProcess_getJitter_ppq5 ((PointProcess) editor->_data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3), NULL);
 	return 1;
 }
 
-static int menu_cb_getJitter_ddp (EDITOR_ARGS) {
+int PointEditor::menu_cb_getJitter_ddp (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure jitter, make a selection first.");
 	Melder_informationReal (PointProcess_getJitter_ddp ((PointProcess) editor->_data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3), NULL);
 	return 1;
 }
 
-static int menu_cb_getShimmer_local (EDITOR_ARGS) {
+int PointEditor::menu_cb_getShimmer_local (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure shimmer, make a selection first.");
 	Melder_informationReal (PointProcess_Sound_getShimmer_local ((PointProcess) editor->_data, editor->_sound.data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3, 1.6), NULL);
 	return 1;
 }
 
-static int menu_cb_getShimmer_local_dB (EDITOR_ARGS) {
+int PointEditor::menu_cb_getShimmer_local_dB (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure shimmer, make a selection first.");
 	Melder_informationReal (PointProcess_Sound_getShimmer_local_dB ((PointProcess) editor->_data, editor->_sound.data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3, 1.6), NULL);
 	return 1;
 }
 
-static int menu_cb_getShimmer_apq3 (EDITOR_ARGS) {
+int PointEditor::menu_cb_getShimmer_apq3 (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure shimmer, make a selection first.");
 	Melder_informationReal (PointProcess_Sound_getShimmer_apq3 ((PointProcess) editor->_data, editor->_sound.data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3, 1.6), NULL);
 	return 1;
 }
 
-static int menu_cb_getShimmer_apq5 (EDITOR_ARGS) {
+int PointEditor::menu_cb_getShimmer_apq5 (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure shimmer, make a selection first.");
 	Melder_informationReal (PointProcess_Sound_getShimmer_apq5 ((PointProcess) editor->_data, editor->_sound.data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3, 1.6), NULL);
 	return 1;
 }
 
-static int menu_cb_getShimmer_apq11 (EDITOR_ARGS) {
+int PointEditor::menu_cb_getShimmer_apq11 (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure shimmer, make a selection first.");
 	Melder_informationReal (PointProcess_Sound_getShimmer_apq11 ((PointProcess) editor->_data, editor->_sound.data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3, 1.6), NULL);
 	return 1;
 }
 
-static int menu_cb_getShimmer_dda (EDITOR_ARGS) {
+int PointEditor::menu_cb_getShimmer_dda (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	if (editor->_startSelection == editor->_endSelection) return Melder_error1 (L"To measure shimmer, make a selection first.");
 	Melder_informationReal (PointProcess_Sound_getShimmer_dda ((PointProcess) editor->_data, editor->_sound.data, editor->_startSelection, editor->_endSelection, 1e-4, 0.02, 1.3, 1.6), NULL);
 	return 1;
 }
 
-static int menu_cb_removePoints (EDITOR_ARGS) {
+int PointEditor::menu_cb_removePoints (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	editor->save (L"Remove point(s)");
 	if (editor->_startSelection == editor->_endSelection)
@@ -142,7 +142,7 @@ static int menu_cb_removePoints (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPointAtCursor (EDITOR_ARGS) {
+int PointEditor::menu_cb_addPointAtCursor (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	editor->save (L"Add point");
 	PointProcess_addPoint ((PointProcess) editor->_data, 0.5 * (editor->_startSelection + editor->_endSelection));
@@ -151,7 +151,7 @@ static int menu_cb_addPointAtCursor (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_addPointAt (EDITOR_ARGS) {
+int PointEditor::menu_cb_addPointAt (EDITOR_ARGS) {
 	PointEditor *editor = (PointEditor *)editor_me;
 	EDITOR_FORM (L"Add point", 0)
 		REAL (L"Position", L"0.0");
@@ -165,7 +165,7 @@ static int menu_cb_addPointAt (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_PointEditorHelp (EDITOR_ARGS) { PointEditor *editor = (PointEditor *)editor_me; Melder_help (L"PointEditor"); return 1; }
+int PointEditor::menu_cb_PointEditorHelp (EDITOR_ARGS) { PointEditor *editor = (PointEditor *)editor_me; Melder_help (L"PointEditor"); return 1; }
 
 void PointEditor::createMenus () {
 	EditorMenu *menu = getMenu (L"Query");

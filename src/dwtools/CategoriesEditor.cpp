@@ -38,11 +38,10 @@
 
 #include "CategoriesEditor.h"
 //#include "Preferences.h"
-#include "sys/EditorM.h"
 
 wchar_t *CategoriesEditor_EMPTYLABEL = L"(empty)";
 
-static int menu_cb_help (EDITOR_ARGS) { Melder_help (L"CategoriesEditor"); return 1; }
+int CategoriesEditor::menu_cb_help (EDITOR_ARGS) { Melder_help (L"CategoriesEditor"); return 1; }
 
 /**************** Some methods for Collection  ****************/
 
@@ -684,7 +683,7 @@ void CategoriesEditor::update (long from, long to, const long *select, long nSel
 	}
 }
 
-static void gui_button_cb_remove (I, GuiButtonEvent event) {
+void CategoriesEditor::gui_button_cb_remove (I, GuiButtonEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	long posCount, *posList = GuiList_getSelectedPositions (editor->_list, & posCount);
@@ -721,13 +720,13 @@ end:
 	forget (command);
 }
 
-static void gui_button_cb_insert (I, GuiButtonEvent event) {
+void CategoriesEditor::gui_button_cb_insert (I, GuiButtonEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	editor->insert (editor->_position);
 }
 
-static void gui_button_cb_insertAtEnd (I, GuiButtonEvent event) {
+void CategoriesEditor::gui_button_cb_insertAtEnd (I, GuiButtonEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	Categories categories = (structCategories *)editor->_data;
@@ -735,7 +734,7 @@ static void gui_button_cb_insertAtEnd (I, GuiButtonEvent event) {
 	editor->_position = categories->size;
 }
 
-static void gui_button_cb_replace (I, GuiButtonEvent event) {
+void CategoriesEditor::gui_button_cb_replace (I, GuiButtonEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	long posCount, *posList = GuiList_getSelectedPositions (editor->_list, & posCount);
@@ -761,7 +760,7 @@ end:
 }
 
 /* Precondition: contiguous selection */
-static void gui_button_cb_moveUp (I, GuiButtonEvent event) {
+void CategoriesEditor::gui_button_cb_moveUp (I, GuiButtonEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	long posCount, *posList = GuiList_getSelectedPositions (editor->_list, & posCount);
@@ -781,7 +780,7 @@ end:
 }
 
 /* Precondition: contiguous selection */
-static void gui_button_cb_moveDown (I, GuiButtonEvent event) {
+void CategoriesEditor::gui_button_cb_moveDown (I, GuiButtonEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	long posCount, *posList = GuiList_getSelectedPositions (editor->_list, & posCount);
@@ -801,25 +800,25 @@ end:
 }
 
 
-static void gui_cb_scroll (GUI_ARGS) {
+void CategoriesEditor::gui_cb_scroll (GUI_ARGS) {
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	editor->notifyOutOfView ();
 }
 
-static void gui_list_cb_double_click (void *void_me, GuiListEvent event) {
+void CategoriesEditor::gui_list_cb_double_click (void *void_me, GuiListEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	const wchar_t *catg = OrderedOfString_itemAtIndex_c (editor->_data, editor->_position);
 	GuiText_setString (editor->_text, catg);
 }
 
-static void gui_list_cb_extended (void *void_me, GuiListEvent event) {
+void CategoriesEditor::gui_list_cb_extended (void *void_me, GuiListEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	editor->updateWidgets ();
 }
 
-static void gui_button_cb_undo (I, GuiButtonEvent event) {
+void CategoriesEditor::gui_button_cb_undo (I, GuiButtonEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	if (CommandHistory_offleft (editor->_history)) return;
@@ -828,7 +827,7 @@ static void gui_button_cb_undo (I, GuiButtonEvent event) {
 	editor->updateWidgets ();
 }
 
-static void gui_button_cb_redo (I, GuiButtonEvent event) {
+void CategoriesEditor::gui_button_cb_redo (I, GuiButtonEvent event) {
 	(void) event;
 	CategoriesEditor *editor = (CategoriesEditor *)void_me;
 	CommandHistory_forth (editor->_history);

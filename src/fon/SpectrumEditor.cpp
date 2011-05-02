@@ -124,7 +124,7 @@ void SpectrumEditor::play (double fmin, double fmax) {
 	forget (sound);
 }
 
-static int menu_cb_publishBand (EDITOR_ARGS) {
+int SpectrumEditor::menu_cb_publishBand (EDITOR_ARGS) {
 	SpectrumEditor *editor = (SpectrumEditor *)editor_me;
 	Spectrum publish = Spectrum_band ((Spectrum) editor->_data, editor->_startSelection, editor->_endSelection);
 	if (! publish) return 0;
@@ -133,7 +133,7 @@ static int menu_cb_publishBand (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_publishSound (EDITOR_ARGS) {
+int SpectrumEditor::menu_cb_publishSound (EDITOR_ARGS) {
 	SpectrumEditor *editor = (SpectrumEditor *)editor_me;
 	Sound publish = Spectrum_to_Sound_part ((Spectrum) editor->_data, editor->_startSelection, editor->_endSelection);
 	if (! publish) return 0;
@@ -142,7 +142,7 @@ static int menu_cb_publishSound (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_passBand (EDITOR_ARGS) {
+int SpectrumEditor::menu_cb_passBand (EDITOR_ARGS) {
 	SpectrumEditor *editor = (SpectrumEditor *)editor_me;
 	EDITOR_FORM (L"Filter (pass Hann band)", L"Spectrum: Filter (pass Hann band)...");
 		REAL (L"Band smoothing (Hz)", L"100.0")
@@ -158,7 +158,7 @@ static int menu_cb_passBand (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_stopBand (EDITOR_ARGS) {
+int SpectrumEditor::menu_cb_stopBand (EDITOR_ARGS) {
 	SpectrumEditor *editor = (SpectrumEditor *)editor_me;
 	EDITOR_FORM (L"Filter (stop Hann band)", 0)
 		REAL (L"Band smoothing (Hz)", L"100.0")
@@ -174,7 +174,7 @@ static int menu_cb_stopBand (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_setDynamicRange (EDITOR_ARGS) {
+int SpectrumEditor::menu_cb_setDynamicRange (EDITOR_ARGS) {
 	SpectrumEditor *editor = (SpectrumEditor *)editor_me;
 	EDITOR_FORM (L"Set dynamic range", 0)
 		POSITIVE (L"Dynamic range (dB)", L"60.0")
@@ -187,8 +187,8 @@ static int menu_cb_setDynamicRange (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_help_SpectrumEditor (EDITOR_ARGS) { Melder_help (L"SpectrumEditor"); return 1; }
-static int menu_cb_help_Spectrum (EDITOR_ARGS) { Melder_help (L"Spectrum"); return 1; }
+int SpectrumEditor::menu_cb_help_SpectrumEditor (EDITOR_ARGS) { Melder_help (L"SpectrumEditor"); return 1; }
+int SpectrumEditor::menu_cb_help_Spectrum (EDITOR_ARGS) { Melder_help (L"Spectrum"); return 1; }
 
 void SpectrumEditor::createMenus () {
 	EditorMenu *menu = getMenu (L"File");

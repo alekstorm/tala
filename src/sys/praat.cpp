@@ -50,8 +50,6 @@
  * pb 2010/12/08 can read Collections created from multiple objects read from one file (e.g. a labelled sound file)
  */
 
-#include "praat.h"
-
 #include "HyperPage.h"
 #include "machine.h"
 #include "melder.h"
@@ -64,6 +62,8 @@
 #include "UiFile.h"
 #include "UiHistory.h"
 #include "dwsys/NUMmachar.h"
+
+#include "praat.h"
 
 #include <ctype.h>
 #include <stdarg.h>

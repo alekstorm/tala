@@ -69,6 +69,12 @@ class DemoEditor : public Editor {
 	long _x, _y;
 	wchar_t _key;
 	bool _waitingForInput, _userWantsToClose, _fullScreen;
+
+  private:
+	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
+	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
+	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
+	static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event);
 };
 
 /* End of file DemoEditor.h */

@@ -33,7 +33,7 @@
 #include "sys/EditorM.h"
 #include "sys/machine.h"
 
-static int menu_cb_evaluate (EDITOR_ARGS) {
+int OTMultiEditor::menu_cb_evaluate (EDITOR_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)editor_me;
 	EDITOR_FORM (L"Evaluate", 0)
 		REAL (L"Evaluation noise", L"2.0")
@@ -46,7 +46,7 @@ static int menu_cb_evaluate (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_evaluate_noise_2_0 (EDITOR_ARGS) {
+int OTMultiEditor::menu_cb_evaluate_noise_2_0 (EDITOR_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)editor_me;
 	editor->save (L"Evaluate (noise 2.0)");
 	OTMulti_newDisharmonies ((OTMulti) editor->_data, 2.0);
@@ -55,7 +55,7 @@ static int menu_cb_evaluate_noise_2_0 (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_evaluate_tinyNoise (EDITOR_ARGS) {
+int OTMultiEditor::menu_cb_evaluate_tinyNoise (EDITOR_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)editor_me;
 	editor->save (L"Evaluate (tiny noise)");
 	OTMulti_newDisharmonies ((OTMulti) editor->_data, 1e-9);
@@ -64,7 +64,7 @@ static int menu_cb_evaluate_tinyNoise (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_editRanking (EDITOR_ARGS) {
+int OTMultiEditor::menu_cb_editRanking (EDITOR_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)editor_me;
 	EDITOR_FORM (L"Edit ranking", 0)
 		LABEL (L"constraint", L"");
@@ -90,7 +90,7 @@ static int menu_cb_editRanking (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_learnOne (EDITOR_ARGS) {
+int OTMultiEditor::menu_cb_learnOne (EDITOR_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)editor_me;
 	EDITOR_FORM (L"Learn one", L"OTGrammar: Learn one...")
 		OPTIONMENU_ENUM (L"Update rule", kOTGrammar_rerankingStrategy, SYMMETRIC_ALL)
@@ -116,7 +116,7 @@ static int menu_cb_learnOne (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_removeConstraint (EDITOR_ARGS) {
+int OTMultiEditor::menu_cb_removeConstraint (EDITOR_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)editor_me;
 	OTMulti grammar = (OTMulti) editor->_data;
 	OTConstraint constraint;
@@ -130,7 +130,7 @@ static int menu_cb_removeConstraint (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_resetAllRankings (EDITOR_ARGS) {
+int OTMultiEditor::menu_cb_resetAllRankings (EDITOR_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)editor_me;
 	EDITOR_FORM (L"Reset all rankings", 0)
 		REAL (L"Ranking", L"100.0")
@@ -143,7 +143,7 @@ static int menu_cb_resetAllRankings (EDITOR_ARGS) {
 	EDITOR_END
 }
 
-static int menu_cb_OTLearningTutorial (EDITOR_ARGS) {
+int OTMultiEditor::menu_cb_OTLearningTutorial (EDITOR_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)editor_me;
 	Melder_help (L"OT learning");
 	return 1;
@@ -157,13 +157,13 @@ void OTMultiEditor::do_limit () {
 	Graphics_updateWs (_g);
 }
 
-static void gui_button_cb_limit (I, GuiButtonEvent event) {
+void OTMultiEditor::gui_button_cb_limit (I, GuiButtonEvent event) {
 	(void) event;
 	OTMultiEditor *editor = (OTMultiEditor *)void_me;
 	editor->do_limit ();
 }
 
-static void gui_cb_limit (GUI_ARGS) {
+void OTMultiEditor::gui_cb_limit (GUI_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)void_me;
 	editor->do_limit ();
 }

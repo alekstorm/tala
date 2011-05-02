@@ -40,6 +40,23 @@ class PointEditor : public TimeSoundEditor {
 
 	Sound _monoSound;
 	GuiObject _addPointAtDialog;
+
+  private:
+	static int menu_cb_getJitter_local (EDITOR_ARGS);
+	static int menu_cb_getJitter_local_absolute (EDITOR_ARGS);
+	static int menu_cb_getJitter_rap (EDITOR_ARGS);
+	static int menu_cb_getJitter_ppq5 (EDITOR_ARGS);
+	static int menu_cb_getJitter_ddp (EDITOR_ARGS);
+	static int menu_cb_getShimmer_local (EDITOR_ARGS);
+	static int menu_cb_getShimmer_local_dB (EDITOR_ARGS);
+	static int menu_cb_getShimmer_apq3 (EDITOR_ARGS);
+	static int menu_cb_getShimmer_apq5 (EDITOR_ARGS);
+	static int menu_cb_getShimmer_apq11 (EDITOR_ARGS);
+	static int menu_cb_getShimmer_dda (EDITOR_ARGS);
+	static int menu_cb_removePoints (EDITOR_ARGS);
+	static int menu_cb_addPointAtCursor (EDITOR_ARGS);
+	static int menu_cb_addPointAt (EDITOR_ARGS);
+	static int menu_cb_PointEditorHelp (EDITOR_ARGS);
 };
 
 /* End of file PointEditor.h */

@@ -36,8 +36,8 @@ PitchTierEditor::PitchTierEditor (GuiObject parent, const wchar_t *title, PitchT
 	createMenus ();
 }
 
-static int menu_cb_PitchTierEditorHelp (EDITOR_ARGS) { Melder_help (L"PitchTierEditor"); return 1; }
-static int menu_cb_PitchTierHelp (EDITOR_ARGS) { Melder_help (L"PitchTier"); return 1; }
+int PitchTierEditor::menu_cb_PitchTierEditorHelp (EDITOR_ARGS) { Melder_help (L"PitchTierEditor"); return 1; }
+int PitchTierEditor::menu_cb_PitchTierHelp (EDITOR_ARGS) { Melder_help (L"PitchTier"); return 1; }
 
 void PitchTierEditor::createMenus () {
 	EditorMenu *menu = getMenu (L"Help");

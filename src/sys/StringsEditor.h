@@ -42,6 +42,14 @@ class StringsEditor : public Editor {
 	virtual void dataChanged ();
 
 	GuiObject _list, _text;
+
+  private:
+	static int menu_cb_help (EDITOR_ARGS);
+	static void gui_button_cb_insert (I, GuiButtonEvent event);
+	static void gui_button_cb_append (I, GuiButtonEvent event);
+	static void gui_button_cb_remove (I, GuiButtonEvent event);
+	static void gui_button_cb_replace (I, GuiButtonEvent event);
+	static void gui_list_cb_doubleClick (GuiObject widget, void *void_me, long item);
 };
 
 /* End of file StringsEditor.h */

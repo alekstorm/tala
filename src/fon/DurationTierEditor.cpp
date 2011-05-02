@@ -30,7 +30,7 @@ DurationTierEditor::DurationTierEditor (GuiObject parent, const wchar_t *title, 
 	createMenus ();
 }
 
-static int menu_cb_DurationTierHelp (EDITOR_ARGS) { Melder_help (L"DurationTier"); return 1; }
+int DurationTierEditor::menu_cb_DurationTierHelp (EDITOR_ARGS) { Melder_help (L"DurationTier"); return 1; }
 
 void DurationTierEditor::createMenus () {
 	EditorMenu *menu = getMenu(L"Help");

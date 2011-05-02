@@ -24,6 +24,7 @@
  */
 
 #include "TimeSoundAnalysisEditor.h"
+#include "sys/EditorM.h"
 
 class SoundEditor : public TimeSoundAnalysisEditor {
   public:
@@ -43,6 +44,17 @@ class SoundEditor : public TimeSoundAnalysisEditor {
 	double _maxBuffer;
 
   private:
+	static int menu_cb_Copy (EDITOR_ARGS);
+	static int menu_cb_Cut (EDITOR_ARGS);
+	static int menu_cb_Paste (EDITOR_ARGS);
+	static int menu_cb_SetSelectionToZero (EDITOR_ARGS);
+	static int menu_cb_ReverseSelection (EDITOR_ARGS);
+	static int menu_cb_MoveCursorToZero (EDITOR_ARGS);
+	static int menu_cb_MoveBtoZero (EDITOR_ARGS);
+	static int menu_cb_MoveEtoZero (EDITOR_ARGS);
+	static int menu_cb_SoundEditorHelp (EDITOR_ARGS);
+	static int menu_cb_LongSoundEditorHelp (EDITOR_ARGS);
+
 	void createMenus ();
 };
 

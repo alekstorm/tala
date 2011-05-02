@@ -21,14 +21,14 @@
  * pb 2011/03/22
  */
 
-#include "sys/praat.h"
-
 #include "Network.h"
 #include "OTGrammar.h"
 #include "OTMulti.h"
 #include "OTGrammarEditor.h"
 #include "OTMultiEditor.h"
 #include "sys/UiFile.h"
+
+#include "sys/praat.h"
 
 /***** HELP *****/
 

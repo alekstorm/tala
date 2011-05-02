@@ -257,11 +257,11 @@ void ButtonEditor::which (int show) {
 	goToPage (L"Buttons");
 }
 
-static void gui_radiobutton_cb_objects (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (1); }
-static void gui_radiobutton_cb_picture (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (2); }
-static void gui_radiobutton_cb_editors (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (3); }
-static void gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (4); }
-static void gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (5); }
+void ButtonEditor::gui_radiobutton_cb_objects (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (1); }
+void ButtonEditor::gui_radiobutton_cb_picture (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (2); }
+void ButtonEditor::gui_radiobutton_cb_editors (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (3); }
+void ButtonEditor::gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (4); }
+void ButtonEditor::gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (5); }
 
 void ButtonEditor::createChildren () {
 	#if gtk
@@ -295,7 +295,7 @@ void ButtonEditor::createChildren () {
 	#endif
 }
 
-static int menu_cb_ButtonEditorHelp (EDITOR_ARGS) { Melder_help (L"ButtonEditor"); return 1; }
+int ButtonEditor::menu_cb_ButtonEditorHelp (EDITOR_ARGS) { Melder_help (L"ButtonEditor"); return 1; }
 
 void ButtonEditor::createMenus () {
 	EditorMenu *menu = getMenu (L"Help");

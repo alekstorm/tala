@@ -55,7 +55,7 @@ void ArtwordEditor::updateList () {
 	Graphics_updateWs (_graphics);
 }
 
-static void gui_button_cb_removeTarget (I, GuiButtonEvent event) {
+void ArtwordEditor::gui_button_cb_removeTarget (I, GuiButtonEvent event) {
 	(void) event;
 	ArtwordEditor *editor = (ArtwordEditor *)void_me;
 	Artword artword = (Artword) editor->_data;
@@ -69,7 +69,7 @@ static void gui_button_cb_removeTarget (I, GuiButtonEvent event) {
 	editor->broadcastChange ();
 }
 
-static void gui_button_cb_addTarget (I, GuiButtonEvent event) {
+void ArtwordEditor::gui_button_cb_addTarget (I, GuiButtonEvent event) {
 	(void) event;
 	ArtwordEditor *editor = (ArtwordEditor *)void_me;
 	Artword artword = (Artword) editor->_data;
@@ -103,7 +103,7 @@ static void gui_button_cb_addTarget (I, GuiButtonEvent event) {
 	editor->broadcastChange ();
 }
 
-static void gui_radiobutton_cb_toggle (I, GuiRadioButtonEvent event) {
+void ArtwordEditor::gui_radiobutton_cb_toggle (I, GuiRadioButtonEvent event) {
 	ArtwordEditor *editor = (ArtwordEditor *)void_me;
 	int i = 0;
 	while (event -> toggle != editor->_button [i]) {
@@ -116,7 +116,7 @@ static void gui_radiobutton_cb_toggle (I, GuiRadioButtonEvent event) {
 	editor->updateList ();
 }
 
-static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
+void ArtwordEditor::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	ArtwordEditor *editor = (ArtwordEditor *)void_me;
 	(void) event;
 	if (editor->_graphics == NULL) return;
@@ -125,7 +125,7 @@ static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	Artword_draw (artword, editor->_graphics, editor->_feature, TRUE);
 }
 
-static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
+void ArtwordEditor::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	ArtwordEditor *editor = (ArtwordEditor *)void_me;
 	if (editor->_graphics == NULL) return;
 if (gtk && event -> type != BUTTON_PRESS) return;

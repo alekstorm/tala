@@ -41,6 +41,13 @@ class ArtwordEditor : public Editor {
 	int _feature;
 	GuiObject _list, _drawingArea, _radio, _time, _value;
 	GuiObject _button [1 + kArt_muscle_MAX];
+
+  private:
+	static void gui_button_cb_removeTarget (I, GuiButtonEvent event);
+	static void gui_button_cb_addTarget (I, GuiButtonEvent event);
+	static void gui_radiobutton_cb_toggle (I, GuiRadioButtonEvent event);
+	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
+	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
 };
 
 /* End of file ArtwordEditor.h */

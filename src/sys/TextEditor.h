@@ -40,6 +40,21 @@ class TextEditor : public InfoEditor {
   protected:
 	virtual void createMenus ();
 	virtual void goAway ();
+
+  private:
+	static void gui_button_cb_saveAndOpen (void *void_me, GuiButtonEvent event);
+	static void gui_button_cb_cancelOpen (void *void_me, GuiButtonEvent event);
+	static void gui_button_cb_discardAndOpen (void *void_me, GuiButtonEvent event);
+	static int menu_cb_open (EDITOR_ARGS);
+	static int menu_cb_save (EDITOR_ARGS);
+	static int menu_cb_reopen (EDITOR_ARGS);
+	static void gui_button_cb_saveAndNew (void *void_me, GuiButtonEvent event);
+	static void gui_button_cb_cancelNew (void *void_me, GuiButtonEvent event);
+	static void gui_button_cb_discardAndNew (void *void_me, GuiButtonEvent event);
+	static void gui_button_cb_saveAndClose (void *void_me, GuiButtonEvent event);
+	static void gui_button_cb_cancelClose (void *void_me, GuiButtonEvent event);
+	static void gui_button_cb_discardAndClose (void *void_me, GuiButtonEvent event);
+	static int menu_cb_new (EDITOR_ARGS);
 };
 
 /* End of file TextEditor.h */

@@ -69,6 +69,13 @@ class DataSubEditor : public Editor {
 	virtual void showStructMember (void *structAddress, Data_Description structDescription, Data_Description memberDescription, FieldData *fieldData, wchar_t *history);
 	virtual void showStructMembers (void *structAddress, Data_Description structDescription, int fromMember, wchar_t *history);
 	virtual void showMembers ();
+
+  private:
+	static void gui_button_cb_change (I, GuiButtonEvent event);
+	static void gui_button_cb_cancel (I, GuiButtonEvent event);
+	static void gui_cb_scroll (GUI_ARGS);
+	static void gui_button_cb_open (I, GuiButtonEvent event);
+	static int menu_cb_help (EDITOR_ARGS);
 };
 
 class VectorEditor : public DataSubEditor {

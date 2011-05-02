@@ -21,8 +21,6 @@
  * pb 2011/03/22
  */
 
-#include "sys/praat.h"
-
 #include "Art_Speaker.h"
 #include "Artword_Speaker.h"
 #include "Art_Speaker_to_VocalTract.h"
@@ -31,6 +29,8 @@
 #include "Artword_to_Art.h"
 #include "ArtwordEditor.h"
 #include "fon/VocalTract_to_Spectrum.h"
+
+#include "sys/praat.h"
 
 extern "C" int praat_Fon_formula (UiForm *dia, Interpreter *interpreter);
 Graphics Movie_create (const wchar_t *title, int width, int height);

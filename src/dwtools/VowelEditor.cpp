@@ -97,30 +97,6 @@ trajectory --> path ????
 // Too prevent the generation of inaudible short Sounds we set a minimum duration
 #define MINIMUM_SOUND_DURATION 0.01
 
-// menu callbacks
-static int menu_cb_help (EDITOR_ARGS);
-static int menu_cb_prefs (EDITOR_ARGS);
-static int menu_cb_publishSound (EDITOR_ARGS);
-static int menu_cb_extract_FormantGrid (EDITOR_ARGS);
-static int menu_cb_extract_PitchTier (EDITOR_ARGS);
-static int menu_cb_extract_KlattGrid (EDITOR_ARGS);
-static int menu_cb_showOneVowelMark (EDITOR_ARGS);
-static int menu_cb_showVowelMarks (EDITOR_ARGS);
-static int menu_cb_setF0 (EDITOR_ARGS);
-static int menu_cb_setF3F4 (EDITOR_ARGS);
-static int menu_cb_reverseTrajectory (EDITOR_ARGS);
-static int menu_cb_newTrajectory (EDITOR_ARGS);
-static int menu_cb_extendTrajectory (EDITOR_ARGS);
-static int menu_cb_modifyTrajectoryDuration (EDITOR_ARGS);
-static int menu_cb_shiftTrajectory (EDITOR_ARGS);
-static int menu_cb_showTrajectoryTimeMarkersEvery (EDITOR_ARGS);
-// button callbacks
-static void gui_button_cb_publish (I, GuiButtonEvent event);
-static void gui_button_cb_play (I, GuiButtonEvent event);
-static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
-static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
-static void gui_button_cb_reverse (I, GuiButtonEvent event);
-static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 // helpers
 static double getRealFromTextWidget (GuiObject me);
 static double getCoordinate (double fmin, double fmax, double f);
@@ -184,7 +160,7 @@ void VowelEditor::prefs (void)
 	Preferences_addInt (L"VowelEditor.speakerType", &preferences.speakerType, 1);
 }
 
-static void cb_publish (Editor *editor, void *closure, Any publish)
+void VowelEditor::cb_publish (Editor *editor, void *closure, Any publish)
 {
 	(void) editor;
 	(void) closure;
@@ -884,14 +860,14 @@ static int paCallback (const void *inputBuffer, void *outputBuffer, unsigned lon
 
 /********** MENU METHODS **********/
 
-static int menu_cb_help (EDITOR_ARGS)
+int VowelEditor::menu_cb_help (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	Melder_help (L"VowelEditor");
 	return 1;
 }
 
-static int menu_cb_prefs (EDITOR_ARGS)
+int VowelEditor::menu_cb_prefs (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Preferences", 0);
@@ -918,7 +894,7 @@ static int menu_cb_prefs (EDITOR_ARGS)
 	EDITOR_END
 }
 
-static int menu_cb_publishSound (EDITOR_ARGS)
+int VowelEditor::menu_cb_publishSound (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	Sound publish = editor->createTarget ();
@@ -927,7 +903,7 @@ static int menu_cb_publishSound (EDITOR_ARGS)
 	return 1;
 }
 
-static int menu_cb_extract_FormantGrid (EDITOR_ARGS)
+int VowelEditor::menu_cb_extract_FormantGrid (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	editor->updateVowel ();
@@ -937,7 +913,7 @@ static int menu_cb_extract_FormantGrid (EDITOR_ARGS)
 	return 1;
 }
 
-static int menu_cb_extract_KlattGrid (EDITOR_ARGS)
+int VowelEditor::menu_cb_extract_KlattGrid (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	editor->updateVowel ();
@@ -955,7 +931,7 @@ static int menu_cb_extract_KlattGrid (EDITOR_ARGS)
 	return 1;
 }
 
-static int menu_cb_extract_PitchTier (EDITOR_ARGS)
+int VowelEditor::menu_cb_extract_PitchTier (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	editor->updateVowel ();
@@ -965,7 +941,7 @@ static int menu_cb_extract_PitchTier (EDITOR_ARGS)
 	return 1;
 }
 
-static int menu_cb_drawTrajectory (EDITOR_ARGS)
+int VowelEditor::menu_cb_drawTrajectory (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Draw trajectory", 0)
@@ -983,7 +959,7 @@ static int menu_cb_drawTrajectory (EDITOR_ARGS)
 	EDITOR_END
 }
 
-static int menu_cb_showOneVowelMark (EDITOR_ARGS)
+int VowelEditor::menu_cb_showOneVowelMark (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Show one vowel mark", 0);
@@ -1016,7 +992,7 @@ static int menu_cb_showOneVowelMark (EDITOR_ARGS)
 	EDITOR_END
 }
 
-static int menu_cb_showVowelMarks (EDITOR_ARGS)
+int VowelEditor::menu_cb_showVowelMarks (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Show vowel marks", 0);
@@ -1036,7 +1012,7 @@ static int menu_cb_showVowelMarks (EDITOR_ARGS)
 	EDITOR_END
 }
 
-static int menu_cb_setF0 (EDITOR_ARGS)
+int VowelEditor::menu_cb_setF0 (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Set F0", 0);
@@ -1054,7 +1030,7 @@ static int menu_cb_setF0 (EDITOR_ARGS)
 	EDITOR_END
 }
 
-static int menu_cb_setF3F4 (EDITOR_ARGS)
+int VowelEditor::menu_cb_setF3F4 (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Set F3 & F4", 0);
@@ -1070,7 +1046,7 @@ static int menu_cb_setF3F4 (EDITOR_ARGS)
 		if (! editor->setF3F4 (f3, b3, f4, b4)) return 0;
 	EDITOR_END
 }
-static int menu_cb_reverseTrajectory (EDITOR_ARGS)
+int VowelEditor::menu_cb_reverseTrajectory (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	editor->Vowel_reverseFormantTier ();
@@ -1124,7 +1100,7 @@ static void checkXY (double *x, double *y)
 	else if (*y > 1) *y = 1;
 }
 
-static int menu_cb_newTrajectory (EDITOR_ARGS)
+int VowelEditor::menu_cb_newTrajectory (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"New Trajectory", 0);
@@ -1167,7 +1143,7 @@ end:
 	EDITOR_END
 }
 
-static int menu_cb_extendTrajectory (EDITOR_ARGS)
+int VowelEditor::menu_cb_extendTrajectory (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Extend Trajectory", 0);
@@ -1190,7 +1166,7 @@ static int menu_cb_extendTrajectory (EDITOR_ARGS)
 	EDITOR_END
 }
 
-static int menu_cb_modifyTrajectoryDuration (EDITOR_ARGS)
+int VowelEditor::menu_cb_modifyTrajectoryDuration (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Modify duration", 0);
@@ -1201,7 +1177,7 @@ static int menu_cb_modifyTrajectoryDuration (EDITOR_ARGS)
 	EDITOR_END
 }
 
-static int menu_cb_shiftTrajectory (EDITOR_ARGS)
+int VowelEditor::menu_cb_shiftTrajectory (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Shift trajectory", 0);
@@ -1214,7 +1190,7 @@ static int menu_cb_shiftTrajectory (EDITOR_ARGS)
 	EDITOR_END
 }
 
-static int menu_cb_showTrajectoryTimeMarkersEvery (EDITOR_ARGS)
+int VowelEditor::menu_cb_showTrajectoryTimeMarkersEvery (EDITOR_ARGS)
 {
 	VowelEditor *editor = (VowelEditor *)editor_me;
 	EDITOR_FORM (L"Show trajectory time markers every", 0);
@@ -1229,7 +1205,7 @@ static int menu_cb_showTrajectoryTimeMarkersEvery (EDITOR_ARGS)
 
 /********** BUTTON METHODS **********/
 
-static void gui_button_cb_play (I, GuiButtonEvent event)
+void VowelEditor::gui_button_cb_play (I, GuiButtonEvent event)
 {
 	(void) event;
 	VowelEditor *editor = (VowelEditor *)void_me;
@@ -1239,7 +1215,7 @@ static void gui_button_cb_play (I, GuiButtonEvent event)
 	forget (thee);
 }
 
-static void gui_button_cb_publish (I, GuiButtonEvent event)
+void VowelEditor::gui_button_cb_publish (I, GuiButtonEvent event)
 {
 	(void) event;
 	VowelEditor *editor = (VowelEditor *)void_me;
@@ -1248,7 +1224,7 @@ static void gui_button_cb_publish (I, GuiButtonEvent event)
 	if (editor->_publishCallback) editor->_publishCallback (editor, editor->_publishClosure, publish);
 }
 
-static void gui_button_cb_reverse (I, GuiButtonEvent event)
+void VowelEditor::gui_button_cb_reverse (I, GuiButtonEvent event)
 {
 	(void) event;
 	VowelEditor *editor = (VowelEditor *)void_me;
@@ -1260,7 +1236,7 @@ static void gui_button_cb_reverse (I, GuiButtonEvent event)
 }
 
 /* Main drawing routine: it's been called after every call to Graphics_updateWs (g) */
-static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event)
+void VowelEditor::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event)
 {
 	VowelEditor *editor = (VowelEditor *)void_me;
 	(void) event;
@@ -1293,7 +1269,7 @@ static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event)
 	FormantTier_drawF1F2Trajectory (editor->_vowel -> ft, editor->_g, editor->_f1min, editor->_f1max, editor->_f2min, editor->_f2max, editor->_markTraceEvery, editor->_width);
 }
 
-static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event)
+void VowelEditor::gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event)
 {
 	VowelEditor *editor = (VowelEditor *)void_me;
 	(void) event;
@@ -1337,7 +1313,7 @@ int VowelEditor::Vowel_updateTiers (Vowel thee, double time, double x, double y)
 
 // shift key always extends what already is.
 // Special case : !soundFollowsMouse. The first click just defines the vowel's first f1f2-position,
-static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event)
+void VowelEditor::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event)
 {
 	VowelEditor *editor = (VowelEditor *)void_me;
 	(void) event;
@@ -1418,7 +1394,7 @@ end:
 	gui_button_cb_play (editor, & gb_event);
 }
 
-static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {}
+void VowelEditor::gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {}
 
 void VowelEditor::updateWidgets () {}
 

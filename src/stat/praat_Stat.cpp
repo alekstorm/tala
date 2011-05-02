@@ -21,8 +21,6 @@
  * pb 2011/03/28
  */
 
-#include "sys/praat.h"
-
 #include "Distributions_and_Strings.h"
 #include "LogisticRegression.h"
 #include "PairDistribution.h"
@@ -31,6 +29,8 @@
 #include "stat/Table.h"
 #include "stat/TableEditor.h"
 #include "sys/UiFile.h"
+
+#include "sys/praat.h"
 
 static wchar_t formatBuffer [32] [40];
 static int formatIndex = 0;

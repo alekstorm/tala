@@ -49,6 +49,9 @@ class DurationTierEditor : public RealTierEditor {
 
 	virtual void createMenus ();
 	virtual void play (double tmin, double tmax);
+
+  private:
+	static int menu_cb_DurationTierHelp (EDITOR_ARGS);
 };
 
 /* End of file DurationTierEditor.h */

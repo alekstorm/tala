@@ -33,6 +33,7 @@
 	#include "Graphics.h"
 #endif
 #include "Editor_enums.h"
+#include "sys/EditorM.h"
 
 #define Editor_HIDDEN  (1 << 14)
 
@@ -160,6 +161,14 @@ class Editor {
 	virtual void setMenuSensitive (const wchar_t *menu, int sensitive);
 
   private:
+	static void gui_window_cb_goAway (void *editor);
+	static int menu_cb_newScript (EDITOR_ARGS);
+	static int menu_cb_openScript (EDITOR_ARGS);
+	static int menu_cb_close (EDITOR_ARGS);
+	static int menu_cb_undo (EDITOR_ARGS);
+	static int menu_cb_settingsReport (EDITOR_ARGS);
+	static int menu_cb_info (EDITOR_ARGS);
+
 	void createMenus ();
 };
 

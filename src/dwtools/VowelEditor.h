@@ -41,6 +41,12 @@
 	#include "sys/Editor.h"
 #endif
 
+#include "sys/EditorM.h"
+
+#ifdef __cplusplus
+	extern "C" {
+#endif
+
 #define Vowel_members Function_members \
 	PitchTier pt; \
 	FormantTier ft;
@@ -113,6 +119,39 @@ class VowelEditor : public Editor {
 	GuiObject _durationLabel, _durationTextField, _extendLabel, _extendTextField;
 	GuiObject _startInfo, _endInfo;
 	struct structF1F2Grid _grid;
+
+  private:
+	static void cb_publish (Editor *editor, void *closure, Any publish);
+	// menu callbacks
+	static int menu_cb_help (EDITOR_ARGS);
+	static int menu_cb_prefs (EDITOR_ARGS);
+	static int menu_cb_publishSound (EDITOR_ARGS);
+	static int menu_cb_extract_FormantGrid (EDITOR_ARGS);
+	static int menu_cb_extract_PitchTier (EDITOR_ARGS);
+	static int menu_cb_extract_KlattGrid (EDITOR_ARGS);
+	static int menu_cb_drawTrajectory (EDITOR_ARGS);
+	static int menu_cb_showOneVowelMark (EDITOR_ARGS);
+	static int menu_cb_showVowelMarks (EDITOR_ARGS);
+	static int menu_cb_setF0 (EDITOR_ARGS);
+	static int menu_cb_setF3F4 (EDITOR_ARGS);
+	static int menu_cb_reverseTrajectory (EDITOR_ARGS);
+	static int menu_cb_newTrajectory (EDITOR_ARGS);
+	static int menu_cb_extendTrajectory (EDITOR_ARGS);
+	static int menu_cb_modifyTrajectoryDuration (EDITOR_ARGS);
+	static int menu_cb_shiftTrajectory (EDITOR_ARGS);
+	static int menu_cb_showTrajectoryTimeMarkersEvery (EDITOR_ARGS);
+	// button callbacks
+	static void gui_button_cb_publish (I, GuiButtonEvent event);
+	static void gui_button_cb_play (I, GuiButtonEvent event);
+	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
+	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
+	static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event);
+	static void gui_button_cb_reverse (I, GuiButtonEvent event);
+	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 };
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif /* _VowelEditor_h_ */

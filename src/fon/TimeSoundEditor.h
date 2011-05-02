@@ -58,6 +58,21 @@ class TimeSoundEditor : public FunctionEditor {
 	void updateMenuItems_file (); // FIXME
 
   private:
+	static int menu_cb_DrawVisibleSound (EDITOR_ARGS);
+	static int menu_cb_DrawSelectedSound (EDITOR_ARGS);
+	static int menu_cb_ExtractSelectedSound_timeFromZero (EDITOR_ARGS);
+	static int menu_cb_ExtractSelectedSound_preserveTimes (EDITOR_ARGS);
+	static int menu_cb_ExtractSelectedSound_windowed (EDITOR_ARGS);
+	static int menu_cb_WriteWav (EDITOR_ARGS);
+	static int menu_cb_WriteAiff (EDITOR_ARGS);
+	static int menu_cb_WriteAifc (EDITOR_ARGS);
+	static int menu_cb_WriteNextSun (EDITOR_ARGS);
+	static int menu_cb_WriteNist (EDITOR_ARGS);
+	static int menu_cb_WriteFlac (EDITOR_ARGS);
+	static int menu_cb_SoundInfo (EDITOR_ARGS);
+	static int menu_cb_LongSoundInfo (EDITOR_ARGS);
+	static int menu_cb_autoscaling (EDITOR_ARGS);
+
 	void createMenus ();
 };
 

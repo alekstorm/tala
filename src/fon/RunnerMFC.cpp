@@ -37,7 +37,7 @@
 #include "sys/EditorM.h"
 #include "sys/machine.h"
 
-static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
+void RunnerMFC::gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event) {
 	RunnerMFC *editor = (RunnerMFC *)void_me;
 	if (editor->_graphics == NULL) return;
 	Graphics_setWsViewport (editor->_graphics, 0, event -> width, 0, event -> height);
@@ -100,7 +100,7 @@ void RunnerMFC::drawControlButton (double left, double right, double bottom, dou
 	Graphics_text (_graphics, 0.5 * (left + right), 0.5 * (bottom + top), visibleText);
 }
 
-static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
+void RunnerMFC::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	RunnerMFC *editor = (RunnerMFC *)void_me;
 	Melder_assert (event -> widget == editor->_drawingArea);
 	if (editor->_graphics == NULL) return;   // Could be the case in the very beginning.
@@ -267,7 +267,7 @@ void RunnerMFC::do_replay () {
 	}
 }
 
-static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
+void RunnerMFC::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	RunnerMFC *editor = (RunnerMFC *)void_me;
 	if (editor->_graphics == NULL) return;   // Could be the case in the very beginning.
 if (gtk && event -> type != BUTTON_PRESS) return;
@@ -368,7 +368,7 @@ if (gtk && event -> type != BUTTON_PRESS) return;
 	}
 }
 
-static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {
+void RunnerMFC::gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {
 	RunnerMFC *editor = (RunnerMFC *)void_me;
 	if (editor->_graphics == NULL) return;   // Could be the case in the very beginning.
 	ExperimentMFC experiment = (ExperimentMFC) editor->_data;

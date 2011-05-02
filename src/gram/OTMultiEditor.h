@@ -42,6 +42,17 @@ class OTMultiEditor : public HyperPage {
 	long _selectedConstraint;
 
   private:
+	static int menu_cb_evaluate (EDITOR_ARGS);
+	static int menu_cb_evaluate_noise_2_0 (EDITOR_ARGS);
+	static int menu_cb_evaluate_tinyNoise (EDITOR_ARGS);
+	static int menu_cb_editRanking (EDITOR_ARGS);
+	static int menu_cb_learnOne (EDITOR_ARGS);
+	static int menu_cb_removeConstraint (EDITOR_ARGS);
+	static int menu_cb_resetAllRankings (EDITOR_ARGS);
+	static int menu_cb_OTLearningTutorial (EDITOR_ARGS);
+	static void gui_button_cb_limit (I, GuiButtonEvent event);
+	static void gui_cb_limit (GUI_ARGS);
+
 	void createMenus ();
 };
 

@@ -43,7 +43,6 @@
 #include "Sound_and_Spectrogram.h"
 #include "Pitch.h"
 #include "sys/Preferences.h"
-#include "sys/EditorM.h"
 
 /********** METHODS **********/
 
@@ -77,7 +76,7 @@ void SoundEditor::dataChanged () {
 
 /***** EDIT MENU *****/
 
-static int menu_cb_Copy (EDITOR_ARGS) {
+int SoundEditor::menu_cb_Copy (EDITOR_ARGS) {
 	SoundEditor *editor = (SoundEditor *)editor_me;
 	Sound publish = editor->_longSound.data ? LongSound_extractPart ((LongSound) editor->_data, editor->_startSelection, editor->_endSelection, FALSE) :
 		Sound_extractPart ((Sound) editor->_data, editor->_startSelection, editor->_endSelection, kSound_windowShape_RECTANGULAR, 1.0, FALSE);
@@ -87,7 +86,7 @@ static int menu_cb_Copy (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_Cut (EDITOR_ARGS) {
+int SoundEditor::menu_cb_Cut (EDITOR_ARGS) {
 	SoundEditor *editor = (SoundEditor *)editor_me;
 	Sound sound = (Sound) editor->_data;
 	long first, last, selectionNumberOfSamples = Sampled_getWindowSamples (sound,
@@ -180,7 +179,7 @@ static int menu_cb_Cut (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_Paste (EDITOR_ARGS) {
+int SoundEditor::menu_cb_Paste (EDITOR_ARGS) {
 	SoundEditor *editor = (SoundEditor *)editor_me;
 	Sound sound = (Sound) editor->_data;
 	long leftSample = Sampled_xToLowIndex (sound, editor->_endSelection);
@@ -239,7 +238,7 @@ static int menu_cb_Paste (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_SetSelectionToZero (EDITOR_ARGS) {
+int SoundEditor::menu_cb_SetSelectionToZero (EDITOR_ARGS) {
 	SoundEditor *editor = (SoundEditor *)editor_me;
 	Sound sound = (Sound) editor->_data;
 	long first, last;
@@ -256,7 +255,7 @@ static int menu_cb_SetSelectionToZero (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_ReverseSelection (EDITOR_ARGS) {
+int SoundEditor::menu_cb_ReverseSelection (EDITOR_ARGS) {
 	SoundEditor *editor = (SoundEditor *)editor_me;
 	editor->save (L"Reverse selection");
 	Sound_reverse ((Sound) editor->_data, editor->_startSelection, editor->_endSelection);
@@ -268,7 +267,7 @@ static int menu_cb_ReverseSelection (EDITOR_ARGS) {
 
 /***** SELECT MENU *****/
 
-static int menu_cb_MoveCursorToZero (EDITOR_ARGS) {
+int SoundEditor::menu_cb_MoveCursorToZero (EDITOR_ARGS) {
 	SoundEditor *editor = (SoundEditor *)editor_me;
 	double zero = Sound_getNearestZeroCrossing ((Sound) editor->_data, 0.5 * (editor->_startSelection + editor->_endSelection), 1);   // STEREO BUG
 	if (NUMdefined (zero)) {
@@ -278,7 +277,7 @@ static int menu_cb_MoveCursorToZero (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_MoveBtoZero (EDITOR_ARGS) {
+int SoundEditor::menu_cb_MoveBtoZero (EDITOR_ARGS) {
 	SoundEditor *editor = (SoundEditor *)editor_me;
 	double zero = Sound_getNearestZeroCrossing ((Sound) editor->_data, editor->_startSelection, 1);   // STEREO BUG
 	if (NUMdefined (zero)) {
@@ -293,7 +292,7 @@ static int menu_cb_MoveBtoZero (EDITOR_ARGS) {
 	return 1;
 }
 
-static int menu_cb_MoveEtoZero (EDITOR_ARGS) {
+int SoundEditor::menu_cb_MoveEtoZero (EDITOR_ARGS) {
 	SoundEditor *editor = (SoundEditor *)editor_me;
 	double zero = Sound_getNearestZeroCrossing ((Sound) editor->_data, editor->_endSelection, 1);   // STEREO BUG
 	if (NUMdefined (zero)) {
@@ -310,8 +309,8 @@ static int menu_cb_MoveEtoZero (EDITOR_ARGS) {
 
 /***** HELP MENU *****/
 
-static int menu_cb_SoundEditorHelp (EDITOR_ARGS) { Melder_help (L"SoundEditor"); return 1; }
-static int menu_cb_LongSoundEditorHelp (EDITOR_ARGS) { Melder_help (L"LongSoundEditor"); return 1; }
+int SoundEditor::menu_cb_SoundEditorHelp (EDITOR_ARGS) { Melder_help (L"SoundEditor"); return 1; }
+int SoundEditor::menu_cb_LongSoundEditorHelp (EDITOR_ARGS) { Melder_help (L"LongSoundEditor"); return 1; }
 
 void SoundEditor::createMenus () {
 	Melder_assert (_data != NULL);

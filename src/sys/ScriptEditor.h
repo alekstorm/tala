@@ -59,6 +59,26 @@ class ScriptEditor : public TextEditor {
 	virtual void goAway ();
 
   private:
+	static int args_ok (UiForm *sendingForm, const wchar_t *sendingString_dummy, Interpreter *interpreter_dummy, const wchar_t *invokingButtonTitle, bool modified_dummy, I);
+	static int menu_cb_run (EDITOR_ARGS);
+	static int menu_cb_runSelection (EDITOR_ARGS);
+	static int menu_cb_addToMenu (EDITOR_ARGS);
+	static int menu_cb_addToFixedMenu (EDITOR_ARGS);
+	static int menu_cb_addToDynamicMenu (EDITOR_ARGS);
+	static int menu_cb_clearHistory (EDITOR_ARGS);
+	static int menu_cb_pasteHistory (EDITOR_ARGS);
+	static int menu_cb_expandIncludeFiles (EDITOR_ARGS);
+	static int menu_cb_AboutScriptEditor (EDITOR_ARGS);
+	static int menu_cb_ScriptingTutorial (EDITOR_ARGS);
+	static int menu_cb_ScriptingExamples (EDITOR_ARGS);
+	static int menu_cb_PraatScript (EDITOR_ARGS);
+	static int menu_cb_FormulasTutorial (EDITOR_ARGS);
+	static int menu_cb_DemoWindow (EDITOR_ARGS);
+	static int menu_cb_TheHistoryMechanism (EDITOR_ARGS);
+	static int menu_cb_InitializationScripts (EDITOR_ARGS);
+	static int menu_cb_AddingToAFixedMenu (EDITOR_ARGS);
+	static int menu_cb_AddingToADynamicMenu (EDITOR_ARGS);
+
 	void init (GuiObject parent, Editor *editor, const wchar_t *initialText);
 };
 
