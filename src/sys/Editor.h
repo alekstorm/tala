@@ -71,27 +71,11 @@ class Editor {
 		const wchar_t *title, Any data);
 	virtual ~Editor ();
 
+	// FIXME
 	virtual bool hasMenuBar () { return true; }
 	virtual bool canFullScreen () { return false; }
 	virtual bool isEditable () { return true; }
 	virtual bool isScriptable () { return true; }
-	virtual const wchar_t * type () = 0;
-	virtual void info ();
-	virtual void nameChanged ();
-	virtual void goAway ();
-	virtual void dataChanged ();
-	virtual void clipboardChanged (Any clipboard);
-	virtual void save ();
-	virtual void restore ();
-	virtual void form_pictureWindow (EditorCommand *cmd);
-	virtual void ok_pictureWindow (EditorCommand *cmd);
-	virtual void do_pictureWindow (EditorCommand *cmd);
-	virtual void form_pictureMargins (EditorCommand *cmd);
-	virtual void ok_pictureMargins (EditorCommand *cmd);
-	virtual void do_pictureMargins (EditorCommand *cmd);
-
-	virtual EditorMenu * addMenu (const wchar_t *menuTitle, long flags);
-	virtual EditorMenu * getMenu (const wchar_t *menuTitle);
 
 	virtual void raise ();
 	/* Raises and deiconizes the editor window. */
@@ -128,13 +112,11 @@ class Editor {
 		By registering this callback, the client takes responsibility for eventually removing "publish".
 	*/
 
-	virtual void save (const wchar_t *text);   /* For Undo. */
-
+	// FIXME should be protected
+	virtual EditorMenu * addMenu (const wchar_t *menuTitle, long flags);
+	virtual EditorMenu * getMenu (const wchar_t *menuTitle);
 	virtual EditorCommand *getMenuCommand (const wchar_t *menuTitle, const wchar_t *itemTitle);
 	virtual int doMenuCommand (const wchar_t *command, const wchar_t *arguments, Interpreter *interpreter);
-
-	virtual void openPraatPicture ();
-	virtual void closePraatPicture ();
 
 	wchar_t *_name;
 	GuiObject _parent, _shell, _dialog, _menuBar, _undoButton, _searchButton;
@@ -152,7 +134,27 @@ class Editor {
 	void *_publish2Closure;
 
   protected:
+	virtual const wchar_t * type () = 0;
+	virtual void info ();
+	virtual void nameChanged ();
+	virtual void goAway ();
+	virtual void clipboardChanged (Any clipboard);
+	virtual void save ();
+	virtual void restore ();
+	virtual void form_pictureWindow (EditorCommand *cmd);
+	virtual void ok_pictureWindow (EditorCommand *cmd);
+	virtual void do_pictureWindow (EditorCommand *cmd);
+	virtual void form_pictureMargins (EditorCommand *cmd);
+	virtual void ok_pictureMargins (EditorCommand *cmd);
+	virtual void do_pictureMargins (EditorCommand *cmd);
+
+	virtual void save (const wchar_t *text);   /* For Undo. */
+
+	virtual void openPraatPicture ();
+	virtual void closePraatPicture ();
+
 	virtual void setMenuSensitive (const wchar_t *menu, int sensitive);
+	virtual void dataChanged ();
 
   private:
 	static void gui_window_cb_goAway (void *editor);

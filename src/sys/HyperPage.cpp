@@ -669,7 +669,7 @@ int HyperPage::script (double width_inches, double height_inches, const wchar_t 
 
 void HyperPage::draw () {}
 
-static void print (void *void_me, Graphics graphics) {
+void HyperPage::print (void *void_me, Graphics graphics) {
 	HyperPage *editor= (HyperPage *)void_me;
 	editor->_ps = graphics;
 	Graphics_setDollarSignIsCode (graphics, TRUE);

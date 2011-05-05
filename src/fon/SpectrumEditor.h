@@ -32,6 +32,11 @@ class SpectrumEditor : public FunctionEditor {
 
 	SpectrumEditor (GuiObject parent, const wchar_t *title, Any data);
 
+	double _minimum, _maximum, _cursorHeight;
+	double _bandSmoothing, _dynamicRange;
+	GuiObject _publishBandButton, _publishSoundButton;
+
+  protected:
 	virtual const wchar_t * type () { return L"SpectrumEditor"; }
 
 	virtual int fixedPrecision_long () { return 2; }
@@ -49,10 +54,6 @@ class SpectrumEditor : public FunctionEditor {
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
 	virtual void play (double fmin, double fmax);
 	virtual void createMenus ();
-
-	double _minimum, _maximum, _cursorHeight;
-	double _bandSmoothing, _dynamicRange;
-	GuiObject _publishBandButton, _publishSoundButton;
 
   private:
 	static int menu_cb_publishBand (EDITOR_ARGS);

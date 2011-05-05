@@ -31,11 +31,25 @@ class InfoEditor : public Editor {
 	InfoEditor (GuiObject parent, const wchar_t *initialText);
 	virtual ~InfoEditor ();
 
+	virtual void showOpen ();
+
+	structMelderFile _file;
+	GuiObject _textWidget;
+	UiInfile *_openDialog;
+	UiOutfile *_saveDialog;
+	UiForm *_printDialog, *_findDialog;
+	int _dirty, _fontSize;
+	GuiObject _dirtyNewDialog, _dirtyOpenDialog, _dirtyCloseDialog;
+	GuiObject _fontSizeButton_10, _fontSizeButton_12, _fontSizeButton_14, _fontSizeButton_18, _fontSizeButton_24;
+
+  protected:
+	static int menu_cb_saveAs (EDITOR_ARGS); // FIXME
+	static void cb_showOpen (EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter);
+
 	virtual const wchar_t * type () { return L"InfoEditor"; }
 
 	virtual bool isScriptable () { return false; }
 
-	virtual void showOpen ();
 	virtual void clear ();
 	virtual void setFontSize (int fontSize);
 	virtual int openDocument (MelderFile file);
@@ -48,22 +62,11 @@ class InfoEditor : public Editor {
 	virtual const wchar_t * getName ();
 	virtual void menu_new (EditorCommand *cmd);
 
-	structMelderFile _file;
-	GuiObject _textWidget;
-	UiInfile *_openDialog;
-	UiOutfile *_saveDialog;
-	UiForm *_printDialog, *_findDialog;
-	int _dirty, _fontSize;
-	GuiObject _dirtyNewDialog, _dirtyOpenDialog, _dirtyCloseDialog;
-	GuiObject _fontSizeButton_10, _fontSizeButton_12, _fontSizeButton_14, _fontSizeButton_18, _fontSizeButton_24;
-
-  protected:
 	virtual void goAway ();
 	virtual void updateSizeMenu ();
-	static int menu_cb_saveAs (EDITOR_ARGS); // FIXME
-	static void cb_showOpen (EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter);
 
   private:
+	static void gui_text_cb_change (void *void_me, GuiTextEvent event);
 	static int cb_open_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, void *void_me);
 	static int cb_saveAs_ok (UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter, const wchar_t *invokingButtonTitle, bool modified, I);
 	static int menu_cb_clear (EDITOR_ARGS);

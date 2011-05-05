@@ -32,7 +32,9 @@ class IntensityTierEditor : public RealTierEditor {
 	IntensityTierEditor (GuiObject parent, const wchar_t *title, IntensityTier intensity, Sound sound, int ownSound);
 	// 'sound' may be NULL.
 
+  protected:
 	virtual const wchar_t * type () { return L"IntensityTierEditor"; }
+
 	virtual const wchar_t * quantityText () { return L"Intensity (dB)"; }
 	virtual const wchar_t * quantityKey () { return L"Intensity"; }
 	virtual const wchar_t * rightTickUnits () { return L" dB"; }

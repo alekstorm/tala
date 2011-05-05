@@ -32,7 +32,9 @@ class DurationTierEditor : public RealTierEditor {
 	DurationTierEditor (GuiObject parent, const wchar_t *title, DurationTier duration, Sound sound, int ownSound);
 	// 'sound' may be NULL.
 
+  protected:
 	virtual const wchar_t * type () { return L"DurationTierEditor"; }
+
 	virtual double minimumLegalValue () { return 0.0; }
 	virtual const wchar_t * quantityText () { return L"Relative duration"; }
 	virtual const wchar_t * quantityKey () { return L"Relative duration"; }

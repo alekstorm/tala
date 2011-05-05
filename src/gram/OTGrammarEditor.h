@@ -30,12 +30,13 @@ class OTGrammarEditor : public HyperPage {
   public:
 	OTGrammarEditor (GuiObject parent, const wchar_t *title, OTGrammar ot);
 
+	long _selected;
+
+  protected:
 	virtual const wchar_t * type () { return L"OTGrammarEditor"; }
 	virtual bool isEditable () { return true; }
 	virtual void draw ();
 	virtual int goToPage (const wchar_t *title);
-
-	long _selected;
 
   private:
 	static int menu_cb_evaluate (EDITOR_ARGS);

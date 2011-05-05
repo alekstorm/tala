@@ -34,6 +34,12 @@ class TableEditor : public Editor {
 	TableEditor (GuiObject parent, const wchar_t *title, Table table);
 	~TableEditor ();
 
+	long _topRow, _leftColumn, _selectedRow, _selectedColumn;
+	GuiObject _text, _drawingArea, _horizontalScrollBar, _verticalScrollBar;
+	double _columnLeft [MAXNUM_VISIBLE_COLUMNS], _columnRight [MAXNUM_VISIBLE_COLUMNS];
+	Graphics _graphics;
+
+  protected:
 	virtual wchar_t * type () { return L"TableEditor"; }
 
 	virtual void draw ();
@@ -41,11 +47,6 @@ class TableEditor : public Editor {
 	virtual void updateVerticalScrollBar ();
 	virtual void updateHorizontalScrollBar ();
 	virtual void dataChanged ();
-
-	long _topRow, _leftColumn, _selectedRow, _selectedColumn;
-	GuiObject _text, _drawingArea, _horizontalScrollBar, _verticalScrollBar;
-	double _columnLeft [MAXNUM_VISIBLE_COLUMNS], _columnRight [MAXNUM_VISIBLE_COLUMNS];
-	Graphics _graphics;
 
   private:
 	#if gtk

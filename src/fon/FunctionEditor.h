@@ -71,7 +71,31 @@ class FunctionEditor : public Editor {
 */
 	virtual ~FunctionEditor ();
 
-	const wchar_t * type () { return L"FunctionEditor"; }
+	/* Subclass may change the following attributes, */
+	/* but has to respect the invariants, */
+	/* and has to call marksChanged () */
+	/* immediately after making the changes. */
+	double _tmin, _tmax, _startWindow, _endWindow;
+	double _startSelection, _endSelection; /* Markers. */
+	/* These attributes are all expressed in seconds. Invariants: */
+	/*    tmin <= startWindow < endWindow <= tmax; */
+	/*    tmin <= (startSelection, endSelection) <= tmax; */
+	double _arrowScrollStep;
+
+	Graphics _graphics;   /* Used in the 'draw' method. */
+	short _width, _height;   /* Size of drawing area in pixels. */
+	GuiObject _text;   /* Optional text at top. */
+	int _shiftKeyPressed;   /* Information for the 'play' method. */
+	int _playingCursor, _playingSelection;   /* Information for end of play. */
+	struct FunctionEditor_picture _picture;
+	bool _group, _enableUpdates;
+	int _nrect;
+	struct { double left, right, bottom, top; } _rect [8];
+	double _marker [1 + 3], _playCursor, _startZoomHistory, _endZoomHistory;
+
+  protected:
+	virtual const wchar_t * type () { return L"FunctionEditor"; }
+
 	virtual int fixedPrecision_long () { return 6; }
 	virtual const wchar_t * format_domain () { return L"Time domain:"; }
 	virtual const wchar_t * format_short () { return L"%.3f"; }
@@ -225,29 +249,6 @@ class FunctionEditor : public Editor {
 	virtual void insetViewport ();
 	virtual void garnish ();   // Optionally selection times and selection hairs.
 
-	/* Subclass may change the following attributes, */
-	/* but has to respect the invariants, */
-	/* and has to call marksChanged () */
-	/* immediately after making the changes. */
-	double _tmin, _tmax, _startWindow, _endWindow;
-	double _startSelection, _endSelection; /* Markers. */
-	/* These attributes are all expressed in seconds. Invariants: */
-	/*    tmin <= startWindow < endWindow <= tmax; */
-	/*    tmin <= (startSelection, endSelection) <= tmax; */
-	double _arrowScrollStep;
-
-	Graphics _graphics;   /* Used in the 'draw' method. */
-	short _width, _height;   /* Size of drawing area in pixels. */
-	GuiObject _text;   /* Optional text at top. */
-	int _shiftKeyPressed;   /* Information for the 'play' method. */
-	int _playingCursor, _playingSelection;   /* Information for end of play. */
-	struct FunctionEditor_picture _picture;
-	bool _group, _enableUpdates;
-	int _nrect;
-	struct { double left, right, bottom, top; } _rect [8];
-	double _marker [1 + 3], _playCursor, _startZoomHistory, _endZoomHistory;
-
-  protected:
 	GuiObject _drawingArea, _scrollBar, _groupButton, _bottomArea;
 	int _numberOfMarkers;
 

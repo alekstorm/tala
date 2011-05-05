@@ -149,22 +149,6 @@ class UiForm {
 		const wchar_t *invokingButtonTitle, const wchar_t *helpTitle);
 	virtual ~UiForm();
 
-	virtual UiField * addReal (const wchar_t *label, const wchar_t *defaultValue);
-	virtual UiField * addRealOrUndefined (const wchar_t *label, const wchar_t *defaultValue);
-	virtual UiField * addPositive (const wchar_t *label, const wchar_t *defaultValue);
-	virtual UiField * addInteger (const wchar_t *label, const wchar_t *defaultValue);
-	virtual UiField * addNatural (const wchar_t *label, const wchar_t *defaultValue);
-	virtual UiField * addWord (const wchar_t *label, const wchar_t *defaultValue);
-	virtual UiField * addSentence (const wchar_t *label, const wchar_t *defaultValue);
-	virtual UiField * addLabel (const wchar_t *name, const wchar_t *label);
-	virtual UiField * addBoolean (const wchar_t *label, int defaultValue);
-	virtual UiField * addText (const wchar_t *name, const wchar_t *defaultValue);
-	virtual UiField * addRadio (const wchar_t *label, int defaultValue);
-	virtual UiField * addOptionMenu (const wchar_t *label, int defaultValue);
-	virtual UiField * addList (const wchar_t *label, long numberOfStrings, const wchar_t **strings, long defaultValue);
-	virtual UiField * addColour (const wchar_t *label, const wchar_t *defaultValue);
-	virtual UiField * addChannel (const wchar_t *label, const wchar_t *defaultValue);
-	virtual void finish ();
 	virtual void setPauseForm (
 		int numberOfContinueButtons, int defaultContinueButton, int cancelContinueButton,
 		const wchar_t *continue1, const wchar_t *continue2, const wchar_t *continue3,
@@ -173,17 +157,8 @@ class UiForm {
 		const wchar_t *continue10,
 		int (*cancelCallback) (void *dia, void *closure));
 
-	/* The following three routines set values in widgets. */
-	/* Do not call from batch. */
-	/* 'fieldName' is name from addXXXXXX (), */
-	/* without anything from and including the first " (" or ":". */
-	virtual void setString (const wchar_t *fieldName, const wchar_t *text);
-		/* Real, Positive, Integer, Natural, Word, Sentence, Label, Text, Radio, List. */
-	virtual void setReal (const wchar_t *fieldName, double value);
-		/* Real, Positive. */
-	virtual void setInteger (const wchar_t *fieldName, long value);
-		/* Integer, Natural, Boolean, Radio, List. */
-
+	// FIXME only public for Printer
+	virtual void finish ();
 	virtual void do_ (bool modified);
 	/*
 		Function:
@@ -213,6 +188,33 @@ class UiForm {
 			but the okCallback will be called immediately.
 	*/
 
+	virtual UiField * addReal (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addRealOrUndefined (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addPositive (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addInteger (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addNatural (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addWord (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addSentence (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addLabel (const wchar_t *name, const wchar_t *label);
+	virtual UiField * addBoolean (const wchar_t *label, int defaultValue);
+	virtual UiField * addText (const wchar_t *name, const wchar_t *defaultValue);
+	virtual UiField * addRadio (const wchar_t *label, int defaultValue);
+	virtual UiField * addOptionMenu (const wchar_t *label, int defaultValue);
+	virtual UiField * addList (const wchar_t *label, long numberOfStrings, const wchar_t **strings, long defaultValue);
+	virtual UiField * addColour (const wchar_t *label, const wchar_t *defaultValue);
+	virtual UiField * addChannel (const wchar_t *label, const wchar_t *defaultValue);
+
+	/* The following three routines set values in widgets. */
+	/* Do not call from batch. */
+	/* 'fieldName' is name from addXXXXXX (), */
+	/* without anything from and including the first " (" or ":". */
+	virtual void setString (const wchar_t *fieldName, const wchar_t *text);
+		/* Real, Positive, Integer, Natural, Word, Sentence, Label, Text, Radio, List. */
+	virtual void setReal (const wchar_t *fieldName, double value);
+		/* Real, Positive. */
+	virtual void setInteger (const wchar_t *fieldName, long value);
+		/* Integer, Natural, Boolean, Radio, List. */
+
 	/* The 'okCallback' can use the following four routines to ask arguments. */
 	/* The field names are the 'label' or 'name' arguments to addXXXXXX (), */
 	/* without anything from parentheses or from a colon. */
@@ -229,10 +231,8 @@ class UiForm {
 	virtual Graphics_Colour getColour_check (const wchar_t *fieldName);
 
 	virtual int parseString (const wchar_t *arguments, Interpreter *interpreter);
-
-	virtual int getClickedContinueButton ();
-	virtual int widgetsToValues ();
 	virtual void okOrApply (GuiObject button, int hide);
+	virtual int getClickedContinueButton ();
 	virtual int Interpreter_addVariables (Interpreter *interpreter);
 
 	EditorCommand *_command;
@@ -251,6 +251,9 @@ class UiForm {
 	int (*_allowExecutionHook) (void *closure);
 	void *_allowExecutionClosure;
 	wchar_t *_name;
+
+  protected:
+	virtual int widgetsToValues ();
 
   private:
 	UiField * addField (int type, const wchar_t *label);

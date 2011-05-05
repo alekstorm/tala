@@ -30,6 +30,7 @@ class PitchEditor : public FunctionEditor {
   public:
 	PitchEditor (GuiObject parent, const wchar_t *title, Pitch pitch);
 
+  protected:
 	virtual const wchar_t * type () { return L"PitchEditor"; }
 
 	virtual void createMenus ();

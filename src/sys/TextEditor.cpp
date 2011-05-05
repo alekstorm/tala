@@ -171,7 +171,7 @@ void TextEditor::gui_button_cb_discardAndNew (void *void_me, GuiButtonEvent even
 
 void TextEditor::gui_button_cb_saveAndClose (void *void_me, GuiButtonEvent event) {
 	(void) event;
-	InfoEditor *editor = (InfoEditor *)void_me;
+	TextEditor *editor = (TextEditor *)void_me;
 	GuiObject_hide (editor->_dirtyCloseDialog);
 	if (editor->_name) {
 		if (! editor->saveDocument (& editor->_file)) { Melder_flushError (NULL); return; }
@@ -183,13 +183,13 @@ void TextEditor::gui_button_cb_saveAndClose (void *void_me, GuiButtonEvent event
 
 void TextEditor::gui_button_cb_cancelClose (void *void_me, GuiButtonEvent event) {
 	(void) event;
-	InfoEditor *editor = (InfoEditor *)void_me;
+	TextEditor *editor = (TextEditor *)void_me;
 	GuiObject_hide (editor->_dirtyCloseDialog);
 }
 
 void TextEditor::gui_button_cb_discardAndClose (void *void_me, GuiButtonEvent event) {
 	(void) event;
-	InfoEditor *editor = (InfoEditor *)void_me;
+	TextEditor *editor = (TextEditor *)void_me;
 	GuiObject_hide (editor->_dirtyCloseDialog);
 	editor->closeDocument ();
 }
@@ -226,7 +226,7 @@ void TextEditor::menu_new (EditorCommand *cmd) {
 }
 
 int TextEditor::menu_cb_new (EDITOR_ARGS) {
-	((InfoEditor *)editor_me)->menu_new (cmd);
+	((TextEditor *)editor_me)->menu_new (cmd);
 	return 1;
 }
 

@@ -59,30 +59,6 @@ class VowelEditor : public Editor {
 	VowelEditor (GuiObject parent, const wchar_t *title, Any data);
 	virtual ~VowelEditor ();
 
-	virtual const wchar_t * type () { return L"VowelEditor"; }
-	virtual PitchTier to_PitchTier (double duration);
-	virtual void updateF0Info ();
-	virtual void updateExtendDuration ();
-	virtual double updateDurationInfo ();
-	virtual int Vowel_updateTiers (Vowel thee, double time, double x, double y);
-	virtual int Vowel_addData (Vowel thee, double time, double f1, double f2, double f0);
-	virtual void getXYFromF1F2 (double f1, double f2, double *x, double *y);
-	virtual void getF1F2FromXY (double x, double y, double *f1, double *f2);
-	virtual void updateVowel ();
-	virtual Sound createTarget ();
-	virtual void Vowel_reverseFormantTier ();
-	virtual void checkF1F2 (double *f1, double *f2);
-	virtual void shiftF1F2 (double f1_st, double f2_st);
-	virtual int setSource ();
-	virtual int setMarks (int dataset, int speakerType, int fontSize);
-	virtual int setF3F4 (double f3, double b3, double f4, double b4);
-	virtual void getF3F4 (double f1, double f2, double *f3, double *b3, double *f4, double *b4);
-	virtual void drawBackground (Graphics g);
-	virtual void updateWidgets ();
-	virtual void createMenus ();
-	virtual void createChildren ();
-	virtual void dataChanged ();
-
 	int _soundFollowsMouse, _shiftKeyPressed;
 	double _f1min, _f1max, _f2min, _f2max; /* Domain of graphics F1-F2 area */
 	Matrix _f3, _b3, _f4, _b4;
@@ -102,6 +78,30 @@ class VowelEditor : public Editor {
 	GuiObject _durationLabel, _durationTextField, _extendLabel, _extendTextField;
 	GuiObject _startInfo, _endInfo;
 	struct structF1F2Grid _grid;
+
+  protected:
+	virtual const wchar_t * type () { return L"VowelEditor"; }
+
+	virtual PitchTier to_PitchTier (double duration);
+	virtual void updateF0Info ();
+	virtual void updateExtendDuration ();
+	virtual double updateDurationInfo ();
+	virtual int Vowel_updateTiers (Vowel thee, double time, double x, double y);
+	virtual int Vowel_addData (Vowel thee, double time, double f1, double f2, double f0);
+	virtual void getXYFromF1F2 (double f1, double f2, double *x, double *y);
+	virtual void getF1F2FromXY (double x, double y, double *f1, double *f2);
+	virtual void updateVowel ();
+	virtual Sound createTarget ();
+	virtual void Vowel_reverseFormantTier ();
+	virtual void checkF1F2 (double *f1, double *f2);
+	virtual void shiftF1F2 (double f1_st, double f2_st);
+	virtual int setSource ();
+	virtual int setMarks (int dataset, int speakerType, int fontSize);
+	virtual int setF3F4 (double f3, double b3, double f4, double b4);
+	virtual void getF3F4 (double f1, double f2, double *f3, double *b3, double *f4, double *b4);
+	virtual void drawBackground (Graphics g);
+	virtual void updateWidgets ();
+	virtual void dataChanged ();
 
   private:
 	static void cb_publish (Editor *editor, void *closure, Any publish);
@@ -131,6 +131,9 @@ class VowelEditor : public Editor {
 	static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event);
 	static void gui_button_cb_reverse (I, GuiButtonEvent event);
 	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
+
+	void createMenus ();
+	void createChildren ();
 };
 
 #endif /* _VowelEditor_h_ */

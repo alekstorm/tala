@@ -40,8 +40,16 @@ class FormantGridEditor : public FunctionEditor {
 
 	FormantGridEditor (GuiObject parent, const wchar_t *title, FormantGrid data);
 
-	virtual const wchar_t * type () { return L"FormantGridEditor"; }
 	virtual bool hasSourceMenu () { return true; }
+
+	bool _editingBandwidths;
+	long _selectedFormant;
+	double _formantFloor, _formantCeiling, _bandwidthFloor, _bandwidthCeiling, _ycursor;
+	struct FormantGridEditor_Play _play;
+	struct FormantGridEditor_Source _source;
+
+  protected:
+	virtual const wchar_t * type () { return L"FormantGridEditor"; }
 
 	virtual int selectFormantOrBandwidth (long iformant);
 	virtual void createMenus ();
@@ -50,12 +58,6 @@ class FormantGridEditor : public FunctionEditor {
 	virtual void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
 	virtual void play (double tmin, double tmax);
-
-	bool _editingBandwidths;
-	long _selectedFormant;
-	double _formantFloor, _formantCeiling, _bandwidthFloor, _bandwidthCeiling, _ycursor;
-	struct FormantGridEditor_Play _play;
-	struct FormantGridEditor_Source _source;
 
   private:
 	static int menu_cb_removePoints (EDITOR_ARGS);

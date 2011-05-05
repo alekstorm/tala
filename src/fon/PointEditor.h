@@ -32,14 +32,15 @@ class PointEditor : public TimeSoundEditor {
 	PointEditor (GuiObject parent, const wchar_t *title, PointProcess point, Sound sound);
 	virtual ~PointEditor ();
 
+	Sound _monoSound;
+	GuiObject _addPointAtDialog;
+
+  protected:
 	virtual const wchar_t * type () { return L"PointEditor"; }
 
 	virtual void createMenus ();
 	virtual void draw ();
 	virtual void play (double tmin, double tmax);
-
-	Sound _monoSound;
-	GuiObject _addPointAtDialog;
 
   private:
 	static int menu_cb_getJitter_local (EDITOR_ARGS);

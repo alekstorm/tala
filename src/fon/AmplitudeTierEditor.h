@@ -32,7 +32,9 @@ class AmplitudeTierEditor : public RealTierEditor {
 	AmplitudeTierEditor (GuiObject parent, const wchar_t *title, AmplitudeTier amplitude, Sound sound, int ownSound);
 	// 'sound' may be NULL.
 
+  protected:
 	virtual const wchar_t * type () { return L"AmplitudeTierEditor"; }
+
 	virtual const wchar_t * quantityText () { return L"Sound pressure (Pa)"; }
 	virtual const wchar_t * quantityKey () { return L"Sound pressure"; }
 	virtual const wchar_t * rightTickUnits () { return L" Pa"; }
@@ -45,12 +47,12 @@ class AmplitudeTierEditor : public RealTierEditor {
 	virtual const wchar_t * ymaxText () { return L"Maximum amplitude (Pa)"; }
 	virtual const wchar_t * yminKey () { return L"Minimum amplitude"; }
 	virtual const wchar_t * ymaxKey () { return L"Maximum amplitude"; }
-
-	virtual void createMenus ();
 	virtual void play (double tmin, double tmax);
 
   private:
 	static int menu_cb_AmplitudeTierHelp (EDITOR_ARGS);
+
+	void createMenus ();
 };
 
 /* End of file AmplitudeTierEditor.h */

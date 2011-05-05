@@ -35,11 +35,7 @@ class DemoEditor : public Editor {
 	DemoEditor (GuiObject parent);
 	virtual ~DemoEditor ();
 
-	virtual wchar_t * type () { return L"DemoEditor"; }
-	virtual bool hasMenuBar () { return false; }
-	virtual bool canFullScreen () { return true; }
-	virtual bool isScriptable () { return false; }
-
+	// FIXME only public because of Formula
 	virtual int windowTitle (const wchar_t *title);
 	virtual int show (void);
 	virtual bool waitForInput (Interpreter *interpreter);
@@ -52,9 +48,6 @@ class DemoEditor : public Editor {
 	virtual bool commandKeyPressed (void);
 	virtual bool optionKeyPressed (void);
 	virtual bool extraControlKeyPressed (void);
-	virtual void info ();
-	virtual void goAway ();
-	virtual void createChildren ();
 
 	/* Shortcuts: */
 	virtual bool input (const wchar_t *keys);
@@ -67,6 +60,16 @@ class DemoEditor : public Editor {
 	long _x, _y;
 	wchar_t _key;
 	bool _waitingForInput, _userWantsToClose, _fullScreen;
+
+  protected:
+	virtual wchar_t * type () { return L"DemoEditor"; }
+	virtual bool hasMenuBar () { return false; }
+	virtual bool canFullScreen () { return true; }
+	virtual bool isScriptable () { return false; }
+
+	virtual void info ();
+	virtual void goAway ();
+	virtual void createChildren ();
 
   private:
 	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);

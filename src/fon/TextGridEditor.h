@@ -40,6 +40,17 @@ class TextGridEditor : public TimeSoundAnalysisEditor {
 		Any spellingChecker);
 	virtual ~TextGridEditor ();
 
+	SpellingChecker _spellingChecker;
+	long _selectedTier;
+	bool _useTextStyles, _shiftDragMultiple, _suppressRedraw;
+	int _fontSize;
+	enum kGraphics_horizontalAlignment _alignment;
+	wchar_t *_findString, _greenString [Preferences_STRING_BUFFER_SIZE];
+	enum kTextGridEditor_showNumberOf _showNumberOf;
+	enum kMelder_string _greenMethod;
+	GuiObject _extractSelectedTextGridPreserveTimesButton, _extractSelectedTextGridTimeFromZeroButton, _writeSelectedTextGridButton;
+
+  protected:
 	virtual const wchar_t * type () { return L"TextGridEditor"; }
 	virtual void info ();
 
@@ -84,16 +95,6 @@ class TextGridEditor : public TimeSoundAnalysisEditor {
 	virtual double getBottomOfSoundAndAnalysisArea ();
 	virtual void createMenuItems_pitch_picture (EditorMenu *menu);
 	virtual void updateMenuItems_file ();
-
-	SpellingChecker _spellingChecker;
-	long _selectedTier;
-	bool _useTextStyles, _shiftDragMultiple, _suppressRedraw;
-	int _fontSize;
-	enum kGraphics_horizontalAlignment _alignment;
-	wchar_t *_findString, _greenString [Preferences_STRING_BUFFER_SIZE];
-	enum kTextGridEditor_showNumberOf _showNumberOf;
-	enum kMelder_string _greenMethod;
-	GuiObject _extractSelectedTextGridPreserveTimesButton, _extractSelectedTextGridTimeFromZeroButton, _writeSelectedTextGridButton;
 
   private:
 	static int menu_cb_ExtractSelectedTextGrid_preserveTimes (EDITOR_ARGS);

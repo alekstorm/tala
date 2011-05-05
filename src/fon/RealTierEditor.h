@@ -33,7 +33,11 @@ class RealTierEditor : public TimeSoundEditor {
 	if 'ownSound' is TRUE, the editor will contain a deep copy of the Sound,
 	which the editor will destroy when the editor is destroyed. */
 
+	double _ymin, _ymax, _ycursor;
+
+  protected:
 	virtual const wchar_t * type () { return L"RealTierEditor"; }
+
 	virtual double minimumLegalValue () { return NUMundefined; }
 	virtual double maximumLegalValue () { return NUMundefined; }
 	virtual const wchar_t * quantityText () { return L"Y"; }   /* Normally includes units. */
@@ -59,8 +63,6 @@ class RealTierEditor : public TimeSoundEditor {
 	virtual void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
 	virtual void play (double tmin, double tmax);
-
-	double _ymin, _ymax, _ycursor;
 
   private:
 	static int menu_cb_removePoints (EDITOR_ARGS);

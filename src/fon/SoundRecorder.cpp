@@ -115,7 +115,7 @@ void SoundRecorder::gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent even
 	Graphics_updateWs (soundRecorder->_graphics);
 }
 
-static Boolean workProc (XtPointer void_me) {
+Boolean SoundRecorder::workProc (XtPointer void_me) {
 	SoundRecorder *soundRecorder = (SoundRecorder *)void_me;
 	short buffertje [step*2];
 	int stepje = 0;
@@ -817,7 +817,7 @@ long SoundRecorder::getMyNsamp () {
 	return nsamp;
 }
 
-static int portaudioStreamCallback (
+int SoundRecorder::portaudioStreamCallback (
     const void *input, void *output,
     unsigned long frameCount,
     const PaStreamCallbackTimeInfo* timeInfo,

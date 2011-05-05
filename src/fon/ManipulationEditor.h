@@ -34,6 +34,22 @@ class ManipulationEditor : public FunctionEditor {
 	ManipulationEditor (GuiObject parent, const wchar_t *title, Manipulation ana);
 	virtual ~ManipulationEditor ();
 
+	PointProcess _previousPulses;
+	PitchTier _previousPitch;
+	DurationTier _previousDuration;
+	double _soundmin, _soundmax;
+	int _synthesisMethod;
+	GuiObject _synthPulsesButton, _synthPulsesHumButton;
+	GuiObject _synthPulsesLpcButton;
+	GuiObject _synthPitchButton, _synthPitchHumButton;
+	GuiObject _synthPulsesPitchButton, _synthPulsesPitchHumButton;
+	GuiObject _synthOverlapAddNodurButton, _synthOverlapAddButton;
+	GuiObject _synthPitchLpcButton;
+	struct { enum kManipulationEditor_pitchUnits units; enum kManipulationEditor_draggingStrategy draggingStrategy; double minimum, minPeriodic, maximum, cursor; } _pitchTier;
+	struct { double minimum, maximum, cursor;  } _duration;
+	Graphics_Viewport _inset;
+
+  protected:
 	virtual const wchar_t * type () { return L"ManipulationEditor"; }
 
 	virtual void updateMenus ();
@@ -55,20 +71,6 @@ class ManipulationEditor : public FunctionEditor {
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
 	virtual void play (double tmin, double tmax);
 
-	PointProcess _previousPulses;
-	PitchTier _previousPitch;
-	DurationTier _previousDuration;
-	double _soundmin, _soundmax;
-	int _synthesisMethod;
-	GuiObject _synthPulsesButton, _synthPulsesHumButton;
-	GuiObject _synthPulsesLpcButton;
-	GuiObject _synthPitchButton, _synthPitchHumButton;
-	GuiObject _synthPulsesPitchButton, _synthPulsesPitchHumButton;
-	GuiObject _synthOverlapAddNodurButton, _synthOverlapAddButton;
-	GuiObject _synthPitchLpcButton;
-	struct { enum kManipulationEditor_pitchUnits units; enum kManipulationEditor_draggingStrategy draggingStrategy; double minimum, minPeriodic, maximum, cursor; } _pitchTier;
-	struct { double minimum, maximum, cursor;  } _duration;
-	Graphics_Viewport _inset;
 
   private:
 	static int menu_cb_extractOriginalSound (EDITOR_ARGS);

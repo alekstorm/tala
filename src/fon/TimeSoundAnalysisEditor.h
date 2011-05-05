@@ -115,6 +115,18 @@ class TimeSoundAnalysisEditor : public TimeSoundEditor {
 	TimeSoundAnalysisEditor (GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound);
 	virtual ~TimeSoundAnalysisEditor ();
 
+	double _longestAnalysis;
+	enum kTimeSoundAnalysisEditor_timeStepStrategy _timeStepStrategy;
+	double _fixedTimeStep;
+	long _numberOfTimeStepsPerView;
+	struct FunctionEditor_spectrogram _spectrogram;
+	struct FunctionEditor_pitch _pitch;
+	struct FunctionEditor_intensity _intensity;
+	struct FunctionEditor_formant _formant;
+	struct FunctionEditor_pulses _pulses;
+	GuiObject _spectrogramToggle, _pitchToggle, _intensityToggle, _formantToggle, _pulsesToggle;
+
+  protected:
 	virtual const wchar_t * type () { return L"TimeSoundAnalysisEditor"; }
 	virtual void info ();
 
@@ -134,17 +146,6 @@ class TimeSoundAnalysisEditor : public TimeSoundEditor {
 	virtual int do_getBandwidth (int iformant);
 	virtual void computePitch_inside ();
 	virtual int click (double xbegin, double ybegin, int shiftKeyPressed);
-
-	double _longestAnalysis;
-	enum kTimeSoundAnalysisEditor_timeStepStrategy _timeStepStrategy;
-	double _fixedTimeStep;
-	long _numberOfTimeStepsPerView;
-	struct FunctionEditor_spectrogram _spectrogram;
-	struct FunctionEditor_pitch _pitch;
-	struct FunctionEditor_intensity _intensity;
-	struct FunctionEditor_formant _formant;
-	struct FunctionEditor_pulses _pulses;
-	GuiObject _spectrogramToggle, _pitchToggle, _intensityToggle, _formantToggle, _pulsesToggle;
 
   private:
 	static int menu_cb_logSettings (EDITOR_ARGS);

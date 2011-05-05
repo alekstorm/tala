@@ -32,15 +32,16 @@ class ArtwordEditor : public Editor {
 	ArtwordEditor (GuiObject parent, const wchar_t *title, Artword data);
 	virtual ~ArtwordEditor ();
 
-	virtual const wchar_t * type () { return L"ArtwordEditor"; }
-	virtual void updateList ();
-	virtual void dataChanged ();
-	virtual void createChildren ();
-
 	Graphics _graphics;
 	int _feature;
 	GuiObject _list, _drawingArea, _radio, _time, _value;
 	GuiObject _button [1 + kArt_muscle_MAX];
+
+  protected:
+	virtual const wchar_t * type () { return L"ArtwordEditor"; }
+
+	virtual void updateList ();
+	virtual void dataChanged ();
 
   private:
 	static void gui_button_cb_removeTarget (I, GuiButtonEvent event);
@@ -48,6 +49,8 @@ class ArtwordEditor : public Editor {
 	static void gui_radiobutton_cb_toggle (I, GuiRadioButtonEvent event);
 	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
+
+	void createChildren ();
 };
 
 /* End of file ArtwordEditor.h */

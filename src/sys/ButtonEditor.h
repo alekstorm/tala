@@ -30,6 +30,10 @@ class ButtonEditor : public HyperPage {
   public:
 	ButtonEditor (GuiObject parent);
 
+	int _show;
+	GuiObject _button1, _button2, _button3, _button4, _button5;
+
+  protected:
 	virtual const wchar_t * type () { return L"ButtonEditor"; }
 	virtual bool isScriptable () { return false; }
 
@@ -40,9 +44,6 @@ class ButtonEditor : public HyperPage {
 	virtual int goToPage (const wchar_t *title);
 	virtual void createChildren ();
 	virtual void createMenus ();
-
-	int _show;
-	GuiObject _button1, _button2, _button3, _button4, _button5;
 
   private:
 	static void gui_radiobutton_cb_objects (I, GuiRadioButtonEvent event);

@@ -29,6 +29,7 @@ class TextEditor : public InfoEditor {
   public:
 	TextEditor (GuiObject parent, const wchar_t *initialText);
 
+  protected:
 	virtual const wchar_t * type () { return L"TextEditor"; }
 
 	virtual void nameChanged ();
@@ -37,7 +38,6 @@ class TextEditor : public InfoEditor {
 	virtual void menu_new (EditorCommand *cmd);
 	virtual const wchar_t * getName ();
 
-  protected:
 	virtual void createMenus ();
 	virtual void goAway ();
 

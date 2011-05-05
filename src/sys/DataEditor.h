@@ -45,14 +45,6 @@ class DataSubEditor : public Editor {
 	DataSubEditor (DataEditor *root, const wchar_t *title, void *address, Data_Description description);
 	virtual ~DataSubEditor ();
 
-	virtual wchar_t * type () { return L"DataSubEditor"; }
-	virtual bool isScriptable() { return false; }
-	virtual void createMenus ();
-	virtual void update ();
-	virtual long countFields ();
-	virtual Data_Description findNumberUse (const wchar_t *number);
-	virtual void createChildren ();
-
 	DataEditor *_root;
 	void *_address;
 	Data_Description _description;
@@ -62,6 +54,14 @@ class DataSubEditor : public Editor {
 
   protected:
 	static wchar_t * singleTypeToText (void *address, int type, void *tagType, MelderString *buffer);
+
+	virtual wchar_t * type () { return L"DataSubEditor"; }
+	virtual bool isScriptable() { return false; }
+	virtual void createMenus ();
+	virtual void update ();
+	virtual long countFields ();
+	virtual Data_Description findNumberUse (const wchar_t *number);
+	virtual void createChildren ();
 
 	virtual Data_Description getDescription () { return _description; }
 	virtual void showStructMember (void *structAddress, Data_Description structDescription, Data_Description memberDescription, FieldData *fieldData, wchar_t *history);

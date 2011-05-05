@@ -30,12 +30,13 @@ class SpectrogramEditor : public FunctionEditor {
   public:
 	SpectrogramEditor (GuiObject parent, const wchar_t *title, Any data);
 
+	double _maximum;
+
+  protected:
 	virtual const wchar_t * type () { return L"SpectrogramEditor"; }
 
 	virtual void draw ();
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
-
-	double _maximum;
 };
 
 /* End of file SpectrogramEditor.h */

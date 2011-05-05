@@ -32,7 +32,9 @@ class PitchTierEditor : public RealTierEditor {
 	PitchTierEditor (GuiObject parent, const wchar_t *title, PitchTier pitch, Sound sound, int ownSound);
 	//'sound' may be NULL.
 
+  protected:
 	virtual const wchar_t * type () { return L"PitchTierEditor"; }
+
 	virtual double minimumLegalValue () { return 0.0; }
 	virtual const wchar_t * quantityText () { return L"Frequency (Hz)"; }
 	virtual const wchar_t * quantityKey () { return L"Frequency"; }

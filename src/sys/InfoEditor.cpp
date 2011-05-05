@@ -479,7 +479,7 @@ void InfoEditor::createMenus () {
 	#endif
 }
 
-static void gui_text_cb_change (void *void_me, GuiTextEvent event) {
+void InfoEditor::gui_text_cb_change (void *void_me, GuiTextEvent event) {
 	(void) event;
 	InfoEditor *editor = (InfoEditor *)void_me;
 	if (! editor->_dirty) {

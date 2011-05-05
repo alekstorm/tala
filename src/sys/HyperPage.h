@@ -46,6 +46,26 @@ class HyperPage : public Editor {
 	HyperPage (GuiObject parent, const wchar_t *title, Any data);
 	virtual ~HyperPage ();
 
+	GuiObject _drawingArea, _verticalScrollBar;
+	Graphics _g, _ps;
+	double _x, _y, _rightMargin, _previousBottomSpacing;
+	long _pageNumber;
+	Collection _links;
+	int _printing, _top, _mirror;
+	wchar_t *_insideHeader, *_middleHeader, *_outsideHeader;
+	wchar_t *_insideFooter, *_middleFooter, *_outsideFooter;
+	int _font, _fontSize;
+	wchar_t *_entryHint; double _entryPosition;
+	struct { wchar_t *page; int top; } _history [20];
+	int _historyPointer;
+	wchar_t *_currentPageTitle;
+	GuiObject _fontSizeButton_10, _fontSizeButton_12, _fontSizeButton_14, _fontSizeButton_18, _fontSizeButton_24;
+	GuiObject _holder;
+	void *_praatApplication, *_praatObjects, *_praatPicture;
+	bool _scriptErrorHasBeenNotified;
+	structMelderDir _rootDirectory;
+
+  protected:
 	virtual const wchar_t * type () { return L"HyperPage"; }
 	virtual bool isEditable () { return false; }
 	virtual void clear ();
@@ -94,43 +114,24 @@ class HyperPage : public Editor {
 	virtual void dataChanged ();
 	virtual int do_back ();
 
-	GuiObject _drawingArea, _verticalScrollBar;
-	Graphics _g, _ps;
-	double _x, _y, _rightMargin, _previousBottomSpacing;
-	long _pageNumber;
-	Collection _links;
-	int _printing, _top, _mirror;
-	wchar_t *_insideHeader, *_middleHeader, *_outsideHeader;
-	wchar_t *_insideFooter, *_middleFooter, *_outsideFooter;
-	int _font, _fontSize;
-	wchar_t *_entryHint; double _entryPosition;
-	struct { wchar_t *page; int top; } _history [20];
-	int _historyPointer;
-	wchar_t *_currentPageTitle;
-	GuiObject _fontSizeButton_10, _fontSizeButton_12, _fontSizeButton_14, _fontSizeButton_18, _fontSizeButton_24;
-	GuiObject _holder;
-	void *_praatApplication, *_praatObjects, *_praatPicture;
-	bool _scriptErrorHasBeenNotified;
-	structMelderDir _rootDirectory;
-
-  protected:
 	virtual void updateSizeMenu ();
 	virtual void createVerticalScrollBar (GuiObject parent);
 	virtual void createChildren ();
 
   private:
+	static void print (void *void_me, Graphics graphics);
 	static void gui_drawingarea_cb_resize (void *void_me, GuiDrawingAreaResizeEvent event);
-	#if gtk
+#if gtk
 	static void gui_cb_verticalScroll (GtkRange *rng, gpointer void_me);
-	#else
+#else
 	static void gui_cb_verticalScroll (GUI_ARGS);
-	#endif
+#endif
 	static void gui_drawingarea_cb_expose (void *void_me, GuiDrawingAreaExposeEvent event);
 	static void gui_drawingarea_cb_click (void *void_me, GuiDrawingAreaClickEvent event);
 	static int menu_cb_postScriptSettings (EDITOR_ARGS);
-	#ifdef macintosh
+#ifdef macintosh
 	static int menu_cb_pageSetup (EDITOR_ARGS);
-	#endif
+#endif
 	static int menu_cb_print (EDITOR_ARGS);
 	static int menu_cb_font (EDITOR_ARGS);
 	static int menu_cb_10 (EDITOR_ARGS);

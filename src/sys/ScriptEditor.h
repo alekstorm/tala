@@ -39,18 +39,17 @@ class ScriptEditor : public TextEditor {
 	ScriptEditor (GuiObject parent, Editor *other, const wchar_t *initialText);
 	virtual ~ScriptEditor ();
 
+	wchar_t *_environmentName;
+	Interpreter *_interpreter;
+	UiForm *_argsDialog;
+
+  protected:
 	virtual const wchar_t * type () { return L"ScriptEditor"; }
 	virtual bool isScriptable() { return false; }
 
 	virtual void nameChanged ();
 	virtual void run (wchar_t **text);
 	virtual void createMenus ();
-
-	wchar_t *_environmentName;
-	Interpreter *_interpreter;
-	UiForm *_argsDialog;
-
-  protected:
 	virtual void goAway ();
 
   private:

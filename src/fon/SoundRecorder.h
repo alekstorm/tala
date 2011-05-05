@@ -106,22 +106,6 @@ class SoundRecorder : public Editor {
 	SoundRecorder (GuiObject parent, int numberOfChannels, void *applicationContext);
 	virtual ~SoundRecorder ();
 
-	virtual wchar_t * type () { return L"SoundRecorder"; }
-	virtual bool isEditable () { return false; }
-	virtual bool isScriptable () { return false; }
-
-	virtual void createMenus ();
-	virtual void stopRecording ();
-	virtual void showMaximum (int channel, double maximum);
-	virtual void showMeter (short *buffer, long nsamp);
-	virtual int tooManySamplesInBufferToReturnToGui ();
-	virtual long getMyNsamp ();
-	virtual void publish ();
-	virtual int initialize ();
-	virtual void createChildren ();
-	virtual void writeFakeMonoFile_e (MelderFile file, int audioFileType);
-	virtual int writeAudioFile (MelderFile file, int audioFileType);
-
 	int _numberOfChannels;
 	long _nsamp, _nmax;
 	bool _fakeMono, _synchronous, _recording;
@@ -186,6 +170,23 @@ class SoundRecorder : public Editor {
 	int _fd;
 #endif
 
+  protected:
+	virtual wchar_t * type () { return L"SoundRecorder"; }
+	virtual bool isEditable () { return false; }
+	virtual bool isScriptable () { return false; }
+
+	virtual void createMenus ();
+	virtual void stopRecording ();
+	virtual void showMaximum (int channel, double maximum);
+	virtual void showMeter (short *buffer, long nsamp);
+	virtual int tooManySamplesInBufferToReturnToGui ();
+	virtual long getMyNsamp ();
+	virtual void publish ();
+	virtual int initialize ();
+	virtual void createChildren ();
+	virtual void writeFakeMonoFile_e (MelderFile file, int audioFileType);
+	virtual int writeAudioFile (MelderFile file, int audioFileType);
+
   private:
 	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
 	static void gui_button_cb_record (I, GuiButtonEvent event);
@@ -202,6 +203,8 @@ class SoundRecorder : public Editor {
 	static int menu_cb_writeNextSun (EDITOR_ARGS);
 	static int menu_cb_writeNist (EDITOR_ARGS);
 	static int menu_cb_SoundRecorder_help (EDITOR_ARGS);
+	static Boolean workProc (XtPointer void_me);
+	static int portaudioStreamCallback (const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *void_me);
 };
 
 /* End of file SoundRecorder.h */

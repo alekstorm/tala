@@ -31,6 +31,13 @@ class RunnerMFC : public Editor {
 	RunnerMFC (GuiObject parent, const wchar_t *title, Ordered experiments);
 	virtual ~RunnerMFC ();
 
+	GuiObject _drawingArea;
+	Ordered _experiments;
+	long _iexperiment;
+	Graphics _graphics;
+	long _numberOfReplays;
+
+  protected:
 	virtual wchar_t * type () { return L"RunnerMFC"; }
 	virtual bool isEditable () { return false; }
 	virtual bool isScriptable () { return false; }
@@ -42,12 +49,6 @@ class RunnerMFC : public Editor {
 	virtual void do_oops ();
 	virtual void do_replay ();
 	virtual void createChildren ();
-
-	GuiObject _drawingArea;
-	Ordered _experiments;
-	long _iexperiment;
-	Graphics _graphics;
-	long _numberOfReplays;
 
   private:
 	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);

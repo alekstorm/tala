@@ -34,21 +34,21 @@ class CategoriesEditor : public Editor {
 	CategoriesEditor (GuiObject parent, const wchar_t *title, Any data);
 	virtual ~CategoriesEditor ();
 
-	virtual const wchar_t * type () { return L"CategoriesEditor"; }
-
-	virtual void notifyOutOfView ();
-	virtual void update_dos ();
-	virtual void updateWidgets (); /*all buttons except undo & redo */
 	virtual void update (long from, long to, const long *select, long nSelect);
-	virtual void insert (int position);
-	virtual void createMenus ();
-	virtual void createChildren ();
-	virtual void dataChanged ();
 
 	CommandHistory _history;
 	int _position;
 	GuiObject _list, _text, _outOfView, _undo, _redo;
 	GuiObject _remove, _insert, _insertAtEnd, _replace, _moveUp, _moveDown;
+
+  protected:
+	virtual const wchar_t * type () { return L"CategoriesEditor"; }
+
+	virtual void notifyOutOfView ();
+	virtual void update_dos ();
+	virtual void updateWidgets (); /*all buttons except undo & redo */
+	virtual void insert (int position);
+	virtual void dataChanged ();
 
   private:
 	static int menu_cb_help (EDITOR_ARGS);
@@ -63,6 +63,9 @@ class CategoriesEditor : public Editor {
 	static void gui_list_cb_extended (void *void_me, GuiListEvent event);
 	static void gui_button_cb_undo (I, GuiButtonEvent event);
 	static void gui_button_cb_redo (I, GuiButtonEvent event);
+
+	void createMenus ();
+	void createChildren ();
 };
 
 #endif /* _CategoriesEditor_h_ */

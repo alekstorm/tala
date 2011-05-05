@@ -30,14 +30,15 @@ class StringsEditor : public Editor {
   public:
 	StringsEditor (GuiObject parent, const wchar_t *title, Any data);
 
+	GuiObject _list, _text;
+
+  protected:
 	virtual const wchar_t * type () { return L"StringsEditor"; }
 
 	virtual void updateList ();
 	virtual void createMenus ();
 	virtual void createChildren ();
 	virtual void dataChanged ();
-
-	GuiObject _list, _text;
 
   private:
 	static int menu_cb_help (EDITOR_ARGS);
