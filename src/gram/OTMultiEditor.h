@@ -35,10 +35,7 @@ class OTMultiEditor : public HyperPage {
 	long _selectedConstraint;
 
   protected:
-	virtual const wchar_t * type () { return L"OTMultiEditor"; }
 	virtual bool isEditable () { return true; }
-	virtual void do_limit ();
-	virtual void createChildren ();
 	virtual void draw ();
 	virtual int goToPage (const wchar_t *title);
 
@@ -54,7 +51,12 @@ class OTMultiEditor : public HyperPage {
 	static void gui_button_cb_limit (I, GuiButtonEvent event);
 	static void gui_cb_limit (GUI_ARGS);
 
+	virtual const wchar_t * type () { return L"OTMultiEditor"; }
+
+	void do_limit ();
+
 	void createMenus ();
+	void createChildren ();
 };
 
 /* End of file OTMultiEditor.h */

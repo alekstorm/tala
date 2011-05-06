@@ -50,27 +50,13 @@ class ManipulationEditor : public FunctionEditor {
 	Graphics_Viewport _inset;
 
   protected:
-	virtual const wchar_t * type () { return L"ManipulationEditor"; }
-
-	virtual void updateMenus ();
-	virtual int getSoundArea (double *ymin, double *ymax);
-	virtual int getPitchArea (double *ymin, double *ymax);
-	virtual int getDurationArea (double *ymin, double *ymax);
-	virtual void save (const wchar_t *text);
 	virtual void save ();
+	virtual void save (const wchar_t *text);
 	virtual void restore ();
-	virtual void createMenus ();
-	virtual void drawSoundArea (double ymin, double ymax);
-	virtual void drawPitchArea (double ymin, double ymax);
-	virtual void drawDurationArea (double ymin, double ymax);
+
 	virtual void draw ();
-	virtual void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
-	virtual int clickPitch (double xWC, double yWC, int shiftKeyPressed);
-	virtual void drawDurationWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
-	virtual int clickDuration (double xWC, double yWC, int shiftKeyPressed);
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
 	virtual void play (double tmin, double tmax);
-
 
   private:
 	static int menu_cb_extractOriginalSound (EDITOR_ARGS);
@@ -112,6 +98,23 @@ class ManipulationEditor : public FunctionEditor {
 	static int menu_cb_Synth_OverlapAdd_nodur (EDITOR_ARGS);
 	static int menu_cb_Synth_OverlapAdd (EDITOR_ARGS);
 	static int menu_cb_Synth_Pitch_Lpc (EDITOR_ARGS);
+
+	virtual const wchar_t * type () { return L"ManipulationEditor"; }
+
+	void drawSoundArea (double ymin, double ymax);
+	void drawPitchArea (double ymin, double ymax);
+	void drawDurationArea (double ymin, double ymax);
+	void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
+	void drawDurationWhileDragging (double xWC, double yWC, long first, long last, double dt, double df);
+	int clickPitch (double xWC, double yWC, int shiftKeyPressed);
+	int clickDuration (double xWC, double yWC, int shiftKeyPressed);
+
+	void updateMenus ();
+	int getSoundArea (double *ymin, double *ymax);
+	int getPitchArea (double *ymin, double *ymax);
+	int getDurationArea (double *ymin, double *ymax);
+
+	void createMenus ();
 };
 
 /* End of file ManipulationEditor.h */

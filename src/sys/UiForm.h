@@ -252,12 +252,11 @@ class UiForm {
 	void *_allowExecutionClosure;
 	wchar_t *_name;
 
-  protected:
-	virtual int widgetsToValues ();
-
   private:
 	UiField * addField (int type, const wchar_t *label);
 	UiField * findField (const wchar_t *fieldName);
 	UiField * findField_check (const wchar_t *fieldName);
+
+	int widgetsToValues ();
 };
 #endif

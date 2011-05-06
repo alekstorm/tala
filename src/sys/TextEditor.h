@@ -36,7 +36,6 @@ class TextEditor : public InfoEditor {
 	virtual void newDocument ();
 	virtual int saveDocument (MelderFile file);
 	virtual void menu_new (EditorCommand *cmd);
-	virtual const wchar_t * getName ();
 
 	virtual void createMenus ();
 	virtual void goAway ();
@@ -55,6 +54,8 @@ class TextEditor : public InfoEditor {
 	static void gui_button_cb_cancelClose (void *void_me, GuiButtonEvent event);
 	static void gui_button_cb_discardAndClose (void *void_me, GuiButtonEvent event);
 	static int menu_cb_new (EDITOR_ARGS);
+
+	const wchar_t * getName ();
 };
 
 /* End of file TextEditor.h */

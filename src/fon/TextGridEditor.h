@@ -51,50 +51,16 @@ class TextGridEditor : public TimeSoundAnalysisEditor {
 	GuiObject _extractSelectedTextGridPreserveTimesButton, _extractSelectedTextGridTimeFromZeroButton, _writeSelectedTextGridButton;
 
   protected:
-	virtual const wchar_t * type () { return L"TextGridEditor"; }
 	virtual void info ();
 
-	virtual double _computeSoundY ();
-	virtual int _yWCtoTier (double yWC);
-	virtual void _timeToInterval (double t, int itier, double *tmin, double *tmax);
-
-	virtual int checkTierSelection (const wchar_t *verbPhrase);
-	virtual long getSelectedInterval ();
-	virtual long getSelectedLeftBoundary ();
-	virtual long getSelectedPoint ();
-	virtual void scrollToView (double t);
-	virtual void do_selectAdjacentTier (int previous);
-	virtual void do_selectAdjacentInterval (int previous, int shift);
-	virtual int insertBoundaryOrPoint (int itier, double t1, double t2, bool insertSecond);
-	virtual void do_insertIntervalOnTier (int itier);
-	virtual int do_movePointOrBoundary (int where);
-	virtual void do_insertOnTier (int itier);
-	virtual int findInTier ();
-	virtual void do_find ();
-	virtual int checkSpellingInTier ();
-	virtual void createMenus ();
-	virtual void createChildren ();
+	virtual void draw ();
+	virtual int click (double xclick, double yWC, int shiftKeyPressed);
+	virtual void play (double tmin, double tmax);
 	virtual void dataChanged ();
 	virtual void prepareDraw ();
-	virtual void do_drawIntervalTier (IntervalTier tier, int itier);
-	virtual void do_drawTextTier (TextTier tier, int itier);
-	virtual void draw ();
-	virtual void do_drawWhileDragging (double numberOfTiers, int *selectedTier, double x, double soundY);
-	virtual void do_dragBoundary (double xbegin, int iClickedTier, int shiftKeyPressed);
-	virtual int click (double xclick, double yWC, int shiftKeyPressed);
-	virtual int clickB (double t, double yWC);
-	virtual int clickE (double t, double yWC);
-	virtual void play (double tmin, double tmax);
-	virtual void updateText ();
-	virtual void prefs_addFields (EditorCommand *cmd);
-	virtual void prefs_setValues (EditorCommand *cmd);
-	virtual void prefs_getValues (EditorCommand *cmd);
-	virtual void createMenuItems_view_timeDomain (EditorMenu *menu);
+
 	virtual void highlightSelection (double left, double right, double bottom, double top);
 	virtual void unhighlightSelection (double left, double right, double bottom, double top);
-	virtual double getBottomOfSoundAndAnalysisArea ();
-	virtual void createMenuItems_pitch_picture (EditorMenu *menu);
-	virtual void updateMenuItems_file ();
 
   private:
 	static int menu_cb_ExtractSelectedTextGrid_preserveTimes (EDITOR_ARGS);
@@ -163,6 +129,46 @@ class TextGridEditor : public TimeSoundAnalysisEditor {
 	static int menu_cb_PhoneticSymbols (EDITOR_ARGS);
 	static int menu_cb_AboutTextStyles (EDITOR_ARGS);
 	static void gui_text_cb_change (I, GuiTextEvent event);
+
+	virtual const wchar_t * type () { return L"TextGridEditor"; }
+
+	double _computeSoundY ();
+	int _yWCtoTier (double yWC);
+	void _timeToInterval (double t, int itier, double *tmin, double *tmax);
+
+	int checkTierSelection (const wchar_t *verbPhrase);
+	long getSelectedInterval ();
+	long getSelectedLeftBoundary ();
+	long getSelectedPoint ();
+	void scrollToView (double t);
+	void do_selectAdjacentTier (int previous);
+	void do_selectAdjacentInterval (int previous, int shift);
+	int insertBoundaryOrPoint (int itier, double t1, double t2, bool insertSecond);
+	void do_insertIntervalOnTier (int itier);
+	int do_movePointOrBoundary (int where);
+	void do_insertOnTier (int itier);
+	int findInTier ();
+	void do_find ();
+	int checkSpellingInTier ();
+	void do_drawIntervalTier (IntervalTier tier, int itier);
+	void do_drawTextTier (TextTier tier, int itier);
+	void do_drawWhileDragging (double numberOfTiers, int *selectedTier, double x, double soundY);
+	void do_dragBoundary (double xbegin, int iClickedTier, int shiftKeyPressed);
+	int clickB (double t, double yWC);
+	int clickE (double t, double yWC);
+	void updateText ();
+	void prefs_addFields (EditorCommand *cmd);
+	void prefs_setValues (EditorCommand *cmd);
+	void prefs_getValues (EditorCommand *cmd);
+	double getBottomOfSoundAndAnalysisArea ();
+	void updateMenuItems_file ();
+
+	// FIXME
+	void createMenuItems_view_timeDomain (EditorMenu *menu);
+	void createMenuItems_pitch_picture (EditorMenu *menu);
+
+	void createMenus ();
+	void createChildren ();
 };
 
 /* End of file TextGridEditor.h */

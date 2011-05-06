@@ -33,6 +33,12 @@ class PitchTierEditor : public RealTierEditor {
 	//'sound' may be NULL.
 
   protected:
+	virtual void play (double tmin, double tmax);
+
+  private:
+	static int menu_cb_PitchTierEditorHelp (EDITOR_ARGS);
+	static int menu_cb_PitchTierHelp (EDITOR_ARGS);
+
 	virtual const wchar_t * type () { return L"PitchTierEditor"; }
 
 	virtual double minimumLegalValue () { return 0.0; }
@@ -49,12 +55,7 @@ class PitchTierEditor : public RealTierEditor {
 	virtual const wchar_t * yminKey () { return L"Minimum frequency"; }
 	virtual const wchar_t * ymaxKey () { return L"Maximum frequency"; }
 
-	virtual void createMenus ();
-	virtual void play (double tmin, double tmax);
-
-  private:
-	static int menu_cb_PitchTierEditorHelp (EDITOR_ARGS);
-	static int menu_cb_PitchTierHelp (EDITOR_ARGS);
+	void createMenus ();
 };
 
 /* End of file PitchTierEditor.h */

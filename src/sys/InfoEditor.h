@@ -46,20 +46,12 @@ class InfoEditor : public Editor {
 	static int menu_cb_saveAs (EDITOR_ARGS); // FIXME
 	static void cb_showOpen (EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter);
 
-	virtual const wchar_t * type () { return L"InfoEditor"; }
-
 	virtual bool isScriptable () { return false; }
 
-	virtual void clear ();
-	virtual void setFontSize (int fontSize);
 	virtual int openDocument (MelderFile file);
 	virtual void newDocument ();
 	virtual int saveDocument (MelderFile file);
 	virtual void closeDocument ();
-	virtual bool getSelectedLines (long *firstLine, long *lastLine);
-	virtual void do_find ();
-	virtual void do_replace ();
-	virtual const wchar_t * getName ();
 	virtual void menu_new (EditorCommand *cmd);
 
 	virtual void goAway ();
@@ -89,6 +81,15 @@ class InfoEditor : public Editor {
 	static int menu_cb_18 (EDITOR_ARGS);
 	static int menu_cb_24 (EDITOR_ARGS);
 	static int menu_cb_fontSize (EDITOR_ARGS);
+
+	virtual const wchar_t * type () { return L"InfoEditor"; }
+
+	void clear ();
+	void setFontSize (int fontSize);
+	bool getSelectedLines (long *firstLine, long *lastLine);
+	void do_find ();
+	void do_replace ();
+	const wchar_t * getName ();
 
 	void createMenus ();
 	void createChildren ();

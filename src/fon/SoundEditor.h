@@ -33,13 +33,12 @@ class SoundEditor : public TimeSoundAnalysisEditor {
 	double _maxBuffer;
 
   protected:
-	virtual const wchar_t * type () { return L"SoundEditor"; }
-
 	virtual void dataChanged ();
 	virtual void prepareDraw ();
 	virtual void draw ();
 	virtual void play (double tmin, double tmax);
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+
 	virtual void highlightSelection (double left, double right, double bottom, double top);
 	virtual void unhighlightSelection (double left, double right, double bottom, double top);
 
@@ -54,6 +53,8 @@ class SoundEditor : public TimeSoundAnalysisEditor {
 	static int menu_cb_MoveEtoZero (EDITOR_ARGS);
 	static int menu_cb_SoundEditorHelp (EDITOR_ARGS);
 	static int menu_cb_LongSoundEditorHelp (EDITOR_ARGS);
+
+	virtual const wchar_t * type () { return L"SoundEditor"; }
 
 	void createMenus ();
 };

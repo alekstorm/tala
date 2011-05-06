@@ -55,18 +55,14 @@ class DataSubEditor : public Editor {
   protected:
 	static wchar_t * singleTypeToText (void *address, int type, void *tagType, MelderString *buffer);
 
-	virtual wchar_t * type () { return L"DataSubEditor"; }
 	virtual bool isScriptable() { return false; }
-	virtual void createMenus ();
-	virtual void update ();
-	virtual long countFields ();
-	virtual Data_Description findNumberUse (const wchar_t *number);
-	virtual void createChildren ();
 
+	virtual void update ();
 	virtual Data_Description getDescription () { return _description; }
+	virtual long countFields ();
+	virtual void showMembers ();
 	virtual void showStructMember (void *structAddress, Data_Description structDescription, Data_Description memberDescription, FieldData *fieldData, wchar_t *history);
 	virtual void showStructMembers (void *structAddress, Data_Description structDescription, int fromMember, wchar_t *history);
-	virtual void showMembers ();
 
   private:
 	static void gui_button_cb_change (I, GuiButtonEvent event);
@@ -74,6 +70,13 @@ class DataSubEditor : public Editor {
 	static void gui_cb_scroll (GUI_ARGS);
 	static void gui_button_cb_open (I, GuiButtonEvent event);
 	static int menu_cb_help (EDITOR_ARGS);
+
+	virtual wchar_t * type () { return L"DataSubEditor"; }
+
+	Data_Description findNumberUse (const wchar_t *number);
+
+	void createMenus ();
+	void createChildren ();
 };
 
 class VectorEditor : public DataSubEditor {
@@ -88,7 +91,6 @@ class VectorEditor : public DataSubEditor {
   protected:
 	/* No structs inside. */
 	virtual Data_Description getDescription () { return _description -> type != structwa ? NULL : (Data_Description) _description -> tagType; }
-
 	virtual long countFields ();
 	virtual void showMembers ();
 };
@@ -128,7 +130,9 @@ class ClassEditor : public StructEditor {
 
   protected:
 	virtual void showMembers ();
-	virtual void showMembers_recursive (void *klas);
+
+  private:
+	void showMembers_recursive (void *klas);
 };
 
 class DataEditor : public ClassEditor {
@@ -136,9 +140,10 @@ class DataEditor : public ClassEditor {
 	DataEditor (GuiObject parent, const wchar_t *title, Any data);
 	virtual ~DataEditor ();
 
-	virtual void dataChanged ();
-
 	Collection _children;
+
+  protected:
+	virtual void dataChanged ();
 };
 
 /* End of file DataEditor.h */

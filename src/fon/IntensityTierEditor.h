@@ -33,6 +33,9 @@ class IntensityTierEditor : public RealTierEditor {
 	// 'sound' may be NULL.
 
   protected:
+	virtual void play (double tmin, double tmax);
+
+  private:
 	virtual const wchar_t * type () { return L"IntensityTierEditor"; }
 
 	virtual const wchar_t * quantityText () { return L"Intensity (dB)"; }
@@ -48,8 +51,7 @@ class IntensityTierEditor : public RealTierEditor {
 	virtual const wchar_t * yminKey () { return L"Minimum intensity"; }
 	virtual const wchar_t * ymaxKey () { return L"Maximum intensity"; }
 
-	virtual void createMenus ();
-	virtual void play (double tmin, double tmax);
+	void createMenus ();
 
   private:
 	static int menu_cb_IntensityTierHelp (EDITOR_ARGS);

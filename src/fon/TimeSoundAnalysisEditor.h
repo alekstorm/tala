@@ -127,8 +127,8 @@ class TimeSoundAnalysisEditor : public TimeSoundEditor {
 	GuiObject _spectrogramToggle, _pitchToggle, _intensityToggle, _formantToggle, _pulsesToggle;
 
   protected:
-	virtual const wchar_t * type () { return L"TimeSoundAnalysisEditor"; }
 	virtual void info ();
+	virtual int click (double xbegin, double ybegin, int shiftKeyPressed);
 
 	virtual void destroy_analysis ();
 	virtual void draw_analysis ();
@@ -138,14 +138,6 @@ class TimeSoundAnalysisEditor : public TimeSoundEditor {
 	virtual void computeIntensity ();
 	virtual void computeFormants ();
 	virtual void computePulses ();
-	virtual int makeQueriable (int allowCursor, double *tmin, double *tmax);
-	virtual int do_deleteLogFile (int which);
-	virtual int do_log (int which);
-	virtual Sound extractSound (double tmin, double tmax);
-	virtual int do_getFormant (int iformant);
-	virtual int do_getBandwidth (int iformant);
-	virtual void computePitch_inside ();
-	virtual int click (double xbegin, double ybegin, int shiftKeyPressed);
 
   private:
 	static int menu_cb_logSettings (EDITOR_ARGS);
@@ -207,6 +199,16 @@ class TimeSoundAnalysisEditor : public TimeSoundEditor {
 	static int menu_cb_drawVisiblePulses (EDITOR_ARGS);
 	static int menu_cb_voiceReport (EDITOR_ARGS);
 	static int menu_cb_pulseListing (EDITOR_ARGS);
+
+	virtual const wchar_t * type () { return L"TimeSoundAnalysisEditor"; }
+
+	int makeQueriable (int allowCursor, double *tmin, double *tmax);
+	int do_deleteLogFile (int which);
+	int do_log (int which);
+	Sound extractSound (double tmin, double tmax);
+	int do_getFormant (int iformant);
+	int do_getBandwidth (int iformant);
+	void computePitch_inside ();
 
 	void createMenus ();
 };

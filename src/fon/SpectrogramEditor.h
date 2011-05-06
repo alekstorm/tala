@@ -33,10 +33,11 @@ class SpectrogramEditor : public FunctionEditor {
 	double _maximum;
 
   protected:
-	virtual const wchar_t * type () { return L"SpectrogramEditor"; }
-
 	virtual void draw ();
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+
+  private:
+	virtual const wchar_t * type () { return L"SpectrogramEditor"; }
 };
 
 /* End of file SpectrogramEditor.h */

@@ -33,7 +33,6 @@ class OTGrammarEditor : public HyperPage {
 	long _selected;
 
   protected:
-	virtual const wchar_t * type () { return L"OTGrammarEditor"; }
 	virtual bool isEditable () { return true; }
 	virtual void draw ();
 	virtual int goToPage (const wchar_t *title);
@@ -51,6 +50,8 @@ class OTGrammarEditor : public HyperPage {
 	static int menu_cb_OTGrammarEditor_help (EDITOR_ARGS);
 	static int menu_cb_OTGrammar_help (EDITOR_ARGS);
 	static int menu_cb_OTLearningTutorial (EDITOR_ARGS);
+
+	virtual const wchar_t * type () { return L"OTGrammarEditor"; }
 
 	void createMenus ();
 };

@@ -38,9 +38,6 @@ class ArtwordEditor : public Editor {
 	GuiObject _button [1 + kArt_muscle_MAX];
 
   protected:
-	virtual const wchar_t * type () { return L"ArtwordEditor"; }
-
-	virtual void updateList ();
 	virtual void dataChanged ();
 
   private:
@@ -49,6 +46,10 @@ class ArtwordEditor : public Editor {
 	static void gui_radiobutton_cb_toggle (I, GuiRadioButtonEvent event);
 	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
+
+	virtual const wchar_t * type () { return L"ArtwordEditor"; }
+
+	void updateList ();
 
 	void createChildren ();
 };

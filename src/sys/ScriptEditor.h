@@ -48,8 +48,6 @@ class ScriptEditor : public TextEditor {
 	virtual bool isScriptable() { return false; }
 
 	virtual void nameChanged ();
-	virtual void run (wchar_t **text);
-	virtual void createMenus ();
 	virtual void goAway ();
 
   private:
@@ -73,6 +71,8 @@ class ScriptEditor : public TextEditor {
 	static int menu_cb_AddingToAFixedMenu (EDITOR_ARGS);
 	static int menu_cb_AddingToADynamicMenu (EDITOR_ARGS);
 
+	void run (wchar_t **text);
+	void createMenus ();
 	void init (GuiObject parent, Editor *editor, const wchar_t *initialText);
 };
 

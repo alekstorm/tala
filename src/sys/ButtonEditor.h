@@ -34,16 +34,10 @@ class ButtonEditor : public HyperPage {
 	GuiObject _button1, _button2, _button3, _button4, _button5;
 
   protected:
-	virtual const wchar_t * type () { return L"ButtonEditor"; }
 	virtual bool isScriptable () { return false; }
 
-	virtual void which (int show);
 	virtual void draw ();
-	virtual void drawMenuCommand (praat_Command cmd, long i);
-	virtual void drawAction (praat_Command cmd, long i);
 	virtual int goToPage (const wchar_t *title);
-	virtual void createChildren ();
-	virtual void createMenus ();
 
   private:
 	static void gui_radiobutton_cb_objects (I, GuiRadioButtonEvent event);
@@ -52,6 +46,15 @@ class ButtonEditor : public HyperPage {
 	static void gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event);
 	static void gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event);
 	static int menu_cb_ButtonEditorHelp (EDITOR_ARGS);
+
+	virtual const wchar_t * type () { return L"ButtonEditor"; }
+
+	void which (int show);
+	void drawMenuCommand (praat_Command cmd, long i);
+	void drawAction (praat_Command cmd, long i);
+
+	void createChildren ();
+	void createMenus ();
 };
 
 /* End of file ButtonEditor.h */

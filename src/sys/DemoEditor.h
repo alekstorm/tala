@@ -62,20 +62,22 @@ class DemoEditor : public Editor {
 	bool _waitingForInput, _userWantsToClose, _fullScreen;
 
   protected:
-	virtual wchar_t * type () { return L"DemoEditor"; }
 	virtual bool hasMenuBar () { return false; }
 	virtual bool canFullScreen () { return true; }
 	virtual bool isScriptable () { return false; }
 
 	virtual void info ();
 	virtual void goAway ();
-	virtual void createChildren ();
 
   private:
 	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
 	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
 	static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event);
+
+	virtual wchar_t * type () { return L"DemoEditor"; }
+
+	void createChildren ();
 };
 
 /* End of file DemoEditor.h */

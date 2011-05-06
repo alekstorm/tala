@@ -43,18 +43,20 @@ class RunnerMFC : public Editor {
 	virtual bool isScriptable () { return false; }
 
 	virtual void dataChanged ();
-	virtual int startExperiment ();
-	virtual void drawControlButton (double left, double right, double bottom, double top, const wchar_t *visibleText);
-	virtual void do_ok ();
-	virtual void do_oops ();
-	virtual void do_replay ();
-	virtual void createChildren ();
 
   private:
 	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
 	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
 	static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event);
+
+	int startExperiment ();
+	void drawControlButton (double left, double right, double bottom, double top, const wchar_t *visibleText);
+	void do_ok ();
+	void do_oops ();
+	void do_replay ();
+
+	void createChildren ();
 };
 
 /* End of file RunnerMFC.h */

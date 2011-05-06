@@ -33,6 +33,11 @@ class DurationTierEditor : public RealTierEditor {
 	// 'sound' may be NULL.
 
   protected:
+	virtual void play (double tmin, double tmax);
+
+  private:
+	static int menu_cb_DurationTierHelp (EDITOR_ARGS);
+
 	virtual const wchar_t * type () { return L"DurationTierEditor"; }
 
 	virtual double minimumLegalValue () { return 0.0; }
@@ -49,11 +54,7 @@ class DurationTierEditor : public RealTierEditor {
 	virtual const wchar_t * yminKey () { return L"Minimum duration"; }
 	virtual const wchar_t * ymaxKey () { return L"Maximum duration"; }
 
-	virtual void createMenus ();
-	virtual void play (double tmin, double tmax);
-
-  private:
-	static int menu_cb_DurationTierHelp (EDITOR_ARGS);
+	void createMenus ();
 };
 
 /* End of file DurationTierEditor.h */

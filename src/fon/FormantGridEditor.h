@@ -49,13 +49,8 @@ class FormantGridEditor : public FunctionEditor {
 	struct FormantGridEditor_Source _source;
 
   protected:
-	virtual const wchar_t * type () { return L"FormantGridEditor"; }
-
-	virtual int selectFormantOrBandwidth (long iformant);
-	virtual void createMenus ();
 	virtual void dataChanged ();
 	virtual void draw ();
-	virtual void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
 	virtual void play (double tmin, double tmax);
 
@@ -77,6 +72,13 @@ class FormantGridEditor : public FunctionEditor {
 	static int menu_cb_selectNinth (EDITOR_ARGS);
 	static int menu_cb_selectFormantOrBandwidth (EDITOR_ARGS);
 	static int menu_cb_pitchSettings (EDITOR_ARGS);
+
+	virtual const wchar_t * type () { return L"FormantGridEditor"; }
+
+	void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
+	int selectFormantOrBandwidth (long iformant);
+
+	void createMenus ();
 };
 
 /* End of file FormantGridEditor.h */

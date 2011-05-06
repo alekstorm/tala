@@ -33,11 +33,6 @@ class StringsEditor : public Editor {
 	GuiObject _list, _text;
 
   protected:
-	virtual const wchar_t * type () { return L"StringsEditor"; }
-
-	virtual void updateList ();
-	virtual void createMenus ();
-	virtual void createChildren ();
 	virtual void dataChanged ();
 
   private:
@@ -47,6 +42,13 @@ class StringsEditor : public Editor {
 	static void gui_button_cb_remove (I, GuiButtonEvent event);
 	static void gui_button_cb_replace (I, GuiButtonEvent event);
 	static void gui_list_cb_doubleClick (GuiObject widget, void *void_me, long item);
+
+	virtual const wchar_t * type () { return L"StringsEditor"; }
+
+	void updateList ();
+
+	void createMenus ();
+	void createChildren ();
 };
 
 /* End of file StringsEditor.h */

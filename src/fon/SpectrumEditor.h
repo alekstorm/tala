@@ -37,6 +37,20 @@ class SpectrumEditor : public FunctionEditor {
 	GuiObject _publishBandButton, _publishSoundButton;
 
   protected:
+	virtual void dataChanged ();
+	virtual void draw ();
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void play (double fmin, double fmax);
+
+  private:
+	static int menu_cb_publishBand (EDITOR_ARGS);
+	static int menu_cb_publishSound (EDITOR_ARGS);
+	static int menu_cb_passBand (EDITOR_ARGS);
+	static int menu_cb_stopBand (EDITOR_ARGS);
+	static int menu_cb_setDynamicRange (EDITOR_ARGS);
+	static int menu_cb_help_SpectrumEditor (EDITOR_ARGS);
+	static int menu_cb_help_Spectrum (EDITOR_ARGS);
+
 	virtual const wchar_t * type () { return L"SpectrumEditor"; }
 
 	virtual int fixedPrecision_long () { return 2; }
@@ -48,21 +62,9 @@ class SpectrumEditor : public FunctionEditor {
 	virtual const wchar_t * format_window () { return L"Window %.2f Hertz"; }
 	virtual const wchar_t * format_selection () { return L"%.2f Hz"; }
 
-	virtual void updateRange ();
-	virtual void dataChanged ();
-	virtual void draw ();
-	virtual int click (double xWC, double yWC, int shiftKeyPressed);
-	virtual void play (double fmin, double fmax);
-	virtual void createMenus ();
+	void updateRange ();
 
-  private:
-	static int menu_cb_publishBand (EDITOR_ARGS);
-	static int menu_cb_publishSound (EDITOR_ARGS);
-	static int menu_cb_passBand (EDITOR_ARGS);
-	static int menu_cb_stopBand (EDITOR_ARGS);
-	static int menu_cb_setDynamicRange (EDITOR_ARGS);
-	static int menu_cb_help_SpectrumEditor (EDITOR_ARGS);
-	static int menu_cb_help_Spectrum (EDITOR_ARGS);
+	void createMenus ();
 };
 
 /* End of file SpectrumEditor.h */

@@ -40,36 +40,36 @@ class TableEditor : public Editor {
 	Graphics _graphics;
 
   protected:
-	virtual wchar_t * type () { return L"TableEditor"; }
-
 	virtual void draw ();
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void dataChanged ();
 	virtual void updateVerticalScrollBar ();
 	virtual void updateHorizontalScrollBar ();
-	virtual void dataChanged ();
 
   private:
-	#if gtk
+#if gtk
 	static void gui_cb_horizontalScroll(GtkRange *rng, gpointer void_me);
 	static void gui_cb_verticalScroll(GtkRange *rng, gpointer void_me);
 	static gboolean gui_cb_drawing_area_scroll(GuiObject w, GdkEventScroll *event, gpointer void_me);
-	#elif motif
+#elif motif
 	static void gui_cb_horizontalScroll(GUI_ARGS);
 	static void gui_cb_verticalScroll(GUI_ARGS);
-	#endif
+#endif
 
-	#ifndef macintosh
+#ifndef macintosh
 	static int menu_cb_Cut (EDITOR_ARGS);
 	static int menu_cb_Copy (EDITOR_ARGS);
 	static int menu_cb_Paste (EDITOR_ARGS);
 	static int menu_cb_Erase (EDITOR_ARGS);
-	#endif
+#endif
 
 	static int menu_cb_TableEditorHelp (EDITOR_ARGS);
 	static void gui_text_cb_change (I, GuiTextEvent event);
 	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
 	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
+
+	virtual wchar_t * type () { return L"TableEditor"; }
 
 	void createChildren ();
 	void createMenus ();

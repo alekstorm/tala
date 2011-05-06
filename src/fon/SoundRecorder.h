@@ -171,21 +171,8 @@ class SoundRecorder : public Editor {
 #endif
 
   protected:
-	virtual wchar_t * type () { return L"SoundRecorder"; }
 	virtual bool isEditable () { return false; }
 	virtual bool isScriptable () { return false; }
-
-	virtual void createMenus ();
-	virtual void stopRecording ();
-	virtual void showMaximum (int channel, double maximum);
-	virtual void showMeter (short *buffer, long nsamp);
-	virtual int tooManySamplesInBufferToReturnToGui ();
-	virtual long getMyNsamp ();
-	virtual void publish ();
-	virtual int initialize ();
-	virtual void createChildren ();
-	virtual void writeFakeMonoFile_e (MelderFile file, int audioFileType);
-	virtual int writeAudioFile (MelderFile file, int audioFileType);
 
   private:
 	static void gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent event);
@@ -205,6 +192,21 @@ class SoundRecorder : public Editor {
 	static int menu_cb_SoundRecorder_help (EDITOR_ARGS);
 	static Boolean workProc (XtPointer void_me);
 	static int portaudioStreamCallback (const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void *void_me);
+
+	virtual wchar_t * type () { return L"SoundRecorder"; }
+
+	void stopRecording ();
+	void showMaximum (int channel, double maximum);
+	void showMeter (short *buffer, long nsamp);
+	int tooManySamplesInBufferToReturnToGui ();
+	long getMyNsamp ();
+	void publish ();
+	int initialize ();
+	void writeFakeMonoFile_e (MelderFile file, int audioFileType);
+	int writeAudioFile (MelderFile file, int audioFileType);
+
+	void createMenus ();
+	void createChildren ();
 };
 
 /* End of file SoundRecorder.h */

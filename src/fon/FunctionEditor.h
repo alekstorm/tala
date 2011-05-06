@@ -94,45 +94,31 @@ class FunctionEditor : public Editor {
 	double _marker [1 + 3], _playCursor, _startZoomHistory, _endZoomHistory;
 
   protected:
-	virtual const wchar_t * type () { return L"FunctionEditor"; }
-
-	virtual int fixedPrecision_long () { return 6; }
-	virtual const wchar_t * format_domain () { return L"Time domain:"; }
-	virtual const wchar_t * format_short () { return L"%.3f"; }
-	virtual const wchar_t * format_long () { return L"%f"; }
-	virtual const wchar_t * format_units () { return L"seconds"; }
-	virtual const wchar_t * format_totalDuration () { return L"Total duration %f seconds"; }
-	virtual const wchar_t * format_window () { return L"Visible part %f seconds"; }
-	virtual const wchar_t * format_selection () { return L"%f (%.3f / s)"; }
-
 	virtual void info ();
+	virtual void dataChanged ();
+
 	virtual void draw () = 0;
-	virtual void prepareDraw ();   /* For less flashing. */
-	virtual void play (double tmin, double tmax);
 	virtual int click (double xWC, double yWC, int shiftKeyPressed);
-	virtual int clickB (double xWC, double yWC);
-	virtual int clickE (double xWC, double yWC);
-	virtual void key (unsigned char key);
-	virtual void prefs_addFields (EditorCommand *cmd);
-	virtual void prefs_setValues (EditorCommand *cmd);
-	virtual void prefs_getValues (EditorCommand *cmd);
+	virtual void play (double tmin, double tmax);
+
 	virtual void highlightSelection (double left, double right, double bottom, double top);
 	virtual void unhighlightSelection (double left, double right, double bottom, double top);
-	virtual double getBottomOfSoundAndAnalysisArea ();
+
 	virtual void form_pictureSelection (EditorCommand *cmd);
 	virtual void ok_pictureSelection (EditorCommand *cmd);
 	virtual void do_pictureSelection (EditorCommand *cmd);
-	virtual void updateScrollBar ();
-	virtual void updateGroup ();
-	virtual void drawNow ();
-	virtual void do_showAll ();
-	virtual void do_zoomIn ();
-	virtual void do_zoomOut ();
-	virtual void do_zoomToSelection ();
-	virtual void do_zoomBack ();
-	virtual void scrollToView (double t);
-	virtual void dataChanged ();
-	virtual void drawWhileDragging (double x1, double x2);
+
+	/* Some routines to enforce common look to all function editors. */
+	/* The x axis of the window is supposed to have been set to [my startWindow, my endWindow]. */
+	/* Preconditions: default line type, default line width. */
+	/* Postconditions: default line type, default line width, undefined colour, undefined text alignment. */
+	virtual void drawRangeMark (double yWC, const wchar_t *yWC_string, const wchar_t *units, int verticalAlignment);
+	virtual void drawCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units);
+	virtual void insertCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units, double minimum, double maximum);
+	virtual void drawHorizontalHair (double yWC, const wchar_t *yWC_string, const wchar_t *units);
+	virtual void drawGridLine (double yWC);
+	virtual void insetViewport ();
+	virtual void garnish ();   // Optionally selection times and selection hairs.
 
 /*	Attributes:
 		data: must be a Function.
@@ -237,18 +223,6 @@ class FunctionEditor : public Editor {
 		may get outside the common interval of the editors.
 */
 
-	/* Some routines to enforce common look to all function editors. */
-	/* The x axis of the window is supposed to have been set to [my startWindow, my endWindow]. */
-	/* Preconditions: default line type, default line width. */
-	/* Postconditions: default line type, default line width, undefined colour, undefined text alignment. */
-	virtual void drawRangeMark (double yWC, const wchar_t *yWC_string, const wchar_t *units, int verticalAlignment);
-	virtual void drawCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units);
-	virtual void insertCursorFunctionValue (double yWC, const wchar_t *yWC_string, const wchar_t *units, double minimum, double maximum);
-	virtual void drawHorizontalHair (double yWC, const wchar_t *yWC_string, const wchar_t *units);
-	virtual void drawGridLine (double yWC);
-	virtual void insetViewport ();
-	virtual void garnish ();   // Optionally selection times and selection hairs.
-
 	GuiObject _drawingArea, _scrollBar, _groupButton, _bottomArea;
 	int _numberOfMarkers;
 
@@ -299,6 +273,36 @@ class FunctionEditor : public Editor {
 	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);
 	static void gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event);
+
+	virtual const wchar_t * type () { return L"FunctionEditor"; }
+
+	int fixedPrecision_long () { return 6; }
+	const wchar_t * format_domain () { return L"Time domain:"; }
+	const wchar_t * format_short () { return L"%.3f"; }
+	const wchar_t * format_long () { return L"%f"; }
+	const wchar_t * format_units () { return L"seconds"; }
+	const wchar_t * format_totalDuration () { return L"Total duration %f seconds"; }
+	const wchar_t * format_window () { return L"Visible part %f seconds"; }
+	const wchar_t * format_selection () { return L"%f (%.3f / s)"; }
+
+	void prepareDraw ();   /* For less flashing. */
+	int clickB (double xWC, double yWC);
+	int clickE (double xWC, double yWC);
+	void key (unsigned char key);
+	void prefs_addFields (EditorCommand *cmd);
+	void prefs_setValues (EditorCommand *cmd);
+	void prefs_getValues (EditorCommand *cmd);
+	double getBottomOfSoundAndAnalysisArea ();
+	void updateScrollBar ();
+	void updateGroup ();
+	void drawNow ();
+	void do_showAll ();
+	void do_zoomIn ();
+	void do_zoomOut ();
+	void do_zoomToSelection ();
+	void do_zoomBack ();
+	void scrollToView (double t);
+	void drawWhileDragging (double x1, double x2);
 
 	void createMenus ();
 	void createChildren ();

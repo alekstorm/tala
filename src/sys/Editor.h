@@ -134,27 +134,26 @@ class Editor {
 	void *_publish2Closure;
 
   protected:
-	virtual const wchar_t * type () = 0;
 	virtual void info ();
-	virtual void nameChanged ();
 	virtual void goAway ();
-	virtual void clipboardChanged (Any clipboard);
 	virtual void save ();
-	virtual void restore ();
-	virtual void form_pictureWindow (EditorCommand *cmd);
-	virtual void ok_pictureWindow (EditorCommand *cmd);
-	virtual void do_pictureWindow (EditorCommand *cmd);
-	virtual void form_pictureMargins (EditorCommand *cmd);
-	virtual void ok_pictureMargins (EditorCommand *cmd);
-	virtual void do_pictureMargins (EditorCommand *cmd);
-
 	virtual void save (const wchar_t *text);   /* For Undo. */
+	virtual void restore ();
 
 	virtual void openPraatPicture ();
 	virtual void closePraatPicture ();
 
 	virtual void setMenuSensitive (const wchar_t *menu, int sensitive);
 	virtual void dataChanged ();
+	virtual void nameChanged ();
+	virtual void clipboardChanged (Any clipboard);
+
+	virtual void form_pictureWindow (EditorCommand *cmd);
+	virtual void ok_pictureWindow (EditorCommand *cmd);
+	virtual void do_pictureWindow (EditorCommand *cmd);
+	virtual void form_pictureMargins (EditorCommand *cmd);
+	virtual void ok_pictureMargins (EditorCommand *cmd);
+	virtual void do_pictureMargins (EditorCommand *cmd);
 
   private:
 	static void gui_window_cb_goAway (void *editor);
@@ -164,6 +163,9 @@ class Editor {
 	static int menu_cb_undo (EDITOR_ARGS);
 	static int menu_cb_settingsReport (EDITOR_ARGS);
 	static int menu_cb_info (EDITOR_ARGS);
+
+	// Private virtual because it's only called from Editor, but should still be overridden.
+	virtual const wchar_t * type () = 0;
 
 	void createMenus ();
 };

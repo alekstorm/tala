@@ -48,14 +48,10 @@ class TimeSoundEditor : public FunctionEditor {
 	GuiObject _writeAiffButton, _writeAifcButton, _writeWavButton, _writeNextSunButton, _writeNistButton, _writeFlacButton;
 
   protected:
-	virtual const wchar_t * type () { return L"TimeSoundEditor"; }
 	virtual void info ();
-
-	virtual int do_ExtractSelectedSound (bool preserveTimes);
-	virtual int do_write (MelderFile file, int format);
 	virtual void draw_sound (double globalMinimum, double globalMaximum);
 
-	void updateMenuItems_file (); // FIXME
+	virtual void updateMenuItems_file (); // FIXME
 
   private:
 	static int menu_cb_DrawVisibleSound (EDITOR_ARGS);
@@ -72,6 +68,11 @@ class TimeSoundEditor : public FunctionEditor {
 	static int menu_cb_SoundInfo (EDITOR_ARGS);
 	static int menu_cb_LongSoundInfo (EDITOR_ARGS);
 	static int menu_cb_autoscaling (EDITOR_ARGS);
+
+	virtual const wchar_t * type () { return L"TimeSoundEditor"; }
+
+	int do_ExtractSelectedSound (bool preserveTimes);
+	int do_write (MelderFile file, int format);
 
 	void createMenus ();
 };

@@ -36,9 +36,6 @@ class PointEditor : public TimeSoundEditor {
 	GuiObject _addPointAtDialog;
 
   protected:
-	virtual const wchar_t * type () { return L"PointEditor"; }
-
-	virtual void createMenus ();
 	virtual void draw ();
 	virtual void play (double tmin, double tmax);
 
@@ -58,6 +55,10 @@ class PointEditor : public TimeSoundEditor {
 	static int menu_cb_addPointAtCursor (EDITOR_ARGS);
 	static int menu_cb_addPointAt (EDITOR_ARGS);
 	static int menu_cb_PointEditorHelp (EDITOR_ARGS);
+
+	virtual const wchar_t * type () { return L"PointEditor"; }
+
+	void createMenus ();
 };
 
 /* End of file PointEditor.h */

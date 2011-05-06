@@ -36,6 +36,17 @@ class RealTierEditor : public TimeSoundEditor {
 	double _ymin, _ymax, _ycursor;
 
   protected:
+	virtual void dataChanged ();
+	virtual void draw ();
+	virtual int click (double xWC, double yWC, int shiftKeyPressed);
+	virtual void play (double tmin, double tmax);
+
+  private:
+	static int menu_cb_removePoints (EDITOR_ARGS);
+	static int menu_cb_addPointAtCursor (EDITOR_ARGS);
+	static int menu_cb_addPointAt (EDITOR_ARGS);
+	static int menu_cb_setRange (EDITOR_ARGS);
+
 	virtual const wchar_t * type () { return L"RealTierEditor"; }
 
 	virtual double minimumLegalValue () { return NUMundefined; }
@@ -53,22 +64,13 @@ class RealTierEditor : public TimeSoundEditor {
 	virtual const wchar_t * yminKey () { return L"Minimum"; }   /* Without units. */
 	virtual const wchar_t * ymaxKey () { return L"Maximum"; }   /* Without units. */
 
-	virtual void updateScaling ();
+	void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
+
+	void updateScaling ();
 /*	Computes the ymin and ymax values on the basis of the data.
 	Call after every change in the data. */
 
-	virtual void createMenus ();
-	virtual void dataChanged ();
-	virtual void draw ();
-	virtual void drawWhileDragging (double xWC, double yWC, long first, long last, double dt, double dy);
-	virtual int click (double xWC, double yWC, int shiftKeyPressed);
-	virtual void play (double tmin, double tmax);
-
-  private:
-	static int menu_cb_removePoints (EDITOR_ARGS);
-	static int menu_cb_addPointAtCursor (EDITOR_ARGS);
-	static int menu_cb_addPointAt (EDITOR_ARGS);
-	static int menu_cb_setRange (EDITOR_ARGS);
+	void createMenus ();
 };
 
 /* End of file RealTierEditor.h */

@@ -66,11 +66,14 @@ class HyperPage : public Editor {
 	structMelderDir _rootDirectory;
 
   protected:
-	virtual const wchar_t * type () { return L"HyperPage"; }
-	virtual bool isEditable () { return false; }
-	virtual void clear ();
+	virtual bool isEditable () { return false; } // FIXME
+
 	virtual int any (const wchar_t *text, int font, int size, int style, double minFooterDistance,
 		double x, double secondIndent, double topSpacing, double bottomSpacing, unsigned long method);
+	virtual void draw ();
+	virtual void dataChanged ();
+
+	virtual void clear ();
 	virtual int pageTitle (const wchar_t *title);
 	virtual int intro (const wchar_t *text);
 	virtual int entry (const wchar_t *title);
@@ -100,7 +103,6 @@ class HyperPage : public Editor {
 	virtual void setEntryHint (const wchar_t *entry);
 	virtual void initSheetOfPaper ();
 	virtual void updateVerticalScrollBar ();
-	virtual void draw ();
 	virtual void initScreen ();
 	virtual void saveHistory (const wchar_t *title);
 	virtual int goToPage (const wchar_t *title);
@@ -108,15 +110,10 @@ class HyperPage : public Editor {
 	virtual void defaultHeaders (EditorCommand *cmd);
 	virtual void setFontSize (int fontSize);
 	virtual int do_forth ();
-	virtual void createMenus ();
 	virtual long getCurrentPageNumber ();
 	virtual long getNumberOfPages ();
-	virtual void dataChanged ();
 	virtual int do_back ();
-
 	virtual void updateSizeMenu ();
-	virtual void createVerticalScrollBar (GuiObject parent);
-	virtual void createChildren ();
 
   private:
 	static void print (void *void_me, Graphics graphics);
@@ -149,6 +146,12 @@ class HyperPage : public Editor {
 	static void gui_button_cb_forth (void *void_me, GuiButtonEvent event);
 	static void gui_button_cb_previousPage (void *void_me, GuiButtonEvent event);
 	static void gui_button_cb_nextPage (void *void_me, GuiButtonEvent event);
+
+	virtual const wchar_t * type () { return L"HyperPage"; }
+
+	void createVerticalScrollBar (GuiObject parent);
+	void createMenus ();
+	void createChildren ();
 };
 
 /* End of file HyperPage.h */
