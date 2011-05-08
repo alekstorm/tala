@@ -11,7 +11,7 @@ AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
 bin_PROGRAMS = praat
 
-praat_SOURCES = main/main_Praat.cpp
+praat_SOURCES = ui/main_Praat.cpp
 praat_LDADD = \
 	ui/init/libinit.a \
 	ui/libui.a \
