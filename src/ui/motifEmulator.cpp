@@ -59,7 +59,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 #include "GuiP.h"
 #include "machine.h"
 

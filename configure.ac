@@ -109,6 +109,7 @@ AC_CONFIG_FILES([Makefile
                   src/num/Makefile
                   src/stat/Makefile
                   src/sys/Makefile
+                  src/sys/melder/Makefile
                   src/ui/Makefile
                   src/ui/editors/Makefile
                   src/ui/init/Makefile

@@ -52,7 +52,7 @@ typedef wchar_t wchar;
 
 bool Melder_wcsequ_firstCharacterCaseInsensitive (const wchar_t *string1, const wchar_t *string2);
 
-#include "enums.h"
+#include "sys/enums.h"
 
 #include "melder_enums.h"
 

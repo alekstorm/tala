@@ -70,7 +70,7 @@
 #endif
 #include "NUM2.h"
 #include "NUMmachar.h"
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 #include <ctype.h>
 
 #include <gsl/gsl_errno.h>

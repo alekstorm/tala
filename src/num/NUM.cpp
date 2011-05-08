@@ -35,7 +35,7 @@
 #include "NUM.h"
 #include "dwsys/NUM2.h"
 #include <stdlib.h>
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 #define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))
 #define my  me ->
 double NUMpow (double base, double exponent) { return base <= 0.0 ? 0.0 : pow (base, exponent); }

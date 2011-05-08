@@ -29,5 +29,6 @@ praat_LDADD = \
 	stat/libstat.a \
 	dwsys/libdwsys.a \
 	sys/libsys.a \
+	sys/melder/libmelder.a \
 	num/libnum.a \
 	kar/libkar.a

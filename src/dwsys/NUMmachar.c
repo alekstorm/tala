@@ -22,7 +22,7 @@
 */
 
 #include "NUMmachar.h"
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 
 #ifndef _NUMcblas_h_
 	#include "NUMcblas.h"

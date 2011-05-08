@@ -24,7 +24,7 @@
 
 #include "melder.h"
 #include "kar/UnicodeData.h"
-#include "abcio.h"
+#include "sys/abcio.h"
 #define my  me ->
 
 struct structMelderReadText {

@@ -16,7 +16,7 @@
 
 
 /* #include "blaswrap.h" */
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 #include "NUMcblas.h"
 #include "NUMf2c.h"
 #include "NUM2.h"

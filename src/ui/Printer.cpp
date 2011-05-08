@@ -33,7 +33,7 @@
 
 #include <unistd.h> // close
 
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 
 #if defined (_WIN32)
 	#include <windows.h>

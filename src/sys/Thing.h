@@ -40,7 +40,7 @@
 	/* Arrays with any bounds and 1 or two indices, math, and numerics: */
 		#include "num/NUM.h"   /* Including math.h */
 	/* The messaging mechanism: */
-		#include "melder.h"   /* Including stdio.h string.h etc. */
+		#include "sys/melder/melder.h"   /* Including stdio.h string.h etc. */
 	/* The macros for struct and class definitions: */
 		#include "oo.h"
 	/* The input/output mechanism: */

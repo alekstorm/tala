@@ -52,7 +52,7 @@
 
 #include "editors/HyperPage.h"
 #include "machine.h"
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 #include "praatP.h"
 #include "praat_script.h"
 #include "Printer.h"

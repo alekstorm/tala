@@ -73,9 +73,9 @@
 	#include "ui/Gui.h"
 #endif
 
-#include "enums_getText.h"
+#include "sys/enums_getText.h"
 #include "melder_enums.h"
-#include "enums_getValue.h"
+#include "sys/enums_getValue.h"
 #include "melder_enums.h"
 
 /********** Exported variables. **********/

@@ -26,7 +26,7 @@
  */
 
 #include <stdlib.h>
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 #include "Graphics.h"
 
 //#define MAXGREYSIDE  12

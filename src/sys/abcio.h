@@ -33,7 +33,7 @@
 	#include "complex.h"
 #endif
 #ifndef _melder_h_
-	#include "melder.h"
+	#include "sys/melder/melder.h"
 #endif
 
 #include "abcio_enums.h"

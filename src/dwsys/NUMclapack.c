@@ -14,7 +14,7 @@
 #include "NUMclapack.h"
 #include "NUMcblas.h"
 #include "NUM2.h"
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 
 /* Table of constant values */
 

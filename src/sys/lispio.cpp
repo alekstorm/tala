@@ -22,7 +22,7 @@
  * pb 2002/03/07 GPL
  */
 
-#include "melder.h"
+#include "sys/melder/melder.h"
 #include "lispio.h"
 #include <ctype.h>
 

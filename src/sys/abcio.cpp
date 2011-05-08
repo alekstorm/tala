@@ -32,7 +32,7 @@
  * pb 2010/12/23 corrected bingeti3 and bingeti3LE for 64-bit systems
  */
 
-#include "melder.h"
+#include "sys/melder/melder.h"
 #include "num/NUM.h"
 #include <ctype.h>
 #ifdef macintosh

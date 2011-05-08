@@ -31,7 +31,7 @@
  * fb 2010/03/01 cairo fix for black 1px borders
  */
 
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 #include "Gui.h"
 #include "Printer.h"
 #include "Picture.h"

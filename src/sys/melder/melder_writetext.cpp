@@ -33,7 +33,7 @@
 #include "melder.h"
 #include "ui/Preferences.h"
 #include "kar/UnicodeData.h"
-#include "abcio.h"
+#include "sys/abcio.h"
 
 #if defined (macintosh)
 	#include "macport_on.h"

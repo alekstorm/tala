@@ -35,12 +35,12 @@
  */
 
 #include "melder.h"
-#include "abcio.h"
+#include "sys/abcio.h"
 #include "math.h"
 #include "FLAC/metadata.h"
 #include "FLAC/stream_decoder.h"
 #include "FLAC/stream_encoder.h"
-#include "mp3.h"
+#include "sys/mp3.h"
 #if defined (macintosh)
 	#include <Resources.h>
 #endif

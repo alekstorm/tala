@@ -66,7 +66,7 @@
 #include <errno.h>
 #include "melder.h"
 #include <FLAC/stream_encoder.h>
-#include "abcio.h"
+#include "sys/abcio.h"
 
 #if defined (macintosh)
 	#include <sys/stat.h>

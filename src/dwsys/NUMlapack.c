@@ -26,7 +26,7 @@
 #include "num/NUM.h"
 #include "NUMlapack.h"
 #include "NUMmachar.h"
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 
 #define MAX(m,n) ((m) > (n) ? (m) : (n))
 #define MIN(m,n) ((m) < (n) ? (m) : (n))

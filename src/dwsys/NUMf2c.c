@@ -2,7 +2,7 @@
 
 #include <ctype.h>
 #include "NUMf2c.h"
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 
 double d_sign(double *a, double *b)
 {

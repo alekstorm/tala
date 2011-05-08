@@ -24,7 +24,7 @@
  */
 
 #ifndef _melder_h_
-	#include "melder.h"   /* FILE * */
+	#include "sys/melder/melder.h"   /* FILE * */
 #endif
 
 #ifdef __cplusplus

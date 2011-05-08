@@ -26,7 +26,7 @@
 	#include <sys/stat.h>
 #endif
 #include "machine.h"
-#include "sys/melder.h"
+#include "sys/melder/melder.h"
 
 #define LookAndFeel_MOTIF  0
 #define LookAndFeel_SGI  1
