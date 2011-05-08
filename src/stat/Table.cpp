@@ -58,7 +58,7 @@
 #include <ctype.h>
 #include "Table.h"
 #include "dwsys/NUM2.h"
-#include "sys/Formula.h"
+#include "ui/Formula.h"
 #include "dwtools/SSCP.h"
 
 #include "sys/oo_DESTROY.h"

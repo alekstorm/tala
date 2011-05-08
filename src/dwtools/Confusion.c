@@ -27,9 +27,9 @@
 */
 
 #include "Confusion.h"
-#include "dwtools/Polygon_extensions.h"
-#include "dwtools/Matrix_extensions.h"
-#include "dwtools/TableOfReal_extensions.h"
+#include "Polygon_extensions.h"
+#include "Matrix_extensions.h"
+#include "TableOfReal_extensions.h"
 #include "dwsys/Collection_extensions.h"
 #include "stat/Distributions_and_Strings.h"
 #include "dwsys/NUM2.h"

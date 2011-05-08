@@ -23,9 +23,9 @@
 */
 
 #include "ICA.h"
-#include "sys/Interpreter.h"
+#include "ui/Interpreter.h"
 #include "dwsys/NUM2.h"
-#include "dwtools/PCA.h"
+#include "PCA.h"
 #include "dwsys/SVD.h"
 
 // matrix multiply R = V*C*V', V is nrv x ncv, C is ncv x ncv, R is nrv x nrv

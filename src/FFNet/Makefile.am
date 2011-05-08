@@ -5,5 +5,4 @@ noinst_LIBRARIES = libFFNet.a
 libFFNet_a_SOURCES = FFNet.c \
 	FFNet_Eigen.c FFNet_Matrix.c FFNet_Pattern.c \
 	FFNet_Activation_Categories.c FFNet_Pattern_Activation.c \
-	FFNet_Pattern_Categories.c \
-	praat_FFNet_init.cpp
+	FFNet_Pattern_Categories.c

@@ -33,9 +33,9 @@
 #include "dwsys/NUM2.h"
 #include "dwsys/NUMlapack.h"
 #include "dwsys/SVD.h"
-#include "dwtools/Strings_extensions.h"
-#include "dwtools/TableOfReal_extensions.h"
-#include "dwtools/Eigen_and_TableOfReal.h"
+#include "Strings_extensions.h"
+#include "TableOfReal_extensions.h"
+#include "Eigen_and_TableOfReal.h"
 
 #include "sys/oo_DESTROY.h"
 #include "CCA_def.h"

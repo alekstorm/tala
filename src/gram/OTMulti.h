@@ -23,7 +23,7 @@
  * pb 2011/03/23
  */
 
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "stat/PairDistribution.h"
 #include "stat/Distributions.h"
 #include "OTGrammar.h"

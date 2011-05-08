@@ -56,21 +56,21 @@
 	#include <windows.h>
 #endif
 #if defined (macintosh)
-	#include "macport_on.h"
+	#include "ui/macport_on.h"
 	//#include <Sound.h>
-	#include "macport_off.h"
+	#include "ui/macport_off.h"
 #endif
 #ifndef CONSOLE_APPLICATION
-	#include "Graphics.h"
-	#include "machine.h"
+	#include "ui/Graphics.h"
+	#include "ui/machine.h"
 	#ifdef macintosh
-		#include "macport_on.h"
+		#include "ui/macport_on.h"
 		//#include <Events.h>
 		#include <Dialogs.h>
 		#include <MacErrors.h>
-		#include "macport_off.h"
+		#include "ui/macport_off.h"
 	#endif
-	#include "Gui.h"
+	#include "ui/Gui.h"
 #endif
 
 #include "enums_getText.h"

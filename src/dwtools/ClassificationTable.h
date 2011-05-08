@@ -31,10 +31,10 @@
 	#include "stat/TableOfReal.h"
 #endif
 #ifndef _SSCP_h_
-	#include "dwtools/SSCP.h"
+	#include "SSCP.h"
 #endif
 #ifndef _Confusion_h_
-	#include "dwtools/Confusion.h"
+	#include "Confusion.h"
 #endif
 #ifndef _Strings_h_
 	#include "sys/Strings.h"

@@ -25,7 +25,7 @@
 
 /* Matrix inherits from Sampled */
 #include "Sampled.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "stat/Table.h"
 #include "stat/TableOfReal.h"
 

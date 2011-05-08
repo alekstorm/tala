@@ -24,7 +24,7 @@
  * pb 2008/01/19 double
  */
 
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "Harmonicity.h"
 
 double Harmonicity_getMean (Harmonicity me, double tmin, double tmax) {

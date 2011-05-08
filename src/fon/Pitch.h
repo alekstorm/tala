@@ -24,8 +24,8 @@
  */
 
 #include "Sampled.h"
-#include "sys/Graphics.h"
-#include "sys/Interpreter.h"
+#include "ui/Graphics.h"
+#include "ui/Interpreter.h"
 
 #ifdef __cplusplus
 	extern "C" {

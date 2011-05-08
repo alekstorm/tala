@@ -57,7 +57,7 @@
 #include "TableOfReal_extensions.h"
 #include "TableOfReal_and_Permutation.h"
 #include "dwsys/regularExp.h"
-#include "sys/Formula.h"
+#include "ui/Formula.h"
 #include "Table_extensions.h"
 
 #define EMPTY_STRING(s) ((s) == NULL || s[0] == '\0')

@@ -23,7 +23,7 @@
 #include "stat/Distributions_and_Strings.h"
 #include "HMM.h"
 #include "dwsys/Index.h"
-#include "sys/Interpreter.h"
+#include "ui/Interpreter.h"
 #include "dwsys/NUM2.h"
 #include "Strings_extensions.h"
 

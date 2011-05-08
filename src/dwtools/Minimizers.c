@@ -11,7 +11,7 @@
 */
 
 #include "dwsys/NUM2.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "Minimizers.h"
 
 #define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))

@@ -25,7 +25,7 @@
 
 /* Transition inherits from Data */
 #include "Matrix.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {

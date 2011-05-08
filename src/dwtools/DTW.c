@@ -42,7 +42,7 @@
 #include "Sound_extensions.h"
 #include "dwsys/NUM2.h"
 #include "dwsys/NUMmachar.h"
-#include "sys/GraphicsP.h"
+#include "ui/GraphicsP.h"
 
 #include "sys/oo_DESTROY.h"
 #include "DTW_def.h"

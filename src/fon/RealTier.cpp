@@ -35,7 +35,7 @@
  */
 
 #include "RealTier.h"
-#include "sys/Formula.h"
+#include "ui/Formula.h"
 
 #include "sys/oo_DESTROY.h"
 #include "RealTier_def.h"

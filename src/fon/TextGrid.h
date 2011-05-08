@@ -25,7 +25,7 @@
 
 #include "AnyTier.h"
 #include "Label.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "stat/TableOfReal.h"
 #include "stat/Table.h"
 

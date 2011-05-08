@@ -23,7 +23,7 @@
 
 #include "Pitch.h"
 #include "Intensity.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {

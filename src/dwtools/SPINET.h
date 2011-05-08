@@ -29,7 +29,7 @@
 	#include "Sampled2.h"
 #endif
 #ifndef _Graphics_h_
-	#include "sys/Graphics.h"
+	#include "ui/Graphics.h"
 #endif
 
 #ifdef __cplusplus

@@ -42,8 +42,8 @@
  */
 
 #include "melder.h"
-#include "Gui.h"
-#include "Preferences.h"
+#include "ui/Gui.h"
+#include "ui/Preferences.h"
 #include "num/NUM.h"
 #include <time.h>
 #define my  me ->

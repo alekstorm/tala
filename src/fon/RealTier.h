@@ -24,7 +24,7 @@
  */
 
 #include "AnyTier.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "stat/TableOfReal.h"
 #include "Vector.h"
 

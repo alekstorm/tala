@@ -24,7 +24,7 @@
  */
 
 #include "sys/Strings.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "stat/PairDistribution.h"
 #include "stat/Distributions.h"
 #include "stat/TableOfReal.h"

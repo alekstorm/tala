@@ -30,7 +30,7 @@
 */
 
 #include "Table_extensions.h"
-#include "sys/GraphicsP.h"
+#include "ui/GraphicsP.h"
 #include "dwsys/NUM2.h"
 
 /* 

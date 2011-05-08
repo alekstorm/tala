@@ -31,7 +31,7 @@
 	#include "fon/Excitation.h"
 #endif
 #ifndef _Pattern_h_
-	#include "dwtools/Pattern.h"
+	#include "Pattern.h"
 #endif
 #ifndef _TableOfReal_h_
 	#include "stat/TableOfReal.h"

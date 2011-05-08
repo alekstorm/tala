@@ -27,10 +27,10 @@
 	#include "FormantTier.h"
 #endif
 #ifndef _PitchTier_h_
-	#include "PitchTier.h"
+	#include "fon/PitchTier.h"
 #endif
 #ifndef _IntensityTier_h_
-	#include "IntensityTier.h"
+	#include "fon/IntensityTier.h"
 #endif
 #ifndef _Sound_h_
 	#include "Sound.h"

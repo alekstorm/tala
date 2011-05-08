@@ -40,7 +40,7 @@
  */
 
 #include "LongSound.h"
-#include "sys/Preferences.h"
+#include "ui/Preferences.h"
 #include "FLAC/stream_decoder.h"
 #include "mp3/mp3.h"
 #define MARGIN  0.01

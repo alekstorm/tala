@@ -26,8 +26,8 @@
 */
 
 #include "fon/Polygon.h"
-#include "dwtools/Categories.h"
-#include "sys/Graphics.h"
+#include "Categories.h"
+#include "ui/Graphics.h"
 #include "fon/Sound.h"
 
 #ifdef __cplusplus

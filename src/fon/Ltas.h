@@ -36,7 +36,7 @@
 	#include "PointProcess.h"
 #endif
 #ifndef _Collection_h_
-	#include "Collection.h"
+	#include "sys/Collection.h"
 #endif
 
 #ifdef __cplusplus

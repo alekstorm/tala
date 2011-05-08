@@ -41,7 +41,7 @@
 #include "TableOfReal.h"
 #include "dwsys/NUM2.h"
 #include "fon/Matrix.h"
-#include "sys/Formula.h"
+#include "ui/Formula.h"
 
 #include "sys/oo_DESTROY.h"
 #include "TableOfReal_def.h"

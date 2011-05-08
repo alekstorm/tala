@@ -24,7 +24,7 @@
  * pb 2008/01/19 double
  */
 
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "Cochleagram.h"
 
 class_methods (Cochleagram, Matrix)

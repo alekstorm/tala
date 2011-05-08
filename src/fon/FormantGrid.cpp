@@ -30,7 +30,7 @@
 
 #include "FormantGrid.h"
 #include "PitchTier_to_Sound.h"
-#include "sys/Formula.h"
+#include "ui/Formula.h"
 
 #include "sys/oo_DESTROY.h"
 #include "FormantGrid_def.h"

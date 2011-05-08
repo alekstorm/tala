@@ -48,7 +48,7 @@
  djmw 20100325 -Cross-correlation, convolution and autocorrelation
 */
 
-#include "sys/Formula.h"
+#include "ui/Formula.h"
 #include "Intensity_extensions.h"
 #include "Sound_extensions.h"
 #include "fon/Sound_and_Spectrum.h"

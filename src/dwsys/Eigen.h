@@ -31,7 +31,7 @@
 	#include "sys/Collection.h"
 #endif
 #ifndef _Graphics_h_
-	#include "sys/Graphics.h"
+	#include "ui/Graphics.h"
 #endif
 #ifndef _Strings_h_
 	#include "sys/Strings.h"

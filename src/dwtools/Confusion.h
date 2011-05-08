@@ -28,10 +28,10 @@
 	#include "stat/TableOfReal.h"
 #endif
 #ifndef _Categories_h_
-	#include "dwtools/Categories.h"
+	#include "Categories.h"
 #endif
 #ifndef _Graphics_h_
-	#include "sys/Graphics.h"
+	#include "ui/Graphics.h"
 #endif
 #ifndef _Matrix_h_
 	#include "fon/Matrix.h"

@@ -27,7 +27,7 @@
 /* If it comes from a sound (expressed in Pa), the values are expressed in Pa/Hz. */
 
 #include "Matrix.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {

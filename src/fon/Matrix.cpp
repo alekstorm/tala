@@ -36,7 +36,7 @@
 
 #include "Matrix.h"
 #include "dwsys/NUM2.h"
-#include "sys/Formula.h"
+#include "ui/Formula.h"
 #include "dwsys/Eigen.h"
 
 #include "sys/oo_DESTROY.h"

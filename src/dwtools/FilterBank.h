@@ -30,7 +30,7 @@
 	#include "fon/Matrix.h"
 #endif
 #ifndef _Graphics_h_
-	#include "sys/Graphics.h"
+	#include "ui/Graphics.h"
 #endif
 #ifndef _TableOfReal_h_
 	#include "stat/TableOfReal.h"

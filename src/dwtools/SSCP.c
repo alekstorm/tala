@@ -60,7 +60,7 @@
 
 #include "SSCP.h"
 #include "dwsys/Eigen.h"
-#include "sys/Interpreter.h"
+#include "ui/Interpreter.h"
 #include "dwsys/NUMclapack.h"
 #include "dwsys/NUMlapack.h"
 #include "dwsys/NUM2.h"

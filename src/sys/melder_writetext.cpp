@@ -31,7 +31,7 @@
  */
 
 #include "melder.h"
-#include "Preferences.h"
+#include "ui/Preferences.h"
 #include "kar/UnicodeData.h"
 #include "abcio.h"
 

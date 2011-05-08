@@ -30,7 +30,7 @@
 */
 
 #include "FormantGrid_extensions.h"
-#include "sys/Formula.h"
+#include "ui/Formula.h"
 #include "KlattGrid.h"
 #include "KlattTable.h"
 #include "Resonator.h"

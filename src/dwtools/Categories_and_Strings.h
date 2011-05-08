@@ -28,7 +28,7 @@
 	#include "Categories.h"
 #endif
 #ifndef _Strings_h_
-	#include "Strings.h"
+	#include "sys/Strings.h"
 #endif
 
 #ifdef __cplusplus

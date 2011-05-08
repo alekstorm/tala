@@ -29,7 +29,7 @@
 #endif
 
 #ifndef _Categories_h_
-	#include "dwtools/Categories.h"
+	#include "Categories.h"
 #endif
 
 #ifndef _TableOfReal_h_

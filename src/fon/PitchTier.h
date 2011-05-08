@@ -24,7 +24,7 @@
  */
 
 #include "RealTier.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "Sound.h"
 
 #ifdef __cplusplus

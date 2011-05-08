@@ -25,7 +25,7 @@
 */
 
 #include "sys/Data.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 #include "sys/Simple.h"
 
 int SimpleString_init (SimpleString me, const wchar_t *value);

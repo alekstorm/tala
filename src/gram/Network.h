@@ -24,7 +24,7 @@
  */
 
 #include "sys/Data.h"
-#include "sys/Graphics.h"
+#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
