@@ -44,8 +44,8 @@
 	/* The macros for struct and class definitions: */
 		#include "sys/oo/oo.h"
 	/* The input/output mechanism: */
-		#include "abcio.h"
-		#include "lispio.h"
+		#include "io/abcio.h"
+		#include "io/lispio.h"
 
 #ifdef __cplusplus
 	extern "C" {

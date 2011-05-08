@@ -30,7 +30,7 @@
  */
 
 #ifndef _complex_h_
-	#include "complex.h"
+	#include "sys/complex.h"
 #endif
 #ifndef _melder_h_
 	#include "sys/melder/melder.h"

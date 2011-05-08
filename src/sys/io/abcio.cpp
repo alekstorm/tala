@@ -316,9 +316,9 @@ static wchar_t * getString (MelderReadText me) {
 #undef false
 #undef true
 
-#include "enums_getText.h"
+#include "sys/enums_getText.h"
 #include "abcio_enums.h"
-#include "enums_getValue.h"
+#include "sys/enums_getValue.h"
 #include "abcio_enums.h"
 
 int texgeti1 (MelderReadText text) { return getInteger (text); }   /* There should be out-of-bound checks here... */
