@@ -182,7 +182,7 @@ static int _Data_writeToTextFile (I, MelderFile file, bool verbose) {
 	#ifndef _WIN32
 		flockfile (file -> filePointer);   // BUG
 	#endif
-	MelderFile_write2 (file, L"File type = \"ooTextFile\"\nObject class = \"", our _className);
+	MelderFile_write2 (file, L"File type = \"sys/oo/ooTextFile\"\nObject class = \"", our _className);
 	if (our version > 0) MelderFile_write2 (file, L" ", Melder_integer (our version));
 	MelderFile_write1 (file, L"\"\n");
 	Data_writeText (me, file); cherror
@@ -221,7 +221,7 @@ int Data_writeToBinaryFile (I, MelderFile file) {
 	iam (Data);
 	if (! Data_canWriteBinary (me)) error3 (L"(Data_writeToBinaryFile:) Objects of class ", our _className, L" cannot be written to a generic binary file.")
 	MelderFile_create (file, 0, 0, 0); cherror
-	if (fprintf (file -> filePointer, "ooBinaryFile") < 0)
+	if (fprintf (file -> filePointer, "sys/oo/ooBinaryFile") < 0)
 		error1 (L"Cannot write first bytes of file.")
 	binputw1 (our version > 0 ? Melder_wcscat3 (our _className, L" ", Melder_integer (our version)) : our _className, file -> filePointer);
 	if (! Data_writeBinary (me, file -> filePointer)) goto end;
@@ -290,7 +290,7 @@ Any Data_readFromTextFile (MelderFile file) {
 		wchar_t *line = MelderReadText_readLine (text); cherror
 		if (line == NULL) error1 (L"No lines.")
 		{
-			wchar_t *end = wcsstr (line, L"ooTextFile");   /* oo format? */
+			wchar_t *end = wcsstr (line, L"sys/oo/ooTextFile");   /* oo format? */
 			if (end) {
 				klas = texgetw2 (text); cherror
 				me = (structData*)Thing_newFromClassName (klas); cherror
@@ -333,10 +333,10 @@ Any Data_readFromBinaryFile (MelderFile file) {
 	char line [200], *end;
 	if ((f = Melder_fopen (file, "rb")) == NULL) return NULL;
 	n = fread (line, 1, 199, f); line [n] = '\0';
-	end = strstr (line, "ooBinaryFile");
+	end = strstr (line, "sys/oo/ooBinaryFile");
 	if (end) {
 		char *klas;
-		fseek (f, strlen ("ooBinaryFile"), 0);
+		fseek (f, strlen ("sys/oo/ooBinaryFile"), 0);
 		klas = bingets1 (f);
 		if (! klas || ! (me = (structData*)Thing_newFromClassNameA (klas))) { fclose (f); return 0; }
 		Melder_free (klas);

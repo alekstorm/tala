@@ -29,19 +29,19 @@
 
 #include "Polygon.h"
 
-#include "sys/oo_DESTROY.h"
+#include "sys/oo/oo_DESTROY.h"
 #include "Polygon_def.h"
-#include "sys/oo_COPY.h"
+#include "sys/oo/oo_COPY.h"
 #include "Polygon_def.h"
-#include "sys/oo_EQUAL.h"
+#include "sys/oo/oo_EQUAL.h"
 #include "Polygon_def.h"
-#include "sys/oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo/oo_CAN_WRITE_AS_ENCODING.h"
 #include "Polygon_def.h"
-#include "sys/oo_WRITE_BINARY.h"
+#include "sys/oo/oo_WRITE_BINARY.h"
 #include "Polygon_def.h"
-#include "sys/oo_READ_BINARY.h"
+#include "sys/oo/oo_READ_BINARY.h"
 #include "Polygon_def.h"
-#include "sys/oo_DESCRIPTION.h"
+#include "sys/oo/oo_DESCRIPTION.h"
 #include "Polygon_def.h"
 
 static void info (I) {

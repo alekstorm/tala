@@ -130,11 +130,11 @@ oo_DEFINE_CLASS (Vowel, Function)\
 	oo_OBJECT (FormantTier, 0, ft)\
 oo_END_CLASS (Vowel)
 
-#include "sys/oo_DESTROY.h"
+#include "sys/oo/oo_DESTROY.h"
 #define ooSTRUCT Vowel
 VOWEL_def_h
 #undef ooSTRUCT
-#include "sys/oo_COPY.h"
+#include "sys/oo/oo_COPY.h"
 #define ooSTRUCT Vowel
 VOWEL_def_h
 #undef ooSTRUCT

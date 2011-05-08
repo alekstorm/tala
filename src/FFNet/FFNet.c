@@ -43,23 +43,23 @@
 
 static int bookkeeping (FFNet me);
 
-#include "sys/oo_DESTROY.h"
+#include "sys/oo/oo_DESTROY.h"
 #include "FFNet_def.h"
-#include "sys/oo_COPY.h"
+#include "sys/oo/oo_COPY.h"
 #include "FFNet_def.h"
-#include "sys/oo_EQUAL.h"
+#include "sys/oo/oo_EQUAL.h"
 #include "FFNet_def.h"
-#include "sys/oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo/oo_CAN_WRITE_AS_ENCODING.h"
 #include "FFNet_def.h"
-#include "sys/oo_WRITE_TEXT.h"
+#include "sys/oo/oo_WRITE_TEXT.h"
 #include "FFNet_def.h"
-#include "sys/oo_WRITE_BINARY.h"
+#include "sys/oo/oo_WRITE_BINARY.h"
 #include "FFNet_def.h"
-#include "sys/oo_READ_TEXT.h"
+#include "sys/oo/oo_READ_TEXT.h"
 #include "FFNet_def.h"
-#include "sys/oo_READ_BINARY.h"
+#include "sys/oo/oo_READ_BINARY.h"
 #include "FFNet_def.h"
-#include "sys/oo_DESCRIPTION.h"
+#include "sys/oo/oo_DESCRIPTION.h"
 #include "FFNet_def.h"
 
 static int FFNet_checkLayerNumber (FFNet me, long layer)

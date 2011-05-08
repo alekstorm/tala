@@ -84,7 +84,7 @@ int Data_writeToTextFile (I, MelderFile file);
 	Message:
 		"try to write yourself as text to a file".
 	Description:
-		The first line is 'File type = "ooTextFile"'.
+		The first line is 'File type = "sys/oo/ooTextFile"'.
 		Your class name is written in the second line,
 		e.g., if you are a Person, the second line will be 'Object class = "Person"'.
 		The format of the lines after the second line is the same as in Data_writeText.
@@ -95,7 +95,7 @@ int Data_writeToShortTextFile (I, MelderFile file);
 	Message:
 		"try to write yourself as text to a file".
 	Description:
-		The first line is 'File type = "ooTextFile short"'.
+		The first line is 'File type = "sys/oo/ooTextFile short"'.
 		Your class name is written in the second line,
 		e.g., if you are a Person, the second line will be '"Person"'.
 		The format of the lines after the second line is the same as in Data_writeText.

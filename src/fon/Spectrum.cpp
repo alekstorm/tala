@@ -33,9 +33,9 @@
 
 #include "Sound_and_Spectrum.h"
 
-#include "sys/oo_READ_TEXT.h"
+#include "sys/oo/oo_READ_TEXT.h"
 #include "Spectrum_def.h"
-#include "sys/oo_READ_BINARY.h"
+#include "sys/oo/oo_READ_BINARY.h"
 #include "Spectrum_def.h"
 
 static void info (I) {

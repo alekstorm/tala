@@ -58,23 +58,23 @@
 #if defined (_WIN32)
 	#include <windows.h>
 #endif
-#include "oo_DESTROY.h"
+#include "sys/oo/oo_DESTROY.h"
 #include "Strings_def.h"
-#include "oo_COPY.h"
+#include "sys/oo/oo_COPY.h"
 #include "Strings_def.h"
-#include "oo_EQUAL.h"
+#include "sys/oo/oo_EQUAL.h"
 #include "Strings_def.h"
-#include "oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo/oo_CAN_WRITE_AS_ENCODING.h"
 #include "Strings_def.h"
-#include "oo_WRITE_TEXT.h"
+#include "sys/oo/oo_WRITE_TEXT.h"
 #include "Strings_def.h"
-#include "oo_READ_TEXT.h"
+#include "sys/oo/oo_READ_TEXT.h"
 #include "Strings_def.h"
-#include "oo_WRITE_BINARY.h"
+#include "sys/oo/oo_WRITE_BINARY.h"
 #include "Strings_def.h"
-#include "oo_READ_BINARY.h"
+#include "sys/oo/oo_READ_BINARY.h"
 #include "Strings_def.h"
-#include "oo_DESCRIPTION.h"
+#include "sys/oo/oo_DESCRIPTION.h"
 #include "Strings_def.h"
 
 static long Strings_totalLength (Strings me) {

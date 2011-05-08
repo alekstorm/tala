@@ -41,23 +41,23 @@
 
 #define MAX_T  0.02000000001   /* Maximum interval between two voice pulses (otherwise voiceless). */
 
-#include "sys/oo_DESTROY.h"
+#include "sys/oo/oo_DESTROY.h"
 #include "Manipulation_def.h"
-#include "sys/oo_COPY.h"
+#include "sys/oo/oo_COPY.h"
 #include "Manipulation_def.h"
-#include "sys/oo_EQUAL.h"
+#include "sys/oo/oo_EQUAL.h"
 #include "Manipulation_def.h"
-#include "sys/oo_CAN_WRITE_AS_ENCODING.h"
+#include "sys/oo/oo_CAN_WRITE_AS_ENCODING.h"
 #include "Manipulation_def.h"
-#include "sys/oo_WRITE_TEXT.h"
+#include "sys/oo/oo_WRITE_TEXT.h"
 #include "Manipulation_def.h"
-#include "sys/oo_READ_TEXT.h"
+#include "sys/oo/oo_READ_TEXT.h"
 #include "Manipulation_def.h"
-#include "sys/oo_WRITE_BINARY.h"
+#include "sys/oo/oo_WRITE_BINARY.h"
 #include "Manipulation_def.h"
-#include "sys/oo_READ_BINARY.h"
+#include "sys/oo/oo_READ_BINARY.h"
 #include "Manipulation_def.h"
-#include "sys/oo_DESCRIPTION.h"
+#include "sys/oo/oo_DESCRIPTION.h"
 #include "Manipulation_def.h"
 
 static void classManipulation_shiftX (I, double xfrom, double xto) {

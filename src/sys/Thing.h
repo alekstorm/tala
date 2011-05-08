@@ -42,7 +42,7 @@
 	/* The messaging mechanism: */
 		#include "sys/melder/melder.h"   /* Including stdio.h string.h etc. */
 	/* The macros for struct and class definitions: */
-		#include "oo.h"
+		#include "sys/oo/oo.h"
 	/* The input/output mechanism: */
 		#include "abcio.h"
 		#include "lispio.h"
