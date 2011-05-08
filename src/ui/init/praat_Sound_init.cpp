@@ -38,7 +38,7 @@
 #include "ui/editors/SpectrumEditor.h"
 #include "fon/TextGrid_Sound.h"
 #include "dwtools/Sound_extensions.h"
-#include "mp3/mp3.h"
+#include "sys/mp3.h"
 #include "ui/UiFile.h"
 
 #include "ui/praat.h"

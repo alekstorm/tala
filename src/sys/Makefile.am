@@ -27,6 +27,7 @@ libsys_a_SOURCES = \
 	melder_time.cpp \
 	melder_token.cpp \
 	melder_writetext.cpp \
+	mp3.c \
 	Script.cpp \
 	Simple.cpp \
 	Strings.cpp \

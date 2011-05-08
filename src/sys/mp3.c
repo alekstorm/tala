@@ -50,7 +50,7 @@
 
 #include <string.h>
 #include "mp3.h"
-#include "sys/melder.h"
+#include "melder.h"
 
 #define MP3F_BUFFER_SIZE (8 * 1024)
 #define MP3F_MAX_LOCATIONS 1024

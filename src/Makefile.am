@@ -4,7 +4,7 @@ RANLIB = ls
 ICON = # FIXME icons
 MAIN_ICON =
 
-SUBDIRS = num kar mp3 sys stat fon dwsys dwtools LPC gram FFNet artsynth ola ui
+SUBDIRS = num kar sys stat fon dwsys dwtools LPC gram FFNet artsynth ola ui
 
 AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
 AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
@@ -30,5 +30,4 @@ praat_LDADD = \
 	dwsys/libdwsys.a \
 	sys/libsys.a \
 	num/libnum.a \
-	kar/libkar.a \
-	mp3/libmp3.a
+	kar/libkar.a

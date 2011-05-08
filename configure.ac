@@ -101,7 +101,6 @@ AC_CONFIG_FILES([Makefile
                   src/ola/Makefile
                   src/FFNet/Makefile
                   src/LPC/Makefile
-                  src/mp3/Makefile
                   src/dwsys/Makefile
                   src/dwtools/Makefile
                   src/fon/Makefile
