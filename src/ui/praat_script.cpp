@@ -41,8 +41,8 @@
 #include "editors/DemoEditor.h"
 #include "praatP.h"
 #include "praat_script.h"
-#include "sendpraat.h"
-#include "sendsocket.h"
+#include "sendpraat/sendpraat.h"
+#include "sendpraat/sendsocket.h"
 #include "UiFile.h"
 #include "UiPause.h"
 

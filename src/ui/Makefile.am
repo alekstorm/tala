@@ -1,7 +1,7 @@
 AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
 AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
-SUBDIRS = init editors
+SUBDIRS = init editors sendpraat
 
 noinst_LIBRARIES = libui.a
 libui_a_SOURCES = \
@@ -46,8 +46,6 @@ libui_a_SOURCES = \
 	praat_statistics.cpp \
 	Preferences.cpp \
 	Printer.cpp \
-	sendpraat.cpp \
-	sendsocket.cpp \
 	site.cpp \
 	UiField.cpp \
 	UiFile.cpp \

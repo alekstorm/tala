@@ -112,6 +112,7 @@ AC_CONFIG_FILES([Makefile
                   src/sys/Makefile
                   src/ui/Makefile
                   src/ui/editors/Makefile
-                  src/ui/init/Makefile])
+                  src/ui/init/Makefile
+                  src/ui/sendpraat/Makefile])
 AM_INIT_AUTOMAKE(praat, 0.1)
 AC_OUTPUT

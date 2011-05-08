@@ -16,6 +16,7 @@ praat_LDADD = \
 	ui/init/libinit.a \
 	ui/libui.a \
 	ui/editors/libeditors.a \
+	ui/sendpraat/libsendpraat.a \
 	fon/libfon.a \
 	ui/libui.a \
 	ola/libOla.a \
