@@ -33,7 +33,7 @@
  */
 
 #include "NUM.h"
-#include "dwsys/NUM2.h"
+#include "NUM2.h"
 #include <stdlib.h>
 #include "sys/melder/melder.h"
 #define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))

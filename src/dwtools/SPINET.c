@@ -27,7 +27,7 @@
 
 #include "SPINET.h"
 #include "Sound_extensions.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "SPINET_def.h"

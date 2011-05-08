@@ -51,8 +51,8 @@
 #include <ctype.h>
 #include "SSCP.h"
 #include "Matrix_extensions.h"
-#include "dwsys/NUMclapack.h"
-#include "dwsys/NUM2.h"
+#include "num/NUMclapack.h"
+#include "num/NUM2.h"
 #include "dwsys/SVD.h"
 #include "TableOfReal_extensions.h"
 #include "TableOfReal_and_Permutation.h"

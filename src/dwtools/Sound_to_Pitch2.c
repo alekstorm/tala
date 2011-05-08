@@ -29,7 +29,7 @@
 #include "fon/Sound_and_Spectrum.h"
 #include "Sound_to_SPINET.h"
 #include "SPINET_to_Pitch.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 static int spec_enhance_SHS (double a[], long n)
 {

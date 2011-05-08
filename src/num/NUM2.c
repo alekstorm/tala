@@ -62,8 +62,8 @@
  djmw 20110304 Thing_new
 */
 
-#include "SVD.h"
-#include "Eigen.h"
+#include "dwsys/SVD.h"
+#include "dwsys/Eigen.h"
 #include "NUMclapack.h"
 #ifndef _NUM_h_
 	#include "NUM.h"

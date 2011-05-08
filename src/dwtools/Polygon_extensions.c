@@ -25,7 +25,7 @@
 */
 
 #include "fon/Matrix.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "Polygon_extensions.h"
 #include "fon/Vector.h"
 

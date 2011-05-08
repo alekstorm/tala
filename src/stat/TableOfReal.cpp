@@ -39,7 +39,7 @@
 
 #include <ctype.h>
 #include "TableOfReal.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "fon/Matrix.h"
 #include "ui/Formula.h"
 

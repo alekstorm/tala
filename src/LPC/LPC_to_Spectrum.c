@@ -25,7 +25,7 @@
 */
 
 #include "LPC_to_Spectrum.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 /*
 	PSD(f) = (sigma^2 T) /|1 + Sum (k=1..p, a[k] exp(-2 pi i f k T))|^2,

@@ -61,7 +61,7 @@
 #include "sys/Strings.h"
 #include "UiFile.h"
 #include "UiHistory.h"
-#include "dwsys/NUMmachar.h"
+#include "num/NUMmachar.h"
 
 #include "praat.h"
 

@@ -25,7 +25,7 @@
 
 #include "LPC_and_Formant.h"
 #include "LPC_and_Polynomial.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 int Formant_Frame_init (Formant_Frame me, long nFormants)
 {

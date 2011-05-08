@@ -25,12 +25,12 @@
 */
 
 #ifndef _NUM_h_
-	#include "num/NUM.h"
+	#include "NUM.h"
 #endif
 #include "limits.h"
 
 #ifndef _regularExp_h_
-	#include "regularExp.h"
+	#include "dwsys/regularExp.h"
 #endif
 /* machine precision */
 #define NUMeps 2.2e-16

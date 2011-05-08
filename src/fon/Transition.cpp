@@ -26,7 +26,7 @@
  */
 
 #include "Transition.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "dwsys/Eigen.h"
 
 #include "sys/oo/oo_DESTROY.h"

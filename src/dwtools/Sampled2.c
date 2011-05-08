@@ -24,7 +24,7 @@
 */
 
 #include "Sampled2.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "Sampled2_def.h"

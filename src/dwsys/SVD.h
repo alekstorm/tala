@@ -24,7 +24,7 @@
 #ifndef _SVD_h_
 #define _SVD_h_
 
-#include "NUM2.h"
+#include "num/NUM2.h"
 #ifndef _Data_h_
 	#include "sys/Data.h"
 #endif

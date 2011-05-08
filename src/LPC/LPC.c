@@ -29,7 +29,7 @@
 */
 
 #include "LPC_and_Polynomial.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "LPC_def.h"

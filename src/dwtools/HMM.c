@@ -24,7 +24,7 @@
 #include "HMM.h"
 #include "dwsys/Index.h"
 #include "ui/Interpreter.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "Strings_extensions.h"
 
 #include "sys/oo/oo_DESTROY.h"

@@ -35,7 +35,7 @@
 
 #include "Sound.h"
 #include "dwtools/Sound_extensions.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #include "sys/enums_getText.h"
 #include "Sound_enums.h"

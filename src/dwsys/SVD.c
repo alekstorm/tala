@@ -35,11 +35,11 @@
 */
 
 #include "SVD.h"
-#include "NUMlapack.h"
-#include "NUMmachar.h"
+#include "num/NUMlapack.h"
+#include "num/NUMmachar.h"
 #include "sys/Collection.h"
-#include "NUMclapack.h"
-#include "NUMcblas.h"
+#include "num/NUMclapack.h"
+#include "num/NUMcblas.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "SVD_def.h"

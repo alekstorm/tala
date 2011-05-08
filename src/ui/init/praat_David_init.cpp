@@ -63,9 +63,9 @@
  djmw 20100511 Categories_getNumberOfCategories
 */
 
-#include "dwsys/NUM2.h"
-#include "dwsys/NUMlapack.h"
-#include "dwsys/NUMmachar.h"
+#include "num/NUM2.h"
+#include "num/NUMlapack.h"
+#include "num/NUMmachar.h"
 
 #include "dwtools/Activation.h"
 #include "dwtools/Categories.h"

@@ -33,7 +33,7 @@
  */
 
 #include "Sound_and_Spectrogram.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #include "sys/enums_getText.h"
 #include "Sound_and_Spectrogram_enums.h"

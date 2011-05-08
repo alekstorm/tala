@@ -10,7 +10,7 @@
   djmw 20110304 Thing_new
 */
 
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "ui/Graphics.h"
 #include "Minimizers.h"
 

@@ -31,7 +31,7 @@
 #include "dwtools/Sound_extensions.h"
 #include "dwsys/SVD.h"
 #include "fon/Vector.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 struct huber_struct
 {

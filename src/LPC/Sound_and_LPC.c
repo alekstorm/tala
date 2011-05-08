@@ -30,7 +30,7 @@
 #include "dwtools/Sound_extensions.h"
 #include "fon/Vector.h"
 #include "fon/Spectrum.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #define LPC_METHOD_AUTO 1
 #define LPC_METHOD_COVAR 2

@@ -31,7 +31,7 @@
  */
 
 #include "Sound_and_Spectrum.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 Spectrum Sound_to_Spectrum (Sound me, int fast) {
 	Spectrum thee = NULL;

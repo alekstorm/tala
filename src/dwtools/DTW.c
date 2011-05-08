@@ -40,8 +40,8 @@
 
 #include "DTW.h"
 #include "Sound_extensions.h"
-#include "dwsys/NUM2.h"
-#include "dwsys/NUMmachar.h"
+#include "num/NUM2.h"
+#include "num/NUMmachar.h"
 #include "ui/GraphicsP.h"
 
 #include "sys/oo/oo_DESTROY.h"

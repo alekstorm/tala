@@ -28,7 +28,7 @@
  */
 
 #include "AffineTransform.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 
 static void classAffineTransform_transform (I, double **in, long nrows, 

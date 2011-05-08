@@ -27,7 +27,7 @@
 
 #include <time.h>
 #include "Index.h"
-#include "NUM2.h"
+#include "num/NUM2.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "Index_def.h"

@@ -57,7 +57,7 @@
 
 #include <ctype.h>
 #include "Table.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "ui/Formula.h"
 #include "dwtools/SSCP.h"
 

@@ -32,7 +32,7 @@
 #include "TableOfReal_extensions.h"
 #include "dwsys/Collection_extensions.h"
 #include "stat/Distributions_and_Strings.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 static void info (I)
 {

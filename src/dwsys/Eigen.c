@@ -38,10 +38,10 @@
 */
 
 #include "Eigen.h"
-#include "NUMmachar.h"
-#include "NUMlapack.h"
-#include "NUMclapack.h"
-#include "NUM2.h"
+#include "num/NUMmachar.h"
+#include "num/NUMlapack.h"
+#include "num/NUMclapack.h"
+#include "num/NUM2.h"
 #include "SVD.h"
 
 #include "sys/oo/oo_DESTROY.h"

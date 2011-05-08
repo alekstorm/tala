@@ -30,8 +30,8 @@
 */
 
 #include "CCA_and_Correlation.h"
-#include "dwsys/NUM2.h"
-#include "dwsys/NUMlapack.h"
+#include "num/NUM2.h"
+#include "num/NUMlapack.h"
 #include "dwsys/SVD.h"
 #include "Strings_extensions.h"
 #include "TableOfReal_extensions.h"

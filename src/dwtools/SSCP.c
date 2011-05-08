@@ -61,9 +61,9 @@
 #include "SSCP.h"
 #include "dwsys/Eigen.h"
 #include "ui/Interpreter.h"
-#include "dwsys/NUMclapack.h"
-#include "dwsys/NUMlapack.h"
-#include "dwsys/NUM2.h"
+#include "num/NUMclapack.h"
+#include "num/NUMlapack.h"
+#include "num/NUM2.h"
 #include "dwsys/SVD.h"
 
 #include "sys/oo/oo_DESTROY.h"

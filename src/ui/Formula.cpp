@@ -68,7 +68,7 @@
 	#include <sys/stat.h>
 #endif
 #include "num/NUM.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "dwsys/regularExp.h"
 #include "Formula.h"
 #include "Interpreter.h"

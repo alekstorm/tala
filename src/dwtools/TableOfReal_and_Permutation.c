@@ -23,7 +23,7 @@
 
 #include "TableOfReal_and_Permutation.h"
 #include "TableOfReal_extensions.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 TableOfReal TableOfReal_and_Permutation_permuteRows (I, Permutation thee)
 {

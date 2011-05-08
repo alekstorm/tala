@@ -31,9 +31,9 @@
 
 #include "Polynomial.h"
 #include "dwsys/SVD.h"
-#include "dwsys/NUMclapack.h"
+#include "num/NUMclapack.h"
 #include "TableOfReal_extensions.h"
-#include "dwsys/NUMmachar.h"
+#include "num/NUMmachar.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "Polynomial_def.h"

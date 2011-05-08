@@ -24,7 +24,7 @@
 
 #include "FFNet_Eigen.h"
 #include "ui/Graphics.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 void FFNet_Eigen_drawIntersection (FFNet me, Eigen eigen, Graphics g, long pcx, long pcy,
     double xmin, double xmax, double ymin, double ymax)

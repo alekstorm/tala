@@ -40,7 +40,7 @@
 #include "dwtools/Confusion.h"
 #include "dwtools/MDS.h"
 #include "dwtools/TableOfReal_extensions.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "ui/Formula.h"
 
 #include <math.h>

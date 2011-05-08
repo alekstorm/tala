@@ -26,7 +26,7 @@
  */
 
 #include "Regression.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "Regression_def.h"

@@ -31,7 +31,7 @@
 #include "Eigen_and_Matrix.h"
 #include "FilterBank.h"
 #include "Matrix_extensions.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 static double scaleFrequency (double f, int scale_from, int scale_to)
 {

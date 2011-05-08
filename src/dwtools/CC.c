@@ -27,7 +27,7 @@
  */
 
 #include "CC.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "CC_def.h"

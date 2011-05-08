@@ -24,7 +24,7 @@
 */
 
 #include "Configuration_and_Procrustes.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 Procrustes Configurations_to_Procrustes (Configuration me, Configuration thee, int orthogonal)
 {

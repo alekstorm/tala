@@ -31,7 +31,7 @@
 #include "fon/Sound_and_Spectrum.h"
 #include "fon/Sound_to_Pitch.h"
 #include "fon/Vector.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #define MIN(m,n) ((m) < (n) ? (m) : (n))
 

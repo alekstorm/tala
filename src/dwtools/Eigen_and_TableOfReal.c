@@ -26,7 +26,7 @@
 */
 
 #include "Eigen_and_TableOfReal.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 TableOfReal Eigen_and_TableOfReal_project (I, thou, long from,
 	long numberOfComponents)

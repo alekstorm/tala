@@ -22,9 +22,9 @@
 */
 #include "stat/Distributions_and_Strings.h"
 #include "GaussianMixture.h"
-#include "dwsys/NUMlapack.h"
-#include "dwsys/NUMmachar.h"
-#include "dwsys/NUM2.h"
+#include "num/NUMlapack.h"
+#include "num/NUMmachar.h"
+#include "num/NUM2.h"
 #include "Strings_extensions.h"
 
 #include "sys/oo/oo_DESTROY.h"

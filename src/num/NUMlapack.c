@@ -23,7 +23,7 @@
  djmw 20071022 NUMmatricesToUpperTriangularForms now inializes l=0
 */
 
-#include "num/NUM.h"
+#include "NUM.h"
 #include "NUMlapack.h"
 #include "NUMmachar.h"
 #include "sys/melder/melder.h"

@@ -20,7 +20,7 @@
 
 #include "Eigen_and_Procrustes.h"
 #include "Configuration_and_Procrustes.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 Procrustes Eigens_to_Procrustes (I, thou, long evec_from, long evec_to)
 {

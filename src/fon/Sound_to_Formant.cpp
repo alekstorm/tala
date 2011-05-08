@@ -29,7 +29,7 @@
  */
 
 #include "Sound_to_Formant.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "dwtools/Polynomial.h"
 
 static int burg (double sample [], long nsamp_window, double cof [], int nPoles,

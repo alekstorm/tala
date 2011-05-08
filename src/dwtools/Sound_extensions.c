@@ -63,7 +63,7 @@
 #include "TextGrid_extensions.h"
 #include "fon/DurationTier.h"
 #include "fon/Manipulation.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 #define MAX_T  0.02000000001   /* Maximum interval between two voice pulses (otherwise voiceless). */
 

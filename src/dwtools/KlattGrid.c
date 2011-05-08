@@ -37,7 +37,7 @@
 #include "fon/Pitch_to_PitchTier.h"
 #include "fon/PitchTier_to_Sound.h"
 #include "fon/PitchTier_to_PointProcess.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "fon/Sound_to_Formant.h"
 #include "fon/Sound_to_Intensity.h"
 #include "fon/Sound_to_Pitch.h"

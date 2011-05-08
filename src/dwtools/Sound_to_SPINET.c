@@ -23,7 +23,7 @@
 */
 
 #include "Sound_to_SPINET.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 static double fgamma (double x, long n)
 {

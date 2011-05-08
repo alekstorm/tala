@@ -29,7 +29,7 @@
 
 #include "ClassificationTable.h"
 #include "Strings_extensions.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 
 class_methods (ClassificationTable, TableOfReal)
 class_methods_end

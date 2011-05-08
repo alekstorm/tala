@@ -24,7 +24,7 @@
 
 #include "ICA.h"
 #include "ui/Interpreter.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "PCA.h"
 #include "dwsys/SVD.h"
 

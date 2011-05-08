@@ -7,15 +7,6 @@ libdwsys_a_SOURCES = \
 	Command.c \
 	Eigen.c \
 	Index.c \
-	NUM2.c \
-	NUMcblas.c \
-	NUMclapack.c \
-	NUMf2c.c \
-	NUMfft_d.c \
-	NUMhuber.c \
-	NUMlapack.c \
-	NUMmachar.c \
-	NUMsort2.c \
 	Permutation.c \
 	Permutation_and_Index.c \
 	regularExp.c \

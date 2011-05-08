@@ -41,9 +41,9 @@
 #include "SSCP.h"
 #include "Eigen_and_SSCP.h"
 #include "Eigen_and_TableOfReal.h"
-#include "dwsys/NUMlapack.h"
+#include "num/NUMlapack.h"
 #include "dwsys/SVD.h"
-#include "dwsys/NUM2.h"
+#include "num/NUM2.h"
 #include "TableOfReal_extensions.h"
 
 #include "sys/oo/oo_DESTROY.h"
