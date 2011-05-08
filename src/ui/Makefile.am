@@ -51,4 +51,3 @@ libui_a_SOURCES = \
 	UiFile.cpp \
 	UiForm.cpp \
 	UiPause.cpp
-#libui_la_LIBADD = init/libinit.la editors/libeditors.la

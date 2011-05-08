@@ -13,6 +13,7 @@ bin_PROGRAMS = praat
 
 praat_SOURCES = ui/main_Praat.cpp
 praat_LDADD = \
+	artsynth/libartsynth.a \
 	ui/init/libinit.a \
 	ui/libui.a \
 	ui/editors/libeditors.a \
