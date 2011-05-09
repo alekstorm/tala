@@ -65,6 +65,7 @@ void TimeSoundEditor::prefs (void) {
 TimeSoundEditor::TimeSoundEditor (GuiObject parent, const wchar_t *title, Any data, Any sound, bool ownSound)
 	: FunctionEditor (parent, title, data),
 	  _ownSound(ownSound) {
+	_longSound.data = NULL;
 	createMenus ();
 	if (sound != NULL) {
 		if (ownSound) {
