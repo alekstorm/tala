@@ -42,12 +42,6 @@ end:
 	return me;
 }
 
-void AmplitudeTier_draw (AmplitudeTier me, Graphics g, double tmin, double tmax,
-	double ymin, double ymax, const wchar_t *method, int garnish)
-{
-	RealTier_draw (me, g, tmin, tmax, ymin, ymax, garnish, method, L"Sound pressure (Pa)");
-}
-
 AmplitudeTier PointProcess_upto_AmplitudeTier (PointProcess me, double soundPressure) {
 	AmplitudeTier thee = (AmplitudeTier) PointProcess_upto_RealTier (me, soundPressure);
 	if (! thee) return NULL;

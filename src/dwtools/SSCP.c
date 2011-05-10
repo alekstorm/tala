@@ -107,7 +107,7 @@ class_methods_end
 	Calculate scale factor by which sqrt(eigenvalue) has to
 	be multiplied to obtain the length of an ellipse axis.
 */
-static double ellipseScalefactor (I, double scale, int confidence)
+double SSCP_ellipseScalefactor (I, double scale, int confidence)
 {
 	iam (SSCP);
 	long n = SSCP_getNumberOfObservations (me);
@@ -130,11 +130,11 @@ static double ellipseScalefactor (I, double scale, int confidence)
 	return scale;
 }
 
-static void getEllipseBoundingBoxCoordinates (SSCP me, double scale, int confidence,
+void SSCP_getEllipseBoundingBoxCoordinates (SSCP me, double scale, int confidence,
 	double *xmin, double *xmax, double *ymin, double *ymax)
 {
 	double a, b, cs, sn, width, height;
-	double lscale = ellipseScalefactor (me, scale, confidence);
+	double lscale = SSCP_ellipseScalefactor (me, scale, confidence);
 
 	NUMeigencmp22 (my data[1][1], my data[1][2], my data[2][2], &a, &b, &cs, &sn);
 	NUMgetEllipseBoundingBox (sqrt (a), sqrt (b), cs, & width, & height);
@@ -157,7 +157,7 @@ void SSCPs_getEllipsesBoundingBoxCoordinates (SSCPs me, double scale, int confid
 	{
 		SSCP s = my item[i];
 		double xmn, xmx, ymn, ymx;
-		getEllipseBoundingBoxCoordinates (s, scale, confidence, &xmn, &xmx, &ymn, &ymx);
+		SSCP_getEllipseBoundingBoxCoordinates (s, scale, confidence, &xmn, &xmx, &ymn, &ymx);
 		if (xmn < *xmin) *xmin = xmn;
 		if (xmx > *xmax) *xmax = xmx;
 		if (ymn < *ymin) *ymin = ymn;
@@ -165,7 +165,7 @@ void SSCPs_getEllipsesBoundingBoxCoordinates (SSCPs me, double scale, int confid
 	}
 }
 
-static SSCP _SSCP_extractTwoDimensions (SSCP me, long d1, long d2)
+SSCP SSCP_extractTwoDimensions (SSCP me, long d1, long d2)
 {
 	SSCP thee;
 
@@ -200,63 +200,12 @@ SSCPs SSCPs_extractTwoDimensions (SSCPs me, long d1, long d2)
 	if (! (thee = SSCPs_create ())) return NULL;
 	for (i=1; i <= my size; i++)
 	{
-		SSCP t = _SSCP_extractTwoDimensions (my item[i], d1, d2);
+		SSCP t = SSCP_extractTwoDimensions (my item[i], d1, d2);
 		Thing_setName (t, Thing_getName (my item[i]));
 		if (! t || ! Collection_addItem (thee, t)) break;
 	}
 	if (Melder_hasError ()) forget (thee);
 	return thee;
-}
-
-static void _SSCP_drawTwoDimensionalEllipse (SSCP me, Graphics g, double scale,
-	int fontSize)
-{
-	double a, angle, b, cs, sn, twoPi = 2 * NUMpi;
-	long nsteps = 100;
-	double angle_inc = twoPi / nsteps;
-	double *x = NULL, *y = NULL; long i;
-	wchar_t *name;
-
-	x = NUMdvector (0, nsteps);
-	if (x == NULL) return;
-	y = NUMdvector (0, nsteps);
-	if (y == NULL) goto end;
-
-	/*
-		Get principal axes and orientation for the ellipse by performing the
-		eigen decomposition of a symmetric 2-by-2 matrix.
-		Principal axes are a and b with eigenvector/orientation (cs, sn).
-	*/
-
-	NUMeigencmp22 (my data[1][1], my data[1][2], my data[2][2], &a, &b, &cs, &sn);
-
-	/*
-		1. Take sqrt to get units of 'std_dev'
-	*/
-
-	a = scale * sqrt (a) / 2; b = scale * sqrt (b) / 2;
-	x[nsteps] = x[0] = my centroid[1] + cs * a;
-	y[nsteps] = y[0] = my centroid[2] + sn * a;
-	for (angle = 0, i = 1; i < nsteps; i++, angle += angle_inc)
-	{
-		double xc = a * cos (angle);
-		double yc = b * sin (angle);
-		double xt = xc * cs - yc * sn;
-		y[i] = my centroid[2] + xc * sn + yc * cs;
-		x[i] = my centroid[1] + xt;
-	}
-	Graphics_polyline (g, nsteps + 1, x, y);
-	if (fontSize > 0 && (name = Thing_getName (me)))
-	{
-		int oldFontSize = Graphics_inqFontSize (g);
-		Graphics_setFontSize (g, fontSize);
-		Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
-		Graphics_text (g, my centroid[1], my centroid[2], name);
-		Graphics_setFontSize (g, oldFontSize);
-	}
-end:
-	NUMdvector_free (x, 0);
-	NUMdvector_free (y, 0);
 }
 
 SSCP SSCP_toTwoDimensions (I, double *v1, double *v2)
@@ -334,9 +283,9 @@ double SSCP_getConcentrationEllipseArea(I, double scale, int confidence, long d1
 
 	if (d1 < 1 || d1 > p || d2 < 1 || d2 > p || d1 == d2) return 0;
 
-	if ((thee = _SSCP_extractTwoDimensions (me, d1, d2)) == NULL) return 0;
+	if ((thee = SSCP_extractTwoDimensions (me, d1, d2)) == NULL) return 0;
 
-	scale = ellipseScalefactor (thee, scale, confidence);
+	scale = SSCP_ellipseScalefactor (thee, scale, confidence);
 
 	if (scale < 0) return 0;
 
@@ -351,11 +300,6 @@ double SSCP_getConcentrationEllipseArea(I, double scale, int confidence, long d1
 	forget (thee);
 	return NUMpi * a * b;
 }
-/*
-void SSCP_and_TableOfReal_drawMahalanobisDistances (I, thou, Graphics g, long rowb, long rowe, double ymin,
-	double ymax, double chiSqFraction, int garnish)
-{
-}*/
 
 double SSCP_getFractionVariation (I, long from, long to)
 {
@@ -371,47 +315,6 @@ double SSCP_getFractionVariation (I, long from, long to)
 		if (i >= from && i <= to) sum += my numberOfRows == 1 ? my data[1][i] : my data[i][i];
 	}
 	return trace > 0 ? sum / trace : NUMundefined;
-}
-
-void SSCP_drawConcentrationEllipse (SSCP me, Graphics g, double scale,
-	int confidence, long d1, long d2, double xmin, double xmax,
-	double ymin, double ymax, int garnish)
-{
-	SSCP thee;
-	double xmn, xmx, ymn, ymx;
-	long p = my numberOfColumns;
-
-	if (d1 < 1 || d1 > p || d2 < 1 || d2 > p || d1 == d2) return;
-
-	if (! (thee = _SSCP_extractTwoDimensions (me, d1, d2))) return;
-
-	getEllipseBoundingBoxCoordinates (thee, scale, confidence, &xmn, &xmx, &ymn, &ymx);
-
-	if (xmax == xmin)
-	{
-		xmin = xmn; xmax = xmx;
-	}
-
-	if (ymax == ymin)
-	{
-		ymin = ymn; ymax = ymx;
-	}
-
-	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
-	Graphics_setInner (g);
-
-	scale = ellipseScalefactor (thee, scale, confidence);
-	if (scale < 0) return;
-	_SSCP_drawTwoDimensionalEllipse (thee, g, scale, 0);
-
-	Graphics_unsetInner (g);
-	if (garnish)
-	{
-		Graphics_drawInnerBox (g);
-    	Graphics_marksLeft (g, 2, 1, 1, 0);
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-	}
-	forget (thee);
 }
 
 void SSCP_setNumberOfObservations (I, double numberOfObservations)
@@ -1150,63 +1053,6 @@ SSCPs SSCPs_toTwoDimensions (SSCPs me, double *v1, double *v2)
 	}
 	if (Melder_hasError ()) forget (thee);
 	return thee;
-}
-
-
-void SSCPs_drawConcentrationEllipses (SSCPs me, Graphics g, double scale,
-	int confidence, wchar_t *label, long d1, long d2, double xmin, double xmax,
-	double ymin, double ymax, int fontSize, int garnish)
-{
-	SSCPs thee;
-	SSCP t = my item[1];
-	double xmn, xmx, ymn, ymx;
-	long i, p = t -> numberOfColumns;
-
-	if (d1 < 1 || d1 > p || d2 < 1 || d2 > p || d1 == d2) return;
-
-	if (! (thee = SSCPs_extractTwoDimensions (me, d1, d2))) return;
-	SSCPs_getEllipsesBoundingBoxCoordinates (thee, scale, confidence, &xmn, &xmx, &ymn, &ymx);
-
-	if (xmin == xmax)
-	{
-		xmin = xmn; xmax = xmx;
-	}
-
-	if (ymin == ymax)
-	{
-		ymin = ymn; ymax = ymx;
-	}
-
-	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
-	Graphics_setInner (g);
-
-
-	for (i = 1; i <= thy size; i++)
-	{
-		double lscale;
-		t = thy item[i];
-		lscale = ellipseScalefactor (t, scale, confidence);
-		if (lscale < 0) continue;
-		if (label == NULL || Melder_wcscmp (label, Thing_getName (t)) == 0)
-		{
-			_SSCP_drawTwoDimensionalEllipse (t, g, lscale, fontSize);
-		}
-	}
-
-	Graphics_unsetInner (g);
-	if (garnish)
-	{
-		wchar_t text[20];
-		t = my item[1];
-    	Graphics_drawInnerBox (g);
-    	Graphics_marksLeft (g, 2, 1, 1, 0);
-		swprintf (text, 20, L"Dimension %ld", d2);
-    	Graphics_textLeft (g, 1, t -> columnLabels[d2] ? t -> columnLabels[d2] : text);
-    	Graphics_marksBottom (g, 2, 1, 1, 0);
-		swprintf (text, 20, L"Dimension %ld", d1);
-		Graphics_textBottom (g, 1, t -> columnLabels[d1] ? t -> columnLabels[d1] : text);
-	}
-	forget (thee);
 }
 
 TableOfReal SSCP_to_TableOfReal (SSCP me)

@@ -26,8 +26,6 @@
 #include "Preferences.h"
 #include "Gui.h"
 
-#include <stdexcept>
-
 class Editor;
 class Interpreter;
 class UiForm;

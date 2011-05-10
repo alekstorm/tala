@@ -93,19 +93,6 @@ CCA CCA_create (long numberOfCoefficients, long ny, long nx)
 	return me;
 }
 
-void CCA_drawEigenvector (CCA me, Graphics g, int x_or_y, long ivec, long first, long last,
-	double ymin, double ymax, int weigh, double size_mm, const wchar_t *mark,	int connect, int garnish)
-{
-	Eigen e = my x; 
-	Strings labels = my xLabels;
-	if (x_or_y == 1)
-	{
-		e = my y; labels = my yLabels;
-	}	
-	Eigen_drawEigenvector (e, g, ivec, first, last, ymin, ymax, weigh, size_mm, mark,
-		connect, labels -> strings, garnish);
-}
-
 double CCA_getEigenvectorElement (CCA me, int x_or_y, long ivec, long element)
 {
 	Eigen e = x_or_y == 1 ? my y : my x;

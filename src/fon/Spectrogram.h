@@ -24,7 +24,6 @@
  */
 
 #include "Matrix.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -64,28 +63,6 @@ Any Spectrogram_create (double tmin, double tmax, long nt, double dt, double t1,
 		result -> dx = dt;			result -> dy = df;
 		result -> x1 = t1;			result -> y1 = f1;
 		result -> z [1..nf] [1..nt] = 0.0;
-*/
-
-void Spectrogram_paintInside (I, Graphics g,
-	double tmin, double tmax, double fmin, double fmax, double maximum, int autoscaling,
-	double dynamicRange, double preemphasis, double dynamicCompression);
-void Spectrogram_paint (I, Graphics g,
-	double tmin, double tmax, double fmin, double fmax, double maximum, int autoscaling,
-	double dynamicRange, double preemphasis, double dynamicCompression,
-	int garnish);
-/*
-	Function:
-		Draw me to a Graphics.
-		If tmax <= tmin, draw all time samples.
-		If fmax <= fmin, draw all frequency bands.
-	Arguments:
-		dynamicRange (dB): the difference between the maximum intensity and the lowest visible intensity.
-		preemphasis (dB/octave): high-pass filtering.
-		dynamicCompression (0-1):
-			the amount by which weaker frames are enhanced in the direction of the strongest frame;
-			0 = no compression, 1 = complete compression (all frames shown equally strong).
-		garnish:
-			a boolean that determines if a box, ticks, numbers, and text are written in the margins.
 */
 
 Spectrogram Matrix_to_Spectrogram (I);

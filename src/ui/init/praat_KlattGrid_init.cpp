@@ -825,6 +825,628 @@ DIRECT (KlattGrid_play)
 	EVERY_CHECK (KlattGrid_play ((structKlattGrid *)OBJECT))
 END
 
+// y is the heigth in units of the height of one section,
+// y1 is the heigth from the top to the split between the uppper, non-diffed, and lower diffed part
+static void _KlattGrid_queryParallelSplit (KlattGrid me, double dy, double *y, double *y1)
+{
+	long ny = my vocalTract -> nasal_formants -> formants -> size + my vocalTract -> oral_formants -> formants -> size + my coupling -> tracheal_formants -> formants -> size;
+	long n1 = my vocalTract -> nasal_formants -> formants -> size + (my vocalTract -> oral_formants -> formants -> size > 0 ? 1 : 0);
+
+	long n2 = ny - n1;
+	if (ny == 0) { *y = 0; *y1 = 0; return; }
+
+	*y = ny + (ny - 1) * dy;
+
+	if (n1 == 0) { *y1 = 0.5; }
+	else if (n2 == 0) { *y1 = *y - 0.5; }
+	else { *y1 = n1 + (n1 - 1) * dy + 0.5 * dy; }
+	return;
+}
+
+static void getYpositions (double h1, double h2, double h3, double h4, double h5, double fractionOverlap, double *dy, double *ymin1, double *ymax1, double *ymin2, double *ymax2, double *ymin3, double *ymax3)
+{
+	// Given: five 'blocks' with relative heights h1..h5 in arbitrary units.
+	// Problem: scale all h1..h5 such that:
+	// 1. blocks h1 and h2 form one unit, with h1 on top of h2, the quotient h1/h2 is fixed
+	// 2. blocks h3 and h4 form one unit, with h3 on top of h4, the quotient h3/h4 is fixed
+	// 3. blocks h1 and h3 have the same baseline.
+	// 4. h5 is always underneath (h1,h2) but may partially overlap (0.45) with h4.
+	// 5. After scaling the new h1+h2 >= 0.3
+	// 6. Optimally use the vertical space from 0.. 1, i.e the top of h1 or h3 is at 1,
+	// the bottom of h5 is at 0. Preferably scale all blocks with the same factor, if not possible than
+	// scale h3,h4 and h5 the same
+	//
+	// h1  h3
+	// h2  h4
+	//  h5
+	/* Cases:
+                  x             x       ^
+         x      x x    x      x x       |
+      h1 x x    x x    x x    x x h3    | h13
+         -----------------------------------------------------------
+      h2 x x    x x    x x    x x h4
+         x      x      x x    x x
+                         x      x
+         x      x      x x    x x
+      h5 x      x      x      x
+         x      x      x      x
+	*/
+	double h; // h12_min = 0.3; not yet
+	double h13 = h1 > h3 ? h1 : h3; // baselines are now equal
+	if (h2 >= h4)
+	{
+		h = h13 + h2 + h5;
+	}
+	else // h2 < h4
+	{
+		double maximumOverlap3 = fractionOverlap * h5;
+		if (maximumOverlap3 < (h1 + h2)) maximumOverlap3 = 0;
+		else if (maximumOverlap3 > (h4 - h2)) maximumOverlap3 = h4 - h2;
+		h = h13 + h4 + h5 - maximumOverlap3;
+	}
+	*dy = 1 / (1.1 * h);
+	*ymin1 = 1 - (h13 + h2) * *dy; *ymax1 = *ymin1 + (h1 + h2) * *dy;
+	*ymin2 = 1 - (h13 + h4) * *dy; *ymax2 = *ymin2 + (h3 + h4) * *dy;
+	*ymin3 = 0;  *ymax3 = h5 * *dy;
+}
+
+static void rel_to_abs (double *w, double *ws, long n, double d)
+{
+	long i; double sum;
+
+	for (sum = 0, i = 1; i <= n; i++) // relative
+	{
+		sum += w[i];
+	}
+	if (sum != 0)
+	{
+		double dw = d / sum;
+		for (sum = 0, i = 1; i <= n; i++) // to absolute
+		{
+			w[i] *= dw;
+			sum += w[i];
+			ws[i] = sum;
+		}
+	}
+}
+
+// Calculates the intersection point (xi,yi) of a line with a circle.
+// The line starts at the origin and P (xp, yp) is on that line.
+static void NUMcircle_radial_intersection_sq (double x, double y, double r, double xp, double yp, double *xi, double *yi)
+{
+	double dx = xp - x, dy = yp - y;
+	double d = sqrt (dx * dx + dy * dy);
+	if (d > 0)
+	{
+		*xi = x + dx * r / d;
+		*yi = y + dy * r / d;
+	}
+	else { *xi = *yi = NUMundefined; }
+}
+
+typedef struct structconnections { long numberOfConnections; double *x, *y;} *connections;
+
+static void connections_free (connections me)
+{
+	if (me == NULL) return;
+	NUMdvector_free (my x, 1);
+	NUMdvector_free (my y, 1);
+	Melder_free (me);
+}
+
+static connections connections_create (long numberOfConnections)
+{
+	connections me = (connections) _Melder_malloc_e (sizeof (struct structconnections));
+	if (me == NULL) return NULL;
+	my numberOfConnections = numberOfConnections;
+	my x = NUMdvector (1, numberOfConnections);
+	if (my x == NULL) goto end;
+	my y = NUMdvector (1, numberOfConnections);
+end:
+	if (Melder_hasError ()) connections_free (me);
+	return me;
+}
+
+static void summer_draw (Graphics g, double x, double y, double r, int alternating)
+{
+	Graphics_setLineWidth (g, 2);
+	Graphics_circle (g, x, y, r);
+	double dy = 3 * r / 4;
+	// + symbol
+	if (alternating) y += r / 4;
+	Graphics_line (g, x, y + r / 2, x, y - r / 2);
+	Graphics_line (g, x - r / 2, y, x + r / 2, y);
+	if (alternating) Graphics_line (g, x - r / 2, y - dy , x + r / 2, y - dy);
+}
+
+static void _summer_drawConnections (Graphics g, double x, double y, double r, connections thee, int arrow, int alternating, double horizontalFraction)
+{
+	summer_draw (g, x, y, r, alternating);
+
+	for (long i = 1; i <= thy numberOfConnections; i++)
+	{
+		double xto, yto, xp = thy x[i], yp = thy y[i];
+		if (horizontalFraction > 0)
+		{
+			double dx = x - xp;
+			if (dx > 0)
+			{
+				xp += horizontalFraction * dx;
+				Graphics_line (g, thy x[i], yp, xp, yp);
+			}
+		}
+		NUMcircle_radial_intersection_sq (x, y, r, xp, yp, &xto, &yto);
+		if (xto == NUMundefined || yto == NUMundefined) continue;
+		if (arrow) Graphics_arrow (g, xp, yp, xto, yto);
+		else Graphics_line (g, xp, yp, xto, yto);
+	}
+}
+
+static void summer_drawConnections (Graphics g, double x, double y, double r, connections thee, int arrow, double horizontalFraction)
+{
+	_summer_drawConnections (g, x, y, r, thee, arrow, 0, horizontalFraction);
+}
+
+static void alternatingSummer_drawConnections (Graphics g, double x, double y, double r, connections thee, int arrow, double horizontalFraction)
+{
+	_summer_drawConnections (g, x, y, r, thee, arrow, 1, horizontalFraction);
+}
+
+static void draw_oneSection (Graphics g, double xmin, double xmax, double ymin, double ymax, wchar_t *line1, wchar_t *line2, wchar_t *line3)
+{
+	long numberOfTextLines = 0, iline = 0;
+	Graphics_rectangle (g, xmin, xmax, ymin, ymax);
+	if (line1 != NULL) numberOfTextLines++;
+	if (line2 != NULL) numberOfTextLines++;
+	if (line3 != NULL) numberOfTextLines++;
+	double y = ymax, dy = (ymax - ymin) / (numberOfTextLines + 1), ddy = dy / 10;
+	double x = (xmax + xmin) / 2;
+	if (line1 != NULL)
+	{
+		iline++;
+		y -= dy - (numberOfTextLines == 2 ? ddy : 0); // extra spacing for two lines
+		Graphics_text1 (g, x, y, line1);
+	}
+	if (line2 != NULL)
+	{
+		iline++;
+		y -= dy - (numberOfTextLines == 2 ? (iline == 1 ? ddy : -iline * ddy) : 0);
+		Graphics_text1 (g, x, y, line2);
+	}
+	if (line3 != NULL)
+	{
+		iline++;
+		y -= dy - (numberOfTextLines == 2 ? -iline * ddy : 0);
+		Graphics_text1 (g, x, y, line3);
+	}
+}
+
+static void PhonationGrid_draw_inside (PhonationGrid me, Graphics g, double xmin, double xmax, double ymin, double ymax, double dy, double *yout)
+{
+	// dum voicing conn tilt conn summer
+	(void) me;
+	double xw[6] = { 0, 1, 0.5, 1, 0.5, 0.5 }, xws[6];
+	double x1, y1, x2, y2, xs, ys, ymid, r;
+	int arrow = 1;
+
+	connections thee = connections_create (2);
+	if (thee == NULL) return;
+
+	rel_to_abs (xw, xws, 5, xmax - xmin);
+
+	dy = (ymax - ymin) / (1 + (dy < 0 ? 0 : dy) + 1);
+
+	x1 = xmin; x2 = x1 + xw[1];
+	y2 = ymax; y1 = y2 - dy;
+	draw_oneSection (g, x1, x2, y1, y2, NULL, L"Voicing", NULL);
+
+	x1 = x2; x2 = x1 + xw[2]; ymid = (y1 + y2) / 2;
+	Graphics_line (g, x1, ymid, x2, ymid);
+
+	x1 = x2; x2 = x1 + xw[3];
+	draw_oneSection (g, x1, x2, y1, y2, NULL, L"Tilt", NULL);
+
+	thy x[1] = x2; thy y[1] = ymid;
+
+	y2 = y1 - 0.5 * dy; y1 = y2 - dy; ymid = (y1 + y2) / 2;
+	x2 = xmin + xws[3]; x1 = x2 - 1.5 * xw[3]; // some extra space
+	draw_oneSection (g, x1, x2, y1, y2, NULL, L"Aspiration", NULL);
+
+	thy x[2] = x2; thy y[2] = ymid;
+
+	r = xw[5] / 2;
+	xs = xmax - r; ys = (ymax + ymin) / 2;
+
+	summer_drawConnections (g, xs, ys, r, thee, arrow, 0.4);
+	connections_free (thee);
+
+	if (yout != NULL) *yout = ys;
+}
+
+void PhonationGrid_draw (PhonationGrid me, Graphics g)
+{
+	double xmin = 0, xmax2 = 0.9, xmax = 1, ymin = 0, ymax = 1, dy = 0.5, yout;
+
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	PhonationGrid_draw_inside (me, g, xmin, xmax2, ymin, ymax, dy, &yout);
+
+	Graphics_arrow (g, xmax2, yout, xmax, yout);
+	Graphics_unsetInner (g);
+}
+
+static void VocalTractGrid_CouplingGrid_drawCascade_inline (VocalTractGrid me, CouplingGrid thee, Graphics g, double xmin, double xmax, double ymin, double ymax, double *yin, double *yout)
+{
+	long numberOfOralFormants = my oral_formants -> formants -> size;
+	long numberOfNasalFormants = my nasal_formants -> formants -> size;
+	long numberOfNasalAntiFormants = my nasal_antiformants -> formants -> size;
+	long numberOfTrachealFormants = thee != NULL ? thy tracheal_formants -> formants -> size : 0;
+	long numberOfTrachealAntiFormants = thee != NULL ? thy tracheal_antiformants -> formants -> size : 0;
+ 	double x1, y1 = ymin, x2, y2 = ymax, dx, ddx = 0.2, ymid = (y1 + y2) / 2;
+ 	wchar_t *text[6] = { 0, L"TF", L"TAF", L"NF", L"NAF", L""};
+ 	long nf[6] = {0, numberOfTrachealFormants, numberOfTrachealAntiFormants, numberOfNasalFormants, numberOfNasalAntiFormants, numberOfOralFormants};
+	long numberOfFilters, numberOfXSections = 5, nsx = 0, isection, i;
+	MelderString ff = { 0 }, fb = { 0 };
+
+	numberOfFilters = numberOfNasalFormants + numberOfNasalAntiFormants + numberOfTrachealFormants + numberOfTrachealAntiFormants + numberOfOralFormants;
+
+	if (numberOfFilters == 0)
+	{
+		x2 = xmax;
+		Graphics_line (g, xmin, ymid, x2, ymid);
+		goto end;
+	}
+
+	for (isection = 1; isection <= numberOfXSections; isection++) if (nf[isection] > 0) nsx++;
+	dx = (xmax - xmin) / (numberOfFilters  + (nsx - 1) * ddx);
+
+	x1 = xmin;
+	for (isection = 1; isection <= numberOfXSections; isection++)
+	{
+		long numberOfFormants = nf[isection];
+
+		if (numberOfFormants == 0) continue;
+
+		x2 = x1 + dx;
+		for (i = 1; i <= numberOfFormants; i++)
+		{
+			MelderString_append2 (&ff, L"F", Melder_integer (i));
+			MelderString_append2 (&fb, L"B", Melder_integer (i));
+			draw_oneSection (g, x1, x2, y1, y2, text[isection], ff.string, fb.string);
+			if (i < numberOfFormants) { x1 = x2; x2 = x1 + dx; }
+			MelderString_empty (&ff); MelderString_empty (&fb);
+		}
+
+		if (isection < numberOfXSections)
+		{
+			x1 = x2; x2 = x1 + ddx * dx;
+			Graphics_line (g, x1, ymid, x2, ymid);
+			x1 = x2;
+		}
+	}
+end:
+	if (yin != NULL) *yin = ymid;
+	if (yout != NULL) *yout = ymid;
+
+	MelderString_free (&ff); MelderString_free (&fb);
+}
+
+static void VocalTractGrid_CouplingGrid_drawParallel_inline (VocalTractGrid me, CouplingGrid thee, Graphics g, double xmin, double xmax, double ymin, double ymax, double dy, double *yin, double *yout)
+{
+	// (0: filler) (1: hor. line to split) (2: split to diff) (3: diff) (4: diff to split)
+	// (5: split to filter) (6: filters) (7: conn to summer) (8: summer)
+	double xw[9] = { 0, 0.3, 0.2, 1.5, 0.5, 0.5, 1, 0.5, 0.5 }, xws[9];
+	long i, isection, numberOfXSections = 8, ic = 0, numberOfYSections = 4;
+	long numberOfNasalFormants = my nasal_formants -> formants -> size;
+	long numberOfOralFormants = my oral_formants -> formants -> size;
+	long numberOfTrachealFormants = thee != NULL ? thy tracheal_formants -> formants -> size : 0;
+	long numberOfFormants = numberOfNasalFormants + numberOfOralFormants + numberOfTrachealFormants;
+	long numberOfUpperPartFormants = numberOfNasalFormants + (numberOfOralFormants > 0 ? 1 : 0);
+	long numberOfLowerPartFormants = numberOfFormants - numberOfUpperPartFormants;
+	double ddy = dy < 0 ? 0 : dy, x1, y1, x2, y2, x3, r, ymid;
+ 	wchar_t *text[5] = { 0, L"Nasal", L"", L"", L"Tracheal"};
+ 	long nffrom[5] = {0, 1, 1, 2, 1};
+ 	long nfto[5] = {0, numberOfNasalFormants, (numberOfOralFormants > 0 ? 1 : 0), numberOfOralFormants, numberOfTrachealFormants};
+	MelderString fba = { 0 };
+
+	rel_to_abs (xw, xws, numberOfXSections, xmax - xmin);
+
+	connections local_in, local_out;
+
+	if (numberOfFormants == 0)
+	{
+		y1 = y2 = (ymin + ymax) / 2;
+		Graphics_line (g, xmin, y1, xmax, y1);
+		goto end;
+	}
+
+	{
+		dy = (ymax - ymin) / (numberOfFormants * (1 + ddy) - ddy);
+
+		local_in = connections_create (numberOfFormants);
+		if (local_in == NULL) return;
+		local_out = connections_create (numberOfFormants);
+		if (local_out == NULL) goto end;
+
+		// parallel section
+		x1 = xmin + xws[5]; x2 = x1 + xw[6]; y2 = ymax;
+		x3 = xmin + xws[4];
+		for (isection = 1; isection <= numberOfYSections; isection++)
+		{
+			long ifrom = nffrom[isection], ito = nfto[isection];
+			if (ito < ifrom) continue;
+			for (i = ifrom; i <= ito; i++)
+			{
+				y1 = y2 - dy; ymid = (y1 + y2) / 2;
+				const wchar_t *fi = Melder_integer (i);
+				MelderString_append6 (&fba, L"A", fi, L" F", fi, L" B", fi);
+				draw_oneSection (g, x1, x2, y1, y2, text[isection], fba.string, NULL);
+				Graphics_line (g, x3, ymid, x1, ymid); // to the left
+				ic++;
+				local_in -> x[ic] = x3; local_out -> x[ic] = x2;
+				local_in -> y[ic] = local_out -> y[ic] = ymid;
+				y2 = y1 - 0.5 * dy;
+				MelderString_empty (&fba);
+			}
+		}
+
+		ic = 0;
+		x1 = local_in -> y[1];
+		if (numberOfUpperPartFormants > 0)
+		{
+			x1 = local_in -> x[numberOfUpperPartFormants]; y1 = local_in -> y[numberOfUpperPartFormants];
+			if (numberOfUpperPartFormants > 1) Graphics_line (g, x1, y1, local_in -> x[1], local_in -> y[1]); // vertical
+			x2 = xmin;
+			if (numberOfLowerPartFormants > 0) { x2 += xw[1]; }
+			Graphics_line (g, x1, y1, x2, y1); // done
+		}
+		if (numberOfLowerPartFormants > 0)
+		{
+			long ifrom = numberOfUpperPartFormants + 1;
+			x1 = local_in -> x[ifrom]; y1 = local_in -> y[ifrom]; // at the split
+			if (numberOfLowerPartFormants > 1) Graphics_line (g, x1, y1, local_in -> x[numberOfFormants], local_in -> y[numberOfFormants]); // vertical
+			x2 = xmin + xws[3]; // right of diff
+			Graphics_line (g, x1, y1, x2, y1); // from vertical to diff
+			x1 = xmin + xws[2]; // left of diff
+			draw_oneSection (g, x1, x2, y1 + 0.5 * dy, y1 - 0.5 * dy, L"Pre-emphasis", NULL, NULL);
+			x2 = x1;
+			if (numberOfUpperPartFormants > 0)
+			{
+				x2 = xmin + xw[1]; y2 = y1; // at split
+				Graphics_line (g, x1, y1, x2, y1); // to split
+				y1 += (1 + ddy) * dy;
+				Graphics_line (g, x2, y2, x2, y1); // vertical
+				y1 -= 0.5 * (1 + ddy) * dy;
+			}
+			Graphics_line (g, xmin, y1, x2, y1);
+		}
+
+		r = xw[8] / 2;
+		x2 = xmax - r; y2 = (ymin + ymax) / 2;
+
+		alternatingSummer_drawConnections (g, x2, y2, r, local_out, 1, 0.4);
+	}
+
+end:
+
+	connections_free (local_out); connections_free (local_in);
+
+	if (yin != NULL) *yin = y1;
+	if (yout != NULL) *yout = y2;
+
+	MelderString_free (&fba);
+}
+
+static void VocalTractGrid_CouplingGrid_draw_inside (VocalTractGrid me, CouplingGrid thee, Graphics g, int filterModel, double xmin, double xmax, double ymin, double ymax, double dy, double *yin, double *yout)
+{
+	filterModel == KlattGrid_FILTER_CASCADE ?
+		VocalTractGrid_CouplingGrid_drawCascade_inline (me, thee, g, xmin, xmax, ymin, ymax, yin, yout) :
+		VocalTractGrid_CouplingGrid_drawParallel_inline (me, thee, g, xmin, xmax, ymin, ymax, dy, yin, yout);
+}
+
+static void VocalTractGrid_CouplingGrid_draw (VocalTractGrid me, CouplingGrid thee, Graphics g, int filterModel)
+{
+	double xmin = 0, xmin1 = 0.05, xmax1 = 0.95, xmax = 1, ymin = 0, ymax = 1, dy = 0.5, yin, yout;
+
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	Graphics_setLineWidth (g, 2);
+	VocalTractGrid_CouplingGrid_draw_inside (me, thee, g, filterModel, xmin1, xmax1, ymin, ymax, dy, &yin, &yout);
+	Graphics_line (g, xmin, yin, xmin1, yin);
+	Graphics_arrow (g, xmax1, yout, xmax, yout);
+	Graphics_unsetInner (g);
+}
+
+static void FricationGrid_draw_inside (FricationGrid me, Graphics g, double xmin, double xmax, double ymin, double ymax, double dy, double *yout)
+{
+	long numberOfXSections = 5;
+	long numberOfFormants = my frication_formants -> formants -> size;
+	long numberOfParts = numberOfFormants + (numberOfFormants > 1 ? 0 : 1) ; // 2..number + bypass
+	// dum noise, connections, filter, connections, adder
+	double xw[6] = { 0, 2, 0.6, 1.5, 0.6, 0.5 }, xws[6];
+	double r, x1, y1, x2, y2, x3, xs, ys, ymid = (ymin + ymax) / 2;
+
+	rel_to_abs (xw, xws, numberOfXSections, xmax - xmin);
+
+	dy = dy < 0 ? 0 : dy;
+	dy = (ymax - ymin) / (numberOfParts * (1 + dy) - dy);
+
+	connections cp = connections_create (numberOfParts);
+	if (cp == NULL) return;
+
+	// section 1
+	x1 = xmin; x2 = x1 + xw[1]; y1 = ymid - 0.5 * dy; y2 = y1 + dy;
+	draw_oneSection (g, x1, x2, y1, y2, L"Frication", L"noise", NULL);
+
+	// section 2, horizontal line halfway, vertical line
+	x1 = x2; x2 = x1 + xw[2] / 2;
+	Graphics_line (g, x1, ymid, x2, ymid);
+	Graphics_line (g, x2, ymax - dy / 2, x2, ymin + dy / 2);
+	x3 = x2;
+	// final connection to section 2 , filters , connections to adder
+	x1 = xmin + xws[2]; x2 = x1 + xw[3]; y2 = ymax;
+	MelderString fba = { 0 };
+	for (long i = 1; i <= numberOfParts; i++)
+	{
+		const wchar_t *fi = Melder_integer (i+1);
+		y1 = y2 - dy;
+		if (i < numberOfParts) { MelderString_append6 (&fba, L"A", fi, L" F", fi, L" B", fi); }
+		else { MelderString_append1 (&fba,  L"Bypass"); }
+		draw_oneSection (g, x1, x2, y1, y2, NULL, fba.string, NULL);
+		double ymidi = (y1 + y2) / 2;
+		Graphics_line (g, x3, ymidi, x1, ymidi); // from noise to filter
+		cp -> x[i] = x2; cp -> y[i] = ymidi;
+		y2 = y1 - 0.5 * dy;
+		MelderString_empty (&fba);
+	}
+
+	r = xw[5] / 2;
+	xs = xmax - r; ys = ymid;
+
+	if (numberOfParts > 1) alternatingSummer_drawConnections (g, xs, ys, r, cp, 1, 0.4);
+	else Graphics_line (g, cp -> x[1], cp -> y[1], xs + r, ys);
+
+	connections_free (cp);
+
+	if (yout != NULL) *yout = ys;
+	MelderString_free (&fba);
+}
+
+void FricationGrid_draw (FricationGrid me, Graphics g)
+{
+	double xmin = 0, xmax = 1, xmax2 = 0.9, ymin = 0, ymax = 1, dy = 0.5, yout;
+
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	Graphics_setLineWidth (g, 2);
+
+	FricationGrid_draw_inside (me, g, xmin, xmax2, ymin, ymax, dy, &yout);
+
+	Graphics_arrow (g, xmax2, yout, xmax, yout);
+	Graphics_unsetInner (g);
+}
+
+void KlattGrid_drawVocalTract (KlattGrid me, Graphics g, int filterModel, int withTrachea)
+{
+	VocalTractGrid_CouplingGrid_draw (my vocalTract, withTrachea ? my coupling : NULL, g, filterModel);
+}
+
+void KlattGrid_draw (KlattGrid me, Graphics g, int filterModel)
+{
+ 	double xs1, xs2, ys1, ys2, xf1, xf2, yf1, yf2;
+ 	double xp1, xp2, yp1, yp2, xc1, xc2, yc1, yc2;
+ 	double dy, r, xs, ys;
+ 	double xmin = 0, xmax2 = 0.90, xmax3 = 0.95, xmax = 1, ymin = 0, ymax = 1;
+	double xws[6];
+	double height_phonation = 0.3;
+	double dy_phonation = 0.5, dy_vocalTract_p = 0.5, dy_frication = 0.5;
+
+	connections tf = connections_create (2);
+	if (tf == NULL) return;
+
+	Graphics_setInner (g);
+
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	Graphics_setLineWidth (g, 2);
+
+	long nff = my frication -> frication_formants -> formants -> size - 1 + 1;
+	double yh_frication = nff > 0 ? nff + (nff - 1) * dy_frication : 1;
+	double yh_phonation = 1 + dy_phonation + 1;
+	double yout_phonation, yout_frication;
+	dy = height_phonation / yh_phonation; // 1 vertical unit in source section height units
+
+	if (filterModel == KlattGrid_FILTER_CASCADE) // Cascade section
+	{
+		// source connection tract connection, out
+		//     frication
+		double xw[6] = {0, 1.75, 0.125, 3, 0.25, 0.125 };
+		double yin_vocalTract_c, yout_vocalTract_c;
+
+		rel_to_abs (xw, xws, 5, xmax2 - xmin);
+
+		// limit height of frication unit dy !
+
+		height_phonation = yh_phonation / (yh_phonation + yh_frication);
+		if (height_phonation < 0.3) height_phonation = 0.3;
+		dy = height_phonation / yh_phonation;
+
+		xs1 = xmin; xs2 = xs1 + xw[1]; ys2 = ymax; ys1 = ys2 - height_phonation;
+		PhonationGrid_draw_inside (my phonation, g, xs1, xs2, ys1, ys2, dy_phonation, &yout_phonation);
+
+		// units in cascade have same heigth as units in source part.
+
+		xc1 = xmin + xws[2]; xc2 = xc1 + xw[3];
+		yc2 = yout_phonation + dy / 2; yc1 = yc2 - dy;
+		VocalTractGrid_CouplingGrid_drawCascade_inline (my vocalTract, my coupling, g, xc1, xc2, yc1, yc2, &yin_vocalTract_c, &yout_vocalTract_c);
+
+		tf -> x[1] = xc2; tf -> y[1] = yout_vocalTract_c;
+
+		Graphics_line (g, xs2, yout_phonation, xc1, yin_vocalTract_c);
+
+		xf1 = xmin + xws[2]; xf2 = xf1 + xw[3]; yf2 = ymax - height_phonation; yf1 = 0;
+
+		FricationGrid_draw_inside (my frication, g, xf1, xf2, yf1, yf2, dy_frication, &yout_frication);
+	}
+	else // Parallel
+	{
+		// source connection tract connection, out
+		//     frication
+		double yf_parallel, yh_parallel, ytrans_phonation, ytrans_parallel, yh_overlap = 0.3, yin_vocalTract_p, yout_vocalTract_p;
+		double xw[6] = { 0, 1.75, 0.125, 3, 0.25, 0.125 };
+
+		rel_to_abs (xw, xws, 5, xmax2 - xmin);
+
+		// optimize the vertical space for source, parallel and frication
+		// source part is relatively fixed. let the number of vertical section units be the divisor
+		// connector line from source to parallel has to be horizontal
+		// determine y's of source and parallel section
+		_KlattGrid_queryParallelSplit (me, dy_vocalTract_p, &yh_parallel, &yf_parallel);
+		if (yh_parallel == 0) { yh_parallel = yh_phonation; yf_parallel = yh_parallel / 2; yh_overlap = -0.1; }
+
+		height_phonation = yh_phonation / (yh_phonation + yh_frication);
+		if (height_phonation < 0.3) height_phonation = 0.3;
+		double yunit = (ymax - ymin) / (yh_parallel + (1 - yh_overlap) * yh_frication); // some overlap
+
+		double ycs = ymax - 0.5 * height_phonation; // source output connector
+		double ycp = ymax - yf_parallel * yunit; // parallel input connector
+		ytrans_phonation = ycs > ycp ? ycp - ycs : 0;
+		ytrans_parallel = ycp > ycs ? ycs - ycp : 0;
+
+		// source, tract, frication
+		xs1 = xmin; xs2 = xs1 + xw[1];
+
+		double h1 = yh_phonation / 2, h2 = h1, h3 = yf_parallel, h4 = yh_parallel - h3, h5 = yh_frication;
+		getYpositions (h1, h2, h3, h4, h5, yh_overlap, &dy, &ys1, &ys2, &yp1, &yp2, &yf1, &yf2);
+
+		PhonationGrid_draw_inside (my phonation, g, xs1, xs2, ys1, ys2, dy_phonation, &yout_phonation);
+
+		xp1 = xmin + xws[2]; xp2 = xp1 + xw[3];
+		VocalTractGrid_CouplingGrid_drawParallel_inline (my vocalTract, my coupling, g, xp1, xp2, yp1, yp2, dy_vocalTract_p, &yin_vocalTract_p, &yout_vocalTract_p);
+
+		tf -> x[1] = xp2; tf -> y[1] = yout_vocalTract_p;
+
+		Graphics_line (g, xs2, yout_phonation, xp1, yin_vocalTract_p);
+
+		xf1 = xmin /*+ 0.5 * xws[1]*/; xf2 = xf1 + 0.55 * (xw[2] + xws[3]);
+
+		FricationGrid_draw_inside (my frication, g, xf1, xf2, yf1, yf2, dy_frication, &yout_frication);
+	}
+
+	tf -> x[2] = xf2; tf -> y[2] = yout_frication;
+	r = (xmax3 - xmax2) / 2; xs = xmax2 + r / 2; ys = (ymax - ymin) / 2;
+
+	summer_drawConnections (g, xs, ys, r, tf, 1, 0.6);
+
+	Graphics_arrow (g, xs + r, ys, xmax, ys);
+
+	Graphics_unsetInner (g);
+	connections_free (tf);
+}
+
 FORM (KlattGrid_draw, L"KlattGrid: Draw", 0)
 	RADIO (L"Synthesis model", 1)
 	RADIOBUTTON (L"Cascade")

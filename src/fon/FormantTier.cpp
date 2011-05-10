@@ -152,31 +152,6 @@ double FormantTier_getBandwidthAtTime (FormantTier me, int iformant, double t) {
 		: fleft + (t - tleft) * (fright - fleft) / (tright - tleft);   /* Linear interpolation. */
 }
 
-void FormantTier_speckle (FormantTier me, Graphics g, double tmin, double tmax, double fmax, int garnish) {
-	long imin, imax, i, j;
-	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
-	Graphics_setWindow (g, tmin, tmax, 0.0, fmax);
-	Graphics_setInner (g);
-	imin = AnyTier_timeToHighIndex (me, tmin);
-	imax = AnyTier_timeToLowIndex (me, tmax);
-	if (imin > 0) for (i = imin; i <= imax; i ++) {
-		FormantPoint point = (structFormantPoint *)my points -> item [i];
-		double t = point -> time;
-		for (j = 1; j <= point -> numberOfFormants; j ++) {
-			double f = point -> formant [j-1];
-			if (f <= fmax) Graphics_fillCircle_mm (g, t, f, 1.0);
-		}
-	}
-	Graphics_unsetInner (g);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, TRUE, L"Time (s)");
-		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
-		Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
-		Graphics_textLeft (g, TRUE, L"Frequency (Hz)");
-	}
-}
-
 FormantTier Formant_downto_FormantTier (Formant me) {
 	FormantTier thee = FormantTier_create (my xmin, my xmax);
 	long i, j;

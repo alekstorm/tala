@@ -38,9 +38,6 @@
 #ifndef _Matrix_h_
 	#include "fon/Matrix.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
@@ -72,20 +69,6 @@ Cepstrum Cepstrum_create (double qmin, double qmax, long nq);
 		my dx = qmax / nx;			my dy = 1;
 		my x1 = my dx / 2;			my y1 = 1;
 		my z [1..ny] [1..nx] = 0.0;
-*/
-		
-void Cepstrum_draw (Cepstrum me, Graphics g, double qmin, double qmax, 
-	double minimum, double maximum, int garnish);
-/*
-	Function:
-		draw a Cepstrum into a Graphics.
-	Preconditions:
-		maximum > minimum;
-	Arguments:
-		[qmin, qmax]: quefrencies; x domain of drawing;
-		Autowindowing: if qmax <= qmin, x domain of drawing is
-			[my xmin, my xmax].
-		[minimum, maximum]: amplitude; y range of drawing.
 */
 
 Matrix Cepstrum_to_Matrix (Cepstrum me);

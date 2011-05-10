@@ -352,15 +352,6 @@ long OrderedOfString_isSubsetOf (I, thou, long *translation)
     return nStrings;
 }
 
-void OrderedOfString_drawItem (I, Any g, long index, double xWC, double yWC)
-{
-	iam (OrderedOfString);
-    if (index > 0 && index <= my size) 
-	{
-		SimpleString_draw (my item[index], g, xWC, yWC);
-	}
-}
-
 long OrderedOfString_getSize (I)
 {
 	iam (OrderedOfString);

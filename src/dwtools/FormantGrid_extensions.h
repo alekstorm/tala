@@ -27,15 +27,10 @@
 #ifndef _FormantGrid_h_
 	#include "fon/FormantGrid.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
 #endif
-
-void FormantGrid_draw (FormantGrid me, Graphics g, double xmin, double xmax, double ymin, double ymax, bool bandwidths, bool garnish, const wchar_t *method);
 
 void FormantGrid_removeFormantAndBandwidthTiers (FormantGrid me, int position);
 int FormantGrid_addFormantAndBandwidthTiers (FormantGrid me, int position);

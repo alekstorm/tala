@@ -24,7 +24,6 @@
  */
 
 #include "sys/Collection.h"
-#include "ui/Graphics.h"
 #include "ui/Interpreter.h"
 
 #ifdef __cplusplus
@@ -81,6 +80,7 @@ int Table_setNumericValue (Table me, long row, long column, double value);
 
 /* For optimizations only (e.g. conversion to Matrix or TableOfReal). */
 void Table_numericize_Assert (Table me, long columnNumber);
+void Table_numericize_checkDefined (Table me, long columnNumber);
 
 double Table_getQuantile (Table me, long column, double quantile);
 double Table_getMean (Table me, long column);
@@ -88,7 +88,6 @@ double Table_getMaximum (Table me, long icol);
 double Table_getMinimum (Table me, long icol);
 double Table_getGroupMean (Table me, long column, long groupColumn, const wchar_t *group);
 double Table_getStdev (Table me, long column);
-long Table_drawRowFromDistribution (Table me, long column);
 double Table_getCorrelation_pearsonR (Table me, long column1, long column2, double significanceLevel,
 	double *out_significance, double *out_lowerLimit, double *out_upperLimit);
 double Table_getCorrelation_kendallTau (Table me, long column1, long column2, double significanceLevel,
@@ -113,13 +112,6 @@ int Table_formula_columnRange (Table me, long column1, long column2, const wchar
 void Table_sortRows_Assert (Table me, long *columns, long numberOfColumns);
 void Table_sortRows_string (Table me, const wchar_t *columns_string);
 void Table_randomizeRows (Table me);
-
-void Table_scatterPlot (Table me, Graphics g, long xcolumn, long ycolumn,
-	double xmin, double xmax, double ymin, double ymax, long markColumn, int fontSize, int garnish);
-void Table_scatterPlot_mark (Table me, Graphics g, long xcolumn, long ycolumn,
-	double xmin, double xmax, double ymin, double ymax, double markSize_mm, const wchar_t *mark, int garnish);
-void Table_drawEllipse_e (Table me, Graphics g, long xcolumn, long ycolumn,
-	double xmin, double xmax, double ymin, double ymax, double numberOfSigmas, int garnish);
 
 void Table_list (Table me, bool includeRowNumbers);
 int Table_writeToTableFile (Table me, MelderFile file);

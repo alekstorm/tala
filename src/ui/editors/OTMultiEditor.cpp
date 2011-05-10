@@ -33,6 +33,8 @@
 
 #include "ui/machine.h"
 
+void OTMulti_drawTableau (OTMulti me, Graphics g, const wchar_t *form1, const wchar_t *form2, int showDisharmonies);
+
 int OTMultiEditor::menu_cb_evaluate (EDITOR_ARGS) {
 	OTMultiEditor *editor = (OTMultiEditor *)editor_me;
 	EDITOR_FORM (L"Evaluate", 0)

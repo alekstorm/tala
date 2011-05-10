@@ -21,10 +21,12 @@
  * pb 2010/12/08
  */
 
+#include "dwtools/Polygon_extensions.h"
 #include "fon/LongSound.h"
 #include "fon/Ltas.h"
 #include "fon/Manipulation.h"
 #include "fon/ParamCurve.h"
+#include "fon/Polygon.h"
 #include "fon/Sound_and_Spectrogram.h"
 #include "fon/Sound_and_Spectrum.h"
 #include "fon/Sound_to_Cochleagram.h"
@@ -33,6 +35,7 @@
 #include "fon/Sound_to_Intensity.h"
 #include "fon/Sound_to_Pitch.h"
 #include "fon/Sound_to_PointProcess.h"
+#include "LPC/Sound_and_LPC.h"
 #include "ui/editors/SoundEditor.h"
 #include "ui/editors/SoundRecorder.h"
 #include "ui/editors/SpectrumEditor.h"
@@ -273,6 +276,526 @@ FORM_WRITE (LongSound_Sound_writeToWavFile, L"Save as WAV file", 0, L"wav")
 END
 
 /********** SOUND **********/
+
+/*
+	 Given sample numbers isample and isample+1, where the formula evaluates to the booleans left and right, respectively.
+	 We want to find the point in this interval where the formula switches from true to false.
+	 The x-value of the best point is approximated by a number of bisections.
+	 It is essential that the intermediate interpolated y-values are always between the values at points isample and isample+1.
+	 We cannot use a sinc-interpolation because at strong amplitude changes high-frequency oscilations may occur.
+	 (may be leave out the interpolation and just use Vector_VALUE_INTERPOLATION_LINEAR only?)
+*/
+static int Sound_findIntermediatePoint_bs (Sound me, long ichannel, long isample, bool left, bool right, const wchar_t *formula,
+	Interpreter *interpreter, int interpolation, long numberOfBisections, double *x, double *y)
+{
+	struct Formula_Result result;
+
+	if (left)
+	{
+		*x = Matrix_columnToX (me, isample);
+		*y = my z[ichannel][isample];
+	}
+	else
+	{
+		*x = Matrix_columnToX (me, isample + 1);
+		*y = my z[ichannel][isample+1];
+	}
+	if ((left && right) || (!left && !right)) return 0; // xor, something wrong
+
+	if (numberOfBisections < 1) return 1;
+
+	long channel, nx = 3;
+	double xmid, dx = my dx / 2;
+	double xleft = Matrix_columnToX (me, isample);
+	double xright = xleft + my dx; // !!
+	long istep = 1;
+
+	Sound thee = Sound_create (my ny, my xmin, my xmax, nx, dx, xleft); // my domain !
+	if (thee == NULL) return 0;
+
+	for (channel = 1; channel <= my ny; channel++)
+	{
+		thy z[channel][1] = my z[channel][isample]; thy z[channel][3] = my z[channel][isample+1];
+	}
+
+	if (! Formula_compile (interpreter, thee, formula, kFormula_EXPRESSION_TYPE_NUMERIC, true)) return 0;
+
+	// bisection to find optimal x and y
+	do
+	{
+		xmid = (xleft + xright) / 2;
+
+		for (channel = 1; channel <= my ny; channel++)
+		{
+			thy z[channel][2] = Vector_getValueAtX (me, xmid, channel, interpolation);
+		}
+
+		// Only thy x1 and thy dx have changed; It seems we don't have to recompile.
+		if (! Formula_run (ichannel, 2, & result)) return 0;
+		bool current = result.result.numericResult;
+
+		dx /= 2;
+		if ((left && current) || (! left && ! current))
+		{
+			xleft = xmid;
+			left = current;
+			for (channel = 1; channel <= my ny; channel++)
+			{
+				thy z[channel][1] = thy z[channel][2];
+			}
+			thy x1 = xleft;
+		}
+		else if ((left && ! current) || (!left && current))
+		{
+			xright = xmid;
+			right = current;
+			for (channel = 1; channel <= my ny; channel++)
+			{
+				thy z[channel][3] = thy z[channel][2];
+			}
+		}
+		else
+		{
+			// we should not even be here.
+			break;
+		}
+
+		thy xmin = xleft - dx / 2;
+		thy xmax = xright + dx / 2;
+		thy dx = dx;
+		istep ++;
+	} while (istep < numberOfBisections);
+
+	*x = xmid;
+	*y = thy z[ichannel][2];
+	forget (thee);
+	return 1;
+}
+
+static void _Sound_getWindowExtrema (Sound me, double *tmin, double *tmax, double *minimum, double *maximum, long *ixmin, long *ixmax)
+{
+	/*
+	 * Automatic domain.
+	 */
+	if (*tmin == *tmax)
+	{
+		*tmin = my xmin;
+		*tmax = my xmax;
+	}
+	/*
+	 * Domain expressed in sample numbers.
+	 */
+	Matrix_getWindowSamplesX (me, *tmin, *tmax, ixmin, ixmax);
+	/*
+	 * Automatic vertical range.
+	 */
+	if (*minimum == *maximum) {
+		Matrix_getWindowExtrema (me, *ixmin, *ixmax, 1, my ny, minimum, maximum);
+		if (*minimum == *maximum) {
+			*minimum -= 1.0;
+			*maximum += 1.0;
+		}
+	}
+}
+
+/* For method, see Vector_draw. */
+void Sound_draw (Sound me, Graphics g,
+	double tmin, double tmax, double minimum, double maximum, bool garnish, const wchar_t *method)
+{
+	long ixmin, ixmax, ix;
+	bool treversed = tmin > tmax;
+	if (treversed) { double temp = tmin; tmin = tmax; tmax = temp; }
+	/*
+	 * Automatic domain.
+	 */
+	if (tmin == tmax) {
+		tmin = my xmin;
+		tmax = my xmax;
+	}
+	/*
+	 * Domain expressed in sample numbers.
+	 */
+	Matrix_getWindowSamplesX (me, tmin, tmax, & ixmin, & ixmax);
+	/*
+	 * Automatic vertical range.
+	 */
+	if (minimum == maximum) {
+		Matrix_getWindowExtrema (me, ixmin, ixmax, 1, my ny, & minimum, & maximum);
+		if (minimum == maximum) {
+			minimum -= 1.0;
+			maximum += 1.0;
+		}
+	}
+	/*
+	 * Set coordinates for drawing.
+	 */
+	Graphics_setInner (g);
+	for (long channel = 1; channel <= my ny; channel ++) {
+		Graphics_setWindow (g, treversed ? tmax : tmin, treversed ? tmin : tmax,
+			minimum - (my ny - channel) * (maximum - minimum),
+			maximum + (channel - 1) * (maximum - minimum));
+		if (wcsstr (method, L"bars") || wcsstr (method, L"Bars")) {
+			for (ix = ixmin; ix <= ixmax; ix ++) {
+				double x = Sampled_indexToX (me, ix);
+				double y = my z [channel] [ix];
+				double left = x - 0.5 * my dx, right = x + 0.5 * my dx;
+				if (y > maximum) y = maximum;
+				if (left < tmin) left = tmin;
+				if (right > tmax) right = tmax;
+				Graphics_line (g, left, y, right, y);
+				Graphics_line (g, left, y, left, minimum);
+				Graphics_line (g, right, y, right, minimum);
+			}
+		} else if (wcsstr (method, L"poles") || wcsstr (method, L"Poles")) {
+			for (ix = ixmin; ix <= ixmax; ix ++) {
+				double x = Sampled_indexToX (me, ix);
+				Graphics_line (g, x, 0, x, my z [channel] [ix]);
+			}
+		} else if (wcsstr (method, L"speckles") || wcsstr (method, L"Speckles")) {
+			for (ix = ixmin; ix <= ixmax; ix ++) {
+				double x = Sampled_indexToX (me, ix);
+				Graphics_fillCircle_mm (g, x, my z [channel] [ix], 1.0);
+			}
+		} else {
+			/*
+			 * The default: draw as a curve.
+			 */
+			Graphics_function (g, my z [channel], ixmin, ixmax,
+				Matrix_columnToX (me, ixmin), Matrix_columnToX (me, ixmax));
+		}
+	}
+	Graphics_setWindow (g, treversed ? tmax : tmin, treversed ? tmin : tmax, minimum, maximum);
+	if (garnish && my ny == 2) Graphics_line (g, tmin, 0.5 * (minimum + maximum), tmax, 0.5 * (minimum + maximum));
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_setWindow (g, tmin, tmax, minimum - (my ny - 1) * (maximum - minimum), maximum);
+		Graphics_markLeft (g, minimum, 1, 1, 0, NULL);
+		Graphics_markLeft (g, maximum, 1, 1, 0, NULL);
+		if (minimum != 0.0 && maximum != 0.0 && (minimum > 0.0) != (maximum > 0.0)) {
+			Graphics_markLeft (g, 0.0, 1, 1, 1, NULL);
+		}
+		if (my ny == 2) {
+			Graphics_setWindow (g, treversed ? tmax : tmin, treversed ? tmin : tmax, minimum, maximum + (my ny - 1) * (maximum - minimum));
+			Graphics_markRight (g, minimum, 1, 1, 0, NULL);
+			Graphics_markRight (g, maximum, 1, 1, 0, NULL);
+			if (minimum != 0.0 && maximum != 0.0 && (minimum > 0.0) != (maximum > 0.0)) {
+				Graphics_markRight (g, 0.0, 1, 1, 1, NULL);
+			}
+		}
+	}
+}
+
+/* Draw a sound vertically, from bottom to top */
+/* direction is one of the macros's FROM_LEFT_TO_RIGHT... */
+void Sound_draw_btlr (Sound me, Graphics g, double tmin, double tmax, double amin, double amax, int direction, int garnish)
+{
+	long itmin, itmax, it;
+	double t1, t2, a1, a2;
+	double xmin, xmax, ymin, ymax;
+
+	if (tmin == tmax)
+	{
+		tmin = my xmin; tmax = my xmax;
+	}
+	Matrix_getWindowSamplesX (me, tmin, tmax, &itmin, &itmax);
+	if (amin == amax)
+	{
+		Matrix_getWindowExtrema (me, itmin, itmax, 1, my ny, &amin, &amax);
+		if (amin == amax)
+		{
+			amin -= 1.0; amax += 1.0;
+		}
+	}
+	/* In bottom-to-top-drawing the maximum amplitude is on the left, minimum on the right */
+	if (direction == FROM_BOTTOM_TO_TOP)
+	{
+		xmin = amax; xmax = amin; ymin = tmin; ymax = tmax;
+	}
+	else if (direction == FROM_TOP_TO_BOTTOM)
+	{
+		xmin = amin; xmax = amax; ymin = tmax; ymax = tmin;
+	}
+	else if (direction == FROM_RIGHT_TO_LEFT)
+	{
+		xmin = tmax; xmax = tmin; ymin = amin; ymax = amax;
+	}
+	else //if (direction == FROM_LEFT_TO_RIGHT)
+	{
+		xmin = tmin; xmax = tmax; ymin = amin; ymax = amax;
+	}
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	a1 = my z[1][itmin];
+	t1 = Sampled_indexToX (me, itmin);
+	for (it = itmin+1; it <= itmax; it++)
+	{
+		t2 = Sampled_indexToX (me, it);
+		a2 = my z[1][it];
+		if (direction == FROM_BOTTOM_TO_TOP || direction == FROM_TOP_TO_BOTTOM)
+			Graphics_line (g, a1, t1, a2, t2);
+		else
+			Graphics_line (g, t1, a1, t2, a2);
+		a1 = a2; t1 = t2;
+	}
+	if (garnish)
+	{
+		if (direction == FROM_BOTTOM_TO_TOP)
+		{
+			if (amin * amax < 0) Graphics_markBottom (g, 0, 0, 1, 1, NULL);
+		}
+		else if (direction == FROM_TOP_TO_BOTTOM)
+		{
+			if (amin * amax < 0) Graphics_markTop (g, 0, 0, 1, 1, NULL);
+		}
+		else if (direction == FROM_RIGHT_TO_LEFT)
+		{
+			if (amin * amax < 0) Graphics_markRight (g, 0, 0, 1, 1, NULL);
+		}
+		else //if (direction == FROM_LEFT_TO_RIGHT)
+		{
+			if (amin * amax < 0) Graphics_markLeft (g, 0, 0, 1, 1, NULL);
+		}
+		Graphics_rectangle (g, xmin, xmax, ymin, ymax);
+	}
+}
+
+static void _Sound_garnish (Sound me, Graphics g, double tmin, double tmax, double minimum, double maximum)
+{
+	Graphics_drawInnerBox (g);
+	Graphics_textBottom (g, 1, L"Time (s)");
+	Graphics_marksBottom (g, 2, 1, 1, 0);
+	Graphics_setWindow (g, tmin, tmax, minimum - (my ny - 1) * (maximum - minimum), maximum);
+	Graphics_markLeft (g, minimum, 1, 1, 0, NULL);
+	Graphics_markLeft (g, maximum, 1, 1, 0, NULL);
+	if (minimum != 0.0 && maximum != 0.0 && (minimum > 0.0) != (maximum > 0.0))
+	{
+		Graphics_markLeft (g, 0.0, 1, 1, 1, NULL);
+	}
+	if (my ny == 2)
+	{
+		Graphics_setWindow (g, tmin, tmax, minimum, maximum + (my ny - 1) * (maximum - minimum));
+		Graphics_markRight (g, minimum, 1, 1, 0, NULL);
+		Graphics_markRight (g, maximum, 1, 1, 0, NULL);
+		if (minimum != 0.0 && maximum != 0.0 && (minimum > 0.0) != (maximum > 0.0))
+		{
+			Graphics_markRight (g, 0.0, 1, 1, 1, NULL);
+		}
+	}
+}
+
+void Sound_drawWhere (Sound me, Graphics g, double tmin, double tmax, double minimum, double maximum,
+	bool garnish, const wchar_t *method, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter)
+{
+	long ixmin, ixmax, ix;
+	struct Formula_Result result;
+
+	if (! Formula_compile (interpreter, me, formula, kFormula_EXPRESSION_TYPE_NUMERIC, true)) return;
+
+	_Sound_getWindowExtrema (me, &tmin, &tmax, &minimum, &maximum, &ixmin, &ixmax);
+
+	/*
+	 * Set coordinates for drawing.
+	 */
+	Graphics_setInner (g);
+	for (long channel = 1; channel <= my ny; channel ++) {
+		Graphics_setWindow (g, tmin, tmax,
+			minimum - (my ny - channel) * (maximum - minimum),
+			maximum + (channel - 1) * (maximum - minimum));
+		if (wcsstr (method, L"bars") || wcsstr (method, L"Bars")) {
+			for (ix = ixmin; ix <= ixmax; ix ++) {
+				if (! Formula_run (channel, ix, & result)) return;
+				if (result.result.numericResult)
+				{
+					double x = Sampled_indexToX (me, ix);
+					double y = my z [channel] [ix];
+					double left = x - 0.5 * my dx, right = x + 0.5 * my dx;
+					if (y > maximum) y = maximum;
+					if (left < tmin) left = tmin;
+					if (right > tmax) right = tmax;
+					Graphics_line (g, left, y, right, y);
+					Graphics_line (g, left, y, left, minimum);
+					Graphics_line (g, right, y, right, minimum);
+				}
+			}
+		} else if (wcsstr (method, L"poles") || wcsstr (method, L"Poles")) {
+			for (ix = ixmin; ix <= ixmax; ix ++) {
+				if (! Formula_run (channel, ix, & result)) return;
+				if (result.result.numericResult)
+				{
+					double x = Sampled_indexToX (me, ix);
+					double y = my z[channel][ix];
+					if (y > maximum) y = maximum;
+					if (y < minimum) y = minimum;
+					Graphics_line (g, x, 0, x, y);
+				}
+			}
+		} else if (wcsstr (method, L"speckles") || wcsstr (method, L"Speckles")) {
+			for (ix = ixmin; ix <= ixmax; ix ++) {
+				if (! Formula_run (channel, ix, & result)) return;
+				if (result.result.numericResult)
+				{
+					double x = Sampled_indexToX (me, ix);
+					Graphics_fillCircle_mm (g, x, my z [channel] [ix], 1.0);
+				}
+			}
+		} else
+		{
+			/*
+			 * The default: draw as a curve.
+			 */
+			 bool current = true, previous = true;
+			 long istart = ixmin;
+			 double xb = Sampled_indexToX (me, ixmin), yb = my z[channel][ixmin], xe, ye;
+			 for (ix = ixmin; ix <= ixmax; ix++)
+			 {
+				if (! Formula_run (channel, ix, & result)) return;
+				current = result.result.numericResult; // true means draw
+				if (previous && ! current) // leaving drawing segment
+				{
+					if (ix != ixmin)
+					{
+						if (ix - istart > 1)
+						{
+							xe = Matrix_columnToX (me, istart);
+							ye = my z[channel][istart];
+							Graphics_line (g, xb, yb, xe, ye);
+							xb = xe; xe = Matrix_columnToX (me, ix-1);
+							Graphics_function (g, my z[channel], istart, ix - 1, xb, xe);
+							xb = xe; yb = my z[channel][ix - 1];
+						}
+						Sound_findIntermediatePoint_bs (me, channel, ix-1, previous, current, formula, interpreter, Vector_VALUE_INTERPOLATION_LINEAR, numberOfBisections, &xe, &ye);
+						Graphics_line (g, xb, yb, xe, ye);
+						if (! Formula_compile (interpreter, me, formula, kFormula_EXPRESSION_TYPE_NUMERIC, true)) return;
+
+					}
+				}
+				else if (current && ! previous) // entry drawing segment
+				{
+					istart = ix;
+					Sound_findIntermediatePoint_bs (me, channel, ix-1, previous, current, formula, interpreter, Vector_VALUE_INTERPOLATION_LINEAR, numberOfBisections, &xb, &yb);
+					xe = Sampled_indexToX (me, ix), ye = my z[channel][ix];
+					Graphics_line (g, xb, yb, xe, ye);
+					xb = xe; yb = ye;
+					if (! Formula_compile (interpreter, me, formula, kFormula_EXPRESSION_TYPE_NUMERIC, true)) return;
+				}
+				else if (previous && current && ix == ixmax)
+				{
+					xe = Matrix_columnToX (me, istart);
+					ye = my z[channel][istart];
+					Graphics_line (g, xb, yb, xe, ye);
+					xb = xe; xe = Matrix_columnToX (me, ix);
+					Graphics_function (g, my z[channel], istart, ix, xb, xe);
+					xb = xe; yb = my z[channel][ix];
+				}
+				previous = current;
+			 }
+		}
+	}
+
+	Graphics_setWindow (g, tmin, tmax, minimum, maximum);
+	if (garnish && my ny == 2) Graphics_line (g, tmin, 0.5 * (minimum + maximum), tmax, 0.5 * (minimum + maximum));
+	Graphics_unsetInner (g);
+
+	if (garnish) _Sound_garnish (me, g, tmin, tmax, minimum, maximum);
+}
+
+void Sound_paintWhere (Sound me, Graphics g, Graphics_Colour colour, double tmin, double tmax,
+	double minimum, double maximum, double level, bool garnish, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter)
+{
+	long ixmin, ixmax;
+	struct Formula_Result result;
+
+	if (! Formula_compile (interpreter, me, formula, kFormula_EXPRESSION_TYPE_NUMERIC, true)) return;
+
+	_Sound_getWindowExtrema (me, &tmin, &tmax, &minimum, &maximum, &ixmin, &ixmax);
+
+	Graphics_setColour (g, colour);
+	Graphics_setInner (g);
+	for (long channel = 1; channel <= my ny; channel++)
+	{
+		Graphics_setWindow (g, tmin, tmax,
+			minimum - (my ny - channel) * (maximum - minimum),
+			maximum + (channel - 1) * (maximum - minimum));
+		bool current, previous = true, fill = false; // fill only when leaving area
+		double tmini = tmin, tmaxi = tmax, xe, ye;
+		long ix = ixmin;
+		do
+		{
+			if (! Formula_run (channel, ix, & result)) return;
+			current = result.result.numericResult;
+			if (ix == ixmin) { previous = current; }
+			if (previous != current)
+			{
+				Sound_findIntermediatePoint_bs (me, channel, ix-1, previous, current, formula, interpreter, Vector_VALUE_INTERPOLATION_LINEAR, numberOfBisections, &xe, &ye);
+				if (current) // entering painting area
+				{
+					tmini = xe;
+				}
+				else //leaving painting area
+				{
+					tmaxi = xe;
+					fill = true;
+				}
+				if (! Formula_compile (interpreter, me, formula, kFormula_EXPRESSION_TYPE_NUMERIC, true)) return;
+			}
+			if (ix == ixmax && current) { tmaxi = tmax; fill = true; }
+			if (fill)
+			{
+				Polygon him = Sound_to_Polygon (me, channel, tmini, tmaxi, minimum, maximum, level);
+				if (him == NULL) return;
+				Graphics_fillArea (g, his numberOfPoints, &his x[1], &his y[1]);
+				forget (him);
+				fill = false;
+			}
+			previous = current;
+		} while (++ix <= ixmax);
+	}
+	Graphics_setWindow (g, tmin, tmax, minimum, maximum);
+	if (garnish && my ny == 2) Graphics_line (g, tmin, 0.5 * (minimum + maximum), tmax, 0.5 * (minimum + maximum));
+	Graphics_unsetInner (g);
+	if (garnish) _Sound_garnish (me, g, tmin, tmax, minimum, maximum);
+	Melder_clearError ();
+}
+
+void Sounds_paintEnclosed (Sound me, Sound thee, Graphics g, Graphics_Colour colour, double tmin, double tmax,
+	double minimum, double maximum, bool garnish)
+{
+	long ixmin, ixmax, numberOfChannels = my ny > thy ny ? my ny : thy ny;
+	double min1 = minimum, max1 = maximum, tmin1 = tmin, tmax1 = tmax;
+	double min2 = min1, max2 = max1, tmin2 = tmin1, tmax2 = tmax1;
+	double xmin = my xmin > thy xmin ? my xmin : thy xmin;
+	double xmax = my xmax < thy xmax ? my xmax : thy xmax;
+	if (xmax <= xmin) return;
+	if (tmin >= tmax)
+	{
+		tmin = xmin;
+		tmax = xmax;
+	}
+	_Sound_getWindowExtrema (thee, &tmin1, &tmax1, &min1, &max1, &ixmin, &ixmax);
+	_Sound_getWindowExtrema (me,   &tmin2, &tmax2, &min2, &max2, &ixmin, &ixmax);
+	minimum = min1 < min2 ? min1 : min2;
+	maximum = max1 > max2 ? max1 : max2;
+
+	Graphics_setColour (g, colour);
+	Graphics_setInner (g);
+	for (long channel = 1; channel <= numberOfChannels; channel++)
+	{
+		Polygon him = Sounds_to_Polygon_enclosed (me, thee, channel, tmin, tmax, minimum, maximum);
+		if (him == NULL) break;
+		Graphics_setWindow (g, tmin, tmax,
+			minimum - (numberOfChannels - channel) * (maximum - minimum),
+			maximum + (channel - 1) * (maximum - minimum));
+		Graphics_fillArea (g, his numberOfPoints, &his x[1], &his y[1]);
+		forget (him);
+	}
+	Graphics_setWindow (g, tmin, tmax, minimum, maximum);
+	if (garnish && (my ny == 2 || thy ny == 2)) Graphics_line (g, tmin, 0.5 * (minimum + maximum), tmax, 0.5 * (minimum + maximum));
+	Graphics_unsetInner (g);
+	if (garnish) _Sound_garnish (my ny == 2 ? me : thee, g, tmin, tmax, minimum, maximum);
+	Melder_clearError ();
+}
 
 FORM (Sound_add, L"Sound: Add", 0)
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"The following number will be added to the amplitudes of all samples of the sound.")
@@ -1455,6 +1978,176 @@ DO
 		GET_REAL (L"Minimum pitch"), GET_REAL (L"Silence threshold"),
 		GET_REAL (L"Periods per window")))
 END
+
+/* a replication of:
+    D. Michaelis, T. Gramss & H.W. Strube (1997):
+       "Glottal-to-noise excitation ratio -- a new measure
+        for describing pathological voices."
+       ACUSTICA - acta acustica 83: 700-706.
+ henceforth abbreviated as "MGS".
+*/
+
+static void bandFilter (Spectrum me, double fmid, double bandwidth) {
+	long col;
+	double *re = my z [1], *im = my z [2];
+	double fmin = fmid - bandwidth / 2, fmax = fmid + bandwidth / 2;
+	double twopibybandwidth = 2 * NUMpi / bandwidth;
+	for (col = 1; col <= my nx; col ++) {
+		double x = my x1 + (col - 1) * my dx;
+		if (x < fmin || x > fmax) {
+			re [col] = 0.0;
+			im [col] = 0.0;
+		} else {
+			double factor = 0.5 + 0.5 * cos (twopibybandwidth * (x - fmid));
+			re [col] *= factor;
+			im [col] *= factor;
+		}
+	}
+}
+
+Matrix Sound_to_Harmonicity_GNE (Sound me,
+	double fmin,   /* 500 Hz */
+	double fmax,   /* 4500 Hz */
+	double bandwidth,  /* 1000 Hz */
+	double step)   /* 80 Hz */
+{
+	Sound original10k = NULL, flat = NULL, envelope [1+100], crossCorrelation = NULL;
+	Sound band = NULL, hilbertBand = NULL;
+	LPC lpc = NULL;
+	Spectrum flatSpectrum = NULL, hilbertSpectrum = NULL, bandSpectrum = NULL, hilbertBandSpectrum = NULL;
+	Matrix cc = NULL;
+	double duration, fmid;
+	Graphics graphics;
+	long ienvelope, row, col, nenvelopes = (fmax - fmin) / step, nsamp;
+	for (ienvelope = 1; ienvelope <= 100; ienvelope ++)
+		envelope [ienvelope] = NULL;
+
+	/*
+	 * Step 1: down-sampling to 10 kHz,
+	 * in order to be able to flatten the spectrum
+	 * (since the human voice does not contain much above 5 kHz).
+	 */
+	original10k = Sound_resample (me, 10000, 500); cherror
+	Vector_subtractMean (original10k);
+	duration = my xmax - my xmin;
+
+	/*
+	 * Step 2: inverse filtering of the speech signal
+	 * by 13th-order "autocorrelation method"
+	 * with a Gaussian (not Hann, like MGS!) window of 30 ms length
+	 * and 10 ms shift between successive frames.
+	 * Since we need a spectrally flat signal (not an approximation
+	 * of the source signal), we must turn the pre-emphasis off
+	 * (by setting its turnover point at 1,000,000,000 Hertz);
+	 * otherwise, the pre-emphasis would cause an overestimation
+	 * in the LPC object of the high frequencies, so that inverse
+	 * filtering would yield weakened high frequencies.
+	 */
+	lpc = Sound_to_LPC_auto (original10k, 13, 30e-3, 10e-3, 1e9); cherror
+	flat = LPC_and_Sound_filterInverse (lpc, original10k); cherror
+	forget (original10k);
+	forget (lpc);
+	flatSpectrum = Sound_to_Spectrum (flat, TRUE); cherror
+	hilbertSpectrum = (structSpectrum *)Data_copy (flatSpectrum); cherror
+	for (col = 1; col <= hilbertSpectrum -> nx; col ++) {
+		hilbertSpectrum -> z [1] [col] = flatSpectrum -> z [2] [col];
+		hilbertSpectrum -> z [2] [col] = - flatSpectrum -> z [1] [col];
+	}
+	fmid = fmin;
+	ienvelope = 1;
+	graphics = (structGraphics *)Melder_monitor1 (0.0, L"Computing Hilbert envelopes...");
+	while (fmid <= fmax) {
+		/*
+		 * Step 3: calculate Hilbert envelopes of bands.
+		 */
+		bandSpectrum = (structSpectrum *)Data_copy (flatSpectrum);
+		hilbertBandSpectrum = (structSpectrum *)Data_copy (hilbertSpectrum);
+		/*
+		 * 3a: Filter both the spectrum of the original flat sound and its Hilbert transform.
+		 */
+		bandFilter (bandSpectrum, fmid, bandwidth);
+		bandFilter (hilbertBandSpectrum, fmid, bandwidth);
+		/*
+		 * 3b: Create both the band-filtered flat sound and its Hilbert transform.
+		 */
+		band = Spectrum_to_Sound (bandSpectrum); cherror
+		/*if (graphics) {
+			Graphics_clearWs (graphics);
+			Spectrum_draw (bandSpectrum, graphics, 0, 5000, 0, 0, TRUE);
+		}*/
+		if (! Melder_monitor3 (ienvelope / (nenvelopes + 1.0), L"Computing Hilbert envelope ", Melder_integer (ienvelope), L"..."))
+			goto end;
+		forget (bandSpectrum);
+		hilbertBand = Spectrum_to_Sound (hilbertBandSpectrum); cherror
+		forget (hilbertBandSpectrum);
+		envelope [ienvelope] = Sound_extractPart (band, 0, duration, kSound_windowShape_RECTANGULAR, 1.0, TRUE); cherror
+		/*
+		 * 3c: Compute the Hilbert envelope of the band-passed flat signal.
+		 */
+		for (col = 1; col <= envelope [ienvelope] -> nx; col ++) {
+			double self = envelope [ienvelope] -> z [1] [col], other = hilbertBand -> z [1] [col];
+			envelope [ienvelope] -> z [1] [col] = sqrt (self * self + other * other);
+		}
+		Vector_subtractMean (envelope [ienvelope]);
+		/*
+		 * Clean up.
+		 */
+		forget (band);
+		forget (hilbertBand);
+		/*
+		 * Next band.
+		 */
+		fmid += step;
+		ienvelope += 1;
+	}
+
+	/*
+	 * Step 4: crosscorrelation
+	 */
+	nenvelopes = ienvelope - 1;
+	nsamp = envelope [1] -> nx;
+	cc = Matrix_createSimple (nenvelopes, nenvelopes);
+	for (row = 2; row <= nenvelopes; row ++) {
+		for (col = 1; col <= row - 1; col ++) {
+			double ccmax;
+			crossCorrelation = Sounds_crossCorrelate_short (envelope [row], envelope [col], -3.1e-4, 3.1e-4, TRUE);
+			/*
+			 * Step 5: the maximum of each correlation function
+			 */
+			ccmax = Vector_getMaximum (crossCorrelation, 0, 0, 0);
+			forget (crossCorrelation);
+			cc -> z [row] [col] = ccmax;
+		}
+	}
+
+	/*
+	 * Step 6: maximum of the maxima, ignoring those too close to the diagonal.
+	 */	
+	for (row = 2; row <= nenvelopes; row ++) {
+		for (col = 1; col <= row - 1; col ++) {
+			if (abs (row - col) < bandwidth / 2 / step) {
+				cc -> z [row] [col] = 0.0;
+			}
+		}
+	}
+
+end:
+	Melder_monitor1 (1.0, NULL);
+	forget (original10k);
+	forget (lpc);
+	forget (flat);
+	forget (flatSpectrum);
+	forget (hilbertSpectrum);
+	forget (bandSpectrum);
+	forget (hilbertBandSpectrum);
+	forget (band);
+	forget (hilbertBand);
+	for (ienvelope = 1; ienvelope <= 100; ienvelope ++)
+		forget (envelope [ienvelope]);
+	forget (crossCorrelation);
+	iferror forget (cc);
+	return cc;
+}
 
 FORM (Sound_to_Harmonicity_gne, L"Sound: To Harmonicity (gne)", 0)
 	POSITIVE (L"Minimum frequency (Hz)", L"500")

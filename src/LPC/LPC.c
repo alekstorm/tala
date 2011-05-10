@@ -29,7 +29,6 @@
 */
 
 #include "LPC_and_Polynomial.h"
-#include "num/NUM2.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "LPC_def.h"
@@ -101,52 +100,6 @@ Any LPC_create (double tmin, double tmax, long nt, double dt, double t1,
 		predictionOrder, samplingPeriod)) forget (me);
 	return me;
 }
-
-void LPC_drawGain (LPC me, Graphics g, double tmin, double tmax, double gmin, double gmax, int garnish)
-{
-	long itmin, itmax, iframe; double *gain;
-	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
-	if (! Sampled_getWindowSamples (me, tmin, tmax, & itmin, & itmax)) return;
-	if ((gain = NUMdvector (itmin, itmax)) == NULL) return;
-	for (iframe=itmin; iframe <= itmax; iframe++) gain[iframe] = my frame[iframe].gain;
-	if (gmax <= gmin) NUMdvector_extrema (gain, itmin, itmax, & gmin, & gmax);
-	if (gmax == gmin) { gmin = 0; gmax += 0.5; }
-	Graphics_setInner (g);
-	Graphics_setWindow (g, tmin, tmax, gmin, gmax);
-	for (iframe=itmin; iframe <= itmax; iframe++)
-	{
-		double x = Sampled_indexToX (me, iframe);
-		Graphics_fillCircle_mm (g, x, gain[iframe], 1.0);
-	}
-	Graphics_unsetInner (g);
-	if (garnish)
-	{
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, 1, L"Time (seconds)");
-		Graphics_textLeft (g, 1, L"Gain");
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-		Graphics_marksLeft (g, 2, 1, 1, 0);
-	}
-	NUMdvector_free (gain, itmin);
-}
-
-void LPC_drawPoles (LPC me, Graphics g, double time, int garnish)
-{
-	Polynomial p = LPC_to_Polynomial (me, time);
-
-	if (p != NULL)
-	{
-		Roots r = Polynomial_to_Roots (p);
-		if (r != NULL)
-		{
-			Roots_draw (r, g, -1, 1, -1, 1, L"+", 12, garnish);
-			forget (r);
-		}
-		forget (p);
-	}
-	Melder_clearError ();
-}
-
 
 Matrix LPC_to_Matrix (LPC me)
 {

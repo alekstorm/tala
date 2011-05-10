@@ -32,6 +32,9 @@
 
 #include "ui/Preferences.h"
 
+void Sound_draw (Sound me, Graphics g,
+	double tmin, double tmax, double minimum, double maximum, bool garnish, const wchar_t *method);
+
 /********** PREFERENCES **********/
 
 static struct {

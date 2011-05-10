@@ -40,7 +40,6 @@
 #include "fon/Matrix_and_PointProcess.h"
 #include "fon/Matrix_and_Polygon.h"
 #include "fon/ParamCurve.h"
-#include "fon/Pitch_Intensity.h"
 #include "fon/Pitch_to_PitchTier.h"
 #include "fon/Pitch_to_PointProcess.h"
 #include "fon/Pitch_to_Sound.h"
@@ -323,6 +322,43 @@ END
 
 /***** COCHLEAGRAM *****/
 
+void Matrix_movie (I, Graphics g);
+
+void Cochleagram_paint (Cochleagram me, Graphics g, double tmin, double tmax, int garnish)
+{
+	static double border [1 + 12] =
+		{ 0, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80 };
+	Cochleagram copy = (structCochleagram *)Data_copy (me);
+	long iy, ix, itmin, itmax;
+	if (! copy) return;
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	Matrix_getWindowSamplesX (me, tmin, tmax, & itmin, & itmax);
+	for (iy = 2; iy < my ny; iy ++)
+		for (ix = itmin; ix <= itmax; ix ++)
+			if (my z [iy] [ix] > my z [iy - 1] [ix] &&
+				my z [iy] [ix] > my z [iy + 1] [ix])
+			{
+				copy -> z [iy - 1] [ix] += 10;
+				copy -> z [iy] [ix] += 10;
+				copy -> z [iy + 1] [ix] += 10;
+			}
+	Graphics_setInner (g);
+	Graphics_setWindow (g, tmin, tmax, 0, my ny * my dy);
+	Graphics_grey (g, copy -> z,
+		itmin, itmax, Matrix_columnToX (me, itmin), Matrix_columnToX (me, itmax),
+		1, my ny, 0.5 * my dy, (my ny - 0.5) * my dy,
+		12, border);
+	Graphics_unsetInner (g);
+	forget (copy);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_textLeft (g, 1, L"Place (Bark)");
+		Graphics_marksLeftEvery (g, 1.0, 5.0, 1, 1, 0);
+	}
+}
+
 FORM (Cochleagram_difference, L"Cochleagram difference", 0)
 	praat_dia_timeRange (dia);
 	OK
@@ -509,6 +545,29 @@ END
 
 /***** EXCITATION *****/
 
+void Excitation_draw (Excitation me, Graphics g,
+	double fmin, double fmax, double minimum, double maximum, int garnish)
+{
+	long ifmin, ifmax;
+	if (fmax <= fmin) { fmin = my xmin; fmax = my xmax; }
+	Matrix_getWindowSamplesX (me, fmin, fmax, & ifmin, & ifmax);
+	if (maximum <= minimum)
+		Matrix_getWindowExtrema (me, ifmin, ifmax, 1, 1, & minimum, & maximum);
+	if (maximum <= minimum) { minimum -= 20; maximum += 20; }
+	Graphics_setInner (g);
+	Graphics_setWindow (g, fmin, fmax, minimum, maximum);
+	Graphics_function (g, my z [1], ifmin, ifmax,
+		Matrix_columnToX (me, ifmin), Matrix_columnToX (me, ifmax));
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Frequency (Bark)");
+		Graphics_textLeft (g, 1, L"Excitation (phon)");
+		Graphics_marksBottomEvery (g, 1, 5, 1, 1, 0);
+		Graphics_marksLeftEvery (g, 1, 20, 1, 1, 0);
+	}
+}
+
 FORM (Excitation_draw, L"Draw Excitation", 0)
 	REAL (L"From frequency (Bark)", L"0")
 	REAL (L"To frequency (Bark)", L"25.6")
@@ -549,6 +608,116 @@ DIRECT (Excitation_to_Matrix)
 END
 
 /***** FORMANT *****/
+
+void Formant_drawTracks (Formant me, Graphics g, double tmin, double tmax, double fmax, int garnish) {
+	long itmin, itmax, iframe, itrack, ntrack = Formant_getMinNumFormants (me);
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	if (! Sampled_getWindowSamples (me, tmin, tmax, & itmin, & itmax)) return;
+	Graphics_setInner (g);
+	Graphics_setWindow (g, tmin, tmax, 0.0, fmax);
+	for (itrack = 1; itrack <= ntrack; itrack ++) {
+		for (iframe = itmin; iframe < itmax; iframe ++) {
+			Formant_Frame curFrame = & my frame [iframe], nextFrame = & my frame [iframe + 1];
+			double x1 = Sampled_indexToX (me, iframe), x2 = Sampled_indexToX (me, iframe + 1);
+			double f1 = curFrame -> formant [itrack]. frequency;
+			double f2 = nextFrame -> formant [itrack]. frequency;
+			if (NUMdefined (x1) && NUMdefined (f1) && NUMdefined (x2) && NUMdefined (f2))
+				Graphics_line (g, x1, f1, x2, f2);
+		}
+	}
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_textLeft (g, 1, L"Formant frequency (Hz)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeftEvery (g, 1.0, 1000.0, 1, 1, 1);
+	}
+}
+
+void Formant_drawSpeckles_inside (Formant me, Graphics g, double tmin, double tmax, double fmin, double fmax,
+	double suppress_dB, double dotSize)
+{
+	long itmin, itmax, iframe, iformant;
+	double maximumIntensity = 0.0, minimumIntensity;
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	if (! Sampled_getWindowSamples (me, tmin, tmax, & itmin, & itmax)) return;
+	Graphics_setWindow (g, tmin, tmax, fmin, fmax);
+
+	for (iframe = itmin; iframe <= itmax; iframe ++) {
+		Formant_Frame frame = & my frame [iframe];
+		if (frame -> intensity > maximumIntensity)
+			maximumIntensity = frame -> intensity;
+	}
+	if (maximumIntensity == 0.0 || suppress_dB <= 0.0)
+		minimumIntensity = 0.0;   /* Ignore. */
+	else
+		minimumIntensity = maximumIntensity / pow (10, suppress_dB / 10);
+
+	for (iframe = itmin; iframe <= itmax; iframe ++) {
+		Formant_Frame frame = & my frame [iframe];
+		double x = Sampled_indexToX (me, iframe);
+		if (frame -> intensity < minimumIntensity) continue;
+		for (iformant = 1; iformant <= frame -> nFormants; iformant ++) {
+			double frequency = frame -> formant [iformant]. frequency;
+			if (frequency >= fmin && frequency <= fmax)
+				Graphics_fillCircle_mm (g, x, frequency, dotSize);
+		}
+	}
+}
+
+void Formant_drawSpeckles (Formant me, Graphics g, double tmin, double tmax, double fmax, double suppress_dB,
+	int garnish)
+{
+	Graphics_setInner (g);
+	Formant_drawSpeckles_inside (me, g, tmin, tmax, 0.0, fmax, suppress_dB, 1.0);
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_textLeft (g, 1, L"Formant frequency (Hz)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeftEvery (g, 1.0, 1000.0, 1, 1, 1);
+	}
+}
+
+void Formant_scatterPlot (Formant me, Graphics g, double tmin, double tmax,
+	int iformant1, double fmin1, double fmax1, int iformant2, double fmin2, double fmax2,
+	double size_mm, const wchar_t *mark, int garnish)
+{
+	long itmin, itmax, iframe;
+	if (iformant1 < 1 || iformant2 < 1) return;
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	if (! Sampled_getWindowSamples (me, tmin, tmax, & itmin, & itmax)) return;
+	if (fmax1 == fmin1)
+		Formant_getExtrema (me, iformant1, tmin, tmax, & fmin1, & fmax1);
+	if (fmax1 == fmin1) return;
+	if (fmax2 == fmin2)
+		Formant_getExtrema (me, iformant2, tmin, tmax, & fmin2, & fmax2);
+	if (fmax2 == fmin2) return;
+	Graphics_setInner (g);
+	Graphics_setWindow (g, fmin1, fmax1, fmin2, fmax2);
+	for (iframe = itmin; iframe <= itmax; iframe ++) {
+		Formant_Frame frame = & my frame [iframe];
+		double x, y;
+		if (iformant1 > frame -> nFormants || iformant2 > frame -> nFormants) continue;
+		x = frame -> formant [iformant1]. frequency;
+		y = frame -> formant [iformant2]. frequency;
+		if (x == 0.0 || y == 0.0) continue;
+		Graphics_mark (g, x, y, size_mm, mark);
+	}
+	Graphics_unsetInner (g);
+	if (garnish) {
+		wchar_t text [100];
+		Graphics_drawInnerBox (g);
+		swprintf (text, 100, L"%%F_%d (Hz)", iformant1);
+		Graphics_textBottom (g, 1, text);
+		swprintf (text, 100, L"%%F_%d (Hz)", iformant2);
+		Graphics_textLeft (g, 1, text);
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+}
 
 DIRECT (Formant_downto_FormantGrid)
 	EVERY_TO (Formant_downto_FormantGrid ((structFormant *)OBJECT))
@@ -1021,6 +1190,31 @@ END
 
 /***** FORMANTTIER *****/
 
+void FormantTier_speckle (FormantTier me, Graphics g, double tmin, double tmax, double fmax, int garnish) {
+	long imin, imax, i, j;
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	Graphics_setWindow (g, tmin, tmax, 0.0, fmax);
+	Graphics_setInner (g);
+	imin = AnyTier_timeToHighIndex (me, tmin);
+	imax = AnyTier_timeToLowIndex (me, tmax);
+	if (imin > 0) for (i = imin; i <= imax; i ++) {
+		FormantPoint point = (structFormantPoint *)my points -> item [i];
+		double t = point -> time;
+		for (j = 1; j <= point -> numberOfFormants; j ++) {
+			double f = point -> formant [j-1];
+			if (f <= fmax) Graphics_fillCircle_mm (g, t, f, 1.0);
+		}
+	}
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, TRUE, L"Time (s)");
+		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
+		Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
+		Graphics_textLeft (g, TRUE, L"Frequency (Hz)");
+	}
+}
+
 FORM (FormantTier_addPoint, L"Add one point", L"FormantTier: Add point...")
 	REAL (L"Time (s)", L"0.5")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"Frequencies and bandwidths (Hz):")
@@ -1106,6 +1300,9 @@ DIRECT (Sound_FormantTier_filter_noscale)
 END
 
 /***** HARMONICITY *****/
+
+void Matrix_drawRows (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum);
 
 FORM (Harmonicity_draw, L"Draw harmonicity", 0)
 	praat_dia_timeRange (dia);
@@ -1198,6 +1395,32 @@ DIRECT (Harmonicity_to_Matrix)
 END
 
 /***** INTENSITY *****/
+
+void Intensity_drawInside (Intensity me, Graphics g, double tmin, double tmax, double minimum, double maximum) {
+	long itmin, itmax;
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }   /* Autowindow. */
+	Matrix_getWindowSamplesX (me, tmin, tmax, & itmin, & itmax);
+	if (maximum <= minimum)
+		Matrix_getWindowExtrema (me, itmin, itmax, 1, 1, & minimum, & maximum);   /* Autoscale. */
+	if (maximum <= minimum) { minimum -= 10; maximum += 10; }
+	Graphics_setWindow (g, tmin, tmax, minimum, maximum);
+	Graphics_function (g, my z [1], itmin, itmax, Matrix_columnToX (me, itmin), Matrix_columnToX (me, itmax));
+}
+
+void Intensity_draw (Intensity me, Graphics g, double tmin, double tmax,
+	double minimum, double maximum, int garnish)
+{
+	Graphics_setInner (g);
+	Intensity_drawInside (me, g, tmin, tmax, minimum, maximum);
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+		Graphics_textLeft (g, 1, L"Intensity (dB)");
+	}
+}
 
 FORM (Intensity_draw, L"Draw Intensity", 0)
 	praat_dia_timeRange (dia);
@@ -1322,6 +1545,60 @@ DIRECT (Intensity_to_IntensityTier_valleys)
 END
 
 /***** INTENSITY & PITCH *****/
+
+static void Pitch_getExtrema (Pitch me, double *minimum, double *maximum) {
+	long i;
+	*minimum = 1e30, *maximum = -1e30;
+	for (i = 1; i <= my nx; i ++) {
+		double frequency = my frame [i]. candidate [1]. frequency;
+		if (frequency == 0.0) continue;   /* Voiceless. */
+		if (frequency < *minimum) *minimum = frequency;
+		if (frequency > *maximum) *maximum = frequency;
+	}
+	if (*maximum == -1e30) *maximum = 0.0;
+	if (*minimum == 1e30) *minimum = 0.0;
+}
+
+void Pitch_Intensity_draw (Pitch pitch, Intensity intensity, Graphics g,
+	double f1, double f2, double s1, double s2, int garnish, int connect)
+{
+	long i, previousI = 0;
+	double previousX = NUMundefined, previousY = NUMundefined;
+	if (f2 <= f1) Pitch_getExtrema (pitch, & f1, & f2);
+	if (f1 == 0.0) return;   /* All voiceless. */
+	if (f1 == f2) { f1 -= 1.0; f2 += 1.0; }
+	if (s2 <= s1) Matrix_getWindowExtrema (intensity, 0, 0, 1, 1, & s1, & s2);
+	if (s1 == s2) { s1 -= 1.0; s2 += 1.0; }
+	Graphics_setWindow (g, f1, f2, s1, s2);
+	Graphics_setInner (g);
+	for (i = 1; i <= pitch -> nx; i ++) {
+		double t = Sampled_indexToX (pitch, i);
+		double x = pitch -> frame [i]. candidate [1]. frequency;
+		double y = Sampled_getValueAtX (intensity, t, Pitch_LEVEL_FREQUENCY, kPitch_unit_HERTZ, TRUE);
+		if (x == 0) {
+			continue;   /* Voiceless. */
+		}
+		if (connect & 1) Graphics_fillCircle_mm (g, x, y, 1.0);
+		if ((connect & 2) && NUMdefined (previousX)) {
+			if (previousI >= 1 && previousI < i - 1) {
+				Graphics_setLineType (g, Graphics_DOTTED);
+			}
+			Graphics_line (g, previousX, previousY, x, y);
+			Graphics_setLineType (g, Graphics_DRAWN);
+		}
+		previousX = x;
+		previousY = y;
+		previousI = i;
+	}
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Fundamental frequency (Hz)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_textLeft (g, 1, L"Intensity (dB)");
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+}
 
 FORM (Pitch_Intensity_draw, L"Plot intensity by pitch", 0)
 	REAL (L"From frequency (Hertz)", L"0.0")
@@ -1477,6 +1754,90 @@ FORM_READ (IntervalTier_readFromXwaves, L"Read IntervalTier from Xwaves", 0, tru
 END
 
 /***** LTAS *****/
+/*
+	If *pxmin equals *pxmax, then autowindowing from my xmin to my xmax.
+	If *pymin equals *pymax, then autoscaling from minimum to maximum;
+	if minimum then equals maximum, defaultDy will be subtracted from *pymin and added to *pymax;
+	it must be a positive real number (e.g. 0.5 Pa for Sound, 1.0 dB for Ltas).
+	method can be "curve", "bars", "poles", or "speckles"; it must not be NULL;
+	if anything else is specified, a curve is drawn.
+*/
+void Vector_draw (I, Graphics g, double *pxmin, double *pxmax, double *pymin, double *pymax,
+	double defaultDy, const wchar_t *method)
+{
+	iam (Vector);
+	bool xreversed = *pxmin > *pxmax, yreversed = *pymin > *pymax;
+	if (xreversed) { double temp = *pxmin; *pxmin = *pxmax; *pxmax = temp; }
+	if (yreversed) { double temp = *pymin; *pymin = *pymax; *pymax = temp; }
+	long ixmin, ixmax, ix;
+	/*
+	 * Automatic domain.
+	 */
+	if (*pxmin == *pxmax) {
+		*pxmin = my xmin;
+		*pxmax = my xmax;
+	}
+	/*
+	 * Domain expressed in sample numbers.
+	 */
+	Matrix_getWindowSamplesX (me, *pxmin, *pxmax, & ixmin, & ixmax);
+	/*
+	 * Automatic vertical range.
+	 */
+	if (*pymin == *pymax) {
+		Matrix_getWindowExtrema (me, ixmin, ixmax, 1, 1, pymin, pymax);
+		if (*pymin == *pymax) {
+			*pymin -= defaultDy;
+			*pymax += defaultDy;
+		}
+	}
+	/*
+	 * Set coordinates for drawing.
+	 */
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xreversed ? *pxmax : *pxmin, xreversed ? *pxmin : *pxmax, yreversed ? *pymax : *pymin, yreversed ? *pymin : *pymax);
+	if (wcsstr (method, L"bars") || wcsstr (method, L"Bars")) {
+		for (ix = ixmin; ix <= ixmax; ix ++) {
+			double x = Sampled_indexToX (me, ix);
+			double y = my z [1] [ix];
+			double left = x - 0.5 * my dx, right = x + 0.5 * my dx;
+			if (y > *pymax) y = *pymax;
+			if (left < *pxmin) left = *pxmin;
+			if (right > *pxmax) right = *pxmax;
+			Graphics_line (g, left, y, right, y);
+			Graphics_line (g, left, y, left, *pymin);
+			Graphics_line (g, right, y, right, *pymin);
+		}
+	} else if (wcsstr (method, L"poles") || wcsstr (method, L"Poles")) {
+		for (ix = ixmin; ix <= ixmax; ix ++) {
+			double x = Sampled_indexToX (me, ix);
+			Graphics_line (g, x, 0, x, my z [1] [ix]);
+		}
+	} else if (wcsstr (method, L"speckles") || wcsstr (method, L"Speckles")) {
+		for (ix = ixmin; ix <= ixmax; ix ++) {
+			double x = Sampled_indexToX (me, ix);
+			Graphics_fillCircle_mm (g, x, my z [1] [ix], 1.0);
+		}
+	} else {
+		/*
+		 * The default: draw as a curve.
+		 */
+		Graphics_function (g, my z [1], ixmin, ixmax,
+			Matrix_columnToX (me, ixmin), Matrix_columnToX (me, ixmax));
+	}
+	Graphics_unsetInner (g);
+}
+
+void Ltas_draw (Ltas me, Graphics g, double fmin, double fmax, double minimum, double maximum, int garnish, const wchar_t *method) {
+	Vector_draw (me, g, & fmin, & fmax, & minimum, & maximum, 1.0, method);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Frequency (Hz)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_textLeft (g, 1, L"Sound pressure level (dB/Hz)");
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+}
 
 DIRECT (Ltases_average)
 	Collection ltases;
@@ -1917,6 +2278,224 @@ END
 
 /***** MATRIX *****/
 
+/*
+	All of these routines show the samples of a Matrix whose x and y values
+	are inside the window [xmin, xmax] * [ymin, ymax].
+	The scaling of the values of these samples is determined by "minimum" and "maximum".
+	All of these routines can perform automatic windowing and scaling:
+	if xmax <= xmin, the window in the x direction will be set to [my xmin, my xmax];
+	if ymax <= ymin, the window in the y direction will be set to [my ymin, my ymax];
+	if maximum <= minimum, the windowing (scaling) in the z direction will be determined
+	by the minimum and maximum values of the samples inside the window.
+*/
+
+/*
+	Every row is plotted as a function of x,
+	with straight lines connecting the sample points.
+	The rows are stacked from bottom to top.
+*/
+void Matrix_drawRows (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum)
+{
+	iam (Matrix);
+	long ixmin, ixmax, iymin, iymax, iy;
+	if (xmax <= xmin) { xmin = my xmin; xmax = my xmax; }
+	if (ymax <= ymin) { ymin = my ymin; ymax = my ymax; }
+	(void) Matrix_getWindowSamplesX (me, xmin, xmax, & ixmin, & ixmax);
+	(void) Matrix_getWindowSamplesY (me, ymin, ymax, & iymin, & iymax);
+	if (maximum <= minimum)
+		(void) Matrix_getWindowExtrema (me, ixmin, ixmax, iymin, iymax, & minimum, & maximum);
+	if (maximum <= minimum) { minimum -= 1.0; maximum += 1.0; }
+	if (xmin >= xmax) return;
+	Graphics_setInner (g);
+	for (iy = iymin; iy <= iymax; iy ++)
+	{
+		Graphics_setWindow (g, xmin, xmax,
+			minimum - (iy - iymin) * (maximum - minimum),
+			maximum + (iymax - iy) * (maximum - minimum));
+		Graphics_function (g, my z [iy], ixmin, ixmax,
+					Matrix_columnToX (me, ixmin), Matrix_columnToX (me, ixmax));
+	}
+	Graphics_unsetInner (g);
+	if (iymin < iymax)
+		Graphics_setWindow (g, xmin, xmax, my y1 + (iymin - 1.5) * my dy, my y1 + (iymax - 0.5) * my dy);
+}
+
+void Matrix_drawOneContour (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double height)
+{
+	iam (Matrix);
+	bool xreversed = xmin > xmax, yreversed = ymin > ymax;
+	if (xmax == xmin) { xmin = my xmin; xmax = my xmax; }
+	if (ymax == ymin) { ymin = my ymin; ymax = my ymax; }
+	if (xreversed) { double temp = xmin; xmin = xmax; xmax = temp; }
+	if (yreversed) { double temp = ymin; ymin = ymax; ymax = temp; }
+	long ixmin, ixmax, iymin, iymax;
+	(void) Matrix_getWindowSamplesX (me, xmin, xmax, & ixmin, & ixmax);
+	(void) Matrix_getWindowSamplesY (me, ymin, ymax, & iymin, & iymax);
+	if (xmin == xmax || ymin == ymax) return;
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xreversed ? xmax : xmin, xreversed ? xmin : xmax, yreversed ? ymax : ymin, yreversed ? ymin : ymax);
+	Graphics_contour (g, my z,
+		ixmin, ixmax, Matrix_columnToX (me, ixmin), Matrix_columnToX (me, ixmax),
+		iymin, iymax, Matrix_rowToY (me, iymin), Matrix_rowToY (me, iymax),
+		height);
+	Graphics_rectangle (g, xmin, xmax, ymin, ymax);
+	Graphics_unsetInner (g);
+}
+
+/* A contour altitude plot with curves at multiple heights. */
+void Matrix_drawContours (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum)
+{
+	iam (Matrix);
+	double border [1 + 8];
+	long ixmin, ixmax, iymin, iymax, iborder;
+	if (xmax == xmin) { xmin = my xmin; xmax = my xmax; }
+	if (ymax == ymin) { ymin = my ymin; ymax = my ymax; }
+	(void) Matrix_getWindowSamplesX (me, xmin, xmax, & ixmin, & ixmax);
+	(void) Matrix_getWindowSamplesY (me, ymin, ymax, & iymin, & iymax);
+	if (maximum <= minimum)
+		(void) Matrix_getWindowExtrema (me, ixmin, ixmax, iymin, iymax, & minimum, & maximum);
+	if (maximum <= minimum) { minimum -= 1.0; maximum += 1.0; }
+	for (iborder = 1; iborder <= 8; iborder ++)
+		border [iborder] = minimum + iborder * (maximum - minimum) / (8 + 1);
+	if (xmin == xmax || ymin == ymax) return;
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_altitude (g, my z,
+		ixmin, ixmax, Matrix_columnToX (me, ixmin), Matrix_columnToX (me, ixmax),
+		iymin, iymax, Matrix_rowToY (me, iymin), Matrix_rowToY (me, iymax),
+		8, border);
+	Graphics_rectangle (g, xmin, xmax, ymin, ymax);
+	Graphics_unsetInner (g);
+}
+
+/* A contour plot with multiple shades of grey and white (low) and black (high) paint. */
+void Matrix_paintContours (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum)
+{
+	iam (Matrix);
+	double border [1 + 30];
+	long ixmin, ixmax, iymin, iymax, iborder;
+	if (xmax <= xmin) { xmin = my xmin; xmax = my xmax; }
+	if (ymax <= ymin) { ymin = my ymin; ymax = my ymax; }
+	(void) Matrix_getWindowSamplesX (me, xmin, xmax, & ixmin, & ixmax);
+	(void) Matrix_getWindowSamplesY (me, ymin, ymax, & iymin, & iymax);
+	if (maximum <= minimum)
+		(void) Matrix_getWindowExtrema (me, ixmin, ixmax, iymin, iymax, & minimum, & maximum);
+	if (maximum <= minimum) { minimum -= 1.0; maximum += 1.0; }
+	for (iborder = 1; iborder <= 30; iborder ++)
+		border [iborder] = minimum + iborder * (maximum - minimum) / (30 + 1);
+	if (xmin >= xmax || ymin >= ymax) return;
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_grey (g, my z,
+		ixmin, ixmax, Matrix_columnToX (me, ixmin), Matrix_columnToX (me, ixmax),
+		iymin, iymax, Matrix_rowToY (me, iymin), Matrix_rowToY (me, iymax),
+		30, border);
+	Graphics_rectangle (g, xmin, xmax, ymin, ymax);
+	Graphics_unsetInner (g);
+}
+
+static void cellArrayOrImage (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum, int interpolate)
+{
+	iam (Matrix);
+	long ixmin, ixmax, iymin, iymax;
+	if (xmax <= xmin) { xmin = my xmin; xmax = my xmax; }
+	if (ymax <= ymin) { ymin = my ymin; ymax = my ymax; }
+	(void) Matrix_getWindowSamplesX (me, xmin - 0.49999 * my dx, xmax + 0.49999 * my dx,
+		& ixmin, & ixmax);
+	(void) Matrix_getWindowSamplesY (me, ymin - 0.49999 * my dy, ymax + 0.49999 * my dy,
+		& iymin, & iymax);
+	if (maximum <= minimum)
+		(void) Matrix_getWindowExtrema (me, ixmin, ixmax, iymin, iymax, & minimum, & maximum);
+	if (maximum <= minimum) { minimum -= 1.0; maximum += 1.0; }
+	if (xmin >= xmax || ymin >= ymax) return;
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	if (interpolate)
+		Graphics_image (g, my z,
+			ixmin, ixmax, Matrix_columnToX (me, ixmin - 0.5), Matrix_columnToX (me, ixmax + 0.5),
+			iymin, iymax, Matrix_rowToY (me, iymin - 0.5), Matrix_rowToY (me, iymax + 0.5),
+			minimum, maximum);
+	else
+		Graphics_cellArray (g, my z,
+			ixmin, ixmax, Matrix_columnToX (me, ixmin - 0.5), Matrix_columnToX (me, ixmax + 0.5),
+			iymin, iymax, Matrix_rowToY (me, iymin - 0.5), Matrix_rowToY (me, iymax + 0.5),
+			minimum, maximum);
+	Graphics_rectangle (g, xmin, xmax, ymin, ymax);
+	Graphics_unsetInner (g);
+}
+
+/*
+	Two-dimensional interpolation of greys.
+	The larger the value of the sample, the darker the greys.
+*/
+void Matrix_paintImage (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum)
+{
+	cellArrayOrImage (void_me, g, xmin, xmax, ymin, ymax, minimum, maximum, TRUE);
+}
+
+/*
+	Every sample is drawn as a grey rectangle.
+	The larger the value of the sample, the darker the rectangle.
+*/
+void Matrix_paintCells (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum)
+{
+	cellArrayOrImage (void_me, g, xmin, xmax, ymin, ymax, minimum, maximum, FALSE);
+}
+
+/*
+	3D surface plot. Every space between adjacent four samples is drawn as a tetragon filled with a grey value.
+	'elevation' may be 30 degrees, 'azimuth' may be 45 degrees.
+*/
+void Matrix_paintSurface (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum, double elevation, double azimuth)
+{
+	iam (Matrix);
+	long ixmin, ixmax, iymin, iymax;
+	if (xmax <= xmin) { xmin = my xmin; xmax = my xmax; }
+	if (ymax <= ymin) { ymin = my ymin; ymax = my ymax; }
+	(void) Matrix_getWindowSamplesX (me, xmin, xmax, & ixmin, & ixmax);
+	(void) Matrix_getWindowSamplesY (me, ymin, ymax, & iymin, & iymax);
+	if (maximum <= minimum)
+		(void) Matrix_getWindowExtrema (me, ixmin, ixmax, iymin, iymax, & minimum, & maximum);
+	if (maximum <= minimum) { minimum -= 1.0; maximum += 1.0; }
+	Graphics_setInner (g);
+	Graphics_setWindow (g, -1, 1, minimum, maximum);
+	Graphics_surface (g, my z,
+		ixmin, ixmax, Matrix_columnToX (me, ixmin), Matrix_columnToX (me, ixmax),
+		iymin, iymax, Matrix_rowToY (me, iymin), Matrix_rowToY (me, iymax),
+		minimum, maximum, elevation, azimuth);
+	Graphics_unsetInner (g);
+}
+
+extern int sginap (long);
+void Matrix_movie (I, Graphics g) {
+	iam (Matrix);
+	double minimum = 0, maximum = 1;
+	double *column = NUMdvector (1, my ny);
+	Matrix_getWindowExtrema (me, 1, my nx, 1, my ny, & minimum, & maximum);
+	Graphics_setViewport (g, 0, 1, 0, 1);
+	Graphics_setWindow (g, my ymin, my ymax, minimum, maximum);
+	for (long icol = 1; icol <= my nx; icol ++) {
+		long irow;
+		for (irow = 1; irow <= my ny; irow ++)
+			column [irow] = my z [irow] [icol];
+		Graphics_clearWs (g);
+		Graphics_function (g, column, 1, my ny, my ymin, my ymax);
+		Graphics_flushWs (g);
+		#ifdef sgi
+			sginap (2);
+		#endif
+	}
+	NUMdvector_free (column, 1);
+}
+
 DIRECT (Matrix_appendRows)
 	Matrix m1 = NULL, m2 = NULL;
 	WHERE (SELECTED) { if (m1) m2 = (structMatrix *)OBJECT; else m1 = (structMatrix *)OBJECT; }
@@ -2246,6 +2825,65 @@ END
 
 /***** PARAMCURVE *****/
 
+/*
+	Function:
+		draw the points of the curve between parameter values t1 and t2,
+		in time steps dt starting at t1 and including t2,
+		along the axes [x1, x2] x [y1, y2].
+	Defaults:
+		t2 <= t1: draw all (overlapping) points.
+		dt <= 0.0: time step is the smaller of my x -> dx and my y -> dx.
+		x2 <= x1: autoscaling along horizontal axis.
+		y2 <= y1: autoscaling along vertical axis.
+	Return value:
+		1 if OK, 0 if out of memory.
+*/
+int ParamCurve_draw (I, Graphics g, double t1, double t2, double dt,
+	double x1, double x2, double y1, double y2, int garnish)
+{
+	iam (ParamCurve);
+	long numberOfPoints, i;
+	double *x, *y;
+	if (t2 <= t1) {
+		double tx1 = my x -> x1;
+		double ty1 = my y -> x1;
+		double tx2 = my x -> x1 + (my x -> nx - 1) * my x -> dx;
+		double ty2 = my y -> x1 + (my y -> nx - 1) * my y -> dx;
+		t1 = tx1 > ty1 ? tx1 : ty1;
+		t2 = tx2 < ty2 ? tx2 : ty2;
+	}
+	if (x2 <= x1) Matrix_getWindowExtrema (my x, 0, 0, 1, 1, & x1, & x2);
+	if (x1 == x2) { x1 -= 1.0; x2 += 1.0; }
+	if (y2 <= y1) Matrix_getWindowExtrema (my y, 0, 0, 1, 1, & y1, & y2);
+	if (y1 == y2) { y1 -= 1.0; y2 += 1.0; }
+	if (dt <= 0.0)
+		dt = my x -> dx < my y -> dx ? my x -> dx : my y -> dx;
+	numberOfPoints = (long) ceil ((t2 - t1) / dt) + 1;
+	if (! (x = NUMdvector (1, numberOfPoints)) || ! (y = NUMdvector (1, numberOfPoints))) {
+		NUMdvector_free (x, 1);
+		return 0;
+	}
+	for (i = 1; i <= numberOfPoints; i ++) {
+		double t = i == numberOfPoints ? t2 : t1 + (i - 1) * dt;
+		double index = Sampled_xToIndex (my x, t);
+		x [i] = NUM_interpolate_sinc (my x -> z [1], my x -> nx, index, 50);
+		index = Sampled_xToIndex (my y, t);
+		y [i] = NUM_interpolate_sinc (my y -> z [1], my y -> nx, index, 50);
+	}
+	Graphics_setWindow (g, x1, x2, y1, y2);
+	Graphics_setInner (g);
+	Graphics_polyline (g, numberOfPoints, & x [1], & y [1]);
+	Graphics_unsetInner (g);
+	NUMdvector_free (x, 1);
+	NUMdvector_free (y, 1);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+	return 1;
+}
+
 FORM (ParamCurve_draw, L"Draw parametrized curve", 0)
 	REAL (L"Tmin", L"0.0")
 	REAL (L"Tmax", L"0.0")
@@ -2266,6 +2904,141 @@ END
 DIRECT (ParamCurve_help) Melder_help (L"ParamCurve"); END
 
 /***** PITCH *****/
+
+static void Sampled_speckleInside (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double speckle_mm, long ilevel, int unit)
+{
+	iam (Sampled);
+	long ixmin, ixmax, ix;
+	Function_unidirectionalAutowindow (me, & xmin, & xmax);
+	Sampled_getWindowSamples (me, xmin, xmax, & ixmin, & ixmax);
+	if (ClassFunction_isUnitLogarithmic (my methods, ilevel, unit)) {
+		ymin = ClassFunction_convertStandardToSpecialUnit (my methods, ymin, ilevel, unit);
+		ymax = ClassFunction_convertStandardToSpecialUnit (my methods, ymax, ilevel, unit);
+	}
+	if (ymax <= ymin) return;
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	for (ix = ixmin; ix <= ixmax; ix ++) {
+		double value = Sampled_getValueAtSample (me, ix, ilevel, unit);
+		if (NUMdefined (value)) {
+			double x = Sampled_indexToX (me, ix);
+			if (value >= ymin && value <= ymax) {
+				Graphics_fillCircle_mm (g, x, value, speckle_mm);
+			}
+		}
+	}
+}
+
+void Sampled_drawInside (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double speckle_mm, long ilevel, int unit)
+{
+	iam (Sampled);
+	long ixmin, ixmax, ix, startOfDefinedStretch = -1;
+	double *xarray = NULL, *yarray = NULL;
+	double previousValue = NUMundefined;
+	if (speckle_mm != 0.0) {
+		Sampled_speckleInside (me, g, xmin, xmax, ymin, ymax, speckle_mm, ilevel, unit);
+		return;
+	}
+	Function_unidirectionalAutowindow (me, & xmin, & xmax);
+	Sampled_getWindowSamples (me, xmin, xmax, & ixmin, & ixmax);
+	if (ClassFunction_isUnitLogarithmic (my methods, ilevel, unit)) {
+		ymin = ClassFunction_convertStandardToSpecialUnit (my methods, ymin, ilevel, unit);
+		ymax = ClassFunction_convertStandardToSpecialUnit (my methods, ymax, ilevel, unit);
+	}
+	if (ymax <= ymin) return;
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	xarray = NUMdvector (ixmin - 1, ixmax + 1); cherror
+	yarray = NUMdvector (ixmin - 1, ixmax + 1); cherror
+	previousValue = Sampled_getValueAtSample (me, ixmin - 1, ilevel, unit);
+	if (NUMdefined (previousValue)) {
+		startOfDefinedStretch = ixmin - 1;
+		xarray [ixmin - 1] = Sampled_indexToX (me, ixmin - 1);
+		yarray [ixmin - 1] = previousValue;
+	}
+	for (ix = ixmin; ix <= ixmax; ix ++) {
+		double x = Sampled_indexToX (me, ix), value = Sampled_getValueAtSample (me, ix, ilevel, unit);
+		if (NUMdefined (value)) {
+			if (NUMdefined (previousValue)) {
+				xarray [ix] = x;
+				yarray [ix] = value;
+			} else {
+				startOfDefinedStretch = ix - 1;
+				xarray [ix - 1] = x - 0.5 * my dx;
+				yarray [ix - 1] = value;
+				xarray [ix] = x;
+				yarray [ix] = value;
+			}
+		} else if (NUMdefined (previousValue)) {
+			Melder_assert (startOfDefinedStretch >= ixmin - 1);
+			if (ix > ixmin) {
+				xarray [ix] = x - 0.5 * my dx;
+				yarray [ix] = previousValue;
+				if (xarray [startOfDefinedStretch] < xmin) {
+					double phase = (xmin - xarray [startOfDefinedStretch]) / my dx;
+					xarray [startOfDefinedStretch] = xmin;
+					yarray [startOfDefinedStretch] = phase * yarray [startOfDefinedStretch + 1] + (1.0 - phase) * yarray [startOfDefinedStretch];
+				}
+				Graphics_polyline (g, ix + 1 - startOfDefinedStretch, & xarray [startOfDefinedStretch], & yarray [startOfDefinedStretch]);
+			}
+			startOfDefinedStretch = -1;
+		}
+		previousValue = value;
+	}
+	if (startOfDefinedStretch > -1) {
+		double x = Sampled_indexToX (me, ixmax + 1), value = Sampled_getValueAtSample (me, ixmax + 1, ilevel, unit);
+		Melder_assert (NUMdefined (previousValue));
+		if (NUMdefined (value)) {
+			xarray [ixmax + 1] = x;
+			yarray [ixmax + 1] = value;
+		} else {
+			xarray [ixmax + 1] = x - 0.5 * my dx;
+			yarray [ixmax + 1] = previousValue;
+		}
+		if (xarray [startOfDefinedStretch] < xmin) {
+			double phase = (xmin - xarray [startOfDefinedStretch]) / my dx;
+			xarray [startOfDefinedStretch] = xmin;
+			yarray [startOfDefinedStretch] = phase * yarray [startOfDefinedStretch + 1] + (1.0 - phase) * yarray [startOfDefinedStretch];
+		}
+		if (xarray [ixmax + 1] > xmax) {
+			double phase = (xarray [ixmax + 1] - xmax) / my dx;
+			xarray [ixmax + 1] = xmax;
+			yarray [ixmax + 1] = phase * yarray [ixmax] + (1.0 - phase) * yarray [ixmax + 1];
+		}
+		Graphics_polyline (g, ixmax + 2 - startOfDefinedStretch, & xarray [startOfDefinedStretch], & yarray [startOfDefinedStretch]);
+	}
+end:
+	NUMdvector_free (xarray, ixmin - 1);
+	NUMdvector_free (yarray, ixmin - 1);
+	Melder_clearError ();
+}
+
+void Pitch_drawInside (Pitch me, Graphics g, double xmin, double xmax, double fmin, double fmax, int speckle, int unit) {
+	Sampled_drawInside (me, g, xmin, xmax, fmin, fmax, speckle, Pitch_LEVEL_FREQUENCY, unit);
+}
+
+/*
+	If tmax <= tmin, draw whole time domain.
+*/
+void Pitch_draw (Pitch me, Graphics g, double tmin, double tmax, double fmin, double fmax, int garnish, int speckle, int unit) {
+	Graphics_setInner (g);
+	Pitch_drawInside (me, g, tmin, tmax, fmin, fmax, speckle, unit);
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, TRUE, L"Time (s)");
+		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
+		static MelderString buffer = { 0 };
+		MelderString_empty (& buffer);
+		MelderString_append3 (& buffer, L"Pitch (", ClassFunction_getUnitText (classPitch, Pitch_LEVEL_FREQUENCY, unit, Function_UNIT_TEXT_GRAPHICAL), L")");
+		Graphics_textLeft (g, TRUE, buffer.string);
+		if (ClassFunction_isUnitLogarithmic (classPitch, Pitch_LEVEL_FREQUENCY, unit)) {
+			Graphics_marksLeftLogarithmic (g, 6, TRUE, TRUE, FALSE);
+		} else {
+			Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
+		}
+	}
+}
 
 DIRECT (Pitch_getNumberOfVoicedFrames)
 	Pitch me = (structPitch *)ONLY (classPitch);
@@ -2674,6 +3447,153 @@ END
 
 /***** PITCH & PITCHTIER *****/
 
+void RealTier_draw (I, Graphics g, double tmin, double tmax, double fmin, double fmax,
+	int garnish, const wchar_t *method, const wchar_t *quantity)
+{
+	iam (RealTier);
+	bool drawLines = wcsstr (method, L"lines") || wcsstr (method, L"Lines");
+	bool drawSpeckles = wcsstr (method, L"speckles") || wcsstr (method, L"Speckles");
+	long n = my points -> size, imin, imax, i;
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	Graphics_setWindow (g, tmin, tmax, fmin, fmax);
+	Graphics_setInner (g);
+	imin = AnyTier_timeToHighIndex (me, tmin);
+	imax = AnyTier_timeToLowIndex (me, tmax);
+	if (n == 0) {
+	} else if (imax < imin) {
+		double fleft = RealTier_getValueAtTime (me, tmin);
+		double fright = RealTier_getValueAtTime (me, tmax);
+		if (drawLines) Graphics_line (g, tmin, fleft, tmax, fright);
+	} else for (i = imin; i <= imax; i ++) {
+		RealPoint point = (structRealPoint *)my points -> item [i];
+		double t = point -> time, f = point -> value;
+		if (drawSpeckles) Graphics_fillCircle_mm (g, t, f, 1);
+		if (drawLines) {
+			if (i == 1)
+				Graphics_line (g, tmin, f, t, f);
+			else if (i == imin)
+				Graphics_line (g, t, f, tmin, RealTier_getValueAtTime (me, tmin));
+			if (i == n)
+				Graphics_line (g, t, f, tmax, f);
+			else if (i == imax)
+				Graphics_line (g, t, f, tmax, RealTier_getValueAtTime (me, tmax));
+			else {
+				RealPoint pointRight = (structRealPoint *)my points -> item [i + 1];
+				Graphics_line (g, t, f, pointRight -> time, pointRight -> value);
+			}
+		}
+	}
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, TRUE, L"Time (s)");
+		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
+		Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
+		if (quantity) Graphics_textLeft (g, TRUE, quantity);
+	}
+}
+
+/*void AmplitudeTier_draw (AmplitudeTier me, Graphics g, double tmin, double tmax,
+	double ymin, double ymax, const wchar_t *method, int garnish)
+{
+	RealTier_draw (me, g, tmin, tmax, ymin, ymax, garnish, method, L"Sound pressure (Pa)");
+}*/
+
+/*void DurationTier_draw (DurationTier me, Graphics g, double tmin, double tmax,
+	double ymin, double ymax, const wchar_t *method, int garnish)
+{
+	RealTier_draw (me, g, tmin, tmax, ymin, ymax, garnish, method, L"Relative duration");
+}*/
+
+/*void IntensityTier_draw (IntensityTier me, Graphics g, double tmin, double tmax,
+	double ymin, double ymax, const wchar_t *method, int garnish)
+{
+	RealTier_draw (me, g, tmin, tmax, ymin, ymax, garnish, method, L"Intensity (dB)");
+}*/
+
+static void Pitch_line (Pitch me, Graphics g, double tmin, double fleft, double tmax, double fright,
+	int nonPeriodicLineType)
+{
+	/*
+	 * f = fleft + (t - tmin) * (fright - fleft) / (tmax - tmin);
+	 */
+	int lineType = Graphics_inqLineType (g);
+	double lineWidth = Graphics_inqLineWidth (g);
+	double slope = (fright - fleft) / (tmax - tmin);
+	long imin = Sampled_xToNearestIndex (me, tmin);
+	long imax = Sampled_xToNearestIndex (me, tmax), i;
+	if (imin < 1) imin = 1;
+	if (imax > my nx) imax = my nx;
+	for (i = imin; i <= imax; i ++) {
+		double tleft, tright;
+		if (! Pitch_isVoiced_i (me, i)) {
+			if (nonPeriodicLineType == 2) continue;
+			Graphics_setLineType (g, Graphics_DOTTED);
+			Graphics_setLineWidth (g, 0.67 * lineWidth);
+		} else if (nonPeriodicLineType != 2) {
+			Graphics_setLineWidth (g, 2 * lineWidth);
+		}
+		tleft = Sampled_indexToX (me, i) - 0.5 * my dx, tright = tleft + my dx;
+		if (tleft < tmin) tleft = tmin;
+		if (tright > tmax) tright = tmax;
+		Graphics_line (g, tleft, fleft + (tleft - tmin) * slope,
+			tright, fleft + (tright - tmin) * slope);
+		Graphics_setLineType (g, lineType);
+		Graphics_setLineWidth (g, lineWidth);
+	}
+}
+
+void PitchTier_draw (PitchTier me, Graphics g, double tmin, double tmax,
+	double fmin, double fmax, int garnish, const wchar_t *method)
+{
+	RealTier_draw (me, g, tmin, tmax, fmin, fmax, garnish, method, L"Frequency (Hz)");
+}
+
+void PitchTier_Pitch_draw (PitchTier me, Pitch uv, Graphics g,
+	double tmin, double tmax, double fmin, double fmax, int nonPeriodicLineType, int garnish, const wchar_t *method)
+{
+	long n = my points -> size, imin, imax, i;
+	if (nonPeriodicLineType == 0) {
+		PitchTier_draw (me, g, tmin, tmax, fmin, fmax, garnish, method);
+		return;
+	}
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	Graphics_setWindow (g, tmin, tmax, fmin, fmax);
+	Graphics_setInner (g);
+	imin = AnyTier_timeToHighIndex (me, tmin);
+	imax = AnyTier_timeToLowIndex (me, tmax);
+	if (n == 0) {
+	} else if (imax < imin) {
+		double fleft = RealTier_getValueAtTime (me, tmin);
+		double fright = RealTier_getValueAtTime (me, tmax);
+		Pitch_line (uv, g, tmin, fleft, tmax, fright, nonPeriodicLineType);
+	} else for (i = imin; i <= imax; i ++) {
+		RealPoint point = (structRealPoint *)my points -> item [i];
+		double t = point -> time, f = point -> value;
+		Graphics_fillCircle_mm (g, t, f, 1);
+		if (i == 1)
+			Pitch_line (uv, g, tmin, f, t, f, nonPeriodicLineType);
+		else if (i == imin)
+			Pitch_line (uv, g, t, f, tmin, RealTier_getValueAtTime (me, tmin), nonPeriodicLineType);
+		if (i == n)
+			Pitch_line (uv, g, t, f, tmax, f, nonPeriodicLineType);
+		else if (i == imax)
+			Pitch_line (uv, g, t, f, tmax, RealTier_getValueAtTime (me, tmax), nonPeriodicLineType);
+		else {
+			RealPoint pointRight = (structRealPoint *)my points -> item [i + 1];
+			Pitch_line (uv, g, t, f, pointRight -> time, pointRight -> value, nonPeriodicLineType);
+		}
+	}
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+		Graphics_textLeft (g, 1, L"Frequency (Hz)");
+	}
+}
+
 FORM (old_PitchTier_Pitch_draw, L"PitchTier & Pitch: Draw", 0)
 	praat_dia_timeRange (dia);
 	REAL (L"From frequency (Hz)", L"0.0")
@@ -3042,6 +3962,27 @@ DIRECT (PitchTier_PointProcess_to_PitchTier)
 END
 
 /***** POINTPROCESS *****/
+
+void PointProcess_draw (PointProcess me, Graphics g, double tmin, double tmax, int garnish) {
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	Graphics_setWindow (g, tmin, tmax, -1, 1);
+	if (my nt) {
+		long imin = PointProcess_getHighIndex (me, tmin), imax = PointProcess_getLowIndex (me, tmax), i;
+		int lineType = Graphics_inqLineType (g);
+		Graphics_setLineType (g, Graphics_DOTTED);
+		Graphics_setInner (g);
+		for (i = imin; i <= imax; i ++) {
+			Graphics_line (g, my t [i], -1, my t [i], 1);
+		}
+		Graphics_setLineType (g, lineType);
+		Graphics_unsetInner (g);
+	}
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+	}
+}
 
 FORM (PointProcess_addPoint, L"PointProcess: Add point", L"PointProcess: Add point...")
 	REAL (L"Time (s)", L"0.5")
@@ -3551,6 +4492,120 @@ END
 
 /***** POLYGON *****/
 
+static void setWindow (Polygon me, Any graphics,
+	double xmin, double xmax, double ymin, double ymax)
+{
+	Melder_assert (me);
+
+	if (xmax <= xmin)   /* Autoscaling along x axis. */
+	{
+		xmax = xmin = my x [1];
+		for (long i = 2; i <= my numberOfPoints; i ++)
+		{
+			if (my x [i] < xmin) xmin = my x [i];
+			if (my x [i] > xmax) xmax = my x [i];
+		}
+		if (xmin == xmax)
+		{
+			xmin -= 1.0;
+			xmax += 1.0;
+		}
+	}
+	if (ymax <= ymin)   /* Autoscaling along y axis. */
+	{
+		ymax = ymin = my y [1];
+		for (long i = 2; i <= my numberOfPoints; i ++)
+		{
+			if (my y [i] < ymin) ymin = my y [i];
+			if (my y [i] > ymax) ymax = my y [i];
+		}
+		if (ymin == ymax)
+		{
+			ymin -= 1.0;
+			ymax += 1.0;
+		}
+	}
+	Graphics_setWindow (graphics, xmin, xmax, ymin, ymax);
+}
+
+void Polygon_drawMarks (I, Graphics g, double xmin, double xmax,
+	double ymin, double ymax, double size_mm, const wchar_t *mark)
+{
+	iam (Polygon);
+
+	Graphics_setInner (g);
+	setWindow (me, g, xmin, xmax, ymin, ymax);
+	for (long i = 1; i <= my numberOfPoints; i++)
+	{
+		Graphics_mark (g, my x[i], my y[i], size_mm, mark);
+	}
+	Graphics_unsetInner (g);
+}
+
+void Polygon_draw (I, Graphics g, double xmin, double xmax, double ymin, double ymax) {
+	iam (Polygon);
+	Graphics_setInner (g);
+	setWindow (me, g, xmin, xmax, ymin, ymax);
+	Graphics_polyline (g, my numberOfPoints, & my x [1], & my y [1]);
+	Graphics_unsetInner (g);
+}
+
+void Polygon_paint (I, Graphics g, Graphics_Colour colour, double xmin, double xmax, double ymin, double ymax) {
+	iam (Polygon);
+	Graphics_setInner (g);
+	setWindow (me, g, xmin, xmax, ymin, ymax);
+	Graphics_setColour (g, colour);
+	Graphics_fillArea (g, my numberOfPoints, & my x [1], & my y [1]);
+	Graphics_unsetInner (g);
+}
+
+void Polygon_drawCircles (I, Graphics g,
+	double xmin, double xmax, double ymin, double ymax, double diameter_mm)
+{
+	iam (Polygon);
+	Graphics_setInner (g);
+	setWindow (me, g, xmin, xmax, ymin, ymax);
+	for (long i = 1; i <= my numberOfPoints; i ++)
+		Graphics_circle_mm (g, my x [i], my y [i], diameter_mm);
+	Graphics_unsetInner (g);
+}
+
+void Polygon_paintCircles (I, Graphics g,
+	double xmin, double xmax, double ymin, double ymax, double diameter)
+{
+	iam (Polygon);
+	Graphics_setInner (g);
+	setWindow (me, g, xmin, xmax, ymin, ymax);
+	for (long i = 1; i <= my numberOfPoints; i ++)
+		Graphics_fillCircle_mm (g, my x [i], my y [i], diameter);
+	Graphics_unsetInner (g);
+}
+
+void Polygons_drawConnection (I, thou, Graphics g,
+	double xmin, double xmax, double ymin, double ymax, int hasArrow, double relativeLength)
+{
+	iam (Polygon); thouart (Polygon);
+	double w2 = 0.5 * (1 - relativeLength), w1 = 1 - w2;
+	long n = my numberOfPoints;
+	if (thy numberOfPoints < n) n = thy numberOfPoints;
+	Graphics_setInner (g);
+	setWindow (me, g, xmin, xmax, ymin, ymax);
+	for (long i = 1; i <= n; i ++) {
+		double x1 = my x [i], x2 = thy x [i], y1 = my y [i], y2 = thy y [i];
+		double dummy = w1 * x1 + w2 * x2;
+		x2 = w1 * x2 + w2 * x1;
+		x1 = dummy;
+		dummy = w1 * y1 + w2 * y2;
+		y2 = w1 * y2 + w2 * y1;
+		y1 = dummy;
+		if (hasArrow)
+			Graphics_arrow (g, x1, y1, x2, y2);
+		else
+			Graphics_line (g, x1, y1, x2, y2);
+	}
+	Graphics_unsetInner (g);
+}
+
 FORM (Polygon_draw, L"Polygon: Draw", 0)
 	REAL (L"Xmin", L"0.0")
 	REAL (L"Xmax", L"0.0")
@@ -3666,6 +4721,94 @@ END
 
 /***** SPECTROGRAM *****/
 
+void Spectrogram_paintInside (I, Graphics g, double tmin, double tmax, double fmin, double fmax,
+	double maximum, int autoscaling, double dynamic, double preemphasis, double dynamicCompression)
+{
+	iam (Spectrogram);
+	long itmin, itmax, ifmin, ifmax, ifreq, itime;
+	double *preemphasisFactor, *dynamicFactor;
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	if (fmax <= fmin) { fmin = my ymin; fmax = my ymax; }
+	if (! Matrix_getWindowSamplesX (me, tmin - 0.49999 * my dx, tmax + 0.49999 * my dx, & itmin, & itmax) ||
+		 ! Matrix_getWindowSamplesY (me, fmin - 0.49999 * my dy, fmax + 0.49999 * my dy, & ifmin, & ifmax))
+		return;
+	Graphics_setWindow (g, tmin, tmax, fmin, fmax);
+	if (! (preemphasisFactor = NUMdvector (ifmin, ifmax)) ||
+		 ! (dynamicFactor = NUMdvector (itmin, itmax)))
+		return;
+	/* Pre-emphasis in place; also compute maximum after pre-emphasis. */
+	for (ifreq = ifmin; ifreq <= ifmax; ifreq ++) {
+		preemphasisFactor [ifreq] = (preemphasis / NUMln2) * log (ifreq * my dy / 1000.0);
+		for (itime = itmin; itime <= itmax; itime ++) {
+			double value = my z [ifreq] [itime];   /* Power. */
+			value = (10.0/NUMln10) * log ((value + 1e-30) / 4.0e-10) + preemphasisFactor [ifreq];   /* dB */
+			if (value > dynamicFactor [itime]) dynamicFactor [itime] = value;   /* Local maximum. */
+			my z [ifreq] [itime] = value;
+		}
+	}
+	/* Compute global maximum. */
+	if (autoscaling) {
+		maximum = 0.0;
+		for (itime = itmin; itime <= itmax; itime ++)
+			if (dynamicFactor [itime] > maximum) maximum = dynamicFactor [itime];
+	}
+	/* Dynamic compression in place. */
+	for (itime = itmin; itime <= itmax; itime ++) {
+		dynamicFactor [itime] = dynamicCompression * (maximum - dynamicFactor [itime]);
+		for (ifreq = ifmin; ifreq <= ifmax; ifreq ++)
+			my z [ifreq] [itime] += dynamicFactor [itime];
+	}
+	Graphics_image (g, my z,
+		itmin, itmax,
+		Matrix_columnToX (me, itmin - 0.5),
+		Matrix_columnToX (me, itmax + 0.5),
+		ifmin, ifmax,
+		Matrix_rowToY (me, ifmin - 0.5),
+		Matrix_rowToY (me, ifmax + 0.5),
+		maximum - dynamic, maximum);
+	for (ifreq = ifmin; ifreq <= ifmax; ifreq ++)
+		for (itime = itmin; itime <= itmax; itime ++) {
+			double value = 4.0e-10 * exp ((my z [ifreq] [itime] - dynamicFactor [itime]
+				- preemphasisFactor [ifreq]) * (NUMln10 / 10.0)) - 1e-30;
+			my z [ifreq] [itime] = value > 0.0 ? value : 0.0;
+		}
+	NUMdvector_free (preemphasisFactor, ifmin);
+	NUMdvector_free (dynamicFactor, itmin);
+}
+
+/*
+	Function:
+		Draw me to a Graphics.
+		If tmax <= tmin, draw all time samples.
+		If fmax <= fmin, draw all frequency bands.
+	Arguments:
+		dynamicRange (dB): the difference between the maximum intensity and the lowest visible intensity.
+		preemphasis (dB/octave): high-pass filtering.
+		dynamicCompression (0-1):
+			the amount by which weaker frames are enhanced in the direction of the strongest frame;
+			0 = no compression, 1 = complete compression (all frames shown equally strong).
+		garnish:
+			a boolean that determines if a box, ticks, numbers, and text are written in the margins.
+*/
+void Spectrogram_paint (I, Graphics g,
+	double tmin, double tmax, double fmin, double fmax, double maximum, int autoscaling,
+	double dynamic, double preemphasis, double dynamicCompression,
+	int garnish)
+{
+	iam (Spectrogram);
+	Graphics_setInner (g);
+	Spectrogram_paintInside (me, g, tmin, tmax, fmin, fmax, maximum, autoscaling,
+		dynamic, preemphasis, dynamicCompression);
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+		Graphics_textLeft (g, 1, L"Frequency (Hz)");
+	}
+}
+
 FORM (Spectrogram_paint, L"Spectrogram: Paint", L"Spectrogram: Paint...")
 	praat_dia_timeRange (dia);
 	REAL (L"left Frequency range (Hz)", L"0.0")
@@ -3746,6 +4889,111 @@ DIRECT (Spectrogram_view)
 END
 
 /***** SPECTRUM *****/
+
+void Spectrum_drawInside (Spectrum me, Graphics g, double fmin, double fmax, double minimum, double maximum) {
+	double *yWC = NULL;
+	long ifreq, ifmin, ifmax;
+	int autoscaling = minimum >= maximum;
+
+	if (fmax <= fmin) { fmin = my xmin; fmax = my xmax; }
+	if (! Matrix_getWindowSamplesX (me, fmin, fmax, & ifmin, & ifmax)) return;
+
+	yWC = NUMdvector (ifmin, ifmax); cherror
+
+	/*
+	 * First pass: compute power density.
+	 */
+	if (autoscaling) maximum = -1e30;
+	for (ifreq = ifmin; ifreq <= ifmax; ifreq ++) {
+		double y = our getValueAtSample (me, ifreq, 0, 2);
+		if (autoscaling && y > maximum) maximum = y;
+		yWC [ifreq] = y;
+	}
+	if (autoscaling) minimum = maximum - 60;   /* Default dynamic range is 60 dB. */
+
+	/*
+	 * Second pass: clip.
+	 */
+	for (ifreq = ifmin; ifreq <= ifmax; ifreq ++) {
+		if (yWC [ifreq] < minimum) yWC [ifreq] = minimum;
+		else if (yWC [ifreq] > maximum) yWC [ifreq] = maximum;
+	}
+
+	Graphics_setWindow (g, fmin, fmax, minimum, maximum);
+	Graphics_function (g, yWC, ifmin, ifmax, Matrix_columnToX (me, ifmin), Matrix_columnToX (me, ifmax));
+end:
+	NUMdvector_free (yWC, ifmin);
+	Melder_clearError ();
+}
+
+/*
+	Function:
+		draw a Spectrum into a Graphics.
+	Preconditions:
+		maximum > minimum;
+	Arguments:
+		[fmin, fmax]: frequencies in Hertz; x domain of drawing;
+		Autowindowing: if fmax <= fmin, x domain of drawing is [my xmin, my xmax].
+		[minimum, maximum]: power in dB/Hertz; y range of drawing.
+*/
+void Spectrum_draw (Spectrum me, Graphics g, double fmin, double fmax, double minimum, double maximum, int garnish) {
+	Graphics_setInner (g);
+	Spectrum_drawInside (me, g, fmin, fmax, minimum, maximum);
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Frequency (Hz)");
+		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
+		Graphics_textLeft (g, 1, L"Sound pressure level (dB/Hz)");
+		Graphics_marksLeftEvery (g, 1.0, 20.0, TRUE, TRUE, FALSE);
+	}
+}
+
+void Spectrum_drawLogFreq (Spectrum me, Graphics g, double fmin, double fmax, double minimum, double maximum, int garnish) {
+	double *xWC = NULL, *yWC = NULL;
+	long ifreq, ifmin, ifmax;
+	int autoscaling = minimum >= maximum;
+	if (fmax <= fmin) { fmin = my xmin; fmax = my xmax; }
+	if (! Matrix_getWindowSamplesX (me, fmin, fmax, & ifmin, & ifmax)) return;
+if(ifmin==1)ifmin=2;  /* BUG */
+	xWC = NUMdvector (ifmin, ifmax); cherror
+	yWC = NUMdvector (ifmin, ifmax); cherror
+
+	/*
+	 * First pass: compute power density.
+	 */
+	if (autoscaling) maximum = -1e6;
+	for (ifreq = ifmin; ifreq <= ifmax; ifreq ++) {
+		xWC [ifreq] = log10 (my x1 + (ifreq - 1) * my dx);
+		yWC [ifreq] = our getValueAtSample (me, ifreq, 0, 2);
+		if (autoscaling && yWC [ifreq] > maximum) maximum = yWC [ifreq];
+	}
+	if (autoscaling) minimum = maximum - 60;   /* Default dynamic range is 60 dB. */
+
+	/*
+	 * Second pass: clip.
+	 */
+	for (ifreq = ifmin; ifreq <= ifmax; ifreq ++) {
+		if (yWC [ifreq] < minimum) yWC [ifreq] = minimum;
+		else if (yWC [ifreq] > maximum) yWC [ifreq] = maximum;
+	}
+
+	Graphics_setInner (g);
+	Graphics_setWindow (g, log10 (fmin), log10 (fmax), minimum, maximum);
+	Graphics_polyline (g, ifmax - ifmin + 1, & xWC [ifmin], & yWC [ifmin]);
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Frequency (Hz)");
+		Graphics_marksBottomLogarithmic (g, 3, TRUE, TRUE, FALSE);
+		Graphics_textLeft (g, 1, L"Sound pressure level (dB/Hz)");
+		Graphics_marksLeftEvery (g, 1.0, 20.0, TRUE, TRUE, FALSE);
+	}
+end:
+	NUMdvector_free (xWC, ifmin);
+	NUMdvector_free (yWC, ifmin);
+	Melder_clearError ();
+}
 
 FORM (Spectrum_cepstralSmoothing, L"Spectrum: Cepstral smoothing", 0)
 	POSITIVE (L"Bandwidth (Hz)", L"500.0")
@@ -3945,6 +5193,12 @@ DIRECT (Spectrum_to_SpectrumTier_peaks)
 END
 
 /***** SPECTRUMTIER *****/
+
+void SpectrumTier_draw (SpectrumTier me, Graphics g, double fmin, double fmax,
+	double pmin, double pmax, int garnish, const wchar_t *method)
+{
+	RealTier_draw (me, g, fmin, fmax, pmin, pmax, garnish, method, L"Power spectral density (dB)");
+}
 
 DIRECT (SpectrumTier_downto_Table)
 	EVERY_TO (SpectrumTier_downto_Table ((structSpectrumTier *)OBJECT, true, true, true))
@@ -4342,6 +5596,73 @@ DO
 END
 
 /***** TRANSITION *****/
+
+static void NUMrationalize (double x, long *numerator, long *denominator) {
+	double epsilon = 1e-6;
+	*numerator = 1;
+	for (*denominator = 1; *denominator <= 100000; (*denominator) ++) {
+		double numerator_d = x * *denominator, rounded = floor (numerator_d + 0.5);
+		if (fabs (rounded - numerator_d) < epsilon) {
+			*numerator = rounded;
+			return;
+		}
+	}
+	*denominator = 0;   /* Failure. */
+}
+
+static void print4 (wchar_t *buffer, double value, int iformat, int width, int precision) {
+	wchar_t formatString [40];
+	if (iformat == 4) {
+		long numerator, denominator;
+		NUMrationalize (value, & numerator, & denominator);
+		if (numerator == 0)
+			swprintf (buffer, 40, L"0");
+		else if (denominator > 1)
+			swprintf (buffer, 40, L"%ld/%ld", numerator, denominator);
+		else
+			swprintf (buffer, 40, L"%.7g", value);
+	} else {
+		swprintf (formatString, 40, L"%%%d.%d%c", width, precision, iformat == 1 ? 'f' : iformat == 2 ? 'e' : 'g');
+		swprintf (buffer, 40, formatString, value);
+	}
+}
+
+void Transition_drawAsNumbers (I, Graphics g, int iformat, int precision) {
+	iam (Transition);
+	double leftMargin, lineSpacing, maxTextWidth = 0, maxTextHeight = 0;
+	long row, col;
+	Graphics_setInner (g);
+	Graphics_setWindow (g, 0.5, my numberOfStates + 0.5, 0, 1);
+	leftMargin = Graphics_dxMMtoWC (g, 1);
+	lineSpacing = Graphics_dyMMtoWC (g, 1.5 * Graphics_inqFontSize (g) * 25.4 / 72);
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_BOTTOM);
+	for (col = 1; col <= my numberOfStates; col ++) {
+		if (my stateLabels && my stateLabels [col] && my stateLabels [col] [0]) {
+			Graphics_text (g, col, 1, my stateLabels [col]);
+			if (! maxTextHeight) maxTextHeight = lineSpacing;
+		}
+	}
+	for (row = 1; row <= my numberOfStates; row ++) {
+		double y = 1 - lineSpacing * (row - 1 + 0.7);
+		Graphics_setTextAlignment (g, Graphics_RIGHT, Graphics_HALF);
+		if (my stateLabels && my stateLabels [row]) {
+			double textWidth = Graphics_textWidth (g, my stateLabels [row]);
+			if (textWidth > maxTextWidth) maxTextWidth = textWidth;
+			Graphics_text (g, 0.5 - leftMargin, y, my stateLabels [row]);
+		}
+		Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+		for (col = 1; col <= my numberOfStates; col ++) {
+			wchar_t text [40];
+			print4 (text, my data [row] [col], iformat, 0, precision);
+			Graphics_text (g, col, y, text);
+		}
+	}
+	if (maxTextWidth)
+		Graphics_line (g, 0.5 - maxTextWidth - leftMargin, 1, my numberOfStates + 0.5, 1);
+	if (maxTextHeight)
+		Graphics_line (g, 0.5, 1 + maxTextHeight, 0.5, 1 - lineSpacing * (my numberOfStates + 0.2));
+	Graphics_unsetInner (g);
+}
 
 DIRECT (Transition_conflate)
 	EVERY_TO (Transition_to_Distributions_conflate ((structTransition *)OBJECT))

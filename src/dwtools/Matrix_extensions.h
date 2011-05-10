@@ -25,7 +25,6 @@
 */
 
 #include "fon/Matrix.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -36,23 +35,12 @@ void Matrix_scatterPlot (I, Any g, long icx, long icy,
     double size_mm, const wchar_t *mark, int garnish);
 /* Draw my columns ix and iy as a scatterplot (with squares)				*/
 
-void Matrix_drawAsSquares (I, Any graphics, double xmin, double xmax, double ymin, double ymax, int garnished);
-/* Draw a Matrix as small squares whose area correspond to the matrix element */
-/* The square is filled with black if the weights are negative					*/
-
 void Matrix_scale (I, int choice);
 /* choice = 1 :divide each elmnt by the maximum (abs) */
 /* choice = 2 :rows, divide each row elmnt by the maximum (abs) of that row	*/
 /* choice = 3 :columns, divide each col elmnt by the maximum of that col	*/
 
 Any Matrix_transpose (I);
-
-void Matrix_drawDistribution (I, Graphics g, double xmin, double xmax,
-	double ymin, double ymax, double minimum, double maximum, long nBins,
-	double freqMin, double freqmax, int cumulative, int garnish);
-
-void Matrix_drawSliceY (I, Graphics g, double x, double ymin, double ymax,
-	double min, double max);
 
 int Matrix_fitPolynomial (I, long maxDegree);
 

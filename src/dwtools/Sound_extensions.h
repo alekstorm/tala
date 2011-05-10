@@ -153,18 +153,6 @@ void Sound_fade (Sound me, int channel, double t, double fadeTime, int inout, in
 #define FROM_BOTTOM_TO_TOP 2
 #define FROM_TOP_TO_BOTTOM 3
 
-void Sound_draw_btlr (Sound me, Graphics g, double tmin, double tmax, double amin, double amax,
-	int direction, int garnish);
-/* direction is one of the macros's FROM_LEFT_TO_RIGHT... */
-
-void Sound_drawWhere (Sound me, Graphics g, double tmin, double tmax, double minimum, double maximum,
-	bool garnish, const wchar_t *method, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter);
-
-void Sound_paintWhere (Sound me, Graphics g, Graphics_Colour colour, double tmin, double tmax,
-	double minimum, double maximum, double level, bool garnish, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter);
-void Sounds_paintEnclosed (Sound me, Sound thee, Graphics g, Graphics_Colour colour, double tmin, double tmax,
-	double minimum, double maximum, bool garnish);
-
 Sound Sound_changeGender (Sound me, double pitchMin, double pitchMax, double pitchRatio,
 	double formantFrequenciesRatio, double durationRatio);
 Sound Sound_and_Pitch_changeGender (Sound me, Pitch him, double pitchRatio,

@@ -131,78 +131,6 @@ long Formant_getMaxNumFormants (Formant me) {
 	return maxNumFormants;
 }
 
-void Formant_drawTracks (Formant me, Graphics g, double tmin, double tmax, double fmax, int garnish) {
-	long itmin, itmax, iframe, itrack, ntrack = Formant_getMinNumFormants (me);
-	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
-	if (! Sampled_getWindowSamples (me, tmin, tmax, & itmin, & itmax)) return;
-	Graphics_setInner (g);
-	Graphics_setWindow (g, tmin, tmax, 0.0, fmax);
-	for (itrack = 1; itrack <= ntrack; itrack ++) {
-		for (iframe = itmin; iframe < itmax; iframe ++) {
-			Formant_Frame curFrame = & my frame [iframe], nextFrame = & my frame [iframe + 1];
-			double x1 = Sampled_indexToX (me, iframe), x2 = Sampled_indexToX (me, iframe + 1);
-			double f1 = curFrame -> formant [itrack]. frequency;
-			double f2 = nextFrame -> formant [itrack]. frequency;
-			if (NUMdefined (x1) && NUMdefined (f1) && NUMdefined (x2) && NUMdefined (f2))
-				Graphics_line (g, x1, f1, x2, f2);
-		}
-	}
-	Graphics_unsetInner (g);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, 1, L"Time (s)");
-		Graphics_textLeft (g, 1, L"Formant frequency (Hz)");
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-		Graphics_marksLeftEvery (g, 1.0, 1000.0, 1, 1, 1);
-	}
-}
-
-void Formant_drawSpeckles_inside (Formant me, Graphics g, double tmin, double tmax, double fmin, double fmax,
-	double suppress_dB, double dotSize)
-{
-	long itmin, itmax, iframe, iformant;
-	double maximumIntensity = 0.0, minimumIntensity;
-	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
-	if (! Sampled_getWindowSamples (me, tmin, tmax, & itmin, & itmax)) return;
-	Graphics_setWindow (g, tmin, tmax, fmin, fmax);
-
-	for (iframe = itmin; iframe <= itmax; iframe ++) {
-		Formant_Frame frame = & my frame [iframe];
-		if (frame -> intensity > maximumIntensity)
-			maximumIntensity = frame -> intensity;
-	}
-	if (maximumIntensity == 0.0 || suppress_dB <= 0.0)
-		minimumIntensity = 0.0;   /* Ignore. */
-	else
-		minimumIntensity = maximumIntensity / pow (10, suppress_dB / 10);
-
-	for (iframe = itmin; iframe <= itmax; iframe ++) {
-		Formant_Frame frame = & my frame [iframe];
-		double x = Sampled_indexToX (me, iframe);
-		if (frame -> intensity < minimumIntensity) continue;
-		for (iformant = 1; iformant <= frame -> nFormants; iformant ++) {
-			double frequency = frame -> formant [iformant]. frequency;
-			if (frequency >= fmin && frequency <= fmax)
-				Graphics_fillCircle_mm (g, x, frequency, dotSize);
-		}
-	}
-}
-
-void Formant_drawSpeckles (Formant me, Graphics g, double tmin, double tmax, double fmax, double suppress_dB,
-	int garnish)
-{
-	Graphics_setInner (g);
-	Formant_drawSpeckles_inside (me, g, tmin, tmax, 0.0, fmax, suppress_dB, 1.0);
-	Graphics_unsetInner (g);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, 1, L"Time (s)");
-		Graphics_textLeft (g, 1, L"Formant frequency (Hz)");
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-		Graphics_marksLeftEvery (g, 1.0, 1000.0, 1, 1, 1);
-	}
-}
-
 int Formant_formula_bandwidths (Formant me, const wchar_t *formula, Interpreter *interpreter) {
 	long iframe, iformant, nrow = Formant_getMaxNumFormants (me);
 	Matrix mat = NULL;
@@ -342,44 +270,6 @@ double Formant_getBandwidthAtTime (Formant me, int iformant, double time, int ba
 
 double Formant_getQuantileOfBandwidth (Formant me, int iformant, double quantile, double tmin, double tmax, int bark) {
 	return Sampled_getQuantile (me, tmin, tmax, quantile, (iformant << 1) + 1, bark);
-}
-
-void Formant_scatterPlot (Formant me, Graphics g, double tmin, double tmax,
-	int iformant1, double fmin1, double fmax1, int iformant2, double fmin2, double fmax2,
-	double size_mm, const wchar_t *mark, int garnish)
-{
-	long itmin, itmax, iframe;
-	if (iformant1 < 1 || iformant2 < 1) return;
-	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
-	if (! Sampled_getWindowSamples (me, tmin, tmax, & itmin, & itmax)) return;
-	if (fmax1 == fmin1)
-		Formant_getExtrema (me, iformant1, tmin, tmax, & fmin1, & fmax1);
-	if (fmax1 == fmin1) return;
-	if (fmax2 == fmin2)
-		Formant_getExtrema (me, iformant2, tmin, tmax, & fmin2, & fmax2);
-	if (fmax2 == fmin2) return;
-	Graphics_setInner (g);
-	Graphics_setWindow (g, fmin1, fmax1, fmin2, fmax2);
-	for (iframe = itmin; iframe <= itmax; iframe ++) {
-		Formant_Frame frame = & my frame [iframe];
-		double x, y;
-		if (iformant1 > frame -> nFormants || iformant2 > frame -> nFormants) continue;
-		x = frame -> formant [iformant1]. frequency;
-		y = frame -> formant [iformant2]. frequency;
-		if (x == 0.0 || y == 0.0) continue;
-		Graphics_mark (g, x, y, size_mm, mark);
-	}
-	Graphics_unsetInner (g);
-	if (garnish) {
-		wchar_t text [100];
-		Graphics_drawInnerBox (g);
-		swprintf (text, 100, L"%%F_%d (Hz)", iformant1);
-		Graphics_textBottom (g, 1, text);
-		swprintf (text, 100, L"%%F_%d (Hz)", iformant2);
-		Graphics_textLeft (g, 1, text);
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-		Graphics_marksLeft (g, 2, 1, 1, 0);
-	}
 }
 
 Matrix Formant_to_Matrix (Formant me, int iformant) {

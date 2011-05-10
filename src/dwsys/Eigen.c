@@ -69,38 +69,6 @@
 
 extern machar_Table NUMfpp;
 
-static void Graphics_ticks (Graphics g, double min, double max, int hasNumber,
-	int hasTick, int hasDottedLine, int integers)
-{
-	double range = max - min, scale = 1, tick = min, dtick = 1;
-
-	if (range == 0)
-	{
-		return;
-	}
-	else if (range > 1)
-	{
-		while (range / scale > 10) scale *= 10;
-		range /= scale;
-	}
-	else
-	{
-		while (range / scale < 10) scale /= 10;
-		range *= scale;
-	}
-
-	if (range < 3) dtick = 0.5;
-	dtick *= scale;
-	tick = dtick * floor (min / dtick);
-	if (tick < min) tick += dtick;
-	while (tick <= max)
-	{
-		double num = integers ? floor (tick + 0.5) : tick;
-		Graphics_markBottom (g, num, hasNumber, hasTick, hasDottedLine, NULL);
-		tick += dtick;
-	}
-}
-
 class_methods (Eigen, Data)
 	class_method_local (Eigen, destroy)
 	class_method_local (Eigen, description)
@@ -450,100 +418,6 @@ void Eigen_invertEigenvector (I, long ivec)
 	for (j = 1; j <= my dimension; j++)
 	{
 		my eigenvectors[ivec][j] = - my eigenvectors[ivec][j];
-	}
-}
-
-void Eigen_drawEigenvalues (I, Graphics g, long first, long last, double ymin, double ymax,
-	int fractionOfTotal, int cumulative, double size_mm, const wchar_t *mark, int garnish)
-{
-	iam (Eigen);
-	double xmin = first, xmax = last, scale = 1, sumOfEigenvalues = 0;
-	long i;
-
-	if (first < 1) first = 1;
-	if (last < 1 || last > my numberOfEigenvalues) last = my numberOfEigenvalues;
-	if (last <= first )
-	{
-		first = 1; last = my numberOfEigenvalues;
-	}
-	xmin = first - 0.5; xmax = last + 0.5;
-	if (fractionOfTotal || cumulative)
-	{
-		sumOfEigenvalues = Eigen_getSumOfEigenvalues (me, 0, 0);
-		if (sumOfEigenvalues <= 0)  sumOfEigenvalues = 1;
-		scale = sumOfEigenvalues;
-	}
-	if (ymax <= ymin)
-	{
-		ymax = Eigen_getSumOfEigenvalues (me, (cumulative ? 1 : first), first) / scale;
-		ymin = Eigen_getSumOfEigenvalues (me, (cumulative ? 1 : last), last) / scale;
-		if (ymin > ymax)
-		{
-			double tmp = ymin; ymin = ymax; ymax = tmp;
-		}
-	}
-	Graphics_setInner (g);
-	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
-	for (i = first; i <= last; i++)
-	{
-		double accu = Eigen_getSumOfEigenvalues (me, (cumulative ? 1 : i), i);
-		Graphics_mark (g, i, accu / scale, size_mm, mark);
-	}
-	Graphics_unsetInner (g);
-	if (garnish)
-	{
-    	Graphics_drawInnerBox (g);
-		Graphics_textLeft (g, 1, fractionOfTotal ? (cumulative ? L"Cumulative fractional eigenvalue" : L"Fractional eigenvalue") :
-			(cumulative ? L"Cumulative eigenvalue" : L"Eigenvalue"));
-		Graphics_ticks (g, first, last, 1, 1, 0, 1);
-    	Graphics_marksLeft (g, 2, 1, 1, 0);
-		Graphics_textBottom (g, 1, L"Index");
-	}
-}
-
-void Eigen_drawEigenvector (I, Graphics g, long ivec, long first, long last,
-	double ymin, double ymax, int weigh, double size_mm, const wchar_t *mark,
-	int connect, wchar_t **rowLabels, int garnish)
-{
-	iam (Eigen);
-	long i;
-	double xmin = first, xmax = last, *vec, w;
-
-	if (ivec < 1 || ivec > my numberOfEigenvalues) return;
-
-	if (last <= first )
-	{
-		first = 1; last = my dimension;
-		xmin = 0.5; xmax = last + 0.5;
-	}
-	vec = my eigenvectors[ivec];
-	w = weigh ? sqrt (my eigenvalues[ivec]) : 1;
-	/*
-		If ymax < ymin the eigenvector will automatically be drawn inverted.
-	*/
-
-	if (ymax == ymin)
-	{
-		NUMdvector_extrema (vec, first, last, &ymin, &ymax);
-		ymax *= w; ymin *= w;
-	}
-	Graphics_setInner (g);
-	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
-
-	for (i = first; i <= last; i++)
-	{
-		Graphics_mark (g, i, w * vec[i], size_mm, mark);
-		if (connect && i > first) Graphics_line (g, i - 1, w * vec[i-1], i, w * vec[i]);
-	}
-	Graphics_unsetInner (g);
-	if (garnish)
-	{
-		Graphics_markBottom (g, first, 0, 1, 0, rowLabels ? rowLabels[first] : Melder_integer (first));
-		Graphics_markBottom (g, last, 0, 1, 0, rowLabels ? rowLabels[last] : Melder_integer (last));
-    	Graphics_drawInnerBox (g);
-    	if (ymin * ymax < 0) Graphics_markLeft (g, 0.0, 1, 1, 1, NULL);
-    	Graphics_marksLeft (g, 2, 1, 1, 0);
-		if (rowLabels == NULL) Graphics_textBottom (g, 1, L"Element number");
 	}
 }
 

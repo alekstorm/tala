@@ -30,9 +30,6 @@
 #ifndef _Collection_h_
 	#include "sys/Collection.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 #ifndef _Strings_h_
 	#include "sys/Strings.h"
 #endif
@@ -93,12 +90,6 @@ void Eigen_sort (I);
 
 void Eigen_invertEigenvector (I, long ivec);
 
-void Eigen_drawEigenvalues (I, Graphics g, long first, long last, double ymin, double ymax, 
-	int fractionOfTotal, int cumulative, double size_mm, const wchar_t *mark, int garnish);
-	
-void Eigen_drawEigenvector (I, Graphics g, long ivec, long first, long last,
-	double minimum, double maximum, int weigh, double size_mm, const wchar_t *mark,
-	int connect, wchar_t **rowLabels, int garnish);
 /*
 	Draw eigenvector. When rowLabels != NULL, draw row text labels on bottom axis.
 */

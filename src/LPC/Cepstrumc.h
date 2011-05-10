@@ -27,7 +27,6 @@
 
 #include "fon/Sampled.h"
 #include "fon/Matrix.h"
-#include "ui/Graphics.h"
 #include "dwtools/DTW.h"
 #include "Cepstrumc_def.h"
 

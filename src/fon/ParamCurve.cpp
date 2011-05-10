@@ -133,52 +133,6 @@ Any ParamCurve_create (Any x, Any y) {
 	return me;
 }
 
-int ParamCurve_draw (I, Graphics g, double t1, double t2, double dt,
-	double x1, double x2, double y1, double y2, int garnish)
-{
-	iam (ParamCurve);
-	long numberOfPoints, i;
-	double *x, *y;
-	if (t2 <= t1) {
-		double tx1 = my x -> x1;
-		double ty1 = my y -> x1;
-		double tx2 = my x -> x1 + (my x -> nx - 1) * my x -> dx;
-		double ty2 = my y -> x1 + (my y -> nx - 1) * my y -> dx;
-		t1 = tx1 > ty1 ? tx1 : ty1;
-		t2 = tx2 < ty2 ? tx2 : ty2;
-	}
-	if (x2 <= x1) Matrix_getWindowExtrema (my x, 0, 0, 1, 1, & x1, & x2);
-	if (x1 == x2) { x1 -= 1.0; x2 += 1.0; }
-	if (y2 <= y1) Matrix_getWindowExtrema (my y, 0, 0, 1, 1, & y1, & y2);
-	if (y1 == y2) { y1 -= 1.0; y2 += 1.0; }
-	if (dt <= 0.0)
-		dt = my x -> dx < my y -> dx ? my x -> dx : my y -> dx;
-	numberOfPoints = (long) ceil ((t2 - t1) / dt) + 1;
-	if (! (x = NUMdvector (1, numberOfPoints)) || ! (y = NUMdvector (1, numberOfPoints))) {
-		NUMdvector_free (x, 1);
-		return 0;
-	}
-	for (i = 1; i <= numberOfPoints; i ++) {
-		double t = i == numberOfPoints ? t2 : t1 + (i - 1) * dt;
-		double index = Sampled_xToIndex (my x, t);
-		x [i] = NUM_interpolate_sinc (my x -> z [1], my x -> nx, index, 50);
-		index = Sampled_xToIndex (my y, t);
-		y [i] = NUM_interpolate_sinc (my y -> z [1], my y -> nx, index, 50);
-	}
-	Graphics_setWindow (g, x1, x2, y1, y2);
-	Graphics_setInner (g);
-	Graphics_polyline (g, numberOfPoints, & x [1], & y [1]);
-	Graphics_unsetInner (g);
-	NUMdvector_free (x, 1);
-	NUMdvector_free (y, 1);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-		Graphics_marksLeft (g, 2, 1, 1, 0);
-	}
-	return 1;
-}
-
 void ParamCurve_swapXY (I) {
 	iam (ParamCurve);
 	Sound help = my x;

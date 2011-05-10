@@ -27,9 +27,6 @@
 #ifndef _Matrix_h_
 	#include "fon/Matrix.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
@@ -52,11 +49,6 @@ int LPC_init (LPC me, double tmin, double tmax, long nt, double dt, double t1,
 
 Any LPC_create (double tmin, double tmax, long nt, double dt, double t1,
 	int predictionOrder, double samplingPeriod);
-
-void LPC_drawGain (LPC me, Graphics g, double t1, double t2,
-	double gmin, double gmax, int garnish);
-	
-void LPC_drawPoles (LPC me, Graphics g, double time, int garnish);
 
 Matrix LPC_to_Matrix (LPC me);
 

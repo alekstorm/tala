@@ -117,6 +117,8 @@ void ArtwordEditor::gui_radiobutton_cb_toggle (I, GuiRadioButtonEvent event) {
 	editor->updateList ();
 }
 
+void Artword_draw (Artword me, Graphics g, int feature, int garnish);
+
 void ArtwordEditor::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	ArtwordEditor *editor = (ArtwordEditor *)void_me;
 	(void) event;

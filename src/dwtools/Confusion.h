@@ -30,9 +30,6 @@
 #ifndef _Categories_h_
 	#include "Categories.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 #ifndef _Matrix_h_
 	#include "fon/Matrix.h"
 #endif
@@ -72,23 +69,6 @@ void Confusion_getEntropies (Confusion me, double *h, double *hx, double *hy,
 
 void Confusion_getFractionCorrect (Confusion me, double *fraction,
 	long *numberOfCorrect);
-
-void Confusion_Matrix_draw (Confusion me, Matrix thee, Graphics g,
-	long index, double lowerPercentage, double xmin, double xmax,
-	double ymin, double ymax, int garnish);
-/* 1. Draw my rowLabels centered at ( matrix->z[i][1], matrix->z[i][2]).
- * 2. Draw arrows and circles according to:
- *	for (i=1; i <= my numberOfRows; i++)
- *	{
- *		if (index != 0 && index != i) continue;
- *      draw circle at i of width: my z[i][i]/rowSum;
- *		for (j=1; j <= my numberOfColumns; j++)
- *		{
- *			if (i != j && 100*my data[i][j]/rowSum > lowerPercentage) 
- *				draw arrow from i to j of width: my data[i][j]/rowSum;
- *		}
- *	}
- */
  
 Any Confusion_difference (Confusion me, Confusion thee);
 /* return matrix with the difference between the two confusion matrices */
@@ -108,9 +88,6 @@ TableOfReal Confusion_to_TableOfReal_marginals (I);
 	Create a table with one extra row and one extra column with marginals,
 	i.e., column and row sums. 
 */
-
-void Confusion_drawAsNumbers (I, Graphics g, int marginals, int iformat, int precision);
-// option marginals draw one extra row and column with sums.
 
 #ifdef __cplusplus
 	}

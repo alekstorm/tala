@@ -91,13 +91,6 @@ Categories Categories_selectUniqueItems (Categories me, int sorted)
 	return thee;
 }
 
-void Categories_drawItem (Categories me, Graphics g, long position, 
-	double xWC, double yWC)
-{
-	if (position < 1 || position > my size) return;
-	SimpleString_draw (my item[position], g, xWC, yWC);
-}
-
 Categories OrderedOfString_to_Categories (I)
 {
 	iam (OrderedOfString);

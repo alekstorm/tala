@@ -58,15 +58,6 @@ GaussianMixture GaussianMixture_create (long numberOfComponents, long dimension,
 int GaussianMixture_expandPCA (GaussianMixture me);
 void GaussianMixture_unExpandPCA (GaussianMixture me);
 
-void GaussianMixture_drawConcentrationEllipses (GaussianMixture me, Graphics g,
-	double scale, int confidence, wchar_t *label, int pcaDirections, long d1, long d2,
-	double xmin, double xmax, double ymin, double ymax, int fontSize, int garnish);
-void GaussianMixture_and_PCA_drawConcentrationEllipses (GaussianMixture me, PCA him, Graphics g,
-	double scale, int confidence, wchar_t *label, long d1, long d2,
-	double xmin, double xmax, double ymin, double ymax, int fontSize, int garnish);
-void GaussianMixture_drawMarginalPdf (GaussianMixture me, Graphics g, long d, double xmin, double xmax, double ymin, double ymax, long npoints, long nbins, int garnish);
-void GaussianMixture_and_PCA_drawMarginalPdf (GaussianMixture me, PCA him, Graphics g, long d, double xmin, double xmax, double ymin, double ymax, long npoints, long nbins, int garnish);
-
 GaussianMixture TableOfReal_to_GaussianMixture_fromRowLabels (I, long storage);
 
 int GaussianMixture_initialGuess (GaussianMixture me, TableOfReal thee, double nSigmas, double ru_range);

@@ -309,7 +309,7 @@ long OTGrammar_getTableau (OTGrammar me, const wchar_t *input) {
 	return Melder_error3 (L"Input \"", input, L"\" not in list of tableaus.");
 }
 
-static void _OTGrammar_fillInHarmonies (OTGrammar me, long itab) {
+void OTGrammar_fillInHarmonies (OTGrammar me, long itab) {
 	if (my decisionStrategy == kOTGrammar_decisionStrategy_OPTIMALITY_THEORY) return;
 	OTGrammarTableau tableau = & my tableaus [itab];
 	for (long icand = 1; icand <= tableau -> numberOfCandidates; icand ++) {
@@ -340,7 +340,7 @@ static void _OTGrammar_fillInHarmonies (OTGrammar me, long itab) {
 				disharmony += constraintDisharmony * marks [icons];
 			}
 		} else {
-			Melder_fatal ("_OTGrammar_fillInHarmonies: unimplemented decision strategy.");
+			Melder_fatal ("OTGrammar_fillInHarmonies: unimplemented decision strategy.");
 		}
 		candidate -> harmony = - disharmony;
 	}
@@ -440,7 +440,7 @@ long OTGrammar_getWinner (OTGrammar me, long itab) {
 	if (my decisionStrategy == kOTGrammar_decisionStrategy_MAXIMUM_ENTROPY ||
 		my decisionStrategy == kOTGrammar_decisionStrategy_EXPONENTIAL_MAXIMUM_ENTROPY)
 	{
-		_OTGrammar_fillInHarmonies (me, itab);
+		OTGrammar_fillInHarmonies (me, itab);
 		_OTGrammar_fillInProbabilities (me, itab);
 		double cutOff = NUMrandomUniform (0.0, 1.0);
 		double sumOfProbabilities = 0.0;
@@ -622,7 +622,7 @@ bool OTGrammar_isPartialOutputSinglyGrammatical (OTGrammar me, const wchar_t *pa
 	return found;
 }
 
-static int OTGrammar_crucialCell (OTGrammar me, long itab, long icand, long iwinner, long numberOfOptimalCandidates) {
+int OTGrammar_crucialCell (OTGrammar me, long itab, long icand, long iwinner, long numberOfOptimalCandidates) {
 	int icons;
 	OTGrammarTableau tableau = & my tableaus [itab];
 	if (tableau -> numberOfCandidates < 2) return 0;   /* If there is only one candidate, all cells can be greyed. */
@@ -661,235 +661,6 @@ static int OTGrammar_crucialCell (OTGrammar me, long itab, long icand, long iwin
 		}
 	}
 	return my numberOfConstraints;   /* Nothing grey. */
-}
-
-static double OTGrammar_constraintWidth (Graphics g, const wchar_t *name) {
-	wchar_t text [100], *newLine;
-	wcscpy (text, name);
-	newLine = wcschr (text, '\n');
-	if (newLine) {
-		double firstWidth, secondWidth;
-		*newLine = '\0';
-		firstWidth = Graphics_textWidth (g, text);
-		secondWidth = Graphics_textWidth (g, newLine + 1);
-		return firstWidth > secondWidth ? firstWidth : secondWidth;
-	}
-	return Graphics_textWidth (g, text);
-}
-
-void OTGrammar_drawTableau (OTGrammar me, Graphics g, const wchar_t *input) {
-	long itab, winner, icons, icand, numberOfOptimalCandidates, imark;
-	OTGrammarTableau tableau;
-	double candWidth, margin, fingerWidth, doubleLineDx, doubleLineDy;
-	double tableauWidth, rowHeight, headerHeight, descent, x, y, fontSize = Graphics_inqFontSize (g);
-	Graphics_Colour colour = Graphics_inqColour (g);
-	wchar_t text [200];
-	itab = OTGrammar_getTableau (me, input);
-	if (! itab) {
-		Melder_error3 (L"This grammar accepts no input \"", input, L"\".");
-		Melder_flushError (NULL);
-		return;
-	}
-	_OTGrammar_fillInHarmonies (me, itab);
-	winner = OTGrammar_getWinner (me, itab);
-	
-	Graphics_setWindow (g, 0.0, 1.0, 0.0, 1.0);
-	margin = Graphics_dxMMtoWC (g, 1.0);
-	fingerWidth = Graphics_dxMMtoWC (g, 7.0) * fontSize / 12.0;
-	doubleLineDx = Graphics_dxMMtoWC (g, 0.9);
-	doubleLineDy = Graphics_dyMMtoWC (g, 0.9);
-	rowHeight = Graphics_dyMMtoWC (g, 1.5 * fontSize * 25.4 / 72);
-	descent = rowHeight * 0.5;
-	/*
-	 * Compute height of header row.
-	 */
-	headerHeight = rowHeight;
-	for (icons = 1; icons <= my numberOfConstraints; icons ++) {
-		OTGrammarConstraint constraint = & my constraints [icons];
-		if (wcschr (constraint -> name, '\n')) {
-			headerHeight *= 1.6;
-			break;
-		}
-	}
-	/*
-	 * Compute longest candidate string.
-	 * Also count the number of optimal candidates (if there are more than one, the fingers will be drawn in red).
-	 */
-	candWidth = Graphics_textWidth (g, input);
-	tableau = & my tableaus [itab];
-	numberOfOptimalCandidates = 0;
-	for (icand = 1; icand <= tableau -> numberOfCandidates; icand ++) {
-		double width = Graphics_textWidth (g, tableau -> candidates [icand]. output);
-		if (OTGrammar_compareCandidates (me, itab, icand, itab, winner) == 0) {
-			width += fingerWidth;
-			numberOfOptimalCandidates ++;
-		}
-		if (width > candWidth) candWidth = width;
-	}
-	candWidth += margin * 3;
-	/*
-	 * Compute tableau width.
-	 */
-	tableauWidth = candWidth + doubleLineDx;
-	for (icons = 1; icons <= my numberOfConstraints; icons ++) {
-		OTGrammarConstraint constraint = & my constraints [icons];
-		tableauWidth += OTGrammar_constraintWidth (g, constraint -> name);
-	}
-	tableauWidth += margin * 2 * my numberOfConstraints;
-	/*
-	 * Draw box.
-	 */
-	x = doubleLineDx;   /* Left side of tableau. */
-	y = 1.0 - doubleLineDy;
-	Graphics_rectangle (g, x, x + tableauWidth,
-		y - headerHeight - tableau -> numberOfCandidates * rowHeight - doubleLineDy, y);
-	/*
-	 * Draw input.
-	 */
-	y -= headerHeight;
-	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
-	Graphics_text (g, x + 0.5 * candWidth, y + 0.5 * headerHeight, input);
-	Graphics_rectangle (g, x, x + candWidth, y, y + headerHeight);
-	/*
-	 * Draw constraint names.
-	 */
-	x += candWidth + doubleLineDx;
-	for (icons = 1; icons <= my numberOfConstraints; icons ++) {
-		OTGrammarConstraint constraint = & my constraints [my index [icons]];
-		double width = OTGrammar_constraintWidth (g, constraint -> name) + margin * 2;
-		if (wcschr (constraint -> name, '\n')) {
-			wchar_t *newLine;
-			wcscpy (text, constraint -> name);
-			newLine = wcschr (text, '\n');
-			*newLine = '\0';
-			Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_TOP);
-			Graphics_text (g, x + 0.5 * width, y + headerHeight, text);
-			Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_BOTTOM);
-			Graphics_text (g, x + 0.5 * width, y, newLine + 1);
-		} else {
-			Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
-			Graphics_text (g, x + 0.5 * width, y + 0.5 * headerHeight, constraint -> name);
-		}
-		if (constraint -> tiedToTheLeft)
-			Graphics_setLineType (g, Graphics_DOTTED);
-		Graphics_line (g, x, y, x, y + headerHeight);
-		Graphics_setLineType (g, Graphics_DRAWN);
-		Graphics_line (g, x, y, x + width, y);
-		x += width;
-	}
-	/*
-	 * Draw candidates.
-	 */
-	y -= doubleLineDy;
-	for (icand = 1; icand <= tableau -> numberOfCandidates; icand ++) {
-		long crucialCell = OTGrammar_crucialCell (me, itab, icand, winner, numberOfOptimalCandidates);
-		int candidateIsOptimal = OTGrammar_compareCandidates (me, itab, icand, itab, winner) == 0;
-		/*
-		 * Draw candidate transcription.
-		 */
-		x = doubleLineDx;
-		y -= rowHeight;
-		Graphics_setTextAlignment (g, Graphics_RIGHT, Graphics_HALF);
-		Graphics_text (g, x + candWidth - margin, y + descent, tableau -> candidates [icand]. output);
-		if (candidateIsOptimal) {
-			Graphics_setTextAlignment (g, Graphics_LEFT, Graphics_HALF);
-			Graphics_setFontSize (g, (int) (1.5 * fontSize));
-			if (numberOfOptimalCandidates > 1) Graphics_setColour (g, Graphics_RED);
-			Graphics_text (g, x + margin, y + descent - Graphics_dyMMtoWC (g, 1.0) * fontSize / 12.0, L"\\pf");
-			Graphics_setColour (g, colour);
-			Graphics_setFontSize (g, (int) fontSize);
-		}
-		Graphics_rectangle (g, x, x + candWidth, y, y + rowHeight);
-		/*
-		 * Draw grey cell backgrounds.
-		 */
-		x = candWidth + 2 * doubleLineDx;
-		Graphics_setGrey (g, 0.9);
-		for (icons = 1; icons <= my numberOfConstraints; icons ++) {
-			int index = my index [icons];
-			OTGrammarConstraint constraint = & my constraints [index];
-			double width = OTGrammar_constraintWidth (g, constraint -> name) + margin * 2;
-			if (icons > crucialCell)
-				Graphics_fillRectangle (g, x, x + width, y, y + rowHeight);
-			x += width;
-		}
-		Graphics_setColour (g, colour);
-		/*
-		 * Draw cell marks.
-		 */
-		x = candWidth + 2 * doubleLineDx;
-		Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
-		for (icons = 1; icons <= my numberOfConstraints; icons ++) {
-			int index = my index [icons];
-			OTGrammarConstraint constraint = & my constraints [index];
-			double width = OTGrammar_constraintWidth (g, constraint -> name) + margin * 2;
-			wchar_t markString [40];
-			markString [0] = '\0';
-			if (my decisionStrategy == kOTGrammar_decisionStrategy_OPTIMALITY_THEORY) {
-				/*
-				 * An exclamation mark can be drawn in this cell only if all of the following conditions are met:
-				 * 1. the candidate is not optimal;
-				 * 2. the constraint is not tied;
-				 * 3. this is the crucial cell, i.e. the cells after it are drawn in grey.
-				 */
-				if (icons == crucialCell && ! candidateIsOptimal && ! constraint -> tiedToTheLeft && ! constraint -> tiedToTheRight) {
-					int winnerMarks = tableau -> candidates [winner]. marks [index];
-					for (imark = 1; imark <= winnerMarks + 1; imark ++)
-						wcscat (markString, L"*");
-					for (imark = tableau -> candidates [icand]. marks [index]; imark < 0; imark ++)
-						wcscat (markString, L"+");
-					wcscat (markString, L"!");
-					for (imark = winnerMarks + 2; imark <= tableau -> candidates [icand]. marks [index]; imark ++)
-						wcscat (markString, L"*");
-				} else {
-					if (! candidateIsOptimal && (constraint -> tiedToTheLeft || constraint -> tiedToTheRight) &&
-					    crucialCell >= 1 && constraint -> disharmony == my constraints [my index [crucialCell]]. disharmony)
-					{
-						Graphics_setColour (g, Graphics_RED);
-					}
-					for (imark = 1; imark <= tableau -> candidates [icand]. marks [index]; imark ++)
-						wcscat (markString, L"*");
-					for (imark = tableau -> candidates [icand]. marks [index]; imark < 0; imark ++)
-						wcscat (markString, L"+");
-				}
-			} else {
-				for (imark = 1; imark <= tableau -> candidates [icand]. marks [index]; imark ++)
-					wcscat (markString, L"*");
-				for (imark = tableau -> candidates [icand]. marks [index]; imark < 0; imark ++)
-					wcscat (markString, L"+");
-			}
-			Graphics_text (g, x + 0.5 * width, y + descent, markString);
-			Graphics_setColour (g, colour);
-			if (constraint -> tiedToTheLeft)
-				Graphics_setLineType (g, Graphics_DOTTED);
-			Graphics_line (g, x, y, x, y + rowHeight);
-			Graphics_setLineType (g, Graphics_DRAWN);
-			Graphics_line (g, x, y + rowHeight, x + width, y + rowHeight);
-			x += width;
-		}
-		/*
-		 * Draw harmony.
-		 */
-		if (my decisionStrategy != kOTGrammar_decisionStrategy_OPTIMALITY_THEORY) {
-			Graphics_setTextAlignment (g, Graphics_LEFT, Graphics_HALF);
-			double value = tableau -> candidates [icand]. harmony;
-			if (my decisionStrategy == kOTGrammar_decisionStrategy_EXPONENTIAL_HG ||
-				my decisionStrategy == kOTGrammar_decisionStrategy_EXPONENTIAL_MAXIMUM_ENTROPY)
-			{
-				//value = value > -1e-300 ? 1000 : value < -1e300 ? -1000 : - log (- value);
-				Graphics_text (g, x, y + descent, Melder_float (Melder_half (value)));
-			} else {
-				Graphics_text (g, x, y + descent, Melder_fixed (value, 3));
-			}
-		}
-	}
-	/*
-	 * Draw box.
-	 */
-	x = doubleLineDx;   /* Left side of tableau. */
-	y = 1.0 - doubleLineDy;
-	Graphics_rectangle (g, x, x + tableauWidth,
-		y - headerHeight - tableau -> numberOfCandidates * rowHeight - doubleLineDy, y);
 }
 
 Strings OTGrammar_generateInputs (OTGrammar me, long numberOfTrials) {
@@ -1481,52 +1252,6 @@ end:
 	return 1;
 }
 
-int OTGrammar_PairDistribution_learn (OTGrammar me, PairDistribution thee,
-	double evaluationNoise, enum kOTGrammar_rerankingStrategy updateRule, int honourLocalRankings,
-	double initialPlasticity, long replicationsPerPlasticity, double plasticityDecrement,
-	long numberOfPlasticities, double relativePlasticityNoise, long numberOfChews)
-{
-	long iplasticity, ireplication, ichew, idatum = 0, numberOfData = numberOfPlasticities * replicationsPerPlasticity;
-	double plasticity = initialPlasticity;
-	Graphics graphics = (Graphics) Melder_monitor1 (0.0, L"Learning with full knowledge...");
-	if (graphics) {
-		Graphics_clearWs (graphics);
-	}
-	for (iplasticity = 1; iplasticity <= numberOfPlasticities; iplasticity ++) {
-		for (ireplication = 1; ireplication <= replicationsPerPlasticity; ireplication ++) {
-			wchar_t *input, *output;
-			PairDistribution_peekPair (thee, & input, & output); cherror
-			++ idatum;
-			if (graphics && idatum % (numberOfData / 400 + 1) == 0) {
-				long icons;
-				Graphics_setWindow (graphics, 0, numberOfData, 50, 150);
-				for (icons = 1; icons <= 14 && icons <= my numberOfConstraints; icons ++) {
-					Graphics_setGrey (graphics, (double) icons / 14);
-					Graphics_line (graphics, idatum, my constraints [icons]. ranking,
-						idatum, my constraints [icons]. ranking+1);
-				}
-				Graphics_flushWs (graphics);   /* Because drawing is faster than progress loop. */
-			}
-			if (! Melder_monitor8 ((double) idatum / numberOfData,
-				L"Processing input-output pair ", Melder_integer (idatum), L" out of ", Melder_integer (numberOfData), L": ", input, L" -> ", output))
-			{
-				Melder_flushError ("Only %ld input-output pairs out of %ld were processed.", idatum - 1, numberOfData);
-				goto end;
-			}
-			for (ichew = 1; ichew <= numberOfChews; ichew ++) {
-				if (! OTGrammar_learnOne (me, input, output,
-					evaluationNoise, updateRule, honourLocalRankings,
-					plasticity, relativePlasticityNoise, TRUE, TRUE, NULL)) goto end;
-			}
-		}
-		plasticity *= plasticityDecrement;
-	}
-end:
-	Melder_monitor1 (1.0, NULL);
-	iferror return Melder_error1 (L"OTGrammar did not complete learning from input-output pairs.");
-	return 1;
-}
-
 static long PairDistribution_getNumberOfAttestedOutputs (PairDistribution me, const wchar_t *input, wchar_t **attestedOutput) {
 	long result = 0;
 	for (long ipair = 1; ipair <= my pairs -> size; ipair ++) {
@@ -1650,7 +1375,7 @@ int OTGrammar_setConstraintPlasticity (OTGrammar me, long constraint, double pla
 long theSaveNumberOfConstraints, *theSaveIndex;
 double *theSaveRankings, *theSaveDisharmonies;
 int *theSaveTiedToTheLeft, *theSaveTiedToTheRight;
-static int OTGrammar_save (OTGrammar me) {
+int OTGrammar_save (OTGrammar me) {
 	long icons;
 	if (my numberOfConstraints != theSaveNumberOfConstraints) {
 		NUMlvector_free (theSaveIndex, 1); theSaveIndex = NULL;
@@ -1677,7 +1402,8 @@ end:
 	iferror return 0;
 	return 1;
 }
-static void OTGrammar_restore (OTGrammar me) {
+
+void OTGrammar_restore (OTGrammar me) {
 	long icons;
 	for (icons = 1; icons <= my numberOfConstraints; icons ++) {
 		my index [icons] = theSaveIndex [icons];
@@ -1729,7 +1455,7 @@ end:
 	return 1;
 }
 
-static int OTGrammar_learnOneFromPartialOutput_opt (OTGrammar me, long ipartialAdultOutput,
+int OTGrammar_learnOneFromPartialOutput_opt (OTGrammar me, long ipartialAdultOutput,
 	double evaluationNoise, enum kOTGrammar_rerankingStrategy updateRule, int honourLocalRankings,
 	double plasticity, double relativePlasticityNoise, long numberOfChews, int warnIfStalled)
 {
@@ -1770,7 +1496,7 @@ end:
 	return 1;
 }
 
-static OTHistory OTGrammar_createHistory (OTGrammar me, long storeHistoryEvery, long numberOfData) {
+OTHistory OTGrammar_createHistory (OTGrammar me, long storeHistoryEvery, long numberOfData) {
 	long numberOfSamplingPoints = numberOfData / storeHistoryEvery, icons;   /* E.g. 0, 20, 40, ... */
 	OTHistory thee = Thing_new (OTHistory); cherror
 	TableOfReal_init (thee, 2 + numberOfSamplingPoints * 2, 1 + my numberOfConstraints); cherror
@@ -1788,7 +1514,7 @@ end:
 	return thee;
 }
 
-static int OTGrammar_updateHistory (OTGrammar me, OTHistory thee, long storeHistoryEvery, long idatum, const wchar_t *input) {
+int OTGrammar_updateHistory (OTGrammar me, OTHistory thee, long storeHistoryEvery, long idatum, const wchar_t *input) {
 	if (idatum % storeHistoryEvery == 0) {
 		long irow = 2 * idatum / storeHistoryEvery, icons;
 		TableOfReal_setRowLabel (thee, irow, input); cherror
@@ -1804,7 +1530,7 @@ end:
 	return 1;
 }
 
-static int OTGrammar_finalizeHistory (OTGrammar me, OTHistory thee, long idatum) {
+int OTGrammar_finalizeHistory (OTGrammar me, OTHistory thee, long idatum) {
 	long icons;
 	TableOfReal_setRowLabel (thee, thy numberOfRows, L"Final state"); cherror
 	thy data [thy numberOfRows] [1] = idatum;
@@ -1844,7 +1570,7 @@ end:
 	return 1;
 }
 
-static void OTGrammar_opt_deleteOutputMatching (OTGrammar me) {
+void OTGrammar_opt_deleteOutputMatching (OTGrammar me) {
 	for (long itab = 1; itab <= my numberOfTableaus; itab ++) {
 		OTGrammarTableau tab = & my tableaus [itab];
 		for (long icand = 1; icand <= tab -> numberOfCandidates; icand ++) {
@@ -1856,7 +1582,7 @@ static void OTGrammar_opt_deleteOutputMatching (OTGrammar me) {
 	}
 }
 
-static int OTGrammar_Distributions_opt_createOutputMatching (OTGrammar me, Distributions thee, long columnNumber) {
+int OTGrammar_Distributions_opt_createOutputMatching (OTGrammar me, Distributions thee, long columnNumber) {
 	if (columnNumber > thy numberOfColumns)
 		error3 (L"No column ", Melder_integer (columnNumber), L" in Distributions.")
 	if (thy numberOfRows < 1)
@@ -1891,69 +1617,6 @@ end:
 	iferror {
 		OTGrammar_opt_deleteOutputMatching (me);
 		return 0;
-	}
-	return 1;
-}
-
-int OTGrammar_Distributions_learnFromPartialOutputs (OTGrammar me, Distributions thee, long columnNumber,
-	double evaluationNoise, enum kOTGrammar_rerankingStrategy updateRule, int honourLocalRankings,
-	double initialPlasticity, long replicationsPerPlasticity, double plasticityDecrement,
-	long numberOfPlasticities, double relativePlasticityNoise, long numberOfChews,
-	long storeHistoryEvery, OTHistory *history_out)
-{
-	const long numberOfData = numberOfPlasticities * replicationsPerPlasticity;
-	OTHistory history = NULL;
-
-	OTGrammar_Distributions_opt_createOutputMatching (me, thee, columnNumber);
-	const Graphics graphics = (Graphics) Melder_monitor1 (0.0, L"Learning with limited knowledge...");
-	if (graphics) {
-		Graphics_clearWs (graphics);
-	}
-	if (storeHistoryEvery) {
-		history = OTGrammar_createHistory (me, storeHistoryEvery, numberOfData); cherror
-	}
-	{
-		long idatum = 0;
-		double plasticity = initialPlasticity;
-		for (long iplasticity = 1; iplasticity <= numberOfPlasticities; iplasticity ++) {
-			for (long ireplication = 1; ireplication <= replicationsPerPlasticity; ireplication ++) {
-				long ipartialOutput;
-				if (! Distributions_peek_opt (thee, columnNumber, & ipartialOutput)) goto end;
-				++ idatum;
-				if (graphics && idatum % (numberOfData / 400 + 1) == 0) {
-					Graphics_setWindow (graphics, 0, numberOfData, 50, 150);
-					for (long icons = 1; icons <= 14 && icons <= my numberOfConstraints; icons ++) {
-						Graphics_setGrey (graphics, (double) icons / 14);
-						Graphics_line (graphics, idatum, my constraints [icons]. ranking,
-							idatum, my constraints [icons]. ranking+1);
-					}
-					Graphics_flushWs (graphics);   /* Because drawing is faster than progress loop. */
-				}
-				if (! Melder_monitor6 ((double) idatum / numberOfData,
-					L"Processing partial output ", Melder_integer (idatum), L" out of ", Melder_integer (numberOfData), L": ",
-					thy rowLabels [ipartialOutput]))
-				{
-					Melder_flushError ("Only %ld partial outputs out of %ld were processed.", idatum - 1, numberOfData);
-					goto end;
-				}
-				OTGrammar_learnOneFromPartialOutput_opt (me, ipartialOutput,
-					evaluationNoise, updateRule, honourLocalRankings,
-					plasticity, relativePlasticityNoise, numberOfChews, FALSE);   // No warning if stalled: RIP form is allowed to be harmonically bounded.
-				if (history) {
-					OTGrammar_updateHistory (me, history, storeHistoryEvery, idatum, thy rowLabels [ipartialOutput]);
-				}
-				cherror
-			}
-			plasticity *= plasticityDecrement;
-		}
-	}
-end:
-	Melder_monitor1 (1.0, NULL);
-	OTGrammar_opt_deleteOutputMatching (me);
-	if (history_out) *history_out = history;   /* Even (or especially) in case of error, so that we can inspect. */
-	iferror return Melder_error1 (L"OTGrammar did not complete learning from partial outputs.");
-	if (history) {
-		OTGrammar_finalizeHistory (me, history, numberOfData);
 	}
 	return 1;
 }
@@ -2415,66 +2078,6 @@ end:
 	 * Remove room.
 	 */
 	my numberOfFixedRankings = savedNumberOfFixedRankings;
-	NUMstructvector_free (OTGrammarFixedRanking, my fixedRankings, 1);   // dangle
-	/*
-	 * Restore.
-	 */
-	my fixedRankings = savedFixedRankings;   // undangle
-	OTGrammar_restore (me);
-	iferror return 0;
-	return 1;
-}
-
-int OTGrammar_Distributions_listObligatoryRankings (OTGrammar me, Distributions thee, long columnNumber) {
-	OTGrammarFixedRanking savedFixedRankings;
-	long ifixedRanking, icons, jcons, kcons, ipair = 0, npair = my numberOfConstraints * (my numberOfConstraints - 1);
-	/*
-	 * Save.
-	 */
-	savedFixedRankings = my fixedRankings;
-	OTGrammar_save (me);
-	/*
-	 * Add room for one more fixed ranking.
-	 */
-	my numberOfFixedRankings ++;
-	my fixedRankings = NUMstructvector (OTGrammarFixedRanking, 1, my numberOfFixedRankings);
-	for (ifixedRanking = 1; ifixedRanking < my numberOfFixedRankings; ifixedRanking ++) {
-		my fixedRankings [ifixedRanking]. higher = savedFixedRankings [ifixedRanking]. higher;
-		my fixedRankings [ifixedRanking]. lower = savedFixedRankings [ifixedRanking]. lower;
-	}
-	/*
-	 * Test learnability of every possible ranked pair.
-	 */
-	MelderInfo_open ();
-	Melder_progress1 (0.0, L"");
-	for (icons = 1; icons <= my numberOfConstraints; icons ++) {
-		for (jcons = 1; jcons <= my numberOfConstraints; jcons ++) if (icons != jcons) {
-			my fixedRankings [my numberOfFixedRankings]. higher = icons;
-			my fixedRankings [my numberOfFixedRankings]. lower = jcons;
-			OTGrammar_reset (me, 100.0);
-			Melder_progress7 ((double) ipair / npair, Melder_integer (ipair + 1), L"/", Melder_integer (npair), L": Trying ranking ",
-				my constraints [icons]. name, L" >> ", my constraints [jcons]. name);
-			ipair ++;
-			Melder_progressOff ();
-			OTGrammar_Distributions_learnFromPartialOutputs (me, thee, columnNumber,
-				1e-9, kOTGrammar_rerankingStrategy_EDCD, TRUE /* honour fixed rankings; very important */,
-				1.0, 1000, 0.0, 1, 0.0, 1, 0, NULL); cherror
-			Melder_progressOn ();
-			for (kcons = 1; kcons <= my numberOfConstraints; kcons ++) {
-				if (my constraints [kcons]. ranking < 0.0) {
-					MelderInfo_writeLine3 (my constraints [jcons]. name, L" >> ", my constraints [icons]. name);
-					break;
-				}
-			}
-		}
-	}
-end:
-	Melder_progress1 (1.0, L"");
-	MelderInfo_close ();
-	/*
-	 * Remove room.
-	 */
-	my numberOfFixedRankings --;
 	NUMstructvector_free (OTGrammarFixedRanking, my fixedRankings, 1);   // dangle
 	/*
 	 * Restore.

@@ -41,12 +41,6 @@ end:
 	return me;
 }
 
-void IntensityTier_draw (IntensityTier me, Graphics g, double tmin, double tmax,
-	double ymin, double ymax, const wchar_t *method, int garnish)
-{
-	RealTier_draw (me, g, tmin, tmax, ymin, ymax, garnish, method, L"Intensity (dB)");
-}
-
 IntensityTier PointProcess_upto_IntensityTier (PointProcess me, double intensity) {
 	IntensityTier thee = (IntensityTier) PointProcess_upto_RealTier (me, intensity);
 	if (! thee) return NULL;

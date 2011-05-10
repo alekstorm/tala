@@ -47,6 +47,17 @@
 
 void praat_TableOfReal_init (void *klas);
 
+void SSCPs_drawConcentrationEllipses (SSCPs me, Graphics g, double scale,
+	int confidence, wchar_t *label, long d1, long d2, double xmin, double xmax,
+	double ymin, double ymax, int fontSize, int garnish);
+void Proximity_Distance_drawScatterDiagram (I, Distance thee, Graphics g, 
+	double xmin, double xmax, double ymin, double ymax, double size_mm, 
+	const wchar_t *mark, int garnish);
+void Dissimilarity_Configuration_Weight_drawISplineRegression 
+	(Dissimilarity d, Configuration c, Weight w, Graphics g,
+	long numberOfInternalKnots, long order, double xmin, double xmax, 
+	double ymin, double ymax, double size_mm, const wchar_t *mark, int garnish);
+
 static wchar_t *QUERY_BUTTON   = L"Query -";
 static wchar_t *DRAW_BUTTON    = L"Draw -";
 static wchar_t *ANALYSE_BUTTON = L"Analyse -";
@@ -128,6 +139,265 @@ DO
 	if (c == NULL || ! praat_new1 (c, GET_STRING (L"Name"))) return 0;
 	if (! TableOfReal_formula (c, GET_STRING (L"formula"), interpreter, NULL)) return 0;
 END
+
+void drawSplines (Graphics g, double low, double high, double ymin, double ymax,
+	int type, long order, wchar_t *interiorKnots, int garnish)
+{
+	long i, j, k = order, numberOfKnots, numberOfInteriorKnots = 0;
+	long nSplines, n = 1000;
+	double knot[101]; double y[1001];
+	wchar_t *start, *end;
+	
+	if (type == MDS_ISPLINE) k++;
+	for (i = 1; i <= k; i++)
+	{
+		knot[i] = low;
+	}
+	numberOfKnots = k;
+	
+	start = interiorKnots;
+	while (*start)
+	{
+		double value = wcstod (start, &end);
+		start = end;
+		if (value < low || value > high)
+		{
+			Melder_warning5 (L"drawSplines: knots must be in interval (", Melder_double (low), L", ", Melder_double (high), L")");
+			return;
+		}
+		if (numberOfKnots == 100) 
+		{
+			Melder_warning1 (L"drawSplines: too many knots (101)");
+			return;
+		}
+	    knot[++numberOfKnots] = value;
+	}
+
+	numberOfInteriorKnots = numberOfKnots - k;
+	for (i = 1; i <= k; i++)
+	{
+		knot[++numberOfKnots] = high;
+	}
+	
+	nSplines = order + numberOfInteriorKnots;
+	
+	if (nSplines == 0) return;
+	
+	Graphics_setWindow (g, low, high, ymin, ymax);
+	Graphics_setInner (g);
+	for (i = 1; i <= nSplines; i++)
+	{
+		double x, yx, dx = (high-low) / (n-1);
+		for (j = 1; j <= n; j++) 
+		{
+			x = low + dx * (j - 1);
+			if (type == MDS_MSPLINE) 
+			{
+				(void) NUMmspline (knot, numberOfKnots, order, i, x, &yx);
+			}
+			else
+			{
+				(void) NUMispline (knot, numberOfKnots, order, i, x, &yx);
+			}
+			y[j] = yx < ymin ? ymin : yx > ymax ? ymax : yx;
+		}
+		Graphics_function (g, y, 1, n, low, high);
+	} 
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+		static MelderString ts = { 0 };
+		long lastKnot = type == MDS_ISPLINE ? numberOfKnots - 2 : numberOfKnots;
+		MelderString_empty (&ts);
+		Graphics_drawInnerBox (g);
+	   	Graphics_textLeft (g, 0, type == MDS_MSPLINE ? L"\\s{M}\\--spline" : 
+			L"\\s{I}\\--spline");
+		Graphics_marksTop (g, 2, 1, 1, 0);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+    	if (low <= knot[order])
+    	{
+    		if (order == 1) MelderString_append (&ts, L"t__1_");
+			else if (order == 2) MelderString_append (&ts,  L"{t__1_, t__2_}");
+			else MelderString_append3 (&ts, L"{t__1_..t__", Melder_integer (order), L"_}"); 
+			Graphics_markBottom (g, low, 0, 0, 0, ts.string);
+		}
+		for (i = 1; i <= numberOfInteriorKnots; i++)
+		{
+			if (low <= knot[k+i] && knot[k+i] < high)
+			{
+				MelderString_empty (&ts);
+				MelderString_append3 (&ts, L"t__", Melder_integer (order + i), L"_");
+				Graphics_markBottom (g, knot[k+i], 0, 1, 1, ts.string); 
+				Graphics_markTop (g, knot[k+i], 1, 0, 0, 0);
+			}
+		}
+		if (knot[lastKnot-order+1] <= high)
+		{
+			MelderString_empty (&ts);
+			if (order == 1)
+			{
+				MelderString_append3 (&ts, L"t__", Melder_integer (lastKnot), L"_");
+			}
+			else 
+			{
+				MelderString_append5 (&ts, L"{t__", Melder_integer (order == 2 ? lastKnot-1 : lastKnot-order+1), L"_, t__", Melder_integer (lastKnot), L"_}");
+			}
+			Graphics_markBottom (g, high, 0, 0, 0, ts.string);
+		}
+	}
+}
+
+void drawMDSClassRelations (Graphics g)
+{
+	long i, nBoxes = 6;
+	double boxWidth = 0.3, boxWidth2 = boxWidth / 2, boxWidth3 = boxWidth / 3;
+	double boxHeight = 0.1, boxHeight2 = boxHeight / 2;
+	double boxHeight3 = boxHeight / 3;
+	double r_mm = 3, dxt = 0.025, dyt = 0.03;
+	double dboxx = 1 - 0.2 - 2 * boxWidth, dboxy = (1 - 4 * boxHeight) / 3;
+	double x1, x2, xm, x23, x13, y1, y2, ym, y23, y13;
+	double x[7] = {0.0, 0.2, 0.2, 0.7, 0.2, 0.7, 0.2}; /* left */
+	double y[7] = {0.0, 0.9, 0.6, 0.6, 0.3, 0.3, 0.0}; /* bottom */
+	wchar_t *text[7] = {L"", L"Confusion", L"Dissimilarity  %\\de__%%ij%_",
+		L"Similarity", L"Distance  %d__%%ij%_, %d\\'p__%%ij%_", 
+		L"ScalarProduct", L"Configuration"};
+
+	Graphics_setWindow (g, -0.05, 1.05, -0.05, 1.05);	
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);	
+	for (i=1; i <= nBoxes; i++)
+	{
+		x2 = x[i] + boxWidth; y2 = y[i] + boxHeight;
+		xm = x[i] + boxWidth2; ym = y[i] + boxHeight2;
+		Graphics_roundedRectangle (g, x[i], x2, y[i], y2, r_mm);
+		Graphics_text (g, xm, ym, text[i]);
+	}
+	
+	Graphics_setLineWidth (g, 2);
+	Graphics_setTextAlignment (g, Graphics_LEFT, Graphics_BOTTOM);	
+
+	/*
+		Confusion to Dissimilarity
+	*/
+
+	xm = x[1] + boxWidth2;
+	y2 = y[2] + boxHeight;
+	Graphics_arrow (g, xm, y[1], xm, y2);
+	Graphics_text (g, xm + dxt, y2 + dboxy / 2, L"pdf"); 
+
+	/*
+		Confusion to Similarity
+	*/
+	
+	x1 = x[1] + boxWidth;
+	xm = x[3] + boxWidth2;
+	ym = y[1] + boxHeight2;
+	y2 = y[3] + boxHeight;
+	Graphics_line (g, x1, ym, xm, ym);
+	Graphics_arrow (g, xm, ym, xm, y2);
+	y2 += + dboxy / 2 + dyt / 2;
+	Graphics_text (g, xm + dxt, y2, L"average"); 
+	y2 -= dyt;
+	Graphics_text (g, xm + dxt, y2, L"houtgast"); 
+
+	/*
+		Dissimilarity to Similarity
+	*/
+	
+	x1 = x[2] + boxWidth;
+	y23 = y[2] + 2 * boxHeight3;
+	Graphics_arrow (g, x1, y23, x[3], y23);
+	y13 = y[2] + boxHeight3;
+	Graphics_arrow (g, x[3], y13, x1, y13);
+
+	/*
+		Dissimilarity to Distance
+	*/
+	
+	x13 = x[4] + boxWidth3;
+	y1 = y[4] + boxHeight;
+	Graphics_arrow (g, x13, y1, x13, y[2]);
+	x23 = x[4] + 2 * boxWidth3;
+	Graphics_arrow (g, x23, y[2], x23, y1);
+	
+	x1 = x23 + dxt;
+	y1 = y[2] - dyt;
+	x2 = 0 + dxt;
+	y1 -= dyt;
+	Graphics_text (g, x1, y1, L"%d\\'p__%%ij%_ = %\\de__%%ij%_");
+	Graphics_text (g, x2, y1, L"absolute");
+	y1 -= dyt;
+	Graphics_text (g, x1, y1, L"%d\\'p__%%ij%_ = %b\\.c%\\de__%%ij%_");
+	Graphics_text (g, x2, y1, L"ratio");
+	y1 -= dyt;
+	Graphics_text (g, x1, y1, L"%d\\'p__%%ij%_ = %b\\.c%\\de__%%ij%_+%a");
+	Graphics_text (g, x2, y1, L"interval");
+	y1 -= dyt;
+	Graphics_text (g, x1, y1, L"%d\\'p__%%ij%_ = \\s{I}-spline (%\\de__%%ij%_)");
+	Graphics_text (g, x2, y1, L"\\s{I}\\--spline");
+	y1 -= dyt;
+	Graphics_text (g, x1, y1, L"%d\\'p__%%ij%_ = monotone (%\\de__%%ij%_)");
+	Graphics_text (g, x2, y1, L"monotone");
+	
+	/*
+		Distance to ScalarProduct
+	*/
+	
+	x1 = x[4] + boxWidth;
+	ym = y[4] + boxHeight2;		
+	Graphics_arrow (g, x1, ym, x[5], ym);
+	
+	/*
+		Distance to Configuration
+	*/
+	
+	y1 = y[6] + boxHeight;
+	Graphics_arrow (g, x13, y1, x13, y[4]);
+		
+	/*
+		ScalarProduct to Configuration
+	*/
+	
+	x13 = x[5] + boxWidth3;
+	x23 = x[6] + 2 * boxWidth3;
+	y1 = y[5] - dboxy / 2;
+	Graphics_line (g, x13, y[5], x13, y1);
+	Graphics_line (g, x13, y1, x23, y1);
+	Graphics_arrow (g, x23, y1, x23, y[6] + boxHeight);
+	x1 = x[6] + boxWidth + dboxx / 2;
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_BOTTOM);
+	Graphics_text (g, x1, y1, L"\\s{TORSCA}");
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_TOP);
+	Graphics_text (g, x1, y1, L"\\s{YTL}");
+	
+	Graphics_setLineType (g, Graphics_DOTTED);
+	
+	x23 = x[5] + 2 * boxWidth3;
+	ym = y[6] + boxHeight2;	
+	Graphics_line (g, x23, y[5], x23, ym);
+	Graphics_arrow (g, x23, ym, x[6] + boxWidth, ym);
+	x1 = x[6] + boxWidth + dboxx / 2 + boxWidth3;
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_BOTTOM);
+	Graphics_text (g, x1, ym, L"\\s{INDSCAL}");
+	
+	/*
+		Dissimilarity to Configuration
+	*/
+
+	ym = y[2] + boxHeight2;
+	y2 = y[6] + boxHeight2;	
+	Graphics_line (g, x[2], ym, 0, ym);
+	Graphics_line (g, 0, ym, 0, y2);
+	Graphics_arrow (g, 0, y2, x[6], y2);
+	
+	/*
+		Restore settings
+	*/
+	
+	Graphics_setLineType (g, Graphics_DRAWN);
+	Graphics_setLineWidth (g, 1);
+	Graphics_setTextAlignment (g, Graphics_LEFT, Graphics_BOTTOM);
+	
+}
 
 FORM (drawSplines, L"Draw splines", L"spline")
 	REAL (L"left Horizontal range", L"0.0")
@@ -215,6 +485,87 @@ static void Configuration_draw_addCommonFields (UiForm *dia)
 	REAL (L"right Horizontal range", L"0.0")
 	REAL (L"left Vertical range", L"0.0")
 	REAL (L"right Vertical range", L"0.0")
+}
+
+void Configuration_draw (Configuration me, Graphics g, int xCoordinate,
+	int yCoordinate, double xmin, double xmax, double ymin, double ymax,
+	int labelSize, int useRowLabels, wchar_t *label, int garnish)
+{
+	long i, nPoints = my numberOfRows, numberOfDimensions = my numberOfColumns;
+	double *x = NULL, *y = NULL;
+	int fontSize = Graphics_inqFontSize (g), noLabel = 0;
+
+	if (numberOfDimensions > 1 && (xCoordinate > numberOfDimensions ||
+		yCoordinate > numberOfDimensions)) return;
+	if (numberOfDimensions == 1) xCoordinate = 1;
+	if (labelSize == 0) labelSize = fontSize;
+	if (! (x = NUMdvector (1, nPoints)) ||
+		! (y = NUMdvector (1, nPoints))) goto end;
+
+	for (i = 1; i <= nPoints; i++)
+	{
+		x[i] = my data[i][xCoordinate] * my w[xCoordinate];
+		y[i] = numberOfDimensions > 1 ?
+			my data[i][yCoordinate] * my w[yCoordinate] : 0;
+	}
+	if (xmax <= xmin) NUMdvector_extrema (x, 1, nPoints, &xmin, &xmax);
+	if (xmax <= xmin) { xmax += 1; xmin -= 1; }
+	if (ymax <= ymin) NUMdvector_extrema (y, 1, nPoints, &ymin, &ymax);
+	if (ymax <= ymin) { ymax += 1; ymin -= 1; }
+    Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+    Graphics_setInner (g);
+    Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	Graphics_setFontSize (g, labelSize);
+	for (i = 1; i <= my numberOfRows; i++)
+	{
+		if (x[i] >= xmin && x[i] <= xmax && y[i] >= ymin && y[i] <= ymax)
+		{
+			wchar_t *plotLabel = useRowLabels ? my rowLabels[i] : label;
+			if (NUMstring_containsPrintableCharacter (plotLabel))
+			{
+				Graphics_text (g, x[i], y[i], plotLabel);
+			}
+			else noLabel++;
+		}
+	}
+	Graphics_setFontSize (g, fontSize);
+	Graphics_setTextAlignment (g, Graphics_LEFT, Graphics_BOTTOM);
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+    	if (numberOfDimensions > 1)
+    	{
+    		Graphics_marksLeft (g, 2, 1, 1, 0);
+    		if (my columnLabels[xCoordinate])
+    			Graphics_textBottom (g, 1, my columnLabels[xCoordinate]);
+			if (my columnLabels[yCoordinate])
+				Graphics_textLeft (g, 1, my columnLabels[yCoordinate]);
+    	}
+	}
+
+	if (noLabel > 0) Melder_warning5 (L"Configuration_draw: ", Melder_integer (noLabel), L" from ", Melder_integer (my numberOfRows),
+		L" labels are not visible because they are empty or they contain only spaces or they contain only non-printable characters");
+
+end:
+
+	NUMdvector_free (x, 1);
+	NUMdvector_free (y, 1);
+}
+
+void Configuration_drawConcentrationEllipses (Configuration me, Graphics g,
+	double scale, int confidence, wchar_t *label, long d1, long d2, double xmin, double xmax,
+	double ymin, double ymax, int fontSize, int garnish)
+{
+	SSCPs sscps = TableOfReal_to_SSCPs_byLabel (me);
+
+	if (sscps == NULL) return;
+
+	SSCPs_drawConcentrationEllipses (sscps, g, scale, confidence, label,
+			d1, d2, xmin, xmax, ymin, ymax, fontSize, garnish);
+
+	forget (sscps);
 }
 
 FORM (Configuration_draw, L"Configuration: Draw", L"Configuration: Draw...")
@@ -522,6 +873,131 @@ static void Dissimilarity_Configuration_drawDiagram_addCommonFields (UiForm *dia
 	POSITIVE (L"Mark size (mm)", L"1.0")
 	SENTENCE (L"Mark string (+xo.)", L"+")
 	BOOLEAN (L"Garnish", 1)
+}
+
+void Dissimilarity_Configuration_drawShepardDiagram (Dissimilarity me, 
+	Configuration him, Graphics g, double xmin, double xmax, double ymin, 
+	double ymax, double size_mm, const wchar_t *mark, int garnish)
+{
+	Distance dist = Configuration_to_Distance (him);
+	 
+	if (dist == NULL) return;
+	Proximity_Distance_drawScatterDiagram (me, dist, g, xmin, xmax, 
+		ymin, ymax, size_mm, mark, garnish);
+	forget (dist);
+}
+
+void Dissimilarity_Configuration_drawMonotoneRegression 
+	(Dissimilarity me, Configuration him, Graphics g, int tiesProcessing, 
+	double xmin, double xmax, double ymin, double ymax, double size_mm, 
+	const wchar_t *mark, int garnish)
+{/* obsolete replace by transformator */
+	Distance fit = Dissimilarity_Configuration_monotoneRegression 
+		(me, him, tiesProcessing);
+	if (! fit) return;
+	Proximity_Distance_drawScatterDiagram (me, fit, g, xmin, xmax, ymin, ymax, 
+		size_mm, mark, garnish);
+	forget (fit);
+}
+
+void Dissimilarity_Configuration_Weight_drawAbsoluteRegression 
+	(Dissimilarity d, Configuration c, Weight w, Graphics g, 
+	double xmin, double xmax, double ymin, double ymax, 
+	double size_mm, const wchar_t *mark, int garnish)
+{
+	Distance fit = NULL;
+	Transformator t = Transformator_create (d->numberOfRows);
+	
+	if (t == NULL) return;
+	
+	fit = Dissimilarity_Configuration_Transformator_Weight_transform 
+		(d, c, t, w);
+	forget (t);
+	
+	if (fit)
+	{
+		Proximity_Distance_drawScatterDiagram 
+			(d, fit, g, xmin, xmax, ymin, ymax, size_mm, mark, garnish);
+		forget (fit);
+	}
+}
+
+void Dissimilarity_Configuration_Weight_drawRatioRegression (Dissimilarity d,
+	Configuration c, Weight w, Graphics g, 
+	double xmin, double xmax, double ymin, double ymax,
+	double size_mm, const wchar_t *mark, int garnish)
+{
+	Distance fit = NULL; 
+	RatioTransformator t = RatioTransformator_create (d -> numberOfRows);
+	
+	if (t == NULL) return;
+	
+	fit = Dissimilarity_Configuration_Transformator_Weight_transform 
+		(d, c, t, w);
+	forget (t);
+	
+	if (fit)
+	{
+		Proximity_Distance_drawScatterDiagram 
+			(d, fit, g, xmin, xmax, ymin, ymax, size_mm, mark, garnish);
+		forget (fit);
+	}	
+}
+
+void Dissimilarity_Configuration_Weight_drawIntervalRegression (Dissimilarity d,
+	Configuration c, Weight w, Graphics g, 
+	double xmin, double xmax, double ymin, double ymax,
+	double size_mm, const wchar_t *mark, int garnish)
+{
+	Dissimilarity_Configuration_Weight_drawISplineRegression (d, c, w, g,
+		0, 1, xmin, xmax, ymin, ymax, size_mm, mark, garnish);
+}
+
+void Dissimilarity_Configuration_Weight_drawMonotoneRegression (Dissimilarity d,
+	Configuration c, Weight w, Graphics g, int tiesProcessing, 
+	double xmin, double xmax, double ymin, double ymax,
+	double size_mm, const wchar_t *mark, int garnish)
+{
+	Distance fit; 
+	MonotoneTransformator t = MonotoneTransformator_create (d->numberOfRows);
+	
+	if (t == NULL) return;
+	
+	MonotoneTransformator_setTiesProcessing (t, tiesProcessing);
+	
+	fit = Dissimilarity_Configuration_Transformator_Weight_transform 
+		(d, c, t, w);
+	forget (t);
+	
+	if (fit)
+	{
+		Proximity_Distance_drawScatterDiagram 
+			(d, fit, g, xmin, xmax, ymin, ymax, size_mm, mark, garnish);
+		forget (fit);
+	}
+}
+
+void Dissimilarity_Configuration_Weight_drawISplineRegression 
+	(Dissimilarity d, Configuration c, Weight w, Graphics g,
+	long numberOfInternalKnots, long order, double xmin, double xmax, 
+	double ymin, double ymax, double size_mm, const wchar_t *mark, int garnish)
+{
+	Distance fit; 
+	ISplineTransformator t = ISplineTransformator_create (d->numberOfRows, 
+		numberOfInternalKnots, order);
+		
+	if (t == NULL) return;
+	
+	fit = Dissimilarity_Configuration_Transformator_Weight_transform 
+		(d, c, t, w);
+	forget (t);
+	
+	if (fit)
+	{
+		Proximity_Distance_drawScatterDiagram 
+			(d, fit, g, xmin, xmax, ymin, ymax, size_mm, mark, garnish);
+		forget (fit);
+	}
 }
 
 DIRECT (Dissimilarity_help)
@@ -1170,6 +1646,82 @@ END
 
 /************************* Distance(s) ***************************************/
 
+void Proximity_Distance_drawScatterDiagram (I, Distance thee, Graphics g, 
+	double xmin, double xmax, double ymin, double ymax, double size_mm, 
+	const wchar_t *mark, int garnish)   
+{
+	iam (Proximity);
+	long i, j, n = my numberOfRows * (my numberOfRows - 1) / 2;
+	double **x = my data, **y = thy data;
+	
+	if (n == 0) return;
+	if (! TableOfReal_equalLabels (me, thee, 1, 1))
+	{
+		(void) Melder_error1 (L"Proximity_Distance_drawScatterDiagram: Dimensions and labels must be the same.");
+		return;
+	}
+	if (xmax <= xmin)
+	{
+		xmin = xmax = x[1][2];
+		for (i=1; i <= thy numberOfRows-1; i++)
+		{
+			for (j=i+1; j <= thy numberOfColumns; j++)
+			{
+				if (x[i][j] > xmax) xmax = x[i][j];
+				else if (x[i][j] < xmin) xmin = x[i][j];
+			}
+		}
+	}	
+	if (ymax <= ymin)
+	{
+		ymin = ymax = y[1][2];
+		for (i=1; i <= my numberOfRows -1; i++)
+		{
+			for (j=i+1; j <= my numberOfColumns; j++)
+			{
+				if (y[i][j] > ymax) ymax = y[i][j];
+				else if (y[i][j] < ymin) ymin = y[i][j];
+			}
+		}
+	}
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_setInner (g);
+	for (i=1; i <= thy numberOfRows-1; i++)
+	{
+		for (j=i+1; j <= thy numberOfColumns; j++)
+		{
+			if (x[i][j] >= xmin && x[i][j] <= xmax &&
+				y[i][j] >= ymin && y[i][j] <= ymax)
+			{
+				Graphics_mark (g, x[i][j], y[i][j], size_mm, mark);
+			}
+		}
+	}
+
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+	   	Graphics_textLeft (g, 1, L"Distance");
+	   	Graphics_textBottom (g, 1, L"Dissimilarity");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+}
+
+void Distance_and_Configuration_drawScatterDiagram (Distance me, 
+	Configuration him, Graphics g, double xmin, double xmax, double ymin, 
+	double ymax, double size_mm, const wchar_t *mark, int garnish)
+{
+	Distance dist = Configuration_to_Distance (him);
+	 
+	if (! dist) return;
+	
+	Proximity_Distance_drawScatterDiagram (me, dist, g, xmin, xmax, ymin, 
+		ymax, size_mm, mark, garnish);
+	forget (dist);
+}
+
 FORM (Distance_to_ScalarProduct, L"Distance: To ScalarProduct", L"Distance: To ScalarProduct...")
 	BOOLEAN (L"Make sum of squares equal 1.0", 1)
 	OK
@@ -1409,6 +1961,52 @@ END
 
 /************************* Salience ***************************************/
 
+void Salience_draw (Salience me, Graphics g, int ix, int iy, int garnish)
+{
+	long i, j, nc2, nc1 = ix < iy ? (nc2 = iy, ix) : (nc2 = ix, iy);
+	double xmin = 0, xmax = 1, ymin = 0, ymax = 1, wmax = 1;
+	
+	if (ix < 1 || ix > my numberOfColumns || 
+		iy < 1 || iy > my numberOfColumns) return;
+		
+	for (i = 1; i <= my numberOfRows; i++)
+	{
+		for (j = nc1; j <= nc2; j++)
+		{
+			if (my data[i][j] > wmax) wmax = my data[i][j];
+		}
+	}
+	xmax = ymax = wmax;
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+    Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	
+	for (i = 1; i <= my numberOfRows; i++)
+	{
+		if (my rowLabels[i])
+		{
+			Graphics_text (g, my data[i][ix], my data[i][iy], my rowLabels[i]);
+		}
+	}
+	
+	Graphics_setTextAlignment (g, Graphics_LEFT, Graphics_BOTTOM);
+	Graphics_line (g, xmin, ymax, xmin, ymin);
+	Graphics_line (g, xmin, ymin, xmax, ymin);
+	/* Graphics_arc (g, xmin, ymin, xmax - xmin, 0, 90); */
+    Graphics_unsetInner (g);
+	
+	if (garnish)
+	{
+		if (my columnLabels[ix])
+		{
+			Graphics_textBottom (g, 0, my columnLabels[ix]);
+		}
+		if (my columnLabels[iy])
+		{
+			Graphics_textLeft (g, 0, my columnLabels[iy]);
+		}
+	}
+}
 
 FORM (Salience_draw, L"Salience: Draw", 0)
 	NATURAL (L"Horizontal dimension", L"1")

@@ -41,55 +41,6 @@ Cepstrum Cepstrum_create (double qmin, double qmax, long nq)
 	return me;
 }
 
-void Cepstrum_draw (Cepstrum me, Graphics g, double qmin, double qmax,
-	double minimum, double maximum, int garnish)
-{
-	double *y = NULL, *z;
-	long i, imin, imax;
-	int autoscaling = minimum >= maximum;
-
-	Graphics_setInner (g);
-
-	if (qmax <= qmin)
-	{
-		qmin = my xmin; qmax = my xmax;
-	}
-	
-	if (! Matrix_getWindowSamplesX (me, qmin, qmax, & imin, & imax)) return;
-
-	if ((y = NUMdvector (imin, imax)) == NULL) return;
-	
-	z = my z[1];
-	
-	for (i = imin; i <= imax; i++)
-	{
-		y[i] = z[i];
-	}
-	
-	if (autoscaling) NUMdvector_extrema (y, imin, imax, & minimum, & maximum);
-
-	for (i = imin; i <= imax; i ++)
-	{
-		if (y[i] > maximum) y[i] = maximum;
-		else if (y[i] < minimum) y[i] = minimum;
-	}
-	
-	Graphics_setWindow (g, qmin, qmax, minimum, maximum);
-	Graphics_function (g, y, imin, imax, Matrix_columnToX (me, imin),
-		Matrix_columnToX (me, imax));
-
-	Graphics_unsetInner (g);
-	
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, 1, L"Quefrency");
-		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
-		Graphics_textLeft (g, 1, L"Amplitude");
-	}
-
-	NUMdvector_free (y, imin);
-}
-
 Matrix Cepstrum_to_Matrix (Cepstrum me)
 {
 	Matrix thee = Data_copy (me);

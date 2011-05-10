@@ -25,9 +25,6 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 #ifndef _Configuration_h_
 	#include "Configuration.h"
 #endif
@@ -77,15 +74,6 @@ double Discriminant_getConcentrationEllipseArea (Discriminant me, long group,
 
 double Discriminant_getLnDeterminant_group (Discriminant me, long group);
 double Discriminant_getLnDeterminant_total (Discriminant me);
-
-void Discriminant_drawTerritorialMap (Discriminant me, Graphics g, int discriminantDirections,
-	long d1, long d2, double xmin, double xmax, double ymin, double ymax, int fontSize,
-	int poolCovarianceMatrices, int garnish);
-
-void Discriminant_drawConcentrationEllipses (Discriminant me, Graphics g,
-	double scale, int confidence, wchar_t *label, int discriminantDirections,
-	long d1, long d2, double xmin, double xmax, double ymin, double ymax,
-	int fontSize, int garnish);
 
 TableOfReal Discriminant_extractCoefficients (Discriminant me, int choice);
 

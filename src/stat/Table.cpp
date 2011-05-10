@@ -570,7 +570,7 @@ void Table_numericize_Assert (Table me, long columnNumber) {
 	my columnHeaders [columnNumber]. numericized = TRUE;
 }
 
-static void Table_numericize_checkDefined (Table me, long columnNumber) {
+void Table_numericize_checkDefined (Table me, long columnNumber) {
 	Table_numericize_Assert (me, columnNumber);
 	for (long irow = 1; irow <= my rows -> size; irow ++) {
 		TableRow row = static_cast <TableRow> (my rows -> item [irow]);
@@ -704,34 +704,6 @@ double Table_getStdev (Table me, long columnNumber) {
 		return sqrt (sum / (my rows -> size - 1));
 	} catch (...) {
 		rethrowmzero (me, ": cannot compute the standard deviation of column ", columnNumber, ".");
-	}
-}
-
-long Table_drawRowFromDistribution (Table me, long columnNumber) {
-	try {
-		Table_checkSpecifiedColumnNumberWithinRange (me, columnNumber);
-		Table_numericize_checkDefined (me, columnNumber); therror
-		if (my rows -> size < 1)
-			Melder_throw (me, ": no rows.");
-		double total = 0.0;
-		for (long irow = 1; irow <= my rows -> size; irow ++) {
-			TableRow row = static_cast <TableRow> (my rows -> item [irow]);
-			total += row -> cells [columnNumber]. number;
-		}
-		if (total <= 0.0)
-			Melder_throw (me, ": the total weight of column ", columnNumber, " is not positive.");
-		long irow;
-		do {
-			double rand = NUMrandomUniform (0, total), sum = 0.0;
-			for (irow = 1; irow <= my rows -> size; irow ++) {
-				TableRow row = static_cast <TableRow> (my rows -> item [irow]);
-				sum += row -> cells [columnNumber]. number;
-				if (rand <= sum) break;
-			}
-		} while (irow > my rows -> size);   /* Guard against rounding errors. */
-		return irow;
-	} catch (...) {
-		rethrowmzero (me, ": cannot draw a row from the distribution of column ", columnNumber, ".");
 	}
 }
 
@@ -1797,108 +1769,6 @@ bool Table_getExtrema (Table me, long icol, double *minimum, double *maximum) {
 		if (value > *maximum) *maximum = value;
 	}
 	return true;
-}
-
-void Table_scatterPlot_mark (Table me, Graphics g, long xcolumn, long ycolumn,
-	double xmin, double xmax, double ymin, double ymax, double markSize_mm, const wchar *mark, int garnish)
-{
-	long n = my rows -> size, irow;
-	if (xcolumn < 1 || xcolumn > my numberOfColumns || ycolumn < 1 || ycolumn > my numberOfColumns) return;
-	Table_numericize_Assert (me, xcolumn);
-	Table_numericize_Assert (me, ycolumn);
-	if (xmin == xmax) {
-		if (! Table_getExtrema (me, xcolumn, & xmin, & xmax)) return;
-		if (xmin == xmax) xmin -= 0.5, xmax += 0.5;
-	}
-	if (ymin == ymax) {
-		if (! Table_getExtrema (me, ycolumn, & ymin, & ymax)) return;
-		if (ymin == ymax) ymin -= 0.5, ymax += 0.5;
-	}
-	Graphics_setInner (g);
-	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
-
-	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
-	for (irow = 1; irow <= n; irow ++) {
-		TableRow row = static_cast <TableRow> (my rows -> item [irow]);
-		Graphics_mark (g, row -> cells [xcolumn]. number, row -> cells [ycolumn]. number, markSize_mm, mark);
-	}
-	Graphics_unsetInner (g);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
-		if (my columnHeaders [xcolumn]. label)
-			Graphics_textBottom (g, TRUE, my columnHeaders [xcolumn]. label);
-		Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
-		if (my columnHeaders [ycolumn]. label)
-			Graphics_textLeft (g, TRUE, my columnHeaders [ycolumn]. label);
-	}
-}
-
-void Table_scatterPlot (Table me, Graphics g, long xcolumn, long ycolumn,
-	double xmin, double xmax, double ymin, double ymax, long markColumn, int fontSize, int garnish)
-{
-	long n = my rows -> size;
-	int saveFontSize = Graphics_inqFontSize (g);
-	if (xcolumn < 1 || xcolumn > my numberOfColumns || ycolumn < 1 || ycolumn > my numberOfColumns) return;
-	Table_numericize_Assert (me, xcolumn);
-	Table_numericize_Assert (me, ycolumn);
-	if (xmin == xmax) {
-		if (! Table_getExtrema (me, xcolumn, & xmin, & xmax)) return;
-		if (xmin == xmax) xmin -= 0.5, xmax += 0.5;
-	}
-	if (ymin == ymax) {
-		if (! Table_getExtrema (me, ycolumn, & ymin, & ymax)) return;
-		if (ymin == ymax) ymin -= 0.5, ymax += 0.5;
-	}
-	Graphics_setInner (g);
-	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
-
-	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
-	Graphics_setFontSize (g, fontSize);
-	for (long irow = 1; irow <= n; irow ++) {
-		TableRow row = static_cast <TableRow> (my rows -> item [irow]);
-		const wchar *mark = row -> cells [markColumn]. string;
-		if (mark)
-			Graphics_text (g, row -> cells [xcolumn]. number, row -> cells [ycolumn]. number, mark);
-	}
-	Graphics_setFontSize (g, saveFontSize);
-	Graphics_unsetInner (g);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
-		if (my columnHeaders [xcolumn]. label)
-			Graphics_textBottom (g, TRUE, my columnHeaders [xcolumn]. label);
-		Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
-		if (my columnHeaders [ycolumn]. label)
-			Graphics_textLeft (g, TRUE, my columnHeaders [ycolumn]. label);
-	}
-}
-
-void Table_drawEllipse_e (Table me, Graphics g, long xcolumn, long ycolumn,
-	double xmin, double xmax, double ymin, double ymax, double numberOfSigmas, int garnish)
-{
-	try {
-		if (xcolumn < 1 || xcolumn > my numberOfColumns || ycolumn < 1 || ycolumn > my numberOfColumns) return;
-		Table_numericize_Assert (me, xcolumn);
-		Table_numericize_Assert (me, ycolumn);
-		if (xmin == xmax) {
-			if (! Table_getExtrema (me, xcolumn, & xmin, & xmax)) return;
-			if (xmin == xmax) xmin -= 0.5, xmax += 0.5;
-		}
-		if (ymin == ymax) {
-			if (! Table_getExtrema (me, ycolumn, & ymin, & ymax)) return;
-			if (ymin == ymax) ymin -= 0.5, ymax += 0.5;
-		}
-		autoTableOfReal tableOfReal = TableOfReal_create (my rows -> size, 2);
-		for (long irow = 1; irow <= my rows -> size; irow ++) {
-			tableOfReal -> data [irow] [1] = Table_getNumericValue_Assert (me, irow, xcolumn);
-			tableOfReal -> data [irow] [2] = Table_getNumericValue_Assert (me, irow, ycolumn);
-		}
-		autoSSCP sscp = TableOfReal_to_SSCP (tableOfReal.peek(), 0, 0, 0, 0);
-		SSCP_drawConcentrationEllipse (sscp.peek(), g, numberOfSigmas, 0, 1, 2, xmin, xmax, ymin, ymax, garnish);
-	} catch (...) {
-		Melder_clearError ();   // drawing errors shall be ignored
-	}
 }
 
 static const wchar *visibleString (const wchar *s) {

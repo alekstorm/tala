@@ -36,6 +36,10 @@ SpectrogramEditor::SpectrogramEditor (GuiObject parent, const wchar_t *title, An
 	}*/
 }
 
+// FIXME
+void Spectrogram_paintInside (I, Graphics g, double tmin, double tmax, double fmin, double fmax,
+	double maximum, int autoscaling, double dynamic, double preemphasis, double dynamicCompression);
+
 void SpectrogramEditor::draw () {
 	Spectrogram spectrogram = (Spectrogram) _data;
 	long itmin, itmax;

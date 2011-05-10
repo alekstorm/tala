@@ -24,7 +24,6 @@
  * pb 2008/01/19 double
  */
 
-#include "ui/Graphics.h"
 #include "Cochleagram.h"
 
 class_methods (Cochleagram, Matrix)
@@ -38,41 +37,6 @@ Cochleagram Cochleagram_create (double tmin, double tmax, long nt, double dt, do
 	if (! me || ! Matrix_init (me, tmin, tmax, nt, dt, t1,
 		0.0, nf * df, nf, df, 0.5 * df)) forget (me);
 	return me;
-}
-
-void Cochleagram_paint (Cochleagram me, Graphics g, double tmin, double tmax, int garnish)
-{
-	static double border [1 + 12] =
-		{ 0, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80 };
-	Cochleagram copy = (structCochleagram *)Data_copy (me);
-	long iy, ix, itmin, itmax;
-	if (! copy) return;
-	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
-	Matrix_getWindowSamplesX (me, tmin, tmax, & itmin, & itmax);
-	for (iy = 2; iy < my ny; iy ++)
-		for (ix = itmin; ix <= itmax; ix ++)
-			if (my z [iy] [ix] > my z [iy - 1] [ix] &&
-				my z [iy] [ix] > my z [iy + 1] [ix])
-			{
-				copy -> z [iy - 1] [ix] += 10;
-				copy -> z [iy] [ix] += 10;
-				copy -> z [iy + 1] [ix] += 10;
-			}
-	Graphics_setInner (g);
-	Graphics_setWindow (g, tmin, tmax, 0, my ny * my dy);
-	Graphics_grey (g, copy -> z,
-		itmin, itmax, Matrix_columnToX (me, itmin), Matrix_columnToX (me, itmax),
-		1, my ny, 0.5 * my dy, (my ny - 0.5) * my dy,
-		12, border);
-	Graphics_unsetInner (g);
-	forget (copy);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, 1, L"Time (s)");
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-		Graphics_textLeft (g, 1, L"Place (Bark)");
-		Graphics_marksLeftEvery (g, 1.0, 5.0, 1, 1, 0);
-	}
 }
 
 double Cochleagram_difference (Cochleagram me, Cochleagram thee, double tmin, double tmax)

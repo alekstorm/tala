@@ -24,7 +24,6 @@
  */
 
 #include "RealTier.h"
-#include "ui/Graphics.h"
 #include "Sound.h"
 
 #ifdef __cplusplus
@@ -47,9 +46,6 @@ PitchTier PitchTier_create (double tmin, double tmax);
 
 int PitchTier_shiftFrequencies (PitchTier me, double tmin, double tmax, double shift, int units);
 void PitchTier_multiplyFrequencies (PitchTier me, double tmin, double tmax, double factor);
-
-void PitchTier_draw (PitchTier me, Graphics g, double tmin, double tmax,
-	double fmin, double fmax, int garnish, const wchar_t *method);
 
 PitchTier PointProcess_upto_PitchTier (PointProcess me, double frequency);
 void PitchTier_stylize (PitchTier me, double frequencyResolution, int useSemitones);

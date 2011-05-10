@@ -72,9 +72,6 @@ class_create (CCA, Data);
 
 CCA CCA_create (long numberOfCoefficients, long ny, long nx);
 
-void CCA_drawEigenvector (CCA me, Graphics g, int x_or_y, long ivec, long first, long last,
-	double ymin, double ymax, int weigh, double size_mm, const wchar_t *mark, int connect, int garnish);
-
 double CCA_getEigenvectorElement (CCA me, int x_or_y, long ivec, long element);
 
 CCA TableOfReal_to_CCA (TableOfReal me, long ny);

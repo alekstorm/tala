@@ -25,7 +25,6 @@
  djmw 20041118 Added FFNet_Pattern_Categories_getCosts.
 */
 
-#include "ui/Graphics.h"
 #include "FFNet_Pattern_Activation.h"
 
 static double func (I, const double p[])

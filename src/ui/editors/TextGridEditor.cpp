@@ -291,6 +291,9 @@ int TextGridEditor::menu_cb_WriteToTextFile (EDITOR_ARGS) {
 	EDITOR_END
 }
 
+void TextGrid_Sound_draw (TextGrid me, Sound sound, Graphics g, double tmin, double tmax,
+	int showBoundaries, int useTextStyles, int garnish);
+
 int TextGridEditor::menu_cb_DrawVisibleTextGrid (EDITOR_ARGS) {
 	TextGridEditor *editor = (TextGridEditor *)editor_me;
 	EDITOR_FORM (L"Draw visible TextGrid", 0)
@@ -602,6 +605,9 @@ int TextGridEditor::menu_cb_MoveEtoZero (EDITOR_ARGS) {
 }
 
 /***** PITCH MENU *****/
+
+void TextGrid_Pitch_drawSeparately (TextGrid grid, Pitch pitch, Graphics g, double tmin, double tmax,
+	double fmin, double fmax, int showBoundaries, int useTextStyles, int garnish, int speckle, int unit);
 
 int TextGridEditor::menu_cb_DrawTextGridAndPitch (EDITOR_ARGS) {
 	TextGridEditor *editor = (TextGridEditor *)editor_me;

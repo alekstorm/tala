@@ -66,8 +66,6 @@ Cochleagram Cochleagram_create (double tmin, double tmax, long nt, double dt, do
 		result -> z [1..nf] [1..nt] == 0.0;
 */
 
-void Cochleagram_paint (Cochleagram me, Graphics g, double tmin, double tmax, int garnish);
-
 double Cochleagram_difference (Cochleagram me, Cochleagram thee, double tmin, double tmax);
 
 Cochleagram Matrix_to_Cochleagram (Matrix me);

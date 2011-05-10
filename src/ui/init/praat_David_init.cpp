@@ -105,6 +105,7 @@
 #include "fon/Spectrogram.h"
 #include "ui/editors/Editor.h"
 #include "ui/Formula.h"
+#include "ui/GraphicsP.h"
 #include "ui/UiFile.h"
 
 #include "dwtools/Categories_and_Strings.h"
@@ -144,6 +145,32 @@ extern "C" void praat_Matrixft_query_init (void *klas);
 extern "C" int praat_Fon_formula (UiForm *dia, Interpreter *interpreter);
 
 #undef INCLUDE_DTW_SLOPES
+
+// FIXME
+void Matrix_drawRows (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum);
+void Matrix_drawOneContour (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double height);
+void Matrix_drawContours (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum);
+void Matrix_paintContours (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum);
+void Matrix_paintImage (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum);
+void Matrix_paintCells (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum);
+void Matrix_paintSurface (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
+	double minimum, double maximum, double elevation, double azimuth);
+void Matrix_movie (I, Graphics g);
+
+void TableOfReal_drawAsNumbers (I, Graphics graphics, long rowmin, long rowmax, int iformat, int precision);
+
+void Sound_drawWhere (Sound me, Graphics g, double tmin, double tmax, double minimum, double maximum,
+	bool garnish, const wchar_t *method, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter);
+void Sound_paintWhere (Sound me, Graphics g, Graphics_Colour colour, double tmin, double tmax,
+	double minimum, double maximum, double level, bool garnish, long numberOfBisections, const wchar_t *formula, Interpreter *interpreter);
+void Sounds_paintEnclosed (Sound me, Sound thee, Graphics g, Graphics_Colour colour, double tmin, double tmax,
+	double minimum, double maximum, bool garnish);
 
 static int pr_LongSounds_appendToExistingSoundFile (MelderFile file)
 {
@@ -186,6 +213,313 @@ DIRECT (Activation_to_Matrix)
 END
 
 /********************** BarkFilter *******************************************/
+
+static double scaleFrequency (double f, int scale_from, int scale_to)
+{
+	double fhz = NUMundefined;
+	
+	if (scale_from == scale_to) return f;
+	if (scale_from == FilterBank_HERTZ)
+	{
+		fhz = f;
+	}
+	else if (scale_from == FilterBank_BARK)
+	{
+		fhz = BARKTOHZ (f);
+	}
+	else if (scale_from == FilterBank_MEL)
+	{
+		fhz = MELTOHZ (f);
+	}
+	
+	if (scale_to == FilterBank_HERTZ || fhz == NUMundefined) return fhz;
+ 
+	if (scale_to == FilterBank_BARK)	
+	{
+		f = HZTOBARK (fhz);
+	}
+	else if (scale_to == FilterBank_MEL)
+	{
+		f = HZTOMEL (fhz);
+	}
+	else
+	{
+		return NUMundefined;
+	}
+	return f;
+}
+
+static wchar_t *GetFreqScaleText (int scale)
+{
+	wchar_t *hertz = L"Frequency (Hz)";
+	wchar_t *bark = L"Frequency (Bark)";
+	wchar_t *mel = L"Frequency (mel)";
+	wchar_t *error = L"Frequency (undefined)";
+	if (scale == FilterBank_HERTZ)
+	{
+		return hertz;
+	}
+	else if (scale == FilterBank_BARK)
+	{
+		return bark;
+	}
+	else if (scale == FilterBank_MEL)
+	{
+		return mel;
+	}
+	return error;
+	
+}
+
+static int checkLimits (I, int fromFreqScale, int toFreqScale, int *fromFilter,
+	int *toFilter, double *zmin, double *zmax, int dbScale, 
+	double *ymin, double *ymax)
+{
+	iam (Matrix);
+	
+	if (*fromFilter == 0)  *fromFilter = 1;
+	if (*toFilter == 0)  *toFilter = my ny;
+	if (*toFilter < *fromFilter)
+	{
+		*fromFilter = 1;
+		*toFilter = my ny;
+	}
+	if (*fromFilter < 1) *fromFilter = 1;
+	if (*toFilter > my ny) *toFilter = my ny;
+	if (*fromFilter > *toFilter)
+	{
+		Melder_warning3 (L"Filter numbers must be in range [1, ", Melder_integer (my ny), L"]");
+		return 0;
+	}
+		
+	if (*zmin < 0 || *zmax < 0)
+	{
+		Melder_warning1 (L"Frequencies must be positive.");
+		return 0;
+	}
+	if (*zmax <= *zmin)
+	{
+		*zmin = scaleFrequency (my ymin, fromFreqScale, toFreqScale);
+		*zmax = scaleFrequency (my ymax, fromFreqScale, toFreqScale); 
+	}
+
+	if (*ymax <= *ymin)
+	{
+		*ymax = 1; *ymin = 0;
+		if (dbScale)
+		{
+			*ymax = 0; *ymin = -60;
+		}
+	}
+	return 1;
+}
+
+static double to_dB (double a, double factor, double ref_dB)
+{
+	if (a <= 0) return ref_dB;
+	a = factor * log10 (a);
+	if (a < ref_dB) a = ref_dB;
+	return a;
+}
+
+static void setDrawingLimits (double *a, long n, double amin, double amax,
+	long *ibegin, long *iend)
+{
+	long i, lower = 1;
+	
+	*ibegin = 0;
+	*iend = n + 1;
+
+	for (i = 1; i <= n; i++)
+	{
+		if (a[i] == NUMundefined)
+		{
+			if (lower == 0)
+			{
+				/* high frequency part */
+				*iend = i;
+				break;
+			}
+			*ibegin = i;
+			continue; 
+		}
+		lower = 0;
+		if (a[i] < amin)
+		{
+			a[i] = amin; 
+		}
+		else if (a[i] > amax)
+		{
+			a[i] = amax;
+		}
+	}
+		
+	(*ibegin)++;
+	(*iend)--;
+}
+
+void FilterBank_drawFrequencyScales (I, Graphics g, int horizontalScale, double xmin, 
+	double xmax, int verticalScale, double ymin, double ymax, int garnish)
+{
+	iam (FilterBank);
+	long i, ibegin, iend, n = 2000;
+	double *a, df;
+	int myFreqScale = FilterBank_getFrequencyScale (me);
+
+	if (xmin < 0 || xmax < 0 ||ymin < 0 || ymax < 0)
+	{
+		Melder_warning1 (L"Frequencies must be >= 0.");
+		return;
+	}
+	
+	if (xmin >= xmax)
+	{
+		double xmint = my ymin;
+		double xmaxt = my ymax;
+		if (ymin < ymax)
+		{
+			xmint = scaleFrequency (ymin, verticalScale, myFreqScale);
+			xmaxt = scaleFrequency (ymax, verticalScale, myFreqScale); 
+		}
+		xmin = scaleFrequency (xmint, myFreqScale, horizontalScale);
+		xmax = scaleFrequency (xmaxt, myFreqScale, horizontalScale);
+	}
+	
+	if (ymin >= ymax)
+	{
+		ymin = scaleFrequency (xmin, horizontalScale, verticalScale); 
+		ymax = scaleFrequency (xmax, horizontalScale, verticalScale);
+	}
+	
+	a = NUMdvector (1, n);
+	if (a == NULL) return;
+	
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+
+	df = (xmax - xmin) / (n - 1);
+	
+	for (i = 1; i <= n; i++)
+	{
+		double f = xmin + (i - 1) * df;
+		a[i] = scaleFrequency (f, horizontalScale, verticalScale);
+	}
+	
+	setDrawingLimits (a, n, ymin, ymax,	& ibegin, & iend);
+	if (ibegin <= iend)
+	{
+		double fmin = xmin + (ibegin - 1) * df;
+		double fmax = xmax - (n - iend) * df;
+		Graphics_function (g, a, ibegin, iend, fmin, fmax);
+	}
+	Graphics_unsetInner (g);
+	
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+    	Graphics_textLeft (g, 1, GetFreqScaleText (verticalScale));
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+    	Graphics_textBottom (g, 1, GetFreqScaleText (horizontalScale));
+	}
+	
+	NUMdvector_free (a, 1);
+}
+
+void BarkFilter_drawSekeyHansonFilterFunctions (BarkFilter me, Graphics g,
+	int toFreqScale, int fromFilter, int toFilter, double zmin, double zmax, 
+	int dbScale, double ymin, double ymax, int garnish)
+{
+	long i, j, n = 1000; 
+	double *a = NULL;
+		
+	if (! checkLimits (me, FilterBank_BARK, toFreqScale, & fromFilter, & toFilter, 
+		& zmin, & zmax, dbScale, & ymin, & ymax)) return;
+	
+	a = NUMdvector (1, n);
+	if (a == NULL) return;
+	
+	Graphics_setInner (g);
+	Graphics_setWindow (g, zmin, zmax, ymin, ymax);
+	
+	for (j = fromFilter; j <= toFilter; j++)
+	{
+		double df = (zmax - zmin) / (n - 1);
+		double zMid = Matrix_rowToY (me, j);
+		long ibegin, iend;
+		
+		for (i = 1; i <= n; i++)
+		{
+			double z, f = zmin + (i - 1) * df;
+			
+			z = scaleFrequency (f, toFreqScale, FilterBank_BARK);
+			if (z == NUMundefined)
+			{
+				a[i] = NUMundefined;
+			}
+			else
+			{
+				z -= zMid + 0.215;
+				a[i] = 7 - 7.5 * z - 17.5 * sqrt (0.196 + z * z);
+				if (! dbScale) a[i] = pow (10, a[i]);
+			}			
+		}
+		
+		setDrawingLimits (a, n, ymin, ymax,	&ibegin, &iend);
+		
+		if (ibegin <= iend)
+		{
+			double fmin = zmin + (ibegin - 1) * df;
+			double fmax = zmax - (n - iend) * df;
+			Graphics_function (g, a, ibegin, iend, fmin, fmax);
+		}
+	}
+		
+			
+	Graphics_unsetInner (g);
+	
+	if (garnish)
+	{
+		double distance = dbScale ? 10 : 1;
+		const wchar_t *ytext = dbScale ? L"Amplitude (dB)" : L"Amplitude";
+		Graphics_drawInnerBox (g);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+    	Graphics_marksLeftEvery (g, 1, distance, 1, 1, 0);
+    	Graphics_textLeft (g, 1, ytext);
+    	Graphics_textBottom (g, 1, GetFreqScaleText (toFreqScale));
+	}
+	
+	NUMdvector_free (a, 1);
+}
+
+
+/*
+void FilterBank_drawFilters (I, Graphics g, long fromf, long tof,
+	double xmin, double xmax, int xlinear, double ymin, double ymax, int ydb,
+	double (*tolinf)(double f), double (*tononlin) (double f), 
+	double (*filteramp)(double f0, double b, double f))
+{
+	iam (Matrix);
+	
+
+}*/
+
+void Matrix_drawSliceY (I, Graphics g, double x, double ymin, double ymax,
+	double min, double max);
+
+void FilterBank_drawTimeSlice (I, Graphics g, double t, double fmin, 
+	double fmax, double min, double max, wchar_t *xlabel, int garnish)
+{
+	iam (Matrix);
+	Matrix_drawSliceY (me, g, t, fmin, fmax, min, max);
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+		if (xlabel) Graphics_textBottom (g, 0, xlabel);
+	}
+}
 
 DIRECT (BarkFilter_help)
 	Melder_help (L"BarkFilter");
@@ -327,6 +661,68 @@ DIRECT (Categories_permuteItems)
 END
 
 /***************** CC ****************************************/
+
+void CC_drawC0 (I, Graphics g, double xmin, double xmax, double ymin,
+	double ymax, int garnish)
+{
+	iam (CC);
+	double *c;
+	long i, bframe, eframe, nframes;
+	(void) garnish;
+	
+	if (xmin >= xmax)
+	{
+		xmin = my xmin; xmax = my xmax;
+	}
+	
+	nframes = Sampled_getWindowSamples (me, xmin, xmax, &bframe, &eframe);
+	
+	if ((c = NUMdvector (bframe, eframe)) == NULL) return;
+	
+	for (i = bframe; i <= eframe; i++)
+	{
+		CC_Frame cf = & my frame[i];
+		c[i] = cf -> c0;
+	}
+	if (ymin >= ymax)
+	{
+		NUMdvector_extrema (c, bframe, eframe, &ymin, &ymax);
+		if (ymax <= ymin) { ymin -= 1.0; ymax += 1.0; }
+	}
+	else
+	{
+		NUMdvector_clip (c, bframe, eframe, ymin, ymax);
+	}
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+		
+	Graphics_function (g, c, bframe, eframe, xmin, xmax);
+	Graphics_unsetInner (g);
+	
+	NUMdvector_free (c, bframe);
+}
+
+void CC_paint (I, Graphics g, double xmin, double xmax, long cmin,
+	long cmax, double minimum, double maximum, int garnish)
+{
+	iam (CC);
+	Matrix thee = CC_to_Matrix (me);
+	
+	if (thee == NULL) return;
+	
+	Matrix_paintCells (thee, g, xmin, xmax, cmin, cmax, minimum, maximum);
+	
+	if (garnish)
+	{
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+		Graphics_textLeft (g, 1, L"Coefficients");
+	}
+	
+	forget (thee);
+}
+
 FORM (CC_getValue, L"CC: Get value", L"CC: Get value...")
 	REAL (L"Time (s)", L"0.1")
 	NATURAL (L"Index", L"1")
@@ -394,6 +790,23 @@ DIRECT (CC_to_Matrix)
 END
 
 /******************* class CCA ********************************/
+
+void Eigen_drawEigenvector (I, Graphics g, long ivec, long first, long last,
+	double ymin, double ymax, int weigh, double size_mm, const wchar_t *mark,
+	int connect, wchar_t **rowLabels, int garnish);
+
+void CCA_drawEigenvector (CCA me, Graphics g, int x_or_y, long ivec, long first, long last,
+	double ymin, double ymax, int weigh, double size_mm, const wchar_t *mark, int connect, int garnish)
+{
+	Eigen e = my x; 
+	Strings labels = my xLabels;
+	if (x_or_y == 1)
+	{
+		e = my y; labels = my yLabels;
+	}	
+	Eigen_drawEigenvector (e, g, ivec, first, last, ymin, ymax, weigh, size_mm, mark,
+		connect, labels -> strings, garnish);
+}
 
 FORM (CCA_drawEigenvector, L"CCA: Draw eigenvector", L"Eigen: Draw eigenvector...")
 	OPTIONMENU (L"X or Y", 1)
@@ -574,6 +987,17 @@ END
 
 /********************** Confusion *******************************************/
 
+// option marginals draw one extra row and column with sums.
+void Confusion_drawAsNumbers (I, Graphics g, int marginals, int iformat, int precision)
+{
+	iam (Confusion);
+	TableOfReal thee = NULL;
+	thee = marginals ? Confusion_to_TableOfReal_marginals (me) : (TableOfReal) me; 
+	if (thee == NULL) return;
+	TableOfReal_drawAsNumbers (thee, g, 1, thy numberOfRows, iformat, precision);
+	if (marginals) forget (thee);
+}
+
 DIRECT (Confusion_help)
 	Melder_help (L"Confusion");
 END
@@ -624,6 +1048,141 @@ DIRECT (Confusion_getFractionCorrect)
 END
 
 /******************* Confusion & Matrix *************************************/
+
+#define Pointer_members Polygon_members
+#define Pointer_methods Polygon_methods
+class_create (Pointer, Polygon);
+class_methods (Pointer, Polygon)
+class_methods_end
+
+#define NPOINTS 6
+static Any Pointer_create (void)
+{
+	Pointer me = NULL; long i;
+	double x[NPOINTS+1] = { 0, 0, 0.9, 1, 0.9, 0, 0 };
+	double y[NPOINTS+1] = { 0, 0, 0, 0.5,   1, 1, 0 };
+	if (! (me = (Pointer) Polygon_create (NPOINTS))) { forget (me); return me; }
+	for (i = 1; i <= NPOINTS; i++)
+	{
+		my x[i] = x[i]; my y[i] = y[i];
+	}
+	return me;
+}
+
+static void Pointer_draw (I, Any graphics)
+{
+	iam (Polygon);
+	Graphics_polyline (graphics, my numberOfPoints, & my x[1], & my y[1]);
+}
+
+/* 1. Draw my rowLabels centered at ( matrix->z[i][1], matrix->z[i][2]).
+ * 2. Draw arrows and circles according to:
+ *	for (i=1; i <= my numberOfRows; i++)
+ *	{
+ *		if (index != 0 && index != i) continue;
+ *      draw circle at i of width: my z[i][i]/rowSum;
+ *		for (j=1; j <= my numberOfColumns; j++)
+ *		{
+ *			if (i != j && 100*my data[i][j]/rowSum > lowerPercentage) 
+ *				draw arrow from i to j of width: my data[i][j]/rowSum;
+ *		}
+ *	}
+ */
+void Confusion_Matrix_draw (Confusion me, Matrix thee, Graphics g, long index,
+	double lowerPercentage, double xmin, double xmax,
+	double ymin, double ymax, int garnish)
+{
+	long i, j, ib = 1, ie = my numberOfRows;
+	double rmax, rmin;
+	
+	if (index > 0 && index <= my numberOfColumns) ib = ie = index;
+	 
+	if(	thy ny != my numberOfRows)
+	{
+		(void) Melder_error1 (L"Confusion_Matrix_draw: number of positions.");
+		return;
+	}
+	
+    if (xmax <= xmin) (void) Matrix_getWindowExtrema (thee, 1, 1, 1, thy ny,
+		 &xmin, &xmax);
+		 
+	if (xmax <= xmin) return;
+	 
+    if (ymax <= ymin) (void) Matrix_getWindowExtrema (thee, 2, 2, 1, thy ny,
+		 &ymin, &ymax);
+		 
+	if (ymax <= ymin) return;
+	rmax = fabs (xmax - xmin) / 10;
+	rmin = rmax / 10;
+	
+    Graphics_setInner (g);
+    Graphics_setWindow (g, xmin - rmax, xmax + rmax, ymin - rmax, ymax + rmax); 
+    Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+    for (i=1; i <= my numberOfRows; i++)
+	{
+    	Graphics_text (g, thy z[i][1], thy z[i][2], my rowLabels[i]);
+	}
+	for (i=ib; i <= ie; i++)
+	{
+		double x1, y1, r, xSum = 0;
+		
+		for (j=1; j <= my numberOfColumns; j++)
+		{
+			xSum += my data[i][j];
+		}
+		
+		if (xSum <= 0) continue; /* no confusions */
+		
+		x1 = thy z[i][1]; y1 = thy z[i][2];
+		r = rmax * my data[i][i] / xSum;
+		
+		Graphics_circle (g, x1, y1, r > rmin ? r : rmin);
+		
+		for (j=1; j <= my numberOfColumns; j++)
+		{
+			Pointer p = NULL;
+			double xs, ys;
+			double x2 = thy z[j][1], y2 = thy z[j][2];
+			double  perc =  100 * my data[i][j] / xSum;
+			double dx = x2 - x1, dy = y2 - y1;
+			double alpha = atan2 (dy, dx);
+			 
+			if (perc == 0 || perc < lowerPercentage || j == i) continue;
+			
+			xmin = x1; xmax = x2;
+			if (x2 < x1)
+			{
+				xmin = x2; xmax = x1;
+			}
+			ymin = y1; xmax = y2;
+			if (y2 < y1)
+			{
+				ymin = y2; ymax = y1;
+			}
+			if ((p = (structPointer *)Pointer_create()) == NULL) return;
+			xs = (xs = sqrt (dx * dx + dy * dy) - 2.2 * r) < 0 ? 0 : xs;
+			ys = perc * rmax / 100; 
+			Polygon_scale (p, xs, ys);
+			Polygon_translate (p, x1, y1 - ys / 2);
+			Polygon_rotate (p, alpha, x1, y1);
+			Polygon_translate (p, 1.1 * r * cos (alpha) ,
+				1.1 * r * sin (alpha));
+			Pointer_draw (p, g);
+			forget (p); 	
+		}
+	}
+	
+	Graphics_unsetInner (g);
+	
+    if (garnish)
+    {
+    	Graphics_drawInnerBox (g);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+		if (ymin * ymax < 0.0) Graphics_markLeft (g, 0.0, 1, 1, 1, NULL);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+		if (xmin * xmax < 0.0) Graphics_markBottom (g, 0.0, 1, 1, 1, NULL);
+    }
+}
 
 FORM (Confusion_Matrix_draw, L"Confusion & Matrix: Draw confusions with arrows", 0)
     INTEGER (L"Category position", L"0 (=all)")
@@ -858,6 +1417,76 @@ DO
 END
 
 /********************** Discriminant **********************************/
+
+void SSCPs_drawConcentrationEllipses (SSCPs me, Graphics g, double scale,
+	int confidence, wchar_t *label, long d1, long d2, double xmin, double xmax,
+	double ymin, double ymax, int fontSize, int garnish);
+
+void Discriminant_drawTerritorialMap (Discriminant me, Graphics g,
+	int discriminantDirections, long d1, long d2, double xmin, double xmax,
+	double ymin, double ymax, int fontSize, int poolCovarianceMatrices,
+	int garnish)
+{
+	(void) me;(void) g;(void) discriminantDirections;(void) d1;(void) d2;
+	(void) xmin;(void) xmax;(void) ymin;
+	(void) ymax;(void) fontSize;(void) poolCovarianceMatrices;(void) garnish;
+
+}
+
+void Discriminant_drawConcentrationEllipses (Discriminant me, Graphics g,
+	double scale, int confidence, wchar_t *label, int discriminantDirections, long d1, long d2,
+	double xmin, double xmax, double ymin, double ymax, int fontSize, int garnish)
+{
+	SSCPs thee;
+	long numberOfFunctions = Discriminant_getNumberOfFunctions (me);
+	double *v1, *v2;
+
+	if (! discriminantDirections)
+	{
+		SSCPs_drawConcentrationEllipses (my groups, g, scale, confidence, label,
+			d1, d2, xmin, xmax, ymin, ymax, fontSize, garnish);
+		return;
+	}
+
+	if (numberOfFunctions <= 1)
+	{
+		Melder_warning1 (L"Discriminant_drawConcentrationEllipses: Nothing drawn "
+			"because there is only one dimension in the discriminant space.");
+		return;
+	}
+
+	/*
+		Project SSCPs on eigenvectors.
+	*/
+
+	if (d1 == 0 && d2 == 0)
+	{
+		d1 = 1;
+		d2 = MIN (numberOfFunctions, d1 + 1);
+	}
+	else if (d1 < 0 || d2 > numberOfFunctions) return;
+
+	v1 = my eigenvectors[d1]; v2 = my eigenvectors[d2];
+
+	if ((thee = SSCPs_toTwoDimensions (my groups, v1, v2)) == NULL) return;
+
+	SSCPs_drawConcentrationEllipses (thee, g, scale, confidence, label, 1, 2,
+		xmin, xmax, ymin, ymax, fontSize, 0);
+
+	if (garnish)
+	{
+		wchar_t label[40];
+    	Graphics_drawInnerBox (g);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+    	swprintf (label, 40, L"function %ld", d2);
+    	Graphics_textLeft (g, 1, label);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+    	swprintf (label, 40, L"function %ld", d1);
+		Graphics_textBottom (g, 1, label);
+	}
+
+	forget (thee);
+}
 
 DIRECT (Discriminant_help)
 	Melder_help (L"Discriminant");
@@ -1175,6 +1804,334 @@ END
 
 /********************** DTW *******************************************/
 
+void Sound_draw_btlr (Sound me, Graphics g, double tmin, double tmax, double amin, double amax, int direction, int garnish);
+
+static void DTW_paintDistances_raw (DTW me, Any g, double xmin, double xmax, double ymin,
+	double ymax, double minimum, double maximum, int garnish, int inset)
+{
+	long ixmin, ixmax, iymin, iymax;
+	if (xmax <= xmin) { xmin = my xmin; xmax = my xmax; }
+	if (ymax <= ymin) { ymin = my ymin; ymax = my ymax; }
+	(void) Matrix_getWindowSamplesX (me, xmin - 0.49999 * my dx, xmax + 0.49999 * my dx,
+		& ixmin, & ixmax);
+	(void) Matrix_getWindowSamplesY (me, ymin - 0.49999 * my dy, ymax + 0.49999 * my dy,
+		& iymin, & iymax);
+	if (maximum <= minimum)
+		(void) Matrix_getWindowExtrema (me, ixmin, ixmax, iymin, iymax, & minimum, & maximum);
+	if (maximum <= minimum) { minimum -= 1.0; maximum += 1.0; }
+	if (xmin >= xmax || ymin >= ymax) return;
+	if (inset) Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_cellArray (g, my z,
+			ixmin, ixmax, Matrix_columnToX (me, ixmin - 0.5), Matrix_columnToX (me, ixmax + 0.5),
+			iymin, iymax, Matrix_rowToY (me, iymin - 0.5), Matrix_rowToY (me, iymax + 0.5),
+			minimum, maximum);
+	Graphics_rectangle (g, xmin, xmax, ymin, ymax);
+	if (inset) Graphics_unsetInner (g);
+	if (garnish)
+	{
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+}
+
+void DTW_paintDistances (DTW me, Any g, double xmin, double xmax, double ymin,
+	double ymax, double minimum, double maximum, int garnish)
+{
+	DTW_paintDistances_raw (me, g, xmin, xmax, ymin, ymax, minimum, maximum, garnish, 1);
+}
+
+static int DTW_and_Sounds_checkDomains (DTW me, Sound *y, Sound *x, double *xmin, double *xmax, double *ymin, double *ymax)
+{
+	if (my ymin == (*y) -> xmin && my ymax == (*y) -> xmax)
+	{
+		if (my xmin != (*x) -> xmin || my xmax != (*x) -> xmax)
+		{
+			return Melder_error1 (L"The domains of the DTW and the sound('s) don't match");
+		}
+	}
+	else if (my ymin == (*x) -> xmin && my ymax == (*x) -> xmax)
+	{
+		if (my xmin != (*y) -> xmin || my xmax != (*y) -> xmax)
+		{
+			return Melder_error1 (L"The domains of the DTW and the sound('s) don't match");
+		}
+		Sound tmp = *y; *y = *x; *x = tmp; // swap x and y
+	}
+	else
+	{
+		return Melder_error1 (L"The domains of the DTW and the sound('s) don't match");
+	}
+
+	if (*xmin >= *xmax)
+	{
+		*xmin = my xmin; *xmax = my xmax;
+	}
+	if (*ymin >= *ymax)
+	{
+		*ymin = my ymin; *ymax = my ymax;
+	}
+	return 1;
+}
+
+static void drawBox (Graphics g)
+{
+	double x1WC, x2WC, y1WC, y2WC;
+	double lineWidth = Graphics_inqLineWidth (g);
+	Graphics_inqWindow (g, &x1WC, &x2WC, &y1WC, &y2WC);
+	Graphics_setLineWidth (g, 2.0*lineWidth);
+	Graphics_rectangle (g, x1WC, x2WC, y1WC, y2WC);
+	Graphics_setLineWidth (g, lineWidth);
+}
+
+/*
+  In a picture with a DTW and a left and bottom Sound, we want "width" of the vertical sound
+  and the "height" of the horizontal Sound t be equal.
+  Given the horizontal fraction of the DTW-part, this routine returns the vertical part.
+*/
+static double _DTW_and_Sounds_getPartY (Graphics g, double dtw_part_x)
+{
+	double x1NDC, x2NDC, y1NDC, y2NDC;
+	Graphics_inqViewport (g, &x1NDC, &x2NDC, &y1NDC, &y2NDC);
+	return 1 - ((1 - dtw_part_x) * (x2NDC -x1NDC))/(y2NDC -y1NDC);
+}
+
+static void DTW_drawPath_raw (DTW me, Any g, double xmin, double xmax, double ymin,
+	double ymax, int garnish, int inset)
+{
+	DTW_Path_Query thee = & my pathQuery;
+	long i;
+
+	if (xmin >= xmax)
+	{
+		xmin = my xmin; xmax = my xmax;
+	}
+	if (ymin >= ymax)
+	{
+		ymin = my ymin; ymax = my ymax;
+	}
+
+	if (inset) Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+
+	for (i = 1; i < thy nxy; i++)
+	{
+		double x1, y1, x2, y2;
+		if (NUMclipLineWithinRectangle (thy xytimes[i].x, thy xytimes[i].y,
+			thy xytimes[i+1].x, thy xytimes[i+1].y,
+			xmin, ymin, xmax, ymax, &x1, &y1, &x2, &y2))
+		{
+			Graphics_line (g, x1, y1, x2, y2);
+		}
+	}
+
+	if (inset) Graphics_unsetInner (g);
+	if (garnish)
+	{
+		Graphics_drawInnerBox(g);
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+}
+
+void DTW_drawPath (DTW me, Any g, double xmin, double xmax, double ymin,
+	double ymax, int garnish)
+{
+	DTW_drawPath_raw (me, g, xmin, xmax, ymin, ymax, garnish, 1);
+}
+
+static void DTW_drawWarpX_raw (DTW me, Graphics g, double xmin, double xmax, double ymin, double ymax, double tx, int garnish, int inset)
+{
+	double ty = DTW_getYTime (me, tx);
+	int lineType = Graphics_inqLineType (g);
+
+	if (xmin >= xmax)
+	{
+		xmin = my xmin; xmax = my xmax;
+	}
+	if (ymin >= ymax)
+	{
+		ymin = my ymin; ymax = my ymax;
+	}
+
+	if (inset) Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+
+	ty = DTW_getYTime (me, tx);
+	Graphics_setLineType (g, Graphics_DOTTED);
+
+	Graphics_line (g, tx, ymin, tx, ty);
+	Graphics_line (g, tx, ty, xmin, ty);
+
+	Graphics_setLineType (g, lineType);
+
+	if (inset) Graphics_unsetInner (g);
+
+	if (garnish)
+	{
+		Graphics_markBottom (g, tx, 1, 1, 0, NULL);
+		Graphics_markLeft (g, ty, 1, 1, 0, NULL);
+	}
+}
+
+void DTW_drawWarpX (DTW me, Graphics g, double xmin, double xmax, double ymin, double ymax, double tx, int garnish)
+{
+	DTW_drawWarpX_raw (me, g, xmin, xmax, ymin, ymax, tx, garnish, 1);
+}
+
+void DTW_and_Sounds_draw (DTW me, Sound y, Sound x, Graphics g, double xmin, double xmax,
+	double ymin, double ymax, int garnish)
+{
+	double xmin3, ymin3, dtw_part_x = 0.85, dtw_part_y = dtw_part_x;
+	Graphics_Viewport vp, ovp;
+
+	if (! DTW_and_Sounds_checkDomains (me, &y, &x, &xmin, &xmax, &ymin, &ymax)) return;
+
+	Graphics_setInner (g);
+	ovp = g -> outerViewport; // save for unsetInner
+
+	dtw_part_y = _DTW_and_Sounds_getPartY (g, dtw_part_x);
+
+	/* DTW */
+
+	vp = Graphics_insetViewport (g, 1 - dtw_part_x, 1, 1 - dtw_part_y, 1);
+	DTW_paintDistances_raw (me, g, xmin, xmax, ymin, ymax, 0, 0, 0, 0);
+	DTW_drawPath_raw (me, g, xmin, xmax, ymin, ymax, 0, 0);
+	drawBox(g);
+	Graphics_resetViewport (g, vp);
+
+	/* Sound y */
+
+	vp = Graphics_insetViewport (g, 0, 1 - dtw_part_x, 1 - dtw_part_y, 1);
+	Sound_draw_btlr (y, g, ymin, ymax, -1, 1, FROM_BOTTOM_TO_TOP, 0);
+	if (garnish) drawBox(g);
+	Graphics_resetViewport (g, vp);
+
+	/* Sound x */
+
+	vp = Graphics_insetViewport (g, 1 - dtw_part_x, 1, 0, 1 - dtw_part_y);
+	Sound_draw_btlr (x, g, xmin, xmax, -1, 1, FROM_LEFT_TO_RIGHT, 0);
+	if (garnish) drawBox(g);
+	Graphics_resetViewport (g, vp);
+
+
+	/* Set window coordinates so that margins will work, i.e. extend time domains */
+
+	xmin3 = xmax - (xmax - xmin) / dtw_part_x;
+	ymin3 = ymax - (ymax - ymin) / dtw_part_y;
+	Graphics_setWindow (g, xmin3, xmax, ymin3, ymax);
+
+	g -> outerViewport = ovp; // restore from _setInner
+	Graphics_unsetInner (g);
+
+	if (garnish)
+	{
+		Graphics_markLeft (g, ymin, 1, 1, 0, NULL);
+		Graphics_markLeft (g, ymax, 1, 1, 0, NULL);
+
+		Graphics_markBottom (g, xmin, 1, 1, 0, NULL);
+		Graphics_markBottom (g, xmax, 1, 1, 0, NULL);
+	}
+}
+
+void DTW_and_Sounds_drawWarpX (DTW me, Sound yy, Sound xx, Graphics g, double xmin, double xmax,
+	double ymin, double ymax, double tx, int garnish)
+{
+	Sound y = yy, x = xx;
+	double dtw_part_x = 0.85, dtw_part_y;
+	double ty = DTW_getYTime (me, tx);
+	int lineType = Graphics_inqLineType (g);
+
+	if (! DTW_and_Sounds_checkDomains (me, &y, &x, &xmin, &xmax, &ymin, &ymax )) return;
+
+	Graphics_setInner (g);
+	dtw_part_y = _DTW_and_Sounds_getPartY (g, dtw_part_x);
+
+	xmin = xmax - (xmax - xmin) / dtw_part_x;
+	ymin = ymax - (ymax - ymin) / dtw_part_y;
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+
+	ty = DTW_getYTime (me, tx);
+	Graphics_setLineType (g, Graphics_DOTTED);
+
+	Graphics_line (g, tx, ymin, tx, ty);
+	Graphics_line (g, tx, ty, xmin, ty);
+
+	Graphics_setLineType (g, lineType);
+
+	Graphics_unsetInner (g);
+
+	if (garnish)
+	{
+		Graphics_markBottom (g, tx, 1, 1, 0, NULL);
+		Graphics_markLeft (g, ty, 1, 1, 0, NULL);
+	}
+}
+
+/* nog aanpassen, dl = sqrt (dx^2 + dy^2) */
+void DTW_drawDistancesAlongPath (DTW me, Any g, double xmin, double xmax,
+	double dmin, double dmax, int garnish)
+{
+	long i, ixmax, ixmin;
+	double *d = NULL;
+
+	if (! (d = NUMdvector (1, my nx))) return;
+
+	if (xmin >= xmax)
+	{
+		xmin = my xmin; xmax = my xmax;
+	}
+	if(	! Matrix_getWindowSamplesX (me, xmin, xmax, &ixmin, &ixmax)) return;
+
+	i = 1;
+	while (i < my pathLength && my path[i].x < ixmin) i++;
+	ixmin = i;
+
+	while (i <= my pathLength && my path[i].x < ixmax) i++;
+	ixmax = i;
+
+	if ((d = NUMdvector (ixmin, ixmax)) == NULL) return;
+
+	for (i = ixmin; i <= ixmax; i++)
+	{
+		d[i] = my z[my path[i].y][i];
+	}
+
+	if (dmin >= dmax)
+	{
+		NUMdvector_extrema (d, ixmin, ixmax, &dmin, &dmax);
+	}
+	else
+	{
+		for (i = ixmin; i <= ixmax; i++)
+		{
+			if (d[i] > dmax)
+			{
+				d[i] = dmax;
+			}
+			else if (d[i] < dmin)
+			{
+				d[i] = dmin;
+			}
+		}
+	}
+
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, dmin, dmax);
+	Graphics_function (g, d, ixmin, ixmax, xmin, xmax);
+	Graphics_unsetInner (g);
+
+	if (garnish)
+	{
+		Graphics_drawInnerBox(g);
+		Graphics_textLeft (g, 1, L"distance");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+
+	NUMdvector_free (d, ixmin);
+}
+
 FORM (DTW_and_Sounds_draw, L"DTW & Sounds: Draw", L"DTW & Sounds: Draw...")
 	REAL (L"left Horizontal range", L"0.0")
 	REAL (L"right Horizontal range", L"0.0")
@@ -1414,6 +2371,132 @@ DIRECT (DTW_and_TextGrid_to_TextGrid)
 	NEW (DTW_and_TextGrid_to_TextGrid ((structDTW *)ONLY (classDTW), (structTextGrid *)ONLY (classTextGrid)))
 END
 /******************** Eigen ********************************************/
+
+static void Graphics_ticks (Graphics g, double min, double max, int hasNumber,
+	int hasTick, int hasDottedLine, int integers)
+{
+	double range = max - min, scale = 1, tick = min, dtick = 1;
+
+	if (range == 0)
+	{
+		return;
+	}
+	else if (range > 1)
+	{
+		while (range / scale > 10) scale *= 10;
+		range /= scale;
+	}
+	else
+	{
+		while (range / scale < 10) scale /= 10;
+		range *= scale;
+	}
+
+	if (range < 3) dtick = 0.5;
+	dtick *= scale;
+	tick = dtick * floor (min / dtick);
+	if (tick < min) tick += dtick;
+	while (tick <= max)
+	{
+		double num = integers ? floor (tick + 0.5) : tick;
+		Graphics_markBottom (g, num, hasNumber, hasTick, hasDottedLine, NULL);
+		tick += dtick;
+	}
+}
+
+void Eigen_drawEigenvalues (I, Graphics g, long first, long last, double ymin, double ymax,
+	int fractionOfTotal, int cumulative, double size_mm, const wchar_t *mark, int garnish)
+{
+	iam (Eigen);
+	double xmin = first, xmax = last, scale = 1, sumOfEigenvalues = 0;
+	long i;
+
+	if (first < 1) first = 1;
+	if (last < 1 || last > my numberOfEigenvalues) last = my numberOfEigenvalues;
+	if (last <= first )
+	{
+		first = 1; last = my numberOfEigenvalues;
+	}
+	xmin = first - 0.5; xmax = last + 0.5;
+	if (fractionOfTotal || cumulative)
+	{
+		sumOfEigenvalues = Eigen_getSumOfEigenvalues (me, 0, 0);
+		if (sumOfEigenvalues <= 0)  sumOfEigenvalues = 1;
+		scale = sumOfEigenvalues;
+	}
+	if (ymax <= ymin)
+	{
+		ymax = Eigen_getSumOfEigenvalues (me, (cumulative ? 1 : first), first) / scale;
+		ymin = Eigen_getSumOfEigenvalues (me, (cumulative ? 1 : last), last) / scale;
+		if (ymin > ymax)
+		{
+			double tmp = ymin; ymin = ymax; ymax = tmp;
+		}
+	}
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	for (i = first; i <= last; i++)
+	{
+		double accu = Eigen_getSumOfEigenvalues (me, (cumulative ? 1 : i), i);
+		Graphics_mark (g, i, accu / scale, size_mm, mark);
+	}
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+    	Graphics_drawInnerBox (g);
+		Graphics_textLeft (g, 1, fractionOfTotal ? (cumulative ? L"Cumulative fractional eigenvalue" : L"Fractional eigenvalue") :
+			(cumulative ? L"Cumulative eigenvalue" : L"Eigenvalue"));
+		Graphics_ticks (g, first, last, 1, 1, 0, 1);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+		Graphics_textBottom (g, 1, L"Index");
+	}
+}
+
+void Eigen_drawEigenvector (I, Graphics g, long ivec, long first, long last,
+	double ymin, double ymax, int weigh, double size_mm, const wchar_t *mark,
+	int connect, wchar_t **rowLabels, int garnish)
+{
+	iam (Eigen);
+	long i;
+	double xmin = first, xmax = last, *vec, w;
+
+	if (ivec < 1 || ivec > my numberOfEigenvalues) return;
+
+	if (last <= first )
+	{
+		first = 1; last = my dimension;
+		xmin = 0.5; xmax = last + 0.5;
+	}
+	vec = my eigenvectors[ivec];
+	w = weigh ? sqrt (my eigenvalues[ivec]) : 1;
+	/*
+		If ymax < ymin the eigenvector will automatically be drawn inverted.
+	*/
+
+	if (ymax == ymin)
+	{
+		NUMdvector_extrema (vec, first, last, &ymin, &ymax);
+		ymax *= w; ymin *= w;
+	}
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+
+	for (i = first; i <= last; i++)
+	{
+		Graphics_mark (g, i, w * vec[i], size_mm, mark);
+		if (connect && i > first) Graphics_line (g, i - 1, w * vec[i-1], i, w * vec[i]);
+	}
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+		Graphics_markBottom (g, first, 0, 1, 0, rowLabels ? rowLabels[first] : Melder_integer (first));
+		Graphics_markBottom (g, last, 0, 1, 0, rowLabels ? rowLabels[last] : Melder_integer (last));
+    	Graphics_drawInnerBox (g);
+    	if (ymin * ymax < 0) Graphics_markLeft (g, 0.0, 1, 1, 1, NULL);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+		if (rowLabels == NULL) Graphics_textBottom (g, 1, L"Element number");
+	}
+}
 
 DIRECT (Eigen_drawEigenvalues_scree)
 	Melder_warning1 (L"The command \"Draw eigenvalues (scree)...\" has been "
@@ -1684,6 +2767,52 @@ END
 
 /************************* FilterBank ***********************************/
 
+double FilterBank_getFrequencyInHertz (I, double f, int scale_from)
+{
+	(void) void_me; 
+	return scaleFrequency (f, scale_from, FilterBank_HERTZ);
+}
+
+double FilterBank_getFrequencyInBark (I, double f, int scale_from)
+{
+	(void) void_me; 
+	return scaleFrequency (f, scale_from, FilterBank_BARK);
+}
+
+double FilterBank_getFrequencyInMel (I, double f, int scale_from)
+{
+	(void) void_me; 
+	return scaleFrequency (f, scale_from, FilterBank_MEL);
+}
+
+/*void FilterBank_and_PCA_drawComponent (I, PCA thee, Graphics g, long component, double dblevel,
+	double frequencyOffset, double scale, double tmin, double tmax, double fmin, double fmax)
+{
+	iam (FilterBank);
+	FilterBank fcopy = NULL;
+	Matrix him = NULL;
+	long j;
+	
+	if (component < 1 || component > thy numberOfEigenvalues)
+	{
+		(void) Melder_error1 (L"Component too large.");
+	}
+	// Scale Intensity
+	fcopy = Data_copy (me);
+	if (fcopy == NULL)  return;
+	FilterBank_equalizeIntensities (fcopy, dblevel);
+	him = Eigen_and_Matrix_project (thee, fcopy, component);
+	if (him == NULL) goto end;
+	for (j = 1; j<= my nx; j++)
+	{
+		fcopy -> z[component][j] = frequencyOffset + scale * fcopy -> z[component][j];	
+	}
+	Matrix_drawRows (fcopy, g, tmin, tmax, component-0.5, component+0.5, fmin, fmax);
+end:
+	forget (fcopy);
+	forget (him);
+}*/
+
 FORM (FilterBank_drawFilters, L"FilterBank: Draw filters", 0)
 	REAL (L"left Time range (s)", L"0.0")
 	REAL (L"right Time range (s)", L"0.0")
@@ -1870,6 +2999,76 @@ END
 
 /*********** FormantFilter *******************************************/
 
+void FormantFilter_drawFilterFunctions (FormantFilter me, Graphics g, double bandwidth,
+	int toFreqScale, int fromFilter, int toFilter, double zmin, double zmax, 
+	int dbScale, double ymin, double ymax, int garnish)
+{
+	long i, j, n = 1000; 
+	double *a = NULL;
+		
+	if (! checkLimits (me, FilterBank_HERTZ, toFreqScale, & fromFilter, & toFilter, 
+		& zmin, & zmax, dbScale, & ymin, & ymax)) return;
+	
+	if (bandwidth <= 0)
+	{
+		Melder_warning1 (L"Bandwidth must be greater than zero.");
+	}
+		
+	a = NUMdvector (1, n);
+	if (a == NULL) return;
+		
+	Graphics_setInner (g);
+	Graphics_setWindow (g, zmin, zmax, ymin, ymax);
+	
+	for (j = fromFilter; j <= toFilter; j++)
+	{
+		double df = (zmax - zmin) / (n - 1);
+		double fc = my y1 + (j - 1) * my dy;
+		long ibegin, iend;
+		
+		for (i = 1; i <= n; i++)
+		{
+			double z, f = zmin + (i - 1) * df;
+			
+			z = scaleFrequency (f, toFreqScale, FilterBank_HERTZ);
+			if (z == NUMundefined)
+			{
+				a[i] = NUMundefined;
+			}
+			else
+			{
+				a[i] = NUMformantfilter_amplitude (fc, bandwidth, z);			
+				if (dbScale) a[i] = to_dB (a[i], 10, ymin);
+			}
+		}
+		
+		setDrawingLimits (a, n, ymin, ymax,	&ibegin, &iend);
+		
+		if (ibegin <= iend)
+		{
+			double fmin = zmin + (ibegin - 1) * df;
+			double fmax = zmax - (n - iend) * df;
+			Graphics_function (g, a, ibegin, iend, fmin, fmax);
+		}
+	}
+		
+			
+	Graphics_unsetInner (g);
+	
+	if (garnish)
+	{
+		double distance = dbScale ? 10 : 1;
+		const wchar_t *ytext = dbScale ? L"Amplitude (dB)" : L"Amplitude";
+		Graphics_drawInnerBox (g);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+    	Graphics_marksLeftEvery (g, 1, distance, 1, 1, 0);
+    	Graphics_textLeft (g, 1, ytext);
+    	Graphics_textBottom (g, 1, GetFreqScaleText (toFreqScale));
+	}
+	
+	NUMdvector_free (a, 1);
+}
+
 DIRECT (FormantFilter_help)
 	Melder_help (L"FormantFilter");
 END
@@ -1915,6 +3114,35 @@ END
 
 /****************** FormantGrid  *********************************/
 
+void RealTier_draw (I, Graphics g, double tmin, double tmax, double fmin, double fmax,
+	int garnish, const wchar_t *method, const wchar_t *quantity);
+
+void FormantGrid_draw (FormantGrid me, Graphics g, double xmin, double xmax, double ymin, double ymax, bool bandwidths, bool garnish, const wchar_t *method)
+{
+	Ordered tiers = bandwidths ? my bandwidths : my formants;
+	
+	if (xmax <= xmin)
+	{
+		xmin = my xmin; xmax = my xmax;
+	}
+	if (ymax <= ymin)
+	{
+		ymin = 0; ymax = bandwidths ? 1000: 8000;
+	}
+	for (long iformant = 1; iformant <= my formants -> size; iformant++)
+	{
+		wchar_t *quantity = NULL;
+		bool garnish2 = false;
+		RealTier tier = (structRealTier *)tiers -> item[iformant];
+		if (iformant == my formants -> size)
+		{
+			quantity = L"Frequency (Hz)";
+			if (garnish) garnish2 = true;
+		} 
+		RealTier_draw (tier, g, xmin, xmax, ymin, ymax, garnish2, method, quantity);
+	}
+}
+
 FORM (old_FormantGrid_draw, L"FormantGrid: Draw", 0)
 	REAL (L"left Time range (s)", L"0.0")
 	REAL (L"right Time range (s)", L"0.0 (=all)")
@@ -1951,6 +3179,183 @@ DO_ALTERNATIVE (old_FormantGrid_draw)
 END
 
 /****************** FunctionTerms  *********************************/
+
+static void NUMdcvector_extrema_re (dcomplex v[], long lo, long hi,
+	double *min, double *max)
+{
+	long i;
+	*min = *max = v[lo].re;
+	for (i=lo+1; i <= hi; i++)
+	{
+		if (v[i].re < *min) *min = v[i].re;
+		else if (v[i].re > *max) *max = v[i].re;
+	}
+}
+
+static void NUMdcvector_extrema_im (dcomplex v[], long lo, long hi,
+	double *min, double *max)
+{
+	long i;
+	*min = *max = v[lo].im;
+	for (i=lo+1; i <= hi; i++)
+	{
+		if (v[i].im < *min) *min = v[i].im;
+		else if (v[i].im > *max) *max = v[i].im;
+	}
+}
+
+static void Graphics_polyline_clipTopBottom (Graphics g, double *x, double *y,
+	long numberOfPoints, double ymin, double ymax)
+{
+	double xb, xe, yb, ye, x1, x2, y1, y2;
+	long i, index = 0;
+	
+	if (numberOfPoints < 2) return;
+	
+	xb = x1 = x[0]; yb = y1 = y[0];
+	for (i = 1; i < numberOfPoints; i++)
+	{
+		x2 = x[i]; y2 = y[i];
+		
+		if (! ((y1 > ymax && y2 > ymax) || (y1 < ymin && y2 < ymin)))
+		{
+			double dxy = (x2 - x1) / (y1 - y2);
+			double xcros_max = x1 - (ymax - y1) * dxy;
+			double xcros_min = x1 - (ymin - y1) * dxy;
+			if (y1 > ymax && y2 < ymax)
+			{
+				/*
+					Line enters from above: start new segment.
+					Save start values.
+				*/
+				xb = x[i-1]; yb = y[i-1]; index = i - 1;
+				y[i-1] = ymax; x[i-1] = xcros_max;
+			}
+			if (y1 > ymin && y2 < ymin)
+			{
+				/*
+					Line leaves at bottom: draw segment.
+					Save end values and restore them
+					Origin of arrays for Graphics_polyline are at element 0 !!!
+				*/
+				xe = x[i]; ye = y[i];
+				y[i] = ymin; x[i] = xcros_min;
+				
+				Graphics_polyline (g, i - index + 1, x + index, y + index);
+				
+				x[index] = xb; y[index] = yb; x[i] = xe; y[i] = ye;
+			}
+			if (y1 < ymin && y2 > ymin)
+			{
+				/*
+					Line enters from below: start new segment.
+					Save start values
+				*/
+				xb = x[i-1]; yb = y[i-1]; index = i - 1;
+				y[i-1] = ymin; x[i-1] = xcros_min;
+			}
+			if (y1 < ymax && y2 > ymax)
+			{
+				/*
+					Line leaves at top: draw segment.
+					Save and restore
+				*/
+				xe = x[i]; ye = y[i];
+				y[i] = ymax; x[i] =  xcros_max;
+
+				Graphics_polyline (g, i - index + 1, x + index, y + index);
+				
+				x[index] = xb; y[index] = yb; x[i] = xe; y[i] = ye;
+			}
+		}
+		else index = i;
+		y1 = y2; x1 = x2;
+	}
+	if (index < numberOfPoints - 1)
+	{
+		Graphics_polyline (g, numberOfPoints - index, x + index, y + index);
+		x[index] = xb; y[index] = yb;
+	}
+}
+
+/*
+	Extrapolate only for functions whose domain is extendable and that can be extrapolated.
+	Polynomials can be extrapolated.
+	LegendreSeries and ChebyshevSeries cannot be extrapolated.
+*/
+void FunctionTerms_draw (I, Graphics g, double xmin, double xmax, double ymin,
+	double ymax, int extrapolate, int garnish)
+{
+	iam (FunctionTerms);
+	double dx, fxmin, fxmax, x1, x2;
+	double *x = NULL, *y = NULL;
+	long i, numberOfPoints = 1000;
+		
+	if (((y = NUMdvector (1, numberOfPoints +1)) == NULL) ||
+		((x = NUMdvector (1, numberOfPoints +1)) == NULL)) goto end;
+
+	if (xmax <= xmin)
+	{
+		xmin = my xmin; xmax = my xmax;
+	}
+	
+	fxmin = xmin; fxmax = xmax;
+	if (! extrapolate)
+	{
+		if (xmax < my xmin || xmin > my xmax) return;
+		if (xmin < my xmin) fxmin = my xmin;
+		if (xmax > my xmax) fxmax = my xmax;
+	}
+	
+	if (ymax <= ymin)
+	{
+		FunctionTerms_getExtrema (me, fxmin, fxmax, &x1, &ymin, &x2, &ymax);
+	}
+	
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+
+	/*
+		Draw only the parts within [fxmin, fxmax] X [ymin, ymax].
+	*/
+	
+	dx = (fxmax - fxmin) / (numberOfPoints - 1);	
+	for (i=1; i <= numberOfPoints; i++)
+	{
+		x[i] = fxmin + (i - 1.0) * dx;
+		y[i] = FunctionTerms_evaluate (me, x[i]);
+	}
+	Graphics_polyline_clipTopBottom (g, x+1, y+1, numberOfPoints, ymin, ymax);	
+	Graphics_unsetInner (g);
+	
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+end:
+	NUMdvector_free (y, 1); NUMdvector_free (x, 1);
+}
+
+void FunctionTerms_drawBasisFunction (I, Graphics g, long index, double xmin,
+	double xmax, double ymin, double ymax, int extrapolate, int garnish)
+{
+	iam (FunctionTerms);
+	FunctionTerms thee;
+	long i;
+	
+	if (index < 1 || index > my numberOfCoefficients) return;
+	if ((thee = (structFunctionTerms *)Data_copy (me)) == NULL) return;
+	
+	for (i=1; i < index; i++) thy coefficients[i] = 0;
+	for (i=index+1; i <= my numberOfCoefficients; i++) thy coefficients[i] = 0;
+	thy coefficients[index] = 1;
+	
+	FunctionTerms_draw (thee, g, xmin, xmax, ymin, ymax, extrapolate, garnish);
+	
+	forget (thee);
+}
 
 FORM (FunctionTerms_draw, L"FunctionTerms: Draw", 0)
 	REAL (L"Xmin", L"0.0")
@@ -2227,6 +3632,181 @@ END
 
 /******************* Matrix **************************************************/
 
+/* Draw a Matrix as small squares whose area correspond to the matrix element */
+/* The square is filled with black if the weights are negative					*/
+void Matrix_drawAsSquares (I, Any g, double xmin, double xmax, double ymin, double ymax, int garnish)
+{
+    iam (Matrix);
+	Graphics_Colour colour = Graphics_inqColour (g);
+    long i, j, ixmin, ixmax, iymin, iymax, nx, ny;
+    double dx, dy, min, max, wAbsMax;
+
+	if (xmax <= xmin) { xmin = my xmin; xmax = my xmax; }
+	nx = Matrix_getWindowSamplesX (me, xmin, xmax, &ixmin, &ixmax);
+	if (ymax <= ymin) { ymin = my ymin; ymax = my ymax; }
+	ny = Matrix_getWindowSamplesY (me, ymin, ymax, &iymin, &iymax);
+	max = nx > ny ? nx : ny;
+	dx = (xmax - xmin) / max; dy = (ymax - ymin) / max;
+    Graphics_setInner (g);
+    Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+    Matrix_getWindowExtrema (me, ixmin, ixmax, iymin, iymax, & min, & max);
+    wAbsMax = fabs (max) > fabs (min) ? fabs (max) : fabs (min);
+    for (i = iymin; i <= iymax; i++)
+    {
+		double y = Matrix_rowToY (me, i);
+		for (j = ixmin; j <= ixmax; j++)
+		{
+			double x = Matrix_columnToX (me, j);
+	    	double d = 0.95 * sqrt (fabs (my z[i][j]) / wAbsMax);
+	    	double x1WC = x - d * dx / 2, x2WC = x + d * dx / 2;
+	    	double y1WC = y - d * dy / 2, y2WC = y + d * dy / 2;
+			if (my z[i][j] > 0) Graphics_setColour (g, Graphics_WHITE);
+	    	Graphics_fillRectangle (g, x1WC, x2WC, y1WC, y2WC);
+	    	Graphics_setColour (g, colour);
+	    	Graphics_rectangle (g, x1WC, x2WC , y1WC, y2WC);
+		}
+    }
+    Graphics_setGrey (g, 0.0);
+    Graphics_unsetInner (g);
+    if (garnish)
+    {
+		Graphics_drawInnerBox (g);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+		if (ymin * ymax < 0.0) Graphics_markLeft (g, 0.0, 1, 1, 1, NULL);
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		if (xmin * xmax < 0.0) Graphics_markBottom (g, 0.0, 1, 1, 1, NULL);
+    }
+}
+
+void Matrix_drawDistribution (I, Graphics g, double xmin, double xmax,
+	double ymin, double ymax, double minimum, double maximum, long nBins,
+	double freqMin, double freqMax, int cumulative, int garnish)
+{
+	iam (Matrix);
+	long i, j, ixmin, ixmax, iymin, iymax, nxy = 0, *freq = NULL;
+	double binWidth, fi = 0;
+
+	if (nBins <= 0) return;
+	if (xmax <= xmin)
+	{
+		xmin = my xmin; xmax = my xmax;
+	}
+	if (ymax <= ymin)
+	{
+		ymin = my ymin; ymax = my ymax;
+	}
+	if (Matrix_getWindowSamplesX (me, xmin, xmax, & ixmin, & ixmax) == 0 ||
+		Matrix_getWindowSamplesY (me, ymin, ymax, & iymin, & iymax) == 0)
+			return;
+	if (maximum <= minimum) Matrix_getWindowExtrema (me, ixmin, ixmax, iymin,
+		iymax, & minimum, & maximum);
+	if (maximum <= minimum)
+	{
+		minimum -= 1.0; maximum += 1.0;
+	}
+
+	/*
+		Count the numbers per bin and the total
+	*/
+
+	if (nBins < 1) nBins = 10;
+	if ((freq = NUMlvector (1, nBins)) == NULL) return;
+	binWidth = (maximum - minimum) / nBins;
+	for (i = iymin; i <= iymax; i++)
+	{
+		for (j = ixmin; j <= ixmax; j++)
+		{
+			long bin = 1 + floor ((my z[i][j] - minimum) / binWidth);
+			if (bin <= nBins && bin > 0)
+			{
+				freq[bin]++; nxy ++;
+			}
+		}
+	}
+
+	if (freqMax <= freqMin)
+	{
+		if (cumulative)
+		{
+			freqMin = 0; freqMax = 1.0;
+		}
+		else
+		{
+			NUMlvector_extrema (freq, 1, nBins, & freqMin, & freqMax);
+			if (freqMax <= freqMin)
+			{
+				freqMin = freqMin > 1 ? freqMin-1: 0;
+				freqMax += 1.0;
+			}
+		}
+	}
+
+	Graphics_setInner (g);
+	Graphics_setWindow (g, minimum, maximum, freqMin, freqMax);
+
+	for (i = 1; i <= nBins; i++)
+	{
+		double ftmp = freq[i];
+		fi = cumulative ? fi + freq[i] / nxy : freq[i];
+		ftmp = fi;
+		if (ftmp > freqMax) ftmp = freqMax;
+		if (ftmp > freqMin) Graphics_rectangle (g, minimum + (i-1) *
+			binWidth, minimum + i * binWidth, freqMin, ftmp);
+	}
+    Graphics_unsetInner (g);
+    if (garnish)
+    {
+    	Graphics_drawInnerBox (g);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+    	if (! cumulative) Graphics_textLeft (g, 1, L"Number/bin");
+    }
+	NUMlvector_free (freq, 1);
+}
+
+void Matrix_drawSliceY (I, Graphics g, double x, double ymin, double ymax,
+	double min, double max)
+{
+	iam (Matrix);
+	long i, ix, iymin, iymax, ny;
+	double *y;
+
+	if (x < my xmin || x > my xmax) return;
+	ix = Matrix_xToNearestColumn (me, x);
+
+	if (ymax <= ymin)
+	{
+		ymin = my ymin;
+		ymax = my ymax;
+	}
+
+	ny = Matrix_getWindowSamplesY (me, ymin, ymax, &iymin, &iymax);
+	if (ny < 1) return;
+
+	if (max <= min)
+	{
+		Matrix_getWindowExtrema (me, ix, ix, iymin, iymax, &min, &max);
+	}
+	if (max <= min)
+	{
+		min -= 0.5; max += 0.5;
+	}
+	y = NUMdvector (iymin, iymax);
+	if (y == NULL) return;
+
+	Graphics_setWindow (g, ymin, ymax, min, max);
+	Graphics_setInner (g);
+
+	for (i = iymin; i <= iymax; i++)
+	{
+		y[i] = my z[i][ix];
+	}
+	Graphics_function (g, y, iymin, iymax, Matrix_rowToY (me, iymin),
+		 Matrix_rowToY (me, iymax));
+	Graphics_unsetInner (g);
+	NUMdvector_free (y, 1);
+}
+
 FORM (Matrix_drawAsSquares,L"Matrix: Draw as squares", L"Matrix: Draw as squares...")
     REAL (L"left Horizontal range", L"0.0")
     REAL (L"right Horizontal range", L"0.0")
@@ -2436,6 +4016,112 @@ END
 
 /**************** MelFilter *******************************************/
 
+void MelFilter_drawFilterFunctions (MelFilter me, Graphics g,
+	int toFreqScale, int fromFilter, int toFilter, double zmin, double zmax, 
+	int dbScale, double ymin, double ymax, int garnish)
+{
+	long i, j, n = 1000; 
+	double *a = NULL;
+
+	if (! checkLimits (me, FilterBank_MEL, toFreqScale, & fromFilter, & toFilter, 
+		& zmin, & zmax, dbScale, & ymin, & ymax)) return;
+		
+	a = NUMdvector (1, n);
+	if (a == NULL) return;
+	
+	Graphics_setInner (g);
+	Graphics_setWindow (g, zmin, zmax, ymin, ymax);
+
+	for (j = fromFilter; j <= toFilter; j++)
+	{
+		double df = (zmax - zmin) / (n - 1); 
+		double fc_mel = my y1 + (j - 1) * my dy;
+		double fc_hz = MELTOHZ (fc_mel);
+		double fl_hz = MELTOHZ (fc_mel - my dy);
+		double fh_hz = MELTOHZ (fc_mel + my dy);
+		long ibegin, iend;
+		
+		for (i = 1; i <= n; i++)
+		{
+			double z, f = zmin + (i - 1) * df;
+			
+			/* Filterfunction: triangular on a linear frequency scale
+				AND a linear amplitude scale.
+			*/
+			z = scaleFrequency (f, toFreqScale, FilterBank_HERTZ);
+			if (z == NUMundefined)
+			{
+				a[i] = NUMundefined;
+			}
+			else
+			{
+				a[i] = NUMtriangularfilter_amplitude (fl_hz, fc_hz, fh_hz, z);
+				if (dbScale) a[i] = to_dB (a[i], 10, ymin);
+			}
+			
+		}
+				
+		setDrawingLimits (a, n, ymin, ymax,	&ibegin, &iend);
+		
+		if (ibegin <= iend)
+		{
+			double fmin = zmin + (ibegin - 1) * df;
+			double fmax = zmax - (n - iend) * df;
+			Graphics_function (g, a, ibegin, iend, fmin, fmax);
+		}
+	}
+
+	Graphics_unsetInner (g);
+	
+	if (garnish)
+	{
+		double distance = dbScale ? 10 : 1;
+		const wchar_t *ytext = dbScale ? L"Amplitude (dB)" : L"Amplitude";
+		Graphics_drawInnerBox (g);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+    	Graphics_marksLeftEvery (g, 1, distance, 1, 1, 0);
+    	Graphics_textLeft (g, 1, ytext);
+    	Graphics_textBottom (g, 1, GetFreqScaleText (toFreqScale));
+	}
+	
+	NUMdvector_free (a, 1);
+}
+
+/*
+void MelFilter_drawFilters (MelFilter me, Graphics g, long from, long to,
+	double fmin, double fmax, double ymin, double ymax, int dbscale, 
+	int garnish)
+{
+	long i;
+	double df = my dy;
+
+	if (fmin >= fmax)
+	{
+		fmin = my ymin;
+		fmax = my ymax;
+	}
+	if (from >= to)
+	{
+		from = 1;
+		to = my ny;
+	}
+	Graphics_setWindow (g, my ymin, my ymax, 0, 1);
+	Graphics_setInner (g);	
+	for (i = from; i <= to; i++)
+	{
+		double fc = my y1 + (i - 1) * df;
+		double fc_hz = MELTOHZ (fc);
+		double fl_hz = MELTOHZ (fc - df);
+		double fh_hz = MELTOHZ (fc + df);
+		*//*
+			Draw triangle
+		*//*
+		Graphics_line (g, fl_hz, 0, fc_hz, 1);
+		Graphics_line (g, fc_hz, 1, fh_hz, 0); 
+	}
+	Graphics_unsetInner (g);
+}*/
+
 DIRECT (MelFilter_help)
 	Melder_help (L"MelFilter");
 END
@@ -2531,6 +4217,19 @@ END
 DIRECT (MSpline_help) Melder_help (L"MSpline"); END
 
 /********************** Pattern *******************************************/
+
+void Pattern_draw (I, Graphics g, long pattern, double xmin, double xmax,
+	double ymin, double ymax, int garnish)
+{
+	iam (Pattern);
+	Matrix_drawRows (me, g, xmin, xmax, pattern - 0.5, pattern + 0.5, ymin, ymax);
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);		
+	}
+}
 
 DIRECT (Pattern_and_Categories_to_Discriminant)
 	Pattern p = (structPattern *)ONLY (classPattern);
@@ -2963,6 +4662,65 @@ DO
 	Polygon_scale ((structPolygon *)ONLY(classPolygon), GET_REAL (L"X"), GET_REAL (L"Y"));
 END
 
+void SimpleString_draw (SimpleString me, Any g, double xWC, double yWC);
+
+void OrderedOfString_drawItem (I, Any g, long index, double xWC, double yWC)
+{
+	iam (OrderedOfString);
+    if (index > 0 && index <= my size) 
+	{
+		SimpleString_draw ((structSimpleString *)my item[index], g, xWC, yWC);
+	}
+}
+
+/* reverse axis when min > max */
+void Polygon_Categories_draw (I, thou, Any graphics, double xmin, double xmax,
+	double ymin, double ymax, int garnish)
+{
+    iam (Polygon); thouart (Categories);
+    double min, max, tmp;
+
+    if (my numberOfPoints != thy size) return;
+
+    if (xmax == xmin)
+    {
+		NUMdvector_extrema (my x, 1, my numberOfPoints, & min, & max);
+		tmp = max - min == 0 ? 0.5 : 0.0;
+		xmin = min - tmp; xmax = max + tmp;
+    }
+
+    if (ymax == ymin)
+    {
+		NUMdvector_extrema (my y, 1, my numberOfPoints, & min, & max);
+		tmp = max - min == 0 ? 0.5 : 0.0;
+		ymin = min - tmp; ymax = max + tmp;
+    }
+
+    Graphics_setInner (graphics);
+    Graphics_setWindow (graphics, xmin, xmax, ymin, ymax);
+    Graphics_setTextAlignment (graphics, Graphics_CENTRE, Graphics_HALF);
+
+    for (long i = 1; i <= my numberOfPoints; i++)
+	{
+		OrderedOfString_drawItem (thee, graphics, i, my x[i], my y[i]);
+	}
+    Graphics_unsetInner (graphics);
+    if (garnish)
+    {
+		Graphics_drawInnerBox (graphics);
+		Graphics_marksLeft (graphics, 2, 1, 1, 0);
+		if (ymin * ymax < 0.0)
+		{
+			Graphics_markLeft (graphics, 0.0, 1, 1, 1, NULL);
+		}
+		Graphics_marksBottom (graphics, 2, 1, 1, 0);
+		if (xmin * xmax < 0.0)
+		{
+			Graphics_markBottom (graphics, 0.0, 1, 1, 1, NULL);
+		}
+	}
+}
+
 FORM (Polygon_Categories_draw, L"Polygon & Categories: Draw", 0)
     REAL (L"left Horizontal range", L"0.0")
     REAL (L"right Horizontal range", L"0.0")
@@ -3095,6 +4853,58 @@ DO
 END
 
 /********************* Roots ******************************/
+
+void Roots_draw (Roots me, Graphics g, double rmin, double rmax, double imin,
+	double imax, wchar_t *symbol, int fontSize, int garnish)
+{
+	long i; int oldFontSize = Graphics_inqFontSize (g);
+	double eps = 1e-6, denum;
+	
+	if (rmax <= rmin)
+	{
+		NUMdcvector_extrema_re (my v, 1, my max, &rmin, &rmax);
+	}
+	denum = fabs (rmax) > fabs (rmin) ? fabs(rmax) : fabs (rmin);
+	if (denum == 0) denum = 1;
+	if (fabs((rmax - rmin) / denum) < eps)
+	{
+		rmin -= 1; rmax += 1; 
+	}
+	if (imax <= imin)
+	{
+		NUMdcvector_extrema_im (my v, 1, my max, &imin, &imax);
+	}
+	denum = fabs (imax) > fabs (imin) ? fabs(imax) : fabs (imin);
+	if (denum == 0) denum = 1;
+	if (fabs((imax - imin) / denum) < eps)
+	{
+		imin -= 1; imax += 1;
+	}
+	Graphics_setInner (g);
+	Graphics_setWindow (g, rmin, rmax, imin, imax);
+	Graphics_setFontSize (g, fontSize);
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	for (i=1; i <= my max; i++)
+	{
+		double re = my v[i].re, im = my v[i].im;
+		if (re >= rmin && re <= rmax && im >= imin && im <= imax)
+		{
+			Graphics_text (g, re, im, symbol);
+		}
+	}
+	Graphics_setFontSize (g, oldFontSize);
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+    	Graphics_drawInnerBox (g);
+ 		if (rmin * rmax < 0) Graphics_markLeft (g, 0, 1, 1, 1, L"0");
+ 		if (imin * imax < 0) Graphics_markBottom (g, 0, 1, 1, 1, L"0");
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+ 		Graphics_textLeft (g, 1, L"Imaginary part");
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+ 		Graphics_textBottom (g, 1, L"Real part");
+	}
+}
 
 DIRECT (Roots_help) Melder_help (L"Roots"); END
 
@@ -3529,6 +5339,62 @@ DO
 	}
 END
 
+/*void SPINET_spectralRepresentation (SPINET me, Graphics g, double fromTime, double toTime,
+	double fromErb, double toErb, double minimum, double maximum, int enhanced,
+	int garnish)
+{
+	long i, j; double **z = enhanced ? my s : my y;
+	Matrix thee = Matrix_create (my xmin, my xmax, my nx, my dx, my x1,
+		my ymin, my ymax, my ny, my dy, my y1);
+	if (! thee) return;
+	for (j=1; j <= my ny; j++) for (i=1; i <= my nx; i++)
+		thy z[j][i] = z[j][i]; // > 0 ? 10 * log10 (z[i][j] / 2e-5) : 0;
+	Matrix_paintCells (thee, g, fromTime, toTime, fromErb, toErb, minimum, maximum);
+	if (garnish)
+	{
+		Graphics_drawInnerBox(g);
+		Graphics_textBottom (g, 1, L"Time (s)");
+		Graphics_marksBottom( g, 2, 1, 1, 0);
+		Graphics_textLeft (g, 1, L"Frequency (ERB)");
+		Graphics_marksLeft( g, 2, 1, 1, 0);
+		Graphics_textTop (g, 0, enhanced ? L"Cooperative interaction output" : 
+			L"Gammatone filterbank output");
+	}
+	forget (thee);
+}
+
+void SPINET_drawSpectrum (SPINET me, Graphics g, double time, double fromErb, double toErb,
+	double minimum, double maximum, int enhanced, int garnish)
+{
+	long i, ifmin, ifmax, icol = Sampled2_xToColumn (me, time);
+	double **z = enhanced ? my s : my y; double *spec;
+	if (icol < 1 || icol > my nx) return;
+	if (toErb <= fromErb) { fromErb = my ymin; toErb = my ymax; }
+	if (! Sampled2_getWindowSamplesY (me, fromErb, toErb, &ifmin, &ifmax) ||
+		! (spec = NUMdvector (1, my ny))) return;
+		
+	for (i=1; i <= my ny; i++) spec[i] = z[i][icol];
+	if (maximum <= minimum) NUMdvector_extrema (spec, ifmin, ifmax, &minimum, &maximum);
+	if (maximum <= minimum) { minimum -= 1; maximum += 1; }
+	for (i=ifmin; i <= ifmax; i++)
+		if (spec[i] > maximum) spec[i] = maximum;
+		else if (spec[i] < minimum) spec[i] = minimum;
+	Graphics_setInner (g);
+	Graphics_setWindow (g, fromErb, toErb, minimum, maximum);
+	Graphics_function (g, spec, ifmin, ifmax,
+		Sampled2_rowToY (me, ifmin), Sampled2_rowToY (me, ifmax));
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+		Graphics_drawInnerBox(g);
+		Graphics_textBottom (g, 1, L"Frequency (ERB)");
+		Graphics_marksBottom( g, 2, 1, 1, 0);
+		Graphics_textLeft (g, 1, L"strength");
+		Graphics_marksLeft( g, 2, 1, 1, 0);
+	}
+	NUMdvector_free (spec, 1);
+}*/
+
 FORM (Sound_to_Pitch_SPINET, L"Sound: To SPINET", L"Sound: To SPINET...")
 	POSITIVE (L"Time step (s)", L"0.005")
 	POSITIVE (L"Window length (s)", L"0.040")
@@ -3711,6 +5577,40 @@ END
 
 /**************** Spectrum *******************************************/
 
+void Spectrum_drawPhases (Spectrum me, Graphics g, double fmin, double fmax,
+	double phase_min, double phase_max, int unwrap, int garnish)
+{
+	Matrix thee; long i;
+	int reverse_sign = my z[1][1] < 0;
+
+	if (unwrap)
+	{
+		thee = Spectrum_unwrap (me);
+		if (thee == NULL)
+		{
+		    Melder_warning1 (L"Spectrum_drawPhases: Spectrum has not been unwrapped.");
+		    return;
+		}
+	}
+	else
+	{
+		if ((thee = Matrix_create (my xmin, my xmax, my nx, my dx, my x1,
+			1, 2, 2, 1, 1)) == NULL) return;
+		for (i = 1; i <= my nx; i ++)
+		{
+			thy z[2][i] = PPVPHA (my z[1][i], my z[2][i], reverse_sign);
+		}
+	}
+	
+	Matrix_drawRows (thee, g, fmin, fmax, 1.9, 2.1, phase_min, phase_max);
+	if (garnish)
+	{
+	
+	}	
+
+	forget (thee);
+}
+
 FORM (Spectrum_drawPhases, L"Spectrum: Draw phases", L"Spectrum: Draw phases...")
 	REAL (L"From frequency (Hz)", L"0.0")
 	REAL (L"To frequency (Hz)", L"0.0")
@@ -3753,6 +5653,71 @@ END
 
 /************* Spline *************************************************/
 
+void Spline_drawKnots (I, Graphics g, double xmin, double xmax, double ymin, 
+	double ymax, int garnish)
+{
+	iam (Spline);
+	long i, order = Spline_getOrder (me);
+	double x1, x2;
+	wchar_t ts[20] = L"";
+	
+	if (xmax <= xmin)
+	{
+		xmin = my xmin; xmax = my xmax;
+	}
+	
+	if (xmax < my xmin || xmin > my xmax) return;
+	
+	if (ymax <= ymin)
+	{
+		FunctionTerms_getExtrema (me, xmin, xmax, &x1, &ymin, &x2, &ymax);
+	}
+	
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	
+	if (my knots[1] >= xmin && my knots[1] <= xmax)
+	{
+		if (garnish)
+		{
+    		if (order == 1) swprintf (ts, 20, L"t__1_");
+			else if (order == 2) swprintf (ts, 20, L"{t__1_, t__2_}");
+			else swprintf (ts, 20, L"{t__1_..t__%ld_}", order);
+		}
+		Graphics_markTop (g, my knots[1], 0, 1, 1, ts);
+	}
+	for (i=2; i <= my numberOfKnots - 1; i++)
+	{
+		if (my knots[i] >= xmin && my knots[i] <= xmax)
+		{
+			if (garnish) swprintf (ts, 20, L"t__%ld_", i + order - 1);
+			Graphics_markTop (g, my knots[i], 0, 1, 1, ts); 
+		}
+	}
+	if (my knots[my numberOfKnots] >= xmin &&
+		my knots[my numberOfKnots] <= xmax)
+	{
+		if (garnish)
+		{
+			long numberOfKnots = my numberOfKnots + 2 * (order - 1);
+    		if (order == 1)
+			{
+				swprintf (ts, 20, L"t__%ld_", numberOfKnots);
+			}
+			else if (order == 2)
+			{
+				swprintf (ts, 20, L"{t__%d_, t__%ld_}", numberOfKnots - 1,
+					numberOfKnots);
+			}
+			else
+			{
+				swprintf (ts, 20, L"{t__%d_..t__%ld_}", numberOfKnots - order + 1,
+					numberOfKnots);
+			}
+		}
+		Graphics_markTop (g, my knots[my numberOfKnots], 0, 1, 1, ts);
+	}
+}
+
 FORM (Spline_drawKnots, L"Spline: Draw knots", 0)
 	REAL (L"Xmin", L"0.0")
 	REAL (L"Xmax", L"0.0")
@@ -3783,6 +5748,160 @@ DO
 END
 
 /************ SSCP ***************************************************/
+
+static void _SSCP_drawTwoDimensionalEllipse (SSCP me, Graphics g, double scale,
+	int fontSize)
+{
+	double a, angle, b, cs, sn, twoPi = 2 * NUMpi;
+	long nsteps = 100;
+	double angle_inc = twoPi / nsteps;
+	double *x = NULL, *y = NULL; long i;
+	wchar_t *name;
+
+	x = NUMdvector (0, nsteps);
+	if (x == NULL) return;
+	y = NUMdvector (0, nsteps);
+	if (y == NULL) goto end;
+
+	/*
+		Get principal axes and orientation for the ellipse by performing the
+		eigen decomposition of a symmetric 2-by-2 matrix.
+		Principal axes are a and b with eigenvector/orientation (cs, sn).
+	*/
+
+	NUMeigencmp22 (my data[1][1], my data[1][2], my data[2][2], &a, &b, &cs, &sn);
+
+	/*
+		1. Take sqrt to get units of 'std_dev'
+	*/
+
+	a = scale * sqrt (a) / 2; b = scale * sqrt (b) / 2;
+	x[nsteps] = x[0] = my centroid[1] + cs * a;
+	y[nsteps] = y[0] = my centroid[2] + sn * a;
+	for (angle = 0, i = 1; i < nsteps; i++, angle += angle_inc)
+	{
+		double xc = a * cos (angle);
+		double yc = b * sin (angle);
+		double xt = xc * cs - yc * sn;
+		y[i] = my centroid[2] + xc * sn + yc * cs;
+		x[i] = my centroid[1] + xt;
+	}
+	Graphics_polyline (g, nsteps + 1, x, y);
+	if (fontSize > 0 && (name = Thing_getName (me)))
+	{
+		int oldFontSize = Graphics_inqFontSize (g);
+		Graphics_setFontSize (g, fontSize);
+		Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+		Graphics_text (g, my centroid[1], my centroid[2], name);
+		Graphics_setFontSize (g, oldFontSize);
+	}
+end:
+	NUMdvector_free (x, 0);
+	NUMdvector_free (y, 0);
+}
+
+/*
+void SSCP_and_TableOfReal_drawMahalanobisDistances (I, thou, Graphics g, long rowb, long rowe, double ymin,
+	double ymax, double chiSqFraction, int garnish)
+{
+}*/
+
+void SSCP_drawConcentrationEllipse (SSCP me, Graphics g, double scale,
+	int confidence, long d1, long d2, double xmin, double xmax,
+	double ymin, double ymax, int garnish)
+{
+	SSCP thee;
+	double xmn, xmx, ymn, ymx;
+	long p = my numberOfColumns;
+
+	if (d1 < 1 || d1 > p || d2 < 1 || d2 > p || d1 == d2) return;
+
+	if (! (thee = SSCP_extractTwoDimensions (me, d1, d2))) return;
+
+	SSCP_getEllipseBoundingBoxCoordinates (thee, scale, confidence, &xmn, &xmx, &ymn, &ymx);
+
+	if (xmax == xmin)
+	{
+		xmin = xmn; xmax = xmx;
+	}
+
+	if (ymax == ymin)
+	{
+		ymin = ymn; ymax = ymx;
+	}
+
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_setInner (g);
+
+	scale = SSCP_ellipseScalefactor (thee, scale, confidence);
+	if (scale < 0) return;
+	_SSCP_drawTwoDimensionalEllipse (thee, g, scale, 0);
+
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+	}
+	forget (thee);
+}
+
+void SSCPs_drawConcentrationEllipses (SSCPs me, Graphics g, double scale,
+	int confidence, wchar_t *label, long d1, long d2, double xmin, double xmax,
+	double ymin, double ymax, int fontSize, int garnish)
+{
+	SSCPs thee;
+	SSCP t = (structSSCP *)my item[1];
+	double xmn, xmx, ymn, ymx;
+	long i, p = t -> numberOfColumns;
+
+	if (d1 < 1 || d1 > p || d2 < 1 || d2 > p || d1 == d2) return;
+
+	if (! (thee = SSCPs_extractTwoDimensions (me, d1, d2))) return;
+	SSCPs_getEllipsesBoundingBoxCoordinates (thee, scale, confidence, &xmn, &xmx, &ymn, &ymx);
+
+	if (xmin == xmax)
+	{
+		xmin = xmn; xmax = xmx;
+	}
+
+	if (ymin == ymax)
+	{
+		ymin = ymn; ymax = ymx;
+	}
+
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_setInner (g);
+
+
+	for (i = 1; i <= thy size; i++)
+	{
+		double lscale;
+		t = (structSSCP *)thy item[i];
+		lscale = SSCP_ellipseScalefactor (t, scale, confidence);
+		if (lscale < 0) continue;
+		if (label == NULL || Melder_wcscmp (label, Thing_getName (t)) == 0)
+		{
+			_SSCP_drawTwoDimensionalEllipse (t, g, lscale, fontSize);
+		}
+	}
+
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+		wchar_t text[20];
+		t = (structSSCP *)my item[1];
+    	Graphics_drawInnerBox (g);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+		swprintf (text, 20, L"Dimension %ld", d2);
+    	Graphics_textLeft (g, 1, t -> columnLabels[d2] ? t -> columnLabels[d2] : text);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+		swprintf (text, 20, L"Dimension %ld", d1);
+		Graphics_textBottom (g, 1, t -> columnLabels[d1] ? t -> columnLabels[d1] : text);
+	}
+	forget (thee);
+}
 
 DIRECT (SSCP_help) Melder_help (L"SSCP"); END
 
@@ -4009,6 +6128,83 @@ END
 
 /******************* Table ****************************/
 
+void Table_drawScatterPlotWithConfidenceIntervals (Table me, Graphics g, long xcolumn, long ycolumn,
+	double xmin, double xmax, double ymin, double ymax, long xci_min, long xci_max,
+	long yci_min, long yci_max, double bar_mm, int garnish)
+{
+	long nrows = my rows -> size;
+	double x2min, x1max, y1max, y2min;
+	double bar = ceil (bar_mm * g -> resolution / 25.4);
+	
+	// check validity of columns
+	if (xcolumn < 1 || xcolumn > nrows || ycolumn < 1 || ycolumn > nrows) return;
+	if (labs (xci_min) > nrows || labs (xci_max) > nrows ||
+		labs (yci_min) > nrows || labs (yci_max) > nrows) return;
+	
+	if (xmin >= xmax && 
+		Table_getExtrema (me, xci_min, &xmin, &x1max) &&
+		Table_getExtrema (me, xci_max, &x2min, &xmax) &&
+		xmin >= xmax) return;
+	
+	if (ymin >= ymax && 
+		Table_getExtrema (me, yci_min, &ymin, &y1max) &&
+		Table_getExtrema (me, yci_max, &y2min, &ymax) &&
+		ymin >= ymax) return;
+	
+    Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+    Graphics_setInner (g);
+
+	for (long row = 1; row <= nrows; row++)
+	{
+		double x  = Table_getNumericValue_Assert (me, row, xcolumn);
+		double y  = Table_getNumericValue_Assert (me, row, ycolumn);
+		double x1 = Table_getNumericValue_Assert (me, row, xci_min);	
+		double x2 = Table_getNumericValue_Assert (me, row, xci_max);
+		double y1 = Table_getNumericValue_Assert (me, row, yci_min);	
+		double y2 = Table_getNumericValue_Assert (me, row, yci_max);
+		double xo1, yo1, xo2, yo2;
+		
+		if (xci_min > 0)
+		{
+			if (NUMclipLineWithinRectangle (x1, y, x, y, xmin, ymin, xmax, ymax,
+				&xo1, &yo1, &xo2, &yo2)) Graphics_line (g, xo1, yo1, xo2, yo2);
+			if (bar > 0 && NUMclipLineWithinRectangle (x1, y - bar/2, x1, y + bar/2, 
+				xmin, ymin, xmax, ymax,	&xo1, &yo1, &xo2, &yo2)) Graphics_line (g, xo1, yo1, xo2, yo2);
+		}
+		if (xci_max > 0)
+		{
+			if (NUMclipLineWithinRectangle (x, y, x2, y, xmin, ymin, xmax, ymax,
+				&xo1, &yo1, &xo2, &yo2)) Graphics_line (g, xo1, yo1, xo2, yo2);
+			if (bar > 0 && NUMclipLineWithinRectangle (x2, y - bar/2, x2, y + bar/2, 
+				xmin, ymin, xmax, ymax,	&xo1, &yo1, &xo2, &yo2)) Graphics_line (g, xo1, yo1, xo2, yo2);
+		}
+		if (yci_min > 0)
+		{
+			if (NUMclipLineWithinRectangle (x, y1, x, y, xmin, ymin, xmax, ymax,
+				&xo1, &yo1, &xo2, &yo2)) Graphics_line (g, xo1, yo1, xo2, yo2);
+			if (bar > 0 && NUMclipLineWithinRectangle (x - bar/2, y1, x + bar/2, y1, 
+				xmin, ymin, xmax, ymax,	&xo1, &yo1, &xo2, &yo2)) Graphics_line (g, xo1, yo1, xo2, yo2);
+		}
+		if (yci_max > 0)
+		{
+			if (NUMclipLineWithinRectangle (x, y, x, y2, xmin, ymin, xmax, ymax,
+				&xo1, &yo1, &xo2, &yo2)) Graphics_line (g, xo1, yo1, xo2, yo2);
+			if (bar > 0 && NUMclipLineWithinRectangle (x - bar/2, y2, x + bar/2, y2, 
+				xmin, ymin, xmax, ymax,	&xo1, &yo1, &xo2, &yo2)) Graphics_line (g, xo1, yo1, xo2, yo2);
+		}
+	}
+	
+    Graphics_unsetInner (g);
+	
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+	}
+
+}
+
 DIRECT (Table_createFromPetersonBarneyData)
 	if (! praat_new1 (Table_createFromPetersonBarneyData (), L"pb")) return 0;
 END
@@ -4046,6 +6242,680 @@ DO
 END
 
 /******************* TableOfReal ****************************/
+
+#define Graphics_ARROW 1
+#define Graphics_TWOWAYARROW 2
+#define Graphics_LINE 3
+
+void TableOfReal_drawRowsAsHistogram (I, Graphics g, wchar_t *rows, long colb, long cole,
+	double ymin, double ymax, double xoffsetFraction, double interbarFraction,
+	double interbarsFraction, wchar_t *greys, int garnish)
+{
+	iam (TableOfReal);
+	long i, j, irow, nrows, ncols, ngreys;
+	double *irows, *igreys, grey, bar_width = 1, xb, dx, x1, x2, y1, y2;
+
+	if (colb >= cole)
+	{
+		colb = 1; cole = my numberOfColumns;
+	}
+	if (colb <= cole && (colb < 1 || cole > my numberOfColumns))
+	{
+		    Melder_warning1 (L"Invalid columns");
+			return;
+	}
+
+	irows = NUMstring_to_numbers (rows, &nrows);
+	if (irows == NULL)
+	{
+		 Melder_warning1 (L"No rows!");
+		 return;
+	}
+
+	for (i = 1; i <= nrows; i++)
+	{
+		irow = irows[i];
+		if (irow < 0 || irow > my numberOfRows)
+		{
+			 Melder_warning3 (L"Invalid row (", Melder_integer (irow), L").");
+			 goto end;
+		}
+		if (ymin >= ymax)
+		{
+			double min, max;
+			NUMdvector_extrema (my data[irow], colb, cole, &min, &max);
+			if (i > 1)
+			{
+				if (min < ymin) ymin = min;
+				if (max > ymax) ymax = max;
+			}
+			else
+			{
+				ymin = min; ymax = max;
+			}
+		}
+	}
+
+	igreys = NUMstring_to_numbers (greys, &ngreys);
+	if (igreys == NULL)
+	{
+		 Melder_warning1 (L"No greys!");
+		 return;
+	}
+
+    Graphics_setWindow (g, 0, 1, ymin, ymax);
+    Graphics_setInner (g);
+
+	ncols = cole - colb + 1;
+	bar_width /= ncols * nrows + 2 * xoffsetFraction + (ncols - 1) * interbarsFraction +
+		ncols * (nrows -1) * interbarFraction;
+    dx = (interbarsFraction + nrows + (nrows -1) * interbarFraction) * bar_width;
+
+	for (i = 1; i <= nrows; i++)
+	{
+		irow = irows[i];
+		xb = xoffsetFraction * bar_width + (i - 1) * (1 + interbarFraction) * bar_width;
+
+		x1 = xb;
+		grey = i <= ngreys ? igreys[i] : igreys[ngreys];
+    	for (j = colb; j <= cole; j++)
+    	{
+			x2 = x1 + bar_width;
+			y1 = ymin; y2 = my data[irow][j];
+			if (y2 > ymin)
+			{
+				if (y2 > ymax) y2 = ymax;
+				Graphics_setGrey (g, grey);
+				Graphics_fillRectangle (g, x1, x2, y1, y2);
+				Graphics_setGrey (g, 0); /* Black */
+				Graphics_rectangle (g, x1, x2, y1, y2);
+			}
+			x1 += dx;
+    	}
+	}
+
+    Graphics_unsetInner (g);
+
+	if (garnish)
+	{
+		xb = (xoffsetFraction + 0.5 * (nrows + (nrows - 1) * interbarFraction)) * bar_width;
+		for (j = colb; j <= cole; j++)
+		{
+			if (my columnLabels[j]) Graphics_markBottom (g, xb, 0, 0, 0, my columnLabels[j]);
+			xb += dx;
+		}
+		Graphics_drawInnerBox (g);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+
+end:
+
+	NUMdvector_free (irows, 1);
+}
+
+void TableOfReal_drawBiplot (I, Graphics g, double xmin, double xmax,
+	double ymin, double ymax, double sv_splitfactor, int labelsize, int garnish)
+{
+	iam (TableOfReal);
+	SVD svd;
+	double lambda1, lambda2;
+	double *x = NULL, *y = NULL;
+	long i, numberOfZeroed;
+	long nr = my numberOfRows, nc = my numberOfColumns, nmin;
+	long nPoints = nr + nc;
+	int fontsize = Graphics_inqFontSize (g);
+
+	svd = SVD_create (nr, nc);
+	if (svd == NULL) goto end;
+
+	NUMdmatrix_copyElements (my data, svd -> u, 1, nr, 1, nc);
+	NUMcentreColumns (svd -> u, 1, nr, 1, nc, NULL);
+
+	if (! SVD_compute (svd)) goto end;
+	numberOfZeroed = SVD_zeroSmallSingularValues (svd, 0);
+
+	nmin = MIN (nr, nc) - numberOfZeroed;
+	if (nmin < 2)
+	{
+		Melder_warning1 (L" There must be at least two (independent) columns in the table.");
+		goto end;
+	}
+
+	x = NUMdvector (1, nPoints);
+	if (x == NULL) goto end;
+	y = NUMdvector (1, nPoints);
+	if (y == NULL) goto end;
+
+	lambda1 = pow (svd -> d[1], sv_splitfactor);
+	lambda2 = pow (svd -> d[2], sv_splitfactor);
+	for (i = 1; i <= nr; i++)
+	{
+		x[i] = svd -> u[i][1] * lambda1;
+		y[i] = svd -> u[i][2] * lambda2;
+	}
+	lambda1 = svd -> d[1] / lambda1;
+	lambda2 = svd -> d[2] / lambda2;
+	for (i = 1; i <= nc; i++)
+	{
+			x[nr + i] = svd -> v[i][1] * lambda1;
+			y[nr + i] = svd -> v[i][2] * lambda2;
+	}
+
+	if (xmax <= xmin) NUMdvector_extrema (x, 1, nPoints, &xmin, &xmax);
+	if (xmax <= xmin) { xmax += 1; xmin -= 1; }
+	if (ymax <= ymin) NUMdvector_extrema (y, 1, nPoints, &ymin, &ymax);
+	if (ymax <= ymin) { ymax += 1; ymin -= 1; }
+
+    Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+    Graphics_setInner (g);
+	if (labelsize > 0) Graphics_setFontSize (g, labelsize);
+    Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+
+	for (i = 1; i <= nPoints; i++)
+	{
+		wchar_t *label;
+		if (i <= nr)
+		{
+			label = my rowLabels[i];
+			if (label == NULL) label = L"?__r_";
+		}
+		else
+		{
+			label = my columnLabels[i - nr];
+			if (label == NULL) label = L"?__c_";
+		}
+		Graphics_text (g, x[i], y[i], label);
+	}
+
+    Graphics_unsetInner (g);
+
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+	}
+
+	if (labelsize > 0) Graphics_setFontSize (g, fontsize);
+
+end:
+	forget (svd);
+	NUMdvector_free (x, 1);
+	NUMdvector_free (y, 1);
+}
+
+/*
+	Draw a box plot of data[1..ndata]. The vertical center line of the plot
+	is at position 'x'. The rectangle box is 2*w wide, the whisker 2*r.
+	All drawing outside [ymin, ymax] is clipped.
+*/
+static void Graphics_drawBoxPlot (Graphics g, double data[], long ndata,
+	double x, double r, double w, double ymin, double ymax)
+{
+	double lowerOuterFence, lowerInnerFence, mean;
+	double q75, q25, q50, upperInnerFence, upperOuterFence, hspread;
+	double lowerWhisker, upperWhisker, y1, y2;
+	int lineType = Graphics_inqLineType (g);
+	long i, ie;
+
+	Melder_assert (r > 0 && w > 0);
+	if (ndata < 3) return;
+
+	/*
+		Sort the data (increasing: data[1] <= ... <= data[ndata]).
+		Get the median (q50) and the upper and lower quartile points
+		(q25 and q75).
+		Now q25 and q75 are the lower and upper hinges, respectively.
+		The fances can be calcultaed from q25 and q75.
+		The spread is defined as the interquartile range or midrange
+		|q75 - q25|.
+		The fences are defined as:
+		(lower/upper) innerfence = (lower/upper) hinge +/- 1.5 hspread
+		(lower/upper) outerfence = (lower/upper) hinge +/- 3.0 hspread
+	*/
+
+	NUMsort_d (ndata, data);
+
+	if (ymax <= ymin)
+	{
+		ymin = data[1]; ymax = data[ndata];
+	}
+	if (data[1] > ymax || data[ndata] < ymin) return;
+
+	for (mean=0, i=1; i <= ndata; i++) mean += data[i];
+	mean /= ndata;
+
+	q25 = NUMquantile (ndata, data, 0.25);
+	q50 = NUMquantile (ndata, data, 0.5);
+	q75 = NUMquantile (ndata, data, 0.75);
+
+	hspread = fabs (q75 - q25);
+	lowerOuterFence = q25 - 3.0 * hspread;
+	lowerInnerFence = q25 - 1.5 * hspread;
+	upperInnerFence = q75 + 1.5 * hspread;
+	upperOuterFence = q75 + 3.0 * hspread;
+
+	/*
+		Decide whether there are outliers that have to be drawn.
+		First process data from below (data are sorted).
+	*/
+
+	i = 1; ie = ndata;
+	while (i <= ie && data[i] < ymin) i++;
+    Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	while (i <= ie && data[i] < lowerOuterFence)
+	{
+		Graphics_text (g, x, data[i], L"o"); i++;
+	}
+	while (i <= ie && data[i] < lowerInnerFence)
+	{
+		Graphics_text (g, x, data[i], L"*"); i++;
+	}
+	lowerWhisker = data[i] < q25 ? data[i] : lowerInnerFence;
+	if (lowerWhisker > ymax) return;
+
+	/*
+		Next process data from above.
+	*/
+
+	i = ndata; ie = i;
+	while (i >= ie && data[i] > ymax) i--;
+	while (i >= ie && data[i] > upperOuterFence)
+	{
+		Graphics_text (g, x, data[i], L"o"); i--;
+	}
+	while (i >= ie && data[i] > upperInnerFence)
+	{
+		Graphics_text (g, x, data[i], L"*"); i--;
+	}
+	upperWhisker = data[i] > q75 ? data[i] : upperInnerFence;
+	if (upperWhisker < ymin) return;
+
+	/*
+		Determine what parts of the "box" have to be drawn within the
+		range [ymin, ymax].
+		Horizontal lines first.
+	*/
+
+	y1 = lowerWhisker;
+	if (ymax > y1 && ymin < y1)
+		Graphics_line (g, x - r, y1, x + r, y1);
+	y1 = q25;
+	if (ymax > y1 && ymin < y1)
+		Graphics_line (g, x - w, y1, x + w, y1);
+	y1 = q50;
+	if (ymax > y1 && ymin < y1)
+		Graphics_line (g, x - w, y1, x + w, y1);
+	y1 = q75;
+	if (ymax > y1 && ymin < y1)
+		Graphics_line (g, x - w, y1, x + w, y1);
+	y1 = upperWhisker;
+	if (ymax > y1 && ymin < y1)
+		Graphics_line (g, x - r, y1, x + r, y1);
+
+	/*
+		Extension: draw the mean too.
+	*/
+
+	y1 = mean;
+	if (ymax > y1 && ymin < y1)
+	{
+		Graphics_setLineType (g, Graphics_DOTTED);
+		Graphics_line (g, x - w, y1, x + w, y1);
+		Graphics_setLineType (g, lineType);
+	}
+
+	/*
+		Now process the vertical lines.
+	*/
+
+	y1 = lowerWhisker; y2 = q25;
+	if (ymax > y1 && ymin < y2)
+	{
+		y1 = MAX (y1, ymin);
+		y2 = MIN (y2, ymax);
+		Graphics_line (g, x, y1, x, y2);
+	}
+	y1 = q25; y2 = q75;
+	if (ymax > y1 && ymin < y2)
+	{
+		y1 = MAX (y1, ymin);
+		y2 = MIN (y2, ymax);
+		Graphics_line (g, x - w, y1, x - w, y2);
+		Graphics_line (g, x + w, y1, x + w, y2);
+	}
+	y1 = q75; y2 = upperWhisker;
+	if (ymax > y1 && ymin < y2)
+	{
+		y1 = MAX (y1, ymin);
+		y2 = MIN (y2, ymax);
+		Graphics_line (g, x, y1, x, y2);
+	}
+}
+
+void TableOfReal_drawBoxPlots (I, Graphics g, long rowmin, long rowmax,
+	long colmin, long colmax, double ymin, double ymax, int garnish)
+{
+	iam (TableOfReal);
+	double *data = NULL;
+	long i, j, numberOfRows;
+
+	if (rowmax < rowmin || rowmax < 1)
+	{
+		rowmin = 1;
+		rowmax = my numberOfRows;
+	}
+	if (rowmin < 1) rowmin = 1;
+	if (rowmax > my numberOfRows) rowmax = my numberOfRows;
+	numberOfRows = rowmax - rowmin + 1;
+	if (colmax < colmin || colmax < 1)
+	{
+		colmin = 1;
+		colmax = my numberOfColumns;
+	}
+	if (colmin < 1) colmin = 1;
+	if (colmax > my numberOfColumns) colmax = my numberOfColumns;
+	if (ymax <= ymin) NUMdmatrix_extrema (my data, rowmin, rowmax,
+		colmin, colmax, &ymin, &ymax);
+	if ((data = NUMdvector (1, numberOfRows)) == NULL) return;
+
+    Graphics_setWindow (g, colmin - 0.5, colmax + 0.5, ymin, ymax);
+    Graphics_setInner (g);
+
+	for (j = colmin; j <= colmax; j++)
+	{
+		double x = j, r = 0.05, w = 0.2, t;
+		long ndata = 0;
+
+		for (i = 1; i <= numberOfRows; i++)
+		{
+			if ((t = my data[rowmin+i-1][j]) != NUMundefined) data[++ndata] = t;
+		}
+		Graphics_drawBoxPlot (g, data, ndata, x, r, w, ymin, ymax);
+	}
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+		for (j = colmin; j <= colmax; j++)
+		{
+			if (my columnLabels && my columnLabels[j] && my columnLabels[j][0])
+				Graphics_markBottom (g, j, 0, 1, 0, my columnLabels [j]);
+		}
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+	NUMdvector_free (data, 1);
+}
+
+void TableOfReal_drawScatterPlotMatrix (I, Graphics g, long colb, long cole,
+	double fractionWhite)
+{
+	iam (TableOfReal);
+	double *xmin = NULL, *xmax = NULL;
+	long i, j, k, m = my numberOfRows, n;
+
+	if (colb == 0 && cole == 0)
+	{
+		colb = 1; cole = my numberOfColumns;
+	}
+	else if (cole < colb || colb < 1 || cole > my numberOfColumns) return;
+
+	n = cole - colb + 1;
+	if (n == 1) return;
+
+	if (! (xmin = NUMdvector (colb, cole)) ||
+		! (xmax = NUMdvector (colb, cole))) goto end;
+
+	for (j=colb; j <= cole; j++)
+	{
+		xmin[j] = xmax[j] = my data[1][j];
+	}
+	for (i=2; i <= m; i++)
+	{
+		for (j=colb; j <= cole; j++)
+		{
+			if (my data[i][j] > xmax[j]) xmax[j] = my data[i][j];
+			else if (my data[i][j] < xmin[j]) xmin[j] = my data[i][j];
+		}
+	}
+	for (j=colb; j <= cole; j++)
+	{
+		double extra = fractionWhite * fabs (xmax[j] - xmin[j]);
+		if (extra == 0) extra = 0.5;
+		xmin[j] -= extra; xmax[j] += extra;
+	}
+
+	Graphics_setWindow (g, 0, n, 0, n);
+    Graphics_setInner (g);
+	Graphics_line (g, 0, n, n, n);
+	Graphics_line (g, 0, 0, 0, n);
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+
+	for (i=1; i <= n; i++)
+	{
+		long xcol, ycol = colb + i - 1; const wchar_t *mark; wchar_t label[20];
+		Graphics_line (g, 0, n - i, n, n - i);
+		Graphics_line (g, i, n, i, 0);
+		for (j=1; j <= n; j++)
+		{
+			xcol = colb + j -1;
+			if (i == j)
+			{
+				mark = my columnLabels[xcol];
+				if (! mark)
+				{
+					swprintf (label, 20, L"Column %ld", xcol); mark = label;
+				}
+				Graphics_text (g, j - 0.5, n - i + 0.5, mark);
+			}
+			else
+			{
+				for (k=1; k <= m; k++)
+				{
+					double x = j - 1 + (my data[k][xcol] - xmin[xcol]) /
+						(xmax[xcol] - xmin[xcol]);
+					double y = n - i + (my data[k][ycol] - xmin[ycol]) /
+						(xmax[ycol] - xmin[ycol]);
+					mark = EMPTY_STRING (my rowLabels[k]) ? L"+" : my rowLabels[k];
+					Graphics_text (g, x, y, mark);
+				}
+			}
+		}
+	}
+    Graphics_unsetInner (g);
+end:
+	NUMdvector_free (xmin, colb); NUMdvector_free (xmax, colb);
+}
+
+/* NUMundefined ??? */
+void NUMdmatrix_getColumnExtrema (double **a, long rowb, long rowe, long icol, double *min, double *max)
+{
+	long i;
+	*min = *max = a[rowb][icol];
+	for (i=rowb+1; i <= rowe; i++)
+	{
+		double t = a[i][icol];
+		if (t > *max) *max = t;
+		else if (t < *min) *min = t;
+	}
+}
+
+void TableOfReal_drawScatterPlot (I, Graphics g, long icx, long icy, long rowb,
+	long rowe, double xmin, double xmax, double ymin, double ymax,
+	int labelSize, int useRowLabels, wchar_t *label, int garnish)
+{
+    iam (TableOfReal);
+	double tmp, m = my numberOfRows, n = my numberOfColumns;
+    long i, noLabel = 0;
+	int fontSize = Graphics_inqFontSize (g);
+
+    if (icx < 1 || icx > n || icy < 1 || icy > n) return;
+    if (rowb < 1) rowb = 1;
+    if (rowe > m) rowe = m;
+    if (rowe <= rowb)
+    {
+    	rowb = 1; rowe = m;
+    }
+
+    if (xmax == xmin)
+    {
+		NUMdmatrix_getColumnExtrema (my data, rowb, rowe, icx, & xmin, & xmax);
+		tmp = xmax - xmin == 0 ? 0.5 : 0.0;
+		xmin -= tmp; xmax += tmp;
+    }
+    if (ymax == ymin)
+    {
+		NUMdmatrix_getColumnExtrema (my data, rowb, rowe, icy, & ymin, & ymax);
+		tmp = ymax - ymin == 0 ? 0.5 : 0.0;
+		ymin -= tmp; ymax += tmp;
+    }
+
+    Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+    Graphics_setInner (g);
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	Graphics_setFontSize (g, labelSize);
+
+    for (i=rowb; i <= rowe; i++)
+    {
+    	double x = my data[i][icx], y = my data[i][icy];
+
+		if (((xmin < xmax && x >= xmin && x <= xmax) || (xmin > xmax && x <= xmin && x >= xmax)) &&
+			((ymin < ymax && y >= ymin && y <= ymax) || (ymin > ymax && y <= ymin && y >= ymax)))
+		{
+			wchar_t *plotLabel = useRowLabels ? my rowLabels[i] : label;
+			if (! NUMstring_containsPrintableCharacter (plotLabel))
+			{
+				noLabel++;
+				continue;
+			}
+			Graphics_text (g, x, y, plotLabel);
+		}
+	}
+
+	Graphics_setFontSize (g, fontSize);
+    Graphics_unsetInner (g);
+
+    if (garnish)
+    {
+		Graphics_drawInnerBox (g);
+		if (ymin < ymax)
+		{
+			if (my columnLabels[icx]) Graphics_textBottom (g, 1, my columnLabels[icx]);
+			Graphics_marksBottom (g, 2, 1, 1, 0);
+		}
+		else
+		{
+			if (my columnLabels[icx]) Graphics_textTop (g, 1, my columnLabels[icx]);
+			Graphics_marksTop (g, 2, 1, 1, 0);
+		}
+		if (xmin < xmax)
+		{
+			if (my columnLabels[icy]) Graphics_textLeft (g, 1, my columnLabels[icy]);
+			Graphics_marksLeft (g, 2, 1, 1, 0);
+		}
+		else
+		{
+			if (my columnLabels[icy]) Graphics_textRight (g, 1, my columnLabels[icy]);
+			Graphics_marksRight (g, 2, 1, 1, 0);
+		}
+	}
+	if (noLabel > 0) Melder_warning4 (Melder_integer (noLabel), L" from ", Melder_integer (my numberOfRows), L" labels are "
+		"not visible because they are empty or they contain only spaces or non-printable characters");
+}
+
+void TableOfReal_drawVectors (I, Graphics g, long colx1, long coly1,
+	long colx2, long coly2, double xmin, double xmax,
+	double ymin, double ymax, int vectype, int labelsize, int garnish)
+{
+	iam (TableOfReal);
+	long i, nx = my numberOfColumns, ny = my numberOfRows;
+	double min, max;
+	int fontsize = Graphics_inqFontSize (g);
+
+	if (colx1 < 1 || colx1 > nx || coly1 < 1 || coly1 > nx)
+	{
+		Melder_warning3 (L"The index in the \"From\" column(s) must be in range [1, ", Melder_integer (nx), L"].");
+		return;
+	}
+	if (colx2 < 1 || colx2 > nx || coly2 < 1 || coly2 > nx)
+	{
+		Melder_warning3 (L"The index in the \"To\" column(s) must be in range [1, ", Melder_integer (nx), L"].");
+		return;
+	}
+
+	if (xmin >= xmax)
+	{
+		NUMdmatrix_extrema (my data, 1, ny, colx1, colx1, &min, &max);
+		NUMdmatrix_extrema (my data, 1, ny, colx2, colx2, &xmin, &xmax);
+		if (min < xmin) xmin = min;
+		if (max > xmax) xmax = max;
+	}
+	if (ymin >= ymax)
+	{
+		NUMdmatrix_extrema (my data, 1, ny, coly1, coly1, &min, &max);
+		NUMdmatrix_extrema (my data, 1, ny, coly2, coly2, &ymin, &ymax);
+		if (min < ymin) ymin = min;
+		if (max > ymax) ymax = max;
+	}
+	if (xmin == xmax)
+	{
+		if (ymin == ymax) return;
+		xmin -= 0.5;
+		xmax += 0.5;
+	}
+	if (ymin == ymax)
+	{
+		ymin -= 0.5;
+		ymax += 0.5;
+	}
+
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	Graphics_setInner (g);
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+
+	if (labelsize > 0) Graphics_setFontSize (g, labelsize);
+	for (i = 1; i <= ny; i++)
+	{
+		float x1 = my data[i][colx1];
+		float y1 = my data[i][coly1];
+		float x2 = my data[i][colx2];
+		float y2 = my data[i][coly2];
+		const wchar_t *mark = EMPTY_STRING (my rowLabels[i]) ? L"" : my rowLabels[i];
+		if (vectype == Graphics_LINE)
+			Graphics_line (g, x1, y1, x2, y2);
+		else if (vectype == Graphics_TWOWAYARROW)
+		{
+			Graphics_arrow (g, x1, y1, x2, y2);
+			Graphics_arrow (g, x2, y2, x1, y1);
+		}
+		else /*if (vectype == Graphics_ARROW) */
+			Graphics_arrow (g, x1, y1, x2, y2);
+		if (labelsize <= 0) continue;
+		Graphics_text (g, x1, y1, mark);
+
+	}
+	if (labelsize > 0) Graphics_setFontSize (g, fontsize);
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+	    Graphics_drawInnerBox (g);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+	}
+}
+
+void TableOfReal_drawColumnAsDistribution (I, Graphics g, int column, double minimum, double maximum, long nBins,
+	double freqMin, double freqMax, int cumulative, int garnish)
+{
+	iam (TableOfReal);
+	if (column < 1 || column > my numberOfColumns) return;
+	Matrix thee = TableOfReal_to_Matrix (me);
+	Matrix_drawDistribution (thee, g,  column-0.5, column+0.5, 0, 0,
+		minimum, maximum, nBins, freqMin,  freqMax,  cumulative,  garnish);
+	if (garnish && my columnLabels[column] != NULL) Graphics_textBottom (g, 1, my columnLabels[column]);
+	forget (thee);
+}
+
 
 FORM (TableOfReal_reportMultivariateNormality, L"TableOfReal: Report multivariate normality (BHEP)", L"TableOfReal: Report multivariate normality (BHEP)...")
 	REAL (L"Smoothing parameter", L"0.0")

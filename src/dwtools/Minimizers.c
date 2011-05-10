@@ -10,8 +10,6 @@
   djmw 20110304 Thing_new
 */
 
-#include "num/NUM2.h"
-#include "ui/Graphics.h"
 #include "Minimizers.h"
 
 #define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))
@@ -214,49 +212,6 @@ void Minimizer_reset (I, const double guess[])
     my maxNumOfIterations = my success = my funcCalls = my iteration = 0;
     my minimum = 1.0e38;
     our reset (me);
-}
-
-void Minimizer_drawHistory (I, Any graphics, long iFrom, long iTo, double hmin, 
-    double hmax, int garnish)
-{
-    iam (Minimizer); 
-	double *history;
-    long i, itmin, itmax;
-	
-    if (my history == NULL ||
-		(history = NUMdvector (1, my iteration)) == NULL) return;
-    for (i = 1; i <= my iteration; i++)
-	{
-		history[i] = my history[i];
-	}
-    if (iTo <= iFrom)
-	{
-		iFrom = 1; iTo = my iteration;
-	}
-    itmin = iFrom; itmax = iTo;
-    if (itmin < 1) itmin = 1; 
-    if (itmax > my iteration) itmax = my iteration;
-    if (hmax <= hmin)
-	{
-		NUMdvector_extrema (history, itmin, itmax, & hmin, & hmax);
-	}
-    if (hmax <= hmin)
-	{
-		hmin -= 0.5 * fabs (hmin);
-		hmax += 0.5 * fabs (hmax);
-	}
-    Graphics_setInner (graphics);
-    Graphics_setWindow (graphics, iFrom, iTo, hmin, hmax);
-    Graphics_function (graphics, history, itmin, itmax, itmin, itmax);
-    NUMdvector_free (history, 1);
-    Graphics_unsetInner (graphics);
-    if (garnish)
-    {
-    	Graphics_drawInnerBox (graphics);    
-   		Graphics_textBottom (graphics, 1, L"Number of iterations");
-		Graphics_marksBottom (graphics, 2, 1, 1, 0);
-    	Graphics_marksLeft (graphics, 2, 1, 1, 0);
-    }
 }
 
 double Minimizer_getMinimum (I)

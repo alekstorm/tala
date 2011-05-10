@@ -25,7 +25,6 @@
 
 /* Matrix inherits from Sampled */
 #include "Sampled.h"
-#include "ui/Graphics.h"
 #include "stat/Table.h"
 #include "stat/TableOfReal.h"
 
@@ -206,60 +205,6 @@ int Matrix_formula (Matrix me, const wchar_t *expression, Interpreter *interpret
 */
 int Matrix_formula_part (Matrix me, double xmin, double xmax, double ymin, double ymax,
 	const wchar_t *expression, Interpreter *interpreter, Matrix target);
-
-/***** Graphics routines. *****/
-/*
-	All of these routines show the samples of a Matrix whose x and y values
-	are inside the window [xmin, xmax] * [ymin, ymax].
-	The scaling of the values of these samples is determined by "minimum" and "maximum".
-	All of these routines can perform automatic windowing and scaling:
-	if xmax <= xmin, the window in the x direction will be set to [my xmin, my xmax];
-	if ymax <= ymin, the window in the y direction will be set to [my ymin, my ymax];
-	if maximum <= minimum, the windowing (scaling) in the z direction will be determined
-	by the minimum and maximum values of the samples inside the window.
-*/
-
-void Matrix_drawRows (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
-	double minimum, double maximum);
-/*
-	Every row is plotted as a function of x,
-	with straight lines connecting the sample points.
-	The rows are stacked from bottom to top.
-*/
-
-void Matrix_drawOneContour (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
-	double height);
-
-void Matrix_drawContours (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
-	double minimum, double maximum);
-/* A contour altitude plot with curves at multiple heights. */
-
-void Matrix_paintContours (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
-	double minimum, double maximum);
-/* A contour plot with multiple shades of grey and white (low) and black (high) paint. */
-
-void Matrix_paintImage (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
-	double minimum, double maximum);
-/*
-	Two-dimensional interpolation of greys.
-	The larger the value of the sample, the darker the greys.
-*/
-
-void Matrix_paintCells (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
-	double minimum, double maximum);
-/*
-	Every sample is drawn as a grey rectangle.
-	The larger the value of the sample, the darker the rectangle.
-*/
-
-void Matrix_paintSurface (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
-	double minimum, double maximum, double elevation, double azimuth);
-/*
-	3D surface plot. Every space between adjacent four samples is drawn as a tetragon filled with a grey value.
-	'elevation' may be 30 degrees, 'azimuth' may be 45 degrees.
-*/
-
-void Matrix_movie (I, Graphics g);
 
 Matrix Matrix_readFromRawTextFile (MelderFile file);
 Matrix Matrix_readAP (MelderFile file);

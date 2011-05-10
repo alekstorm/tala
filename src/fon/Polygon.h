@@ -24,7 +24,6 @@
  */
 
 #include "sys/Data.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -67,21 +66,6 @@ void Polygon_salesperson (I, long numberOfIterations);
 		my numberOfPoints == my old numberOfPoints;
 		Polygon_perimeter (me) <= old Polygon_perimeter (me);
 */
-
-/*** Drawing routines. ***/
-
-void Polygon_draw (I, Graphics g, double xmin, double xmax, double ymin, double ymax);
-
-void Polygon_paint (I, Graphics g, Graphics_Colour colour, double xmin, double xmax, double ymin, double ymax);
-
-void Polygon_drawCircles (I, Graphics g,
-	double xmin, double xmax, double ymin, double ymax, double diameter_mm);
-
-void Polygon_paintCircles (I, Graphics g,
-	double xmin, double xmax, double ymin, double ymax, double diameter_mm);
-
-void Polygons_drawConnection (I, thou, Graphics g,
-	double xmin, double xmax, double ymin, double ymax, int hasArrow, double relativeLength);
 
 #ifdef __cplusplus
 	}

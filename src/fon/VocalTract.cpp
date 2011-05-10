@@ -137,10 +137,6 @@ VocalTract VocalTract_createFromPhone (wchar_t *phone) {
 	return me;
 }
 
-void VocalTract_draw (VocalTract me, Graphics g) {
-	Matrix_drawRows (me, g, 0, 0, 0, 0, 0, 0);
-}
-
 Matrix VocalTract_to_Matrix (VocalTract me) {
 	Matrix thee = Matrix_create (my xmin, my xmax, my nx, my dx, my x1,
 							my ymin, my ymax, my ny, my dy, my y1);

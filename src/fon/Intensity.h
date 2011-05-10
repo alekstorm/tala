@@ -53,12 +53,6 @@ Matrix Intensity_to_Matrix (Intensity me);
 
 Intensity Matrix_to_Intensity (Matrix me);
 
-void Intensity_drawInside (Intensity me, Graphics g, double tmin, double tmax,
-	double minimum, double maximum);
-
-void Intensity_draw (Intensity me, Graphics g, double tmin, double tmax,
-	double minimum, double maximum, int garnish);
-
 double Intensity_getQuantile (Intensity me, double tmin, double tmax, double quantile);
 
 #define Intensity_units_ENERGY  1

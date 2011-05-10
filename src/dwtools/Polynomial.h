@@ -36,9 +36,6 @@
 #ifndef _TableOfReal_h_
 	#include "stat/TableOfReal.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 #ifndef _Minimizers_h_
 	#include "Minimizers.h"
 #endif
@@ -105,16 +102,6 @@ double FunctionTerms_getXOfMaximum (I, double x1, double x2);
 		my xmin <= x1 < x2 <= my xmax
 */
 
-void FunctionTerms_draw (I, Graphics g, double xmin, double xmax, double ymin, double ymax, 
-	int extrapolate, int garnish);
-/*
-	Extrapolate only for functions whose domain is extendable and that can be extrapolated.
-	Polynomials can be extrapolated.
-	LegendreSeries and ChebyshevSeries cannot be extrapolated.
-*/
-void FunctionTerms_drawBasisFunction (I, Graphics g, long index, double xmin, double xmax,
-	double ymin, double ymax, int extrapolate, int garnish);
-
 #define Polynomial_members FunctionTerms_members
 #define Polynomial_methods FunctionTerms_methods
 class_create (Polynomial, FunctionTerms);
@@ -142,8 +129,6 @@ double Polynomial_getArea (Polynomial me, double xmin, double xmax);
 Polynomial Polynomial_getDerivative (Polynomial me);
 
 Polynomial Polynomial_getPrimitive (Polynomial me);
-
-void Polynomial_draw (I, Graphics g, double xmin, double xmax, double ymin, double ymax, int garnish);
 
 double Polynomial_evaluate (I, double x);
 
@@ -178,9 +163,6 @@ Roots Polynomial_to_Roots_ev (Polynomial me);
 
 long Roots_getNumberOfRoots (Roots me);
 
-void Roots_draw (Roots me, Graphics g, double rmin, double rmax, double imin, double imax, 
-	wchar_t *symbol, int fontSize, int garnish);
-	
 dcomplex Roots_getRoot (Roots me, long index);
 int Roots_setRoot (Roots me, long index, double re, double im);
 
@@ -232,8 +214,6 @@ class_create (Spline, FunctionTerms);
 int Spline_init (I, double xmin, double xmax, long degree, long numberOfCoefficients, long numberOfKnots);
 
 long Spline_getOrder (I);
-
-void Spline_drawKnots (I, Graphics g, double xmin, double xmax, double ymin, double ymax, int garnish);
 
 Spline Spline_scaleX (I, double xmin, double xmax);
 /* scale domain and knots to new domain */

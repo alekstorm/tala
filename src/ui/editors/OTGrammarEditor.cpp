@@ -31,6 +31,9 @@
 
 #include "OTGrammarEditor.h"
 
+// FIXME
+void OTGrammar_drawTableau (OTGrammar me, Graphics g, const wchar_t *input);
+
 OTGrammarEditor::OTGrammarEditor (GuiObject parent, const wchar_t *title, OTGrammar ot)
 	: HyperPage (parent, title, ot),
 	  _selected(0) {

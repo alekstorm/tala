@@ -184,10 +184,6 @@ Sound Sound_filter_deemphasis (Sound me, double frequency);
 
 void Sound_reverse (Sound me, double tmin, double tmax);
 
-void Sound_draw (Sound me, Graphics g,
-	double tmin, double tmax, double minimum, double maximum, bool garnish, const wchar_t *method);
-/* For method, see Vector_draw. */
-
 Matrix Sound_to_Matrix (Sound me);
 /*
 	Create a Matrix from a Sound,

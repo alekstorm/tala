@@ -50,12 +50,6 @@ end:
 	return me;
 }
 
-void SpectrumTier_draw (SpectrumTier me, Graphics g, double fmin, double fmax,
-	double pmin, double pmax, int garnish, const wchar_t *method)
-{
-	RealTier_draw (me, g, fmin, fmax, pmin, pmax, garnish, method, L"Power spectral density (dB)");
-}
-
 void SpectrumTier_list (SpectrumTier me, bool includeIndexes, bool includeFrequency, bool includePowerDensity) {
 	Table table = SpectrumTier_downto_Table (me, includeIndexes, includeFrequency, includePowerDensity); cherror
 	Table_list (table, false);

@@ -43,6 +43,8 @@
 	#include "SSCP.h"
 #endif
 
+#define EMPTY_STRING(s) ((s) == NULL || s[0] == '\0')
+
 #ifdef __cplusplus
 	extern "C" {
 #endif
@@ -77,30 +79,6 @@ TableOfReal TableOfReal_createFromVanNieropData_25females (int include_levels);
 TableOfReal TableOfReal_createFromWeeninkData (int option); /* M W C */
 
 void TableOfReal_getColumnExtrema (I, long col, double *min, double *max);
-
-void TableOfReal_drawRowsAsHistogram (I, Graphics g, wchar_t *rows, long colb, long cole,
-	double ymin, double ymax, double xoffsetFraction, double interbarFraction,
-	double interbarsFraction, wchar_t *greys, int garnish);
-
-void TableOfReal_drawScatterPlot (I, Graphics g, long icx, long icy, long rowb,
-	long rowe, double xmin, double xmax, double ymin, double ymax,
-	int labelSize, int useRowLabels, wchar_t *label, int garnish);
-
-void TableOfReal_drawScatterPlotMatrix (I, Graphics g, long colb, long cole, double fractionWhite);
-
-void TableOfReal_drawBoxPlots (I, Graphics g, long rowmin, long rowmax, long colmin, long colmax,
-	double ymin, double ymax, int garnish);
-
-void TableOfReal_drawVectors (I, Graphics g, long colx1, long coly1,
-	long colx2, long coly2, double xmin, double xmax,
-	double ymin, double ymax, int vectype, int labelsize, int garnish);
-
-void TableOfReal_drawBiplot (I, Graphics g, double xmin, double xmax,
-	double ymin, double ymax, double sv_splitfactor, int labelsize,
-	int garnish);
-
-void TableOfReal_drawColumnAsDistribution (I, Graphics g, int column, double minimum, double maximum, long nBins,
-	double freqMin, double freqMax, int cumulative, int garnish);
 
 long TableOfReal_getNumberOfLabelMatches (I, wchar_t *search, int columnLabels,
 	int use_regexp);

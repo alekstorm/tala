@@ -33,7 +33,6 @@ libfon_a_SOURCES = \
 	ParamCurve.cpp \
 	Pitch_AnyTier_to_PitchTier.cpp \
 	Pitch.cpp \
-	Pitch_Intensity.cpp \
 	PitchTier.cpp \
 	PitchTier_to_PointProcess.cpp \
 	PitchTier_to_Sound.cpp \
@@ -55,7 +54,6 @@ libfon_a_SOURCES = \
 	Sound_to_Cochleagram.cpp \
 	Sound_to_Formant.cpp \
 	Sound_to_Harmonicity.cpp \
-	Sound_to_Harmonicity_GNE.cpp \
 	Sound_to_Intensity.cpp \
 	Sound_to_Pitch.cpp \
 	Sound_to_PointProcess.cpp \

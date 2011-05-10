@@ -52,12 +52,6 @@ end:
 	return me;
 }
 
-void DurationTier_draw (DurationTier me, Graphics g, double tmin, double tmax,
-	double ymin, double ymax, const wchar_t *method, int garnish)
-{
-	RealTier_draw (me, g, tmin, tmax, ymin, ymax, garnish, method, L"Relative duration");
-}
-
 DurationTier PointProcess_upto_DurationTier (PointProcess me) {
 	long i;
 	DurationTier thee = DurationTier_create (my xmin, my xmax);

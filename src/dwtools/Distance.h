@@ -27,9 +27,6 @@
 #ifndef _Proximity_h_
 	#include "Proximity.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
@@ -40,8 +37,6 @@
 class_create (Distance, Proximity);
 
 Distance Distance_create (long numberOfPoints);
-
-void Distance_drawDendogram (Distance me, Graphics g, int method);
 
 #ifdef __cplusplus
 	}

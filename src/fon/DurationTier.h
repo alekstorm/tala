@@ -26,9 +26,6 @@
 #ifndef _RealTier_h_
 	#include "RealTier.h"
 #endif
-#ifndef _Graphics_h_
-	#include "Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
@@ -41,9 +38,6 @@
 class_create (DurationTier, RealTier);
 
 DurationTier DurationTier_create (double tmin, double tmax);
-
-void DurationTier_draw (DurationTier me, Graphics g, double tmin, double tmax,
-	double ymin, double ymax, const wchar_t *method, int garnish);
 
 DurationTier PointProcess_upto_DurationTier (PointProcess me);
 

@@ -81,15 +81,6 @@ double Formant_getStandardDeviation (Formant me, int iformant, double tmin, doub
 
 void Formant_sort (Formant me);
 
-void Formant_drawTracks (Formant me, Graphics g, double tmin, double tmax, double fmax, int garnish);
-void Formant_drawSpeckles_inside (Formant me, Graphics g, double tmin, double tmax, double fmin, double fmax,
-	double suppress_dB, double dotSize);
-void Formant_drawSpeckles (Formant me, Graphics g, double tmin, double tmax, double fmax,
-	double suppress_dB, int garnish);
-void Formant_scatterPlot (Formant me, Graphics g, double tmin, double tmax,
-	int iformant1, double fmin1, double fmax1, int iformant2, double fmin2, double fmax2,
-	double size_mm, const wchar_t *mark, int garnish);
-
 Matrix Formant_to_Matrix (Formant me, int iformant);
 Matrix Formant_to_Matrix_bandwidths (Formant me, int iformant);
 int Formant_formula_frequencies (Formant me, const wchar_t *formula, Interpreter *interpreter);

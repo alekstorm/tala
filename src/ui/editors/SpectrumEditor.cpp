@@ -34,6 +34,9 @@
 #include "fon/Sound_and_Spectrum.h"
 #include "ui/Preferences.h"
 
+// FIXME
+void Spectrum_drawInside (Spectrum me, Graphics g, double fmin, double fmax, double minimum, double maximum);
+
 static struct {
 	double bandSmoothing;
 	double dynamicRange;

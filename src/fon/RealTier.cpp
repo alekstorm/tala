@@ -340,52 +340,6 @@ void RealTier_multiplyPart (I, double tmin, double tmax, double factor) {
 	}
 }
 
-void RealTier_draw (I, Graphics g, double tmin, double tmax, double fmin, double fmax,
-	int garnish, const wchar_t *method, const wchar_t *quantity)
-{
-	iam (RealTier);
-	bool drawLines = wcsstr (method, L"lines") || wcsstr (method, L"Lines");
-	bool drawSpeckles = wcsstr (method, L"speckles") || wcsstr (method, L"Speckles");
-	long n = my points -> size, imin, imax, i;
-	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
-	Graphics_setWindow (g, tmin, tmax, fmin, fmax);
-	Graphics_setInner (g);
-	imin = AnyTier_timeToHighIndex (me, tmin);
-	imax = AnyTier_timeToLowIndex (me, tmax);
-	if (n == 0) {
-	} else if (imax < imin) {
-		double fleft = RealTier_getValueAtTime (me, tmin);
-		double fright = RealTier_getValueAtTime (me, tmax);
-		if (drawLines) Graphics_line (g, tmin, fleft, tmax, fright);
-	} else for (i = imin; i <= imax; i ++) {
-		RealPoint point = (structRealPoint *)my points -> item [i];
-		double t = point -> time, f = point -> value;
-		if (drawSpeckles) Graphics_fillCircle_mm (g, t, f, 1);
-		if (drawLines) {
-			if (i == 1)
-				Graphics_line (g, tmin, f, t, f);
-			else if (i == imin)
-				Graphics_line (g, t, f, tmin, RealTier_getValueAtTime (me, tmin));
-			if (i == n)
-				Graphics_line (g, t, f, tmax, f);
-			else if (i == imax)
-				Graphics_line (g, t, f, tmax, RealTier_getValueAtTime (me, tmax));
-			else {
-				RealPoint pointRight = (structRealPoint *)my points -> item [i + 1];
-				Graphics_line (g, t, f, pointRight -> time, pointRight -> value);
-			}
-		}
-	}
-	Graphics_unsetInner (g);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, TRUE, L"Time (s)");
-		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
-		Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
-		if (quantity) Graphics_textLeft (g, TRUE, quantity);
-	}
-}
-
 TableOfReal RealTier_downto_TableOfReal (I, const wchar_t *timeLabel, const wchar_t *valueLabel) {
 	iam (RealTier);
 	TableOfReal thee = TableOfReal_create (my points -> size, 2); cherror

@@ -24,7 +24,6 @@
  */
 
 #include "sys/Data.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -53,8 +52,6 @@ Network Network_create_rectangle_vertical_e (double minimumActivity, double maxi
 
 void Network_addNode_e (Network me, double x, double y, double activity, bool clamped);
 void Network_addConnection_e (Network me, long nodeFrom, long nodeTo, double weight, double plasticity);
-
-void Network_draw (Network me, Graphics graphics, bool colour);
 
 double Network_getActivity_e (Network me, long inode);
 void Network_setActivity_e (Network me, long inode, double activity);

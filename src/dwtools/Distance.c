@@ -33,10 +33,3 @@ Distance Distance_create (long numberOfPoints)
 	if (! me || ! Proximity_init (me, numberOfPoints)) forget (me);
 	return me;
 }
-
-void Distance_drawDendogram (Distance me, Graphics g, int method)
-{
-	(void) me;
-	(void) g;
-	(void) method;
-}

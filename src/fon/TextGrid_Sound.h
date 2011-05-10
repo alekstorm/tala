@@ -29,18 +29,10 @@
 	extern "C" {
 #endif
 
-void TextGrid_Sound_draw (TextGrid me, Sound sound, Graphics g, double tmin, double tmax,
-	int showBoundaries, int useTextStyles, int garnish);
 Collection TextGrid_Sound_extractAllIntervals (TextGrid me, Sound sound, long itier, int preserveTimes);
 Collection TextGrid_Sound_extractNonemptyIntervals (TextGrid me, Sound sound, long itier, int preserveTimes);
 Collection TextGrid_Sound_extractIntervalsWhere (TextGrid me, Sound sound,
 	long itier, int which_Melder_STRING, const wchar_t *text, int preserveTimes);
-
-void TextGrid_Pitch_draw (TextGrid grid, Pitch pitch, Graphics g,
-	long itier, double tmin, double tmax, double fmin, double fmax,
-	double fontSize, int useTextStyles, int horizontalAlignment, int garnish, int speckle, int yscale);
-void TextGrid_Pitch_drawSeparately (TextGrid grid, Pitch pitch, Graphics g, double tmin, double tmax,
-	double fmin, double fmax, int showBoundaries, int useTextStyles, int garnish, int speckle, int yscale);
 
 int TextGrid_Sound_readFromBdfFile (MelderFile file, TextGrid *textGrid, Sound *sound);
 

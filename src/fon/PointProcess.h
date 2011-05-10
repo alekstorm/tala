@@ -24,7 +24,6 @@
  */
 
 #include "Function.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -49,7 +48,6 @@ void PointProcess_removePoint (PointProcess me, long index);
 void PointProcess_removePointNear (PointProcess me, double t);
 void PointProcess_removePoints (PointProcess me, long first, long last);
 void PointProcess_removePointsBetween (PointProcess me, double fromTime, double toTime);
-void PointProcess_draw (PointProcess me, Graphics g, double fromTime, double toTime, int garnish);
 double PointProcess_getInterval (PointProcess me, double t);
 PointProcess PointProcesses_union (PointProcess me, PointProcess thee);
 PointProcess PointProcesses_intersection (PointProcess me, PointProcess thee);

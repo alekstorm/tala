@@ -23,11 +23,12 @@
 
 #include "Articulation.h"
 #include "Speaker.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
 #endif
+
+extern int Art_Speaker_meshCount;
 
 void Art_Speaker_toVocalTract (Art art, Speaker speaker,
 	double intX [], double intY [], double extX [], double extY [],
@@ -49,14 +50,9 @@ void Art_Speaker_toVocalTract (Art art, Speaker speaker,
 		ext [6..9] is the gums, upper teeth and upper lip.
 */
 
-void Art_Speaker_draw (Art art, Speaker speaker, Graphics g);
-void Art_Speaker_fillInnerContour (Art art, Speaker speaker, Graphics g);
-
 void Art_Speaker_meshVocalTract (Art art, Speaker speaker,
 	double xi [], double yi [], double xe [], double ye [],
 	double xmm [], double ymm [], int closed []);
-
-void Art_Speaker_drawMesh (Art art, Speaker speaker, Graphics g);
 
 #ifdef __cplusplus
 	}

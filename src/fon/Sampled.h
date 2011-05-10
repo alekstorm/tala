@@ -27,9 +27,6 @@
 #ifndef _Function_h_
 	#include "Function.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
@@ -123,9 +120,6 @@ void Sampled_getMaximumAndX (I, double xmin, double xmax, long ilevel, int unit,
 	double *return_maximum, double *return_xOfMaximum);
 double Sampled_getMaximum (I, double xmin, double xmax, long ilevel, int unit, int interpolate);
 double Sampled_getXOfMaximum (I, double xmin, double xmax, long ilevel, int unit, int interpolate);
-
-void Sampled_drawInside
-	(I, Graphics g, double xmin, double xmax, double ymin, double ymax, double speckle_mm, long ilevel, int unit);
 
 #ifdef __cplusplus
 	}

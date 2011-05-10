@@ -114,67 +114,6 @@ Matrix CC_to_Matrix (I)
 	return thee;
 }
 
-void CC_paint (I, Graphics g, double xmin, double xmax, long cmin,
-	long cmax, double minimum, double maximum, int garnish)
-{
-	iam (CC);
-	Matrix thee = CC_to_Matrix (me);
-	
-	if (thee == NULL) return;
-	
-	Matrix_paintCells (thee, g, xmin, xmax, cmin, cmax, minimum, maximum);
-	
-	if (garnish)
-	{
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-		Graphics_textBottom (g, 1, L"Time (s)");
-		Graphics_marksLeft (g, 2, 1, 1, 0);
-		Graphics_textLeft (g, 1, L"Coefficients");
-	}
-	
-	forget (thee);
-}
-
-void CC_drawC0 (I, Graphics g, double xmin, double xmax, double ymin,
-	double ymax, int garnish)
-{
-	iam (CC);
-	double *c;
-	long i, bframe, eframe, nframes;
-	(void) garnish;
-	
-	if (xmin >= xmax)
-	{
-		xmin = my xmin; xmax = my xmax;
-	}
-	
-	nframes = Sampled_getWindowSamples (me, xmin, xmax, &bframe, &eframe);
-	
-	if ((c = NUMdvector (bframe, eframe)) == NULL) return;
-	
-	for (i = bframe; i <= eframe; i++)
-	{
-		CC_Frame cf = & my frame[i];
-		c[i] = cf -> c0;
-	}
-	if (ymin >= ymax)
-	{
-		NUMdvector_extrema (c, bframe, eframe, &ymin, &ymax);
-		if (ymax <= ymin) { ymin -= 1.0; ymax += 1.0; }
-	}
-	else
-	{
-		NUMdvector_clip (c, bframe, eframe, ymin, ymax);
-	}
-	Graphics_setInner (g);
-	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
-		
-	Graphics_function (g, c, bframe, eframe, xmin, xmax);
-	Graphics_unsetInner (g);
-	
-	NUMdvector_free (c, bframe);
-}
-
 void CC_getNumberOfCoefficients_extrema (I, long startframe, 
 	long endframe, long *min, long *max)
 {

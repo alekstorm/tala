@@ -52,7 +52,6 @@ double FormantTier_getValueAtTime (FormantTier me, int iformant, double t);
 double FormantTier_getBandwidthAtTime (FormantTier me, int iformant, double t);
 int FormantTier_getMinNumFormants (FormantTier me);
 int FormantTier_getMaxNumFormants (FormantTier me);
-void FormantTier_speckle (FormantTier me, Graphics g, double tmin, double tmax, double fmax, int garnish);
 FormantTier Formant_downto_FormantTier (Formant me);
 FormantTier Formant_PointProcess_to_FormantTier (Formant me, PointProcess pp);
 TableOfReal FormantTier_downto_TableOfReal (FormantTier me, int includeFormants, int includeBandwidths);

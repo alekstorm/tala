@@ -97,6 +97,24 @@
 
 #include <time.h>
 
+// FIXME
+void Pitch_draw (Pitch me, Graphics g, double tmin, double tmax, double fmin, double fmax, int garnish, int speckle, int unit);
+void Pitch_drawInside (Pitch me, Graphics g, double xmin, double xmax, double fmin, double fmax, int speckle, int unit);
+void PointProcess_draw (PointProcess me, Graphics g, double tmin, double tmax, int garnish);
+void Spectrogram_paint (I, Graphics g,
+	double tmin, double tmax, double fmin, double fmax, double maximum, int autoscaling,
+	double dynamic, double preemphasis, double dynamicCompression,
+	int garnish);
+void Spectrogram_paintInside (I, Graphics g, double tmin, double tmax, double fmin, double fmax,
+	double maximum, int autoscaling, double dynamic, double preemphasis, double dynamicCompression);
+void Intensity_drawInside (Intensity me, Graphics g, double tmin, double tmax, double minimum, double maximum);
+void Intensity_draw (Intensity me, Graphics g, double tmin, double tmax,
+	double minimum, double maximum, int garnish);
+void Formant_drawSpeckles_inside (Formant me, Graphics g, double tmin, double tmax, double fmin, double fmax,
+	double suppress_dB, double dotSize);
+void Formant_drawSpeckles (Formant me, Graphics g, double tmin, double tmax, double fmax, double suppress_dB,
+	int garnish);
+
 static const wchar_t * theMessage_Cannot_compute_spectrogram = L"The spectrogram is not defined at the edge of the sound.";
 static const wchar_t * theMessage_Cannot_compute_pitch = L"The pitch contour is not defined at the edge of the sound.";
 static const wchar_t * theMessage_Cannot_compute_formant = L"The formants are not defined at the edge of the sound.";

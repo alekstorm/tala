@@ -27,9 +27,6 @@
 #ifndef _Data_h_
 	#include "sys/Data.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 #ifndef _TableOfReal_h_
 	#include "stat/TableOfReal.h"
 #endif
@@ -100,14 +97,6 @@ Configuration Configuration_varimax (Configuration me, int normalizeRows,
 */
 
 int Configuration_rotateToPrincipalDirections (Configuration me);
-
-void Configuration_draw (Configuration me, Graphics g, int xCoordinate, 
-	int yCoordinate, double xmin, double xmax, double ymin, double ymax, 
-	int labelSize, int useRowLabels, wchar_t *label, int garnish);
-	
-void Configuration_drawConcentrationEllipses (Configuration me, Graphics g, 
-	double scale, int confidence, wchar_t *label, long d1, long d2, double xmin, double xmax,
-	double ymin, double ymax, int fontSize, int garnish);
 
 Configuration TableOfReal_to_Configuration (I);
 

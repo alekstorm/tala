@@ -35,15 +35,6 @@
 #include "fon/Sound_and_Spectrum.h"
 #include "num/NUM2.h"
 
-#define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))
-
-#define THLCON 0.5
-#define THLINC 1.5
-#define EXP2   12
-
-#define PPVPHA(x,y,test) ((test) ? atan2 (-(y),-(x)) : atan2 ((y),(x)))
-#define PHADVT(xr,xi,yr,yi,xa) ((xa) > 0 ? ((xr)*(yr)+(xi)*(yi))/ (xa) : 0)
-
 struct tribolet_struct
 {
 	double thlinc, thlcon;
@@ -284,40 +275,6 @@ end:
 	forget (x); forget (nx); forget (snx);
 	if (Melder_hasError ()) forget (thee);
 	return thee;
-}
-
-void Spectrum_drawPhases (Spectrum me, Graphics g, double fmin, double fmax,
-	double phase_min, double phase_max, int unwrap, int garnish)
-{
-	Matrix thee; long i;
-	int reverse_sign = my z[1][1] < 0;
-
-	if (unwrap)
-	{
-		thee = Spectrum_unwrap (me);
-		if (thee == NULL)
-		{
-		    Melder_warning1 (L"Spectrum_drawPhases: Spectrum has not been unwrapped.");
-		    return;
-		}
-	}
-	else
-	{
-		if ((thee = Matrix_create (my xmin, my xmax, my nx, my dx, my x1,
-			1, 2, 2, 1, 1)) == NULL) return;
-		for (i = 1; i <= my nx; i ++)
-		{
-			thy z[2][i] = PPVPHA (my z[1][i], my z[2][i], reverse_sign);
-		}
-	}
-	
-	Matrix_drawRows (thee, g, fmin, fmax, 1.9, 2.1, phase_min, phase_max);
-	if (garnish)
-	{
-	
-	}	
-
-	forget (thee);
 }
 
 Spectrum Spectra_multiply (Spectrum me, Spectrum thee)

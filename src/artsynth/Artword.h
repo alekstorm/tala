@@ -24,7 +24,6 @@
  */
 
 #include "Articulation.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -90,8 +89,6 @@ void Artword_intoArt (Artword me, Art art, double tim);
 		me != NULL;
 		art != NULL;
 */
-	
-void Artword_draw (Artword me, Graphics graphics, int feature, int garnish);
 
 #ifdef __cplusplus
 	}

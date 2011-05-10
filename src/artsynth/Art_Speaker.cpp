@@ -204,58 +204,6 @@ void Art_Speaker_toVocalTract (Art _art, Speaker speaker,
 	intY [16] = intY [1];
 }
 
-void Art_Speaker_draw (Art art, Speaker speaker, Graphics g) {
-	double f = speaker -> relativeSize * 1e-3;
-	double intX [1 + 16], intY [1 + 16], extX [1 + 11], extY [1 + 11];
-	double bodyX, bodyY;
-	int i;
-	Graphics_Viewport previous;
-
-	Art_Speaker_toVocalTract (art, speaker, intX, intY, extX, extY, & bodyX, & bodyY);
-	previous = Graphics_insetViewport (g, 0.1, 0.9, 0.1, 0.9);
-	Graphics_setWindow (g, -0.05, 0.05, -0.05, 0.05);
-
-	/* Draw inner contour. */
-
-	for (i = 1; i <= 5; i ++)
-		Graphics_line (g, intX [i], intY [i], intX [i + 1], intY [i + 1]);
-	Graphics_arc (g, bodyX, bodyY, 20 * f,
-		atan2 (intY [7] - bodyY, intX [7] - bodyX) * 180 / NUMpi,
-		atan2 (intY [6] - bodyY, intX [6] - bodyX) * 180 / NUMpi);
-	for (i = 7; i <= 15; i ++)
-		Graphics_line (g, intX [i], intY [i], intX [i + 1], intY [i + 1]);
-
-	/* Draw outer contour. */
-
-	for (i = 1; i <= 5; i ++)
-		Graphics_line (g, extX [i], extY [i], extX [i + 1], extY [i + 1]);
-	Graphics_arc (g, 0, 0, speaker -> palate.radius,
-		speaker -> alveoli.a * 180 / NUMpi,
-		speaker -> velum.a * 180 / NUMpi);
-	for (i = 7; i <= 10; i ++)
-		Graphics_line (g, extX [i], extY [i], extX [i + 1], extY [i + 1]);
-	Graphics_resetViewport (g, previous);
-}
-
-void Art_Speaker_fillInnerContour (Art art, Speaker speaker, Graphics g) {
-	double f = speaker -> relativeSize * 1e-3;
-	double intX [1 + 16], intY [1 + 16], extX [1 + 11], extY [1 + 11];
-	double x [1 + 16], y [1 + 16];
-	double bodyX, bodyY;
-	int i;
-	Graphics_Viewport previous;
-
-	Art_Speaker_toVocalTract (art, speaker, intX, intY, extX, extY, & bodyX, & bodyY);
-	previous = Graphics_insetViewport (g, 0.1, 0.9, 0.1, 0.9);
-	Graphics_setWindow (g, -0.05, 0.05, -0.05, 0.05);
-	for (i = 1; i <= 16; i ++) { x [i] = intX [i]; y [i] = intY [i]; }
-	Graphics_setGrey (g, 0.8);
-	Graphics_fillArea (g, 16, & x [1], & y [1]);
-	Graphics_fillCircle (g, bodyX, bodyY, 20 * f);
-	Graphics_setGrey (g, 0.0);
-	Graphics_resetViewport (g, previous);
-}
-
 static double arcLength (double from, double to) {
 	double result = to - from;
 	while (result > 0.0) result -= 2 * NUMpi;
@@ -263,7 +211,7 @@ static double arcLength (double from, double to) {
 	return result;
 }
 
-static int Art_Speaker_meshCount = 27;
+int Art_Speaker_meshCount = 27;
 static double bodyX, bodyY, bodyRadius;
 
 static double toLine (double x, double y, const double intX [], const double intY [], int i) {
@@ -406,38 +354,6 @@ void Art_Speaker_meshVocalTract (Art art, Speaker speaker,
 		- xmm [Art_Speaker_meshCount];
 	ymm [Art_Speaker_meshCount + 1] = 2 * ym [Art_Speaker_meshCount]
 		- ymm [Art_Speaker_meshCount];
-}
-
-void Art_Speaker_drawMesh (Art art, Speaker speaker, Graphics graphics) {
-	double xi [40], yi [40], xe [40], ye [40], xmm [40], ymm [40];
-	int closed [40];
-	int i;
-	Graphics_Viewport previous;
-	int oldLineType = Graphics_inqLineType (graphics);
-	Art_Speaker_meshVocalTract (art, speaker, xi, yi, xe, ye, xmm, ymm, closed);
-	previous = Graphics_insetViewport (graphics, 0.1, 0.9, 0.1, 0.9);   /* Must be square. */
-	Graphics_setWindow (graphics, -0.05, 0.05, -0.05, 0.05);
-
-	/* Mesh lines. */
-	for (i = 1; i <= Art_Speaker_meshCount; i ++)
-		Graphics_line (graphics, xi [i], yi [i], xe [i], ye [i]);
-
-	/* Radii. */
-	Graphics_setLineType (graphics, Graphics_DOTTED);
-	for (i = 1; i <= Art_Speaker_meshCount; i ++)
-		if (xe [i] <= 0.0 && ye [i] >= 0.0)
-			Graphics_line (graphics, 0.0, 0.0, 0.9 * xi [i], 0.9 * yi [i]);
-	Graphics_setLineType (graphics, oldLineType);
-
-	/* Lengths. */
-	for (i = 1; i <= Art_Speaker_meshCount; i ++)
-		Graphics_line (graphics, xmm [i], ymm [i], xmm [i + 1], ymm [i + 1]);
-
-	for (i = 1; i <= Art_Speaker_meshCount + 1; i ++)
-		Graphics_fillCircle_mm (graphics, xmm [i], ymm [i], 1.0);
-	Graphics_setTextAlignment (graphics, Graphics_LEFT, Graphics_HALF);
-	Graphics_text (graphics, 0.0, 0.0, L"O");   /* Origin. */
-	Graphics_resetViewport (graphics, previous);
 }
 
 /* End of file Art_Speaker.cpp */

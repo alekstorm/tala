@@ -33,9 +33,6 @@
 #ifndef _TableOfReal_h_
 	#include "stat/TableOfReal.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
@@ -51,8 +48,6 @@ Categories Categories_create (void);
 Categories Categories_sequentialNumbers (long n);
 
 Categories Categories_selectUniqueItems (Categories me, int sorted);
-
-void Categories_drawItem (Categories me, Graphics g, long position, double xWC, double yWC);
 
 Categories OrderedOfString_to_Categories (I);
 

@@ -258,27 +258,6 @@ void PointProcess_removePointsBetween (PointProcess me, double tmin, double tmax
 	PointProcess_removePoints (me, PointProcess_getHighIndex (me, tmin), PointProcess_getLowIndex (me, tmax));
 }
 
-void PointProcess_draw (PointProcess me, Graphics g, double tmin, double tmax, int garnish) {
-	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
-	Graphics_setWindow (g, tmin, tmax, -1, 1);
-	if (my nt) {
-		long imin = PointProcess_getHighIndex (me, tmin), imax = PointProcess_getLowIndex (me, tmax), i;
-		int lineType = Graphics_inqLineType (g);
-		Graphics_setLineType (g, Graphics_DOTTED);
-		Graphics_setInner (g);
-		for (i = imin; i <= imax; i ++) {
-			Graphics_line (g, my t [i], -1, my t [i], 1);
-		}
-		Graphics_setLineType (g, lineType);
-		Graphics_unsetInner (g);
-	}
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, 1, L"Time (s)");
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-	}
-}
-
 double PointProcess_getInterval (PointProcess me, double t) {
 	long ileft = PointProcess_getLowIndex (me, t);
 	if (ileft <= 0 || ileft >= my nt) return NUMundefined;

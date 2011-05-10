@@ -24,7 +24,6 @@
  */
 
 #include "Sampled.h"
-#include "ui/Graphics.h"
 #include "ui/Interpreter.h"
 
 #ifdef __cplusplus
@@ -138,14 +137,6 @@ void Pitch_pathFinder (Pitch me, double silenceThreshold, double voicingThreshol
 /* Drawing methods. */
 #define Pitch_speckle_NO  FALSE
 #define Pitch_speckle_YES  TRUE
-void Pitch_drawInside (Pitch me, Graphics g, double tmin, double tmax, double fmin, double fmax,
-	int speckle, int yscale);
-void Pitch_draw (Pitch me, Graphics g, double tmin, double tmax, double fmin, double fmax, int garnish,
-	int speckle, int yscale);
-/*
-	draw a pitch contour into a Graphics.
-	If tmax <= tmin, draw whole time domain.
-*/
 
 void Pitch_difference (Pitch me, Pitch thee);
 /* give information about frames that are different in me and thee. */

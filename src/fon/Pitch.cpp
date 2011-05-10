@@ -610,30 +610,6 @@ end:
 	NUMlmatrix_free (psi, 1, 1);
 }
 
-void Pitch_drawInside (Pitch me, Graphics g, double xmin, double xmax, double fmin, double fmax, int speckle, int unit) {
-	Sampled_drawInside (me, g, xmin, xmax, fmin, fmax, speckle, Pitch_LEVEL_FREQUENCY, unit);
-}
-
-void Pitch_draw (Pitch me, Graphics g, double tmin, double tmax, double fmin, double fmax, int garnish, int speckle, int unit) {
-	Graphics_setInner (g);
-	Pitch_drawInside (me, g, tmin, tmax, fmin, fmax, speckle, unit);
-	Graphics_unsetInner (g);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, TRUE, L"Time (s)");
-		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
-		static MelderString buffer = { 0 };
-		MelderString_empty (& buffer);
-		MelderString_append3 (& buffer, L"Pitch (", ClassFunction_getUnitText (classPitch, Pitch_LEVEL_FREQUENCY, unit, Function_UNIT_TEXT_GRAPHICAL), L")");
-		Graphics_textLeft (g, TRUE, buffer.string);
-		if (ClassFunction_isUnitLogarithmic (classPitch, Pitch_LEVEL_FREQUENCY, unit)) {
-			Graphics_marksLeftLogarithmic (g, 6, TRUE, TRUE, FALSE);
-		} else {
-			Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
-		}
-	}
-}
-
 void Pitch_difference (Pitch me, Pitch thee) {
 	long i, nuvtov = 0, nvtouv = 0, ndfdown = 0, ndfup = 0;
 	if (my nx != thy nx || my dx != thy dx || my x1 != thy x1) {

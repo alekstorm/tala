@@ -28,10 +28,6 @@
 #ifndef _Sampled_h_
 	#include "Sampled.h"
 #endif
-#ifndef _Graphics_h_
-	#include "Graphics.h"
-#endif
-
 #ifdef __cplusplus
 	extern "C" {
 #endif
@@ -83,13 +79,6 @@ Image Image_create
 
 long Image_getWindowExtrema (I, long ixmin, long ixmax, long iymin, long iymax,
 	unsigned char *minimum, unsigned char *maximum);
-
-void Image_paint (I, Graphics g, double xmin, double xmax, double ymin, double ymax,
-	unsigned char minimum, unsigned char maximum);
-/*
-	Every sample is drawn as a grey rectangle.
-	The larger the value of the sample, the darker the rectangle.
-*/
 
 #ifdef __cplusplus
 	}

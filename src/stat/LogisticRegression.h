@@ -38,9 +38,6 @@ LogisticRegression LogisticRegression_create (const wchar_t *dependent1, const w
 LogisticRegression Table_to_LogisticRegression (Table me, const wchar_t *columnsWithFactors_string,
 	const wchar_t *columnWithDependent1_string, const wchar_t *columnWithDependent2_string);
 
-void LogisticRegression_drawBoundary (LogisticRegression me, Graphics graphics, long colx, double xmin, double xmax,
-	long coly, double ymin, double ymax, bool garnish);
-
 #ifdef __cplusplus
 	}
 #endif

@@ -56,15 +56,6 @@ double TableOfReal_getColumnStdev (I, long icol);
 TableOfReal Table_to_TableOfReal (Table me, long labelColumn);
 Table TableOfReal_to_Table (TableOfReal me, const wchar_t *labelOfFirstColumn);
 int TableOfReal_formula (I, const wchar_t *expression, Interpreter *interpreter, Any /* TableOfReal */ target);
-void TableOfReal_drawAsNumbers (I, Graphics g, long rowmin, long rowmax, int iformat, int precision);
-void TableOfReal_drawAsNumbers_if (I, Graphics g, long rowmin, long rowmax, int iformat, int precision,
-	const wchar_t *conditionFormula, Interpreter *interpreter);
-void TableOfReal_drawAsSquares (I, Graphics g, long rowmin, long rowmax,
-	long colmin, long colmax, int garnish);
-void TableOfReal_drawVerticalLines (I, Graphics g, long rowmin, long rowmax);
-void TableOfReal_drawHorizontalLines (I, Graphics g, long rowmin, long rowmax);
-void TableOfReal_drawLeftAndRightLines (I, Graphics g, long rowmin, long rowmax);
-void TableOfReal_drawTopAndBottomLines (I, Graphics g, long rowmin, long rowmax);
 
 Any TablesOfReal_append (I, thou);
 Any TablesOfReal_appendMany (Collection me);

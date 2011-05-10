@@ -210,21 +210,9 @@ long FFNet_getNumberOfUnitsInLayer (FFNet me, int layer);
 
 double FFNet_getMinimum (FFNet me);
 
-void FFNet_drawTopology (FFNet me, Graphics g);
-void FFNet_drawActivation (FFNet me, Graphics g);
-void FFNet_drawWeightsToLayer (FFNet me, Graphics g, int toLayer, int scaling, int garnish);
-/* Deprecated: the strengths of the weights that connect to the nodes in later 'layer' */
-/* are drawn with boxes. The area of each box corresponds to the strength. */ 
-/* Black boxes have negative strength? */
- 
-void FFNet_drawCostHistory (FFNet me, Graphics g, long from_iteration, long to_iteration,
-	double from_cost, double to_cost, int garnish);
-/* draw cost vs epochs */
-
 Collection FFNet_createIrisExample (long numberOfHidden1, long numberOfHidden2);
 
 TableOfReal FFNet_extractWeights (FFNet me, long layer);
-void FFNet_drawWeights (FFNet me, Graphics g, long layer, int garnish);
 FFNet FFNet_and_TabelOfReal_to_FFNet (FFNet me, TableOfReal him, long layer);
 
 #ifdef __cplusplus

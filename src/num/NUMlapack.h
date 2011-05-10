@@ -34,6 +34,10 @@
 #define NUM_BYROW 1
 #define NUM_BYCOLUMN 0
 
+#ifdef __cplusplus
+	extern "C" {
+#endif
+
 /*
 From: http://www.netlib.org/lapack/faq.html
 
@@ -1110,5 +1114,9 @@ void NUMtriangularInverse (int upper, int unitDiagonal, long n, double **a);
 	Computes inverse of triangular matrix.
 
 */
+
+#ifdef __cplusplus
+	}
+#endif
 
 #endif /* _NUMlapack_h_ */

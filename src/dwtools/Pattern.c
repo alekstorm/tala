@@ -79,19 +79,6 @@ void Pattern_normalize (I, int choice, double pmin, double pmax)
 	}
 }
 
-void Pattern_draw (I, Graphics g, long pattern, double xmin, double xmax,
-	double ymin, double ymax, int garnish)
-{
-	iam (Pattern);
-	Matrix_drawRows (me, g, xmin, xmax, pattern - 0.5, pattern + 0.5, ymin, ymax);
-	if (garnish)
-	{
-		Graphics_drawInnerBox (g);
-    	Graphics_marksBottom (g, 2, 1, 1, 0);
-    	Graphics_marksLeft (g, 2, 1, 1, 0);		
-	}
-}
-
 Pattern Matrix_to_Pattern (I, int join)
 {
     iam (Matrix);

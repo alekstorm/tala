@@ -27,7 +27,6 @@
 /* If it comes from a sound (expressed in Pa), the values are expressed in Pa/Hz. */
 
 #include "Matrix.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -78,20 +77,6 @@ double Spectrum_getCentralMoment (Spectrum me, double moment, double power);
 double Spectrum_getStandardDeviation (Spectrum me, double power);
 double Spectrum_getSkewness (Spectrum me, double power);
 double Spectrum_getKurtosis (Spectrum me, double power);
-
-void Spectrum_drawInside (Spectrum me, Graphics g, double fmin, double fmax, double minimum, double maximum);
-void Spectrum_draw (Spectrum me, Graphics g, double fmin, double fmax, double minimum, double maximum, int garnish);
-/*
-	Function:
-		draw a Spectrum into a Graphics.
-	Preconditions:
-		maximum > minimum;
-	Arguments:
-		[fmin, fmax]: frequencies in Hertz; x domain of drawing;
-		Autowindowing: if fmax <= fmin, x domain of drawing is [my xmin, my xmax].
-		[minimum, maximum]: power in dB/Hertz; y range of drawing.
-*/
-void Spectrum_drawLogFreq (Spectrum me, Graphics g, double fmin, double fmax, double minimum, double maximum, int garnish);
 
 Table Spectrum_downto_Table (Spectrum me, bool includeBinNumbers, bool includeFrequency,
 	bool includeRealPart, bool includeImaginaryPart, bool includeEnergyDensity, bool includePowerDensity);

@@ -70,17 +70,6 @@ void Vector_subtractMean (I);
 void Vector_multiplyByScalar (I, double scalar);
 void Vector_scale (I, double scale);
 
-void Vector_draw (I, Graphics g, double *pxmin, double *pxmax, double *pymin, double *pymax,
-	double defaultDy, const wchar_t *method);
-/*
-	If *pxmin equals *pxmax, then autowindowing from my xmin to my xmax.
-	If *pymin equals *pymax, then autoscaling from minimum to maximum;
-	if minimum then equals maximum, defaultDy will be subtracted from *pymin and added to *pymax;
-	it must be a positive real number (e.g. 0.5 Pa for Sound, 1.0 dB for Ltas).
-	method can be "curve", "bars", "poles", or "speckles"; it must not be NULL;
-	if anything else is specified, a curve is drawn.
-*/
-
 #ifdef __cplusplus
 	}
 #endif

@@ -26,9 +26,6 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 #ifndef _Matrix_h_
 	#include "fon/Matrix.h"
 #endif
@@ -56,12 +53,6 @@ long CC_getMinimumNumberOfCoefficients (I, long startframe, long endframe);
 
 long CC_getMaximumNumberOfCoefficients (I, long startframe, long endframe);
 
-void CC_paint (I, Graphics g, double xmin, double xmax, long cmin,
-	long cmax, double minimum, double maximum, int garnish);
-
-void CC_drawC0 (I, Graphics g, double xmin, double xmax, double ymin,
-	double ymax, int garnish);
- 	
 Matrix CC_to_Matrix (I);
 
 double CC_getValue (I, double t, long index);

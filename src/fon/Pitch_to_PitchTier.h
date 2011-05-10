@@ -35,10 +35,6 @@ PitchTier Pitch_to_PitchTier (Pitch me);
 	Unvoiced frames are not converted.
 */
 
-void PitchTier_Pitch_draw (PitchTier me, Pitch uv, Graphics g,
-	double tmin, double tmax, double fmin, double fmax,
-	int nonPeriodicLineType, int garnish, const wchar_t *method);
-
 Pitch Pitch_PitchTier_to_Pitch (Pitch me, PitchTier tier);
 
 #ifdef __cplusplus

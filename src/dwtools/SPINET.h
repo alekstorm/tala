@@ -28,9 +28,6 @@
 #ifndef _Sampled2_h_
 	#include "Sampled2.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
@@ -48,13 +45,6 @@ class_create (SPINET, Sampled2);
 SPINET SPINET_create (double tmin, double tmax, long nt, double dt, double t1,
 	 double minimumFrequency, double maximumFrequency, long nFilters,
 	 double excitationErbProportion, double inhibitionErbProportion);
-
-void SPINET_spectralRepresentation (SPINET me, Graphics g, double fromTime, double toTime,
-	double fromErb, double toErb, double minimum, double maximum, int enhanced,
-	int garnish);
-	
-void SPINET_drawSpectrum (SPINET me, Graphics g, double time, double fromErb, double toErb,
-	double minimum, double maximum, int enhanced, int garnish);
 
 #ifdef __cplusplus
 	}

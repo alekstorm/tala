@@ -32,17 +32,20 @@
 
 #include "ui/praat.h"
 
-#include "FFNet/FFNet_Eigen.h"
 #include "FFNet/FFNet_Matrix.h"
-#include "FFNet/FFNet_Pattern.h"
 #include "FFNet/FFNet_Activation_Categories.h"
 #include "FFNet/FFNet_Pattern_Activation.h"
 #include "FFNet/FFNet_Pattern_Categories.h"
 #include "dwtools/Discriminant.h"
 #include "dwtools/PCA.h"
 #include "dwtools/Minimizers.h"
+#include "dwtools/Matrix_extensions.h"
+#include "num/NUM2.h"
 
 #include <math.h>
+
+void TableOfReal_drawAsSquares (I, Graphics graphics, long rowmin, long rowmax,
+	long colmin, long colmax, int garnish);
 
 /* Routines to be removed sometime in the future:
 20040422, 2.4.04: FFNet_drawWeightsToLayer  use FFNet_drawWeights
@@ -277,6 +280,241 @@ DIRECT (FFNet_selectAllWeights)
 	}
 END
 
+void SimpleString_draw (SimpleString me, Any g, double xWC, double yWC)
+{
+    Graphics_text (g, xWC, yWC, my string);
+}
+
+void Categories_drawItem (Categories me, Graphics g, long position, 
+	double xWC, double yWC)
+{
+	if (position < 1 || position > my size) return;
+	SimpleString_draw ((structSimpleString *)my item[position], g, xWC, yWC);
+}
+
+void FFNet_drawTopology (FFNet me, Graphics g)
+{
+    long i, maxNumOfUnits = my nUnitsInLayer[0];
+    int dxIsFixed = 1;
+    double radius, dx, dy = 1.0 / (my nLayers + 1);
+
+    for (i = 1; i <= my nLayers; i++)
+	{
+		if (my nUnitsInLayer[i] > maxNumOfUnits) maxNumOfUnits = my nUnitsInLayer[i];
+	}
+    dx = 1.0 / maxNumOfUnits;
+    radius = dx / 10;
+    Graphics_setInner (g);
+    Graphics_setWindow (g, 0.0, 1.0, 0.0, 1.0); 
+    for (i = 0; i <= my nLayers; i++)
+    {
+		long j, k;
+		double dx2 = dx, x2WC, y2WC = dy / 2 + i * dy;
+		double x2 = (maxNumOfUnits - my nUnitsInLayer[i] + 1) * dx2 / 2;
+		/* draw the units */
+		if (! dxIsFixed)
+		{
+			dx2 = 1.0 / my nUnitsInLayer[i];
+			x2 = dx2 / 2;
+		}
+		if (i == 0)
+		{
+	    	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_TOP);
+	    	for (x2WC = x2, j = 1; j <= my nInputs; j++)
+	    	{
+				Graphics_arrow (g, x2WC, y2WC - radius - dy / 4, x2WC, y2WC - radius);
+				x2WC += dx2;
+	    	}
+		}  
+		Graphics_setColour (g, Graphics_RED);
+		for (x2WC = x2, j = 1; j <= my nUnitsInLayer[i]; j++)
+		{
+	   	 	Graphics_circle (g, x2WC, y2WC, radius);
+			if (i > 0) Graphics_fillCircle (g, x2WC, y2WC, radius);
+			x2WC += dx2;
+		}
+		Graphics_setColour (g, Graphics_BLACK);
+		if (i > 0)
+		{
+	    	double dx1 = dx;
+			double x1 = (maxNumOfUnits - my nUnitsInLayer[i - 1] + 1) * dx1 / 2;
+	   		double y1WC = y2WC - dy;
+	    	if (! dxIsFixed)
+			{
+				dx1 = 1.0 / my nUnitsInLayer[i - 1];
+				x1 = dx1 / 2;
+			}
+	    	x2WC = x2;	
+	    	for (j = 1; j <= my nUnitsInLayer[i]; j++)
+	    	{
+				double x1WC = x1;
+				for (k = 1; k <= my nUnitsInLayer[i - 1]; k++)
+				{
+		    		double xd = x2WC - x1WC;
+		    		double cosa = xd / sqrt (xd * xd + dy * dy);
+		    		double sina = dy / sqrt (xd * xd + dy * dy);
+		    		Graphics_line (g, x1WC + radius * cosa, y1WC + radius * sina, x2WC - radius * cosa, y2WC - radius * sina);
+		    		x1WC += dx1;
+				}
+				x2WC += dx2;
+	    	}
+		}
+		if (i == my nLayers)
+		{
+	    	x2WC = x2;
+	    	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_BOTTOM);
+	    	for (j = 1; j <= my nOutputs; j++)
+	    	{
+				Graphics_arrow (g, x2WC, y2WC + radius, x2WC, y2WC + radius + dy / 4);
+				if (my outputCategories) Categories_drawItem (my outputCategories, g, j, x2WC, y2WC + radius + dy / 4); 
+				x2WC += dx2;
+	    	}
+		}
+    }
+    Graphics_unsetInner (g);
+}
+
+void FFNet_drawActivation (FFNet me, Graphics g)
+{
+    long i, j, node = 1, maxNumOfUnits = my nUnitsInLayer[0];
+    int dxIsFixed = 1;
+	Graphics_Colour colour = Graphics_inqColour (g);
+    double r1, dx, dy = 1.0 / (my nLayers + 1);
+
+    Graphics_setInner (g);
+    Graphics_setWindow (g, 0.0, 1.0, 0.0, 1.0); 
+    for (i = 1; i <= my nLayers; i++)
+	{
+		if (my nUnitsInLayer[i] > maxNumOfUnits) maxNumOfUnits = my nUnitsInLayer[i];
+	}
+    dx = 1.0 / maxNumOfUnits;
+    r1 = dx / 2; /* May touch when neighbouring activities are both 1 (very rare). */
+    for (i = 0; i <= my nLayers; i++, node++)
+    {
+		double dx2 = dx, x2WC, y2WC = dy / 2 + i * dy;
+		double x2 = (maxNumOfUnits - my nUnitsInLayer[i] + 1) * dx2 / 2;
+		if (! dxIsFixed)
+		{
+			dx2 = 1.0 / my nUnitsInLayer[i];
+			x2 = dx2 / 2;
+		}
+		x2WC = x2;
+		for (j = 1; j <= my nUnitsInLayer[i]; j++, node++)
+		{
+	    	double activity = my activity[node];
+	    	double radius = r1 * (fabs (activity) < 0.05 ? 0.05 : fabs (activity));
+	    	/*Graphics_setColour (g, activity < 0 ? Graphics_BLACK : Graphics_RED);*/
+	    	Graphics_circle (g, x2WC, y2WC, radius);
+	    	if (activity < 0) Graphics_fillCircle (g, x2WC, y2WC, radius);
+	    	x2WC += dx2;
+		}
+    }
+    Graphics_setColour (g, colour);
+    Graphics_unsetInner (g);
+}
+
+void Matrix_drawAsSquares (I, Any g, double xmin, double xmax, double ymin, double ymax, int garnish);
+
+/* This routine is deprecated since praat-4.2.4 20040422 and will be removed in the future. */
+/* Deprecated: the strengths of the weights that connect to the nodes in later 'layer' */
+/* are drawn with boxes. The area of each box corresponds to the strength. */ 
+/* Black boxes have negative strength? */
+void FFNet_drawWeightsToLayer (FFNet me, Graphics g, int layer, int scaling, int garnish)
+{
+    Matrix weights;
+    
+    if (layer < 1 || layer > my nLayers || 
+    	! (weights = FFNet_weightsToMatrix (me, layer, 0))) return;
+    Matrix_scale (weights, scaling);
+    Matrix_drawAsSquares (weights, g, 0, 0, 0, 0, 0);
+    if (garnish)
+    {
+    	double x1WC, x2WC, y1WC, y2WC; wchar_t text[30];
+		Graphics_inqWindow (g, & x1WC, & x2WC, & y1WC, & y2WC);
+		swprintf (text, 30, L"Units in layer %ld ->", layer);
+		Graphics_textBottom (g, 0, text);
+		if (layer == 1) wcscpy (text, L"Input units ->");
+		else swprintf (text, 30, L"Units in layer %ld ->", layer-1);
+		Graphics_textLeft (g, 0, text);
+		/* how do I find out the current settings ??? */
+		Graphics_setTextAlignment (g, Graphics_RIGHT, Graphics_HALF);
+		Graphics_setInner (g);
+		Graphics_text (g, 0.5, weights->ny, L"bias");
+		Graphics_unsetInner (g);
+    }
+    forget (weights);
+}
+
+void FFNet_drawWeights (FFNet me, Graphics g, long layer, int garnish)
+{
+    TableOfReal thee = FFNet_extractWeights (me, layer);
+    
+	if (thee == NULL) return;
+	TableOfReal_drawAsSquares (thee, g, 1, thy numberOfRows, 1, thy numberOfColumns, garnish);
+
+    forget (thee);
+}
+
+void Minimizer_drawHistory (I, Any graphics, long iFrom, long iTo, double hmin, 
+    double hmax, int garnish)
+{
+    iam (Minimizer); 
+	double *history;
+    long i, itmin, itmax;
+	
+    if (my history == NULL ||
+		(history = NUMdvector (1, my iteration)) == NULL) return;
+    for (i = 1; i <= my iteration; i++)
+	{
+		history[i] = my history[i];
+	}
+    if (iTo <= iFrom)
+	{
+		iFrom = 1; iTo = my iteration;
+	}
+    itmin = iFrom; itmax = iTo;
+    if (itmin < 1) itmin = 1; 
+    if (itmax > my iteration) itmax = my iteration;
+    if (hmax <= hmin)
+	{
+		NUMdvector_extrema (history, itmin, itmax, & hmin, & hmax);
+	}
+    if (hmax <= hmin)
+	{
+		hmin -= 0.5 * fabs (hmin);
+		hmax += 0.5 * fabs (hmax);
+	}
+    Graphics_setInner (graphics);
+    Graphics_setWindow (graphics, iFrom, iTo, hmin, hmax);
+    Graphics_function (graphics, history, itmin, itmax, itmin, itmax);
+    NUMdvector_free (history, 1);
+    Graphics_unsetInner (graphics);
+    if (garnish)
+    {
+    	Graphics_drawInnerBox (graphics);    
+   		Graphics_textBottom (graphics, 1, L"Number of iterations");
+		Graphics_marksBottom (graphics, 2, 1, 1, 0);
+    	Graphics_marksLeft (graphics, 2, 1, 1, 0);
+    }
+}
+
+/* draw cost vs epochs */
+void FFNet_drawCostHistory (FFNet me, Graphics g, long iFrom, long iTo, 
+    double costMin, double costMax, int garnish)
+{
+    if (my minimizer) Minimizer_drawHistory (my minimizer, g, iFrom, iTo,
+		costMin, costMax, 0);
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+		Graphics_textLeft (g, 1, my costFunctionType == FFNet_COST_MSE ?
+			L"Minimum squared error" : L"Minimum cross entropy");
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+		Graphics_textBottom (g, 1, L"Number of epochs");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+	}
+}
+
 DIRECT (FFNet_drawTopology)
     EVERY_DRAW (FFNet_drawTopology ((structFFNet *)OBJECT, GRAPHICS))
 END
@@ -349,6 +587,141 @@ END
 
 /******************* FFNet && Eigen ******************************************/
 
+void FFNet_Eigen_drawIntersection (FFNet me, Eigen eigen, Graphics g, long pcx, long pcy,
+    double xmin, double xmax, double ymin, double ymax)
+{
+    long i, ix = labs (pcx), iy = labs (pcy); double x1, x2, y1, y2;
+    long numberOfEigenvalues = eigen -> numberOfEigenvalues;
+    long dimension = eigen -> dimension;
+    
+    if (ix > numberOfEigenvalues ||
+    	iy > numberOfEigenvalues || my nInputs != dimension) return;
+    Melder_assert (ix > 0 && iy > 0);
+    if (xmax <= xmin || ymax <= ymin) Graphics_inqWindow (g, & x1, & x2, & y1, & y2);
+    if (xmax <= xmin) { xmin = x1; xmax = x2; }
+    if (ymax <= ymin) { ymin = y1; ymax = y2; }
+    Graphics_setInner (g);
+    Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+    for (i=1; i <= my nUnitsInLayer[1]; i++)
+    {
+		long j, unitOffset = my nInputs + 1;
+		double c1 = 0.0, c2 = 0.0, bias = my w[ my wLast[unitOffset+i] ];
+		double x[6], y[6], xs[3], ys[3]; int ns = 0;
+		for (j=1; j <= my nInputs; j++)
+		{
+	    	c1 += my w[ my wFirst[unitOffset+i] + j - 1 ] * eigen->eigenvectors[ix][j];
+	    	c2 += my w[ my wFirst[unitOffset+i] + j - 1 ] * eigen->eigenvectors[iy][j];
+		}
+		x[1] = x[2] = x[5] = xmin; x[3] = x[4] = xmax;
+		y[1] = y[4] = y[5] = ymin; y[2] = y[3] = ymax;
+		for (j=1; j <= 4; j++)
+		{
+	    	double p1 = c1 * x[j  ] + c2 * y[j  ] + bias;
+	    	double p2 = c1 * x[j+1] + c2 * y[j+1] + bias;
+	    	double r = fabs (p1) / ( fabs (p1) + fabs (p2));
+	    	if (p1*p2 > 0 || r == 0.0) continue;
+	    	if (++ns > 2) break;
+	    	xs[ns] = x[j] + ( x[j+1] - x[j]) * r;
+	    	ys[ns] = y[j] + ( y[j+1] - y[j]) * r;
+		}
+		if (ns < 2) Melder_casual ("Intersection for unit %ld outside range", i);
+		else Graphics_line (g, xs[1], ys[1], xs[2], ys[2]);
+    }
+    Graphics_unsetInner (g);
+}
+
+/*
+	Draw the intersection line of the decision hyperplane 'w.e-b' of the weights of unit i 
+	from layer j with the plane spanned by eigenvectors pcx and pcy.
+*/
+void FFNet_Eigen_drawDecisionPlaneInEigenspace (FFNet me, thou, Graphics g, long unit,
+	long layer, long pcx, long pcy, double xmin, double xmax, double ymin, double ymax)
+{
+	thouart (Eigen);
+    long i, iw, node;
+	double ni, xi[3], yi[3]; /* Intersections */
+	double x1, x2, y1, y2;
+	double bias, we1, we2;
+    
+	if (layer < 1 || layer > my nLayers) return;
+	if (unit < 1 || unit > my nUnitsInLayer[layer]) return;
+    if (pcx > thy numberOfEigenvalues || pcy > thy numberOfEigenvalues) return;
+	if (my nUnitsInLayer[layer-1] != thy dimension) return;
+    
+    Graphics_inqWindow (g, & x1, & x2, & y1, & y2);
+    if (xmax <= xmin)
+	{
+		xmin = x1; xmax = x2;
+	}
+    if (ymax <= ymin)
+	{
+		ymin = y1; ymax = y2; 
+	}
+    Graphics_setInner (g);
+    Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+	
+	node = FFNet_getNodeNumberFromUnitNumber (me, unit, layer);
+	if (node < 1) return;
+	
+	/*
+		Suppose p1 and p2 are the two points in the eigenplane, spanned by the eigenvectors
+		e1 and e2, where the neural net decision hyperplane intersects these eigenvectors.
+		Their coordinates in the eigenplane will be (x0*e1, 0) and (0,y0*e2).
+		At the same time, the two points are part of the decision hyperplane of the
+		chosen unit. The hyperplane equation is:
+			w.e+bias = 0,
+		where 'w' is the weight vector, 'e' is the input vector and 'b' is the bias.
+		This results in two equations for the unknown x0 and y0:
+			w.(x0*e1)+bias = 0
+			w.(y0*e2)+bias = 0
+		This suggests the solution for x0 and y0:
+		
+			x0 = -bias / (w.e1)
+			y0 = -bias / (w.e2)
+		
+		If w.e1 != 0 && w.e2 != 0
+		 	p1 = (x0, 0) and p2 = (0, y0)	
+		If w.e1 == 0 && w.e2 != 0
+			The line is parallel to e1 and intersects e2 at y0.
+		If w.e2 == 0 && w.e1 != 0
+			The line is parallel to e2 and intersects e1 at x0.
+		If w.e1 == 0 && w.e2 == 0
+			Both planes are parallel, no intersection.
+	*/
+	
+	we1 = 0; we2 = 0; iw = my wFirst[node] - 1;
+	
+	for (i = 1; i <= my nUnitsInLayer[layer-1]; i++)
+	{
+		we1 += my w[iw + i] * thy eigenvectors[pcx][i];
+		we2 += my w[iw + i] * thy eigenvectors[pcy][i];
+	}
+	
+	bias = my w[my wLast[node]];
+	x1 = xmin; x2 = xmax;
+	y1 = ymin; y2 = ymax;
+	if (we1 != 0)
+	{
+		x1 = -bias / we1; y1 = 0;
+	}
+	if (we2 != 0)
+	{
+		x2 = 0; y2 = -bias / we2;
+	}
+	if (we1 == 0 && we2 == 0)
+	{
+		Melder_warning5 (L"We cannot draw the intersection of the neural net decision plane\n"
+			"for unit ", Melder_integer (unit), L" in layer ", Melder_integer (layer), 
+			L" with the plane spanned by the eigenvectors because \nboth planes are parallel.");
+		return;
+	}
+	ni = NUMgetIntersectionsWithRectangle (x1, y1, x2, y2, xmin, ymin, xmax, ymax, xi, yi);
+	if (ni == 2) Graphics_line (g, xi[1], yi[1], xi[2], yi[2]);
+	else Melder_warning1 (L"There were no intersections in the drawing area.\n"
+		"Please enlarge the drawing area.");
+    Graphics_unsetInner (g);
+}
+
 FORM (FFNet_Eigen_drawIntersection, L"FFnet & Eigen: Draw intersection", 0)
     INTEGER (L"X-component", L"1")
     INTEGER (L"Y-component", L"2")
@@ -406,6 +779,13 @@ DO
 END
 
 /************************* FFNet && Pattern **********************************/
+
+void FFNet_Pattern_drawActivation (FFNet me, Pattern pattern, Graphics g, long index)
+{
+    if (index < 1 || index > pattern->ny) return;
+    FFNet_propagate (me, pattern->z[index], NULL);
+    FFNet_drawActivation (me, g);
+}
 
 FORM (FFNet_Pattern_drawActivation, L"Draw an activation", 0)
 	NATURAL (L"Pattern (row) number", L"1");

@@ -65,9 +65,6 @@
 #ifndef _Data_h_
 	#include "sys/Data.h"
 #endif
-#ifndef _Graphics_h_
-	#include "Graphics.h"
-#endif
 #ifndef _Minimizers_h_
 	#include "Minimizers.h"
 #endif
@@ -116,9 +113,6 @@ Salience Salience_create (long numberOfSources, long numberOfDimensions);
 void Salience_setDefaults (Salience me);
 
 long Salience_correctNegatives (Salience me);
-
-void Salience_draw (Salience me, Graphics g, int xdimension, int ydimension, 
-	int garnish);
 
 /************************** class MDSVec ******************************/
 
@@ -416,31 +410,6 @@ Configuration Dissimilarity_Weight_ispline_mds
 	long numberOfInteriorKnots, long order, double tolerance,
 	long numberOfIterations, long numberOfRepetitions, int showProgress);
 
-void Dissimilarity_Configuration_Weight_drawAbsoluteRegression 
-	(Dissimilarity d, Configuration c, Weight w, Graphics g, double xmin, 
-	double xmax, double ymin, double ymax,
-	double size_mm, const wchar_t *mark, int garnish);
-
-void Dissimilarity_Configuration_Weight_drawRatioRegression 
-	(Dissimilarity d, Configuration c, Weight w, Graphics g, 
-	double xmin, double xmax, double ymin, double ymax,
-	double size_mm, const wchar_t *mark, int garnish);
-
-void Dissimilarity_Configuration_Weight_drawIntervalRegression 
-	(Dissimilarity d, Configuration c, Weight w, Graphics g, 
-	double xmin, double xmax, double ymin, double ymax,
-	double size_mm, const wchar_t *mark, int garnish);
-
-void Dissimilarity_Configuration_Weight_drawMonotoneRegression 
-	(Dissimilarity d, Configuration c, Weight w, Graphics g, 
-	int tiesProcessing, double xmin, double xmax, double ymin, double ymax,
-	double size_mm, const wchar_t *mark, int garnish);
-
-void Dissimilarity_Configuration_Weight_drawISplineRegression 
-	(Dissimilarity d, Configuration c, Weight w, Graphics g, 
-	long numberOfInternalKnots, long order, double xmin, double xmax, 
-	double ymin, double ymax, double size_mm, const wchar_t *mark, int garnish);
-
 Distance Dissimilarity_Configuration_Transformator_Weight_transform 
 	(Dissimilarity d, Configuration c, Any t, Weight w);
 
@@ -448,14 +417,6 @@ Distance Dissimilarity_Configuration_Transformator_Weight_transform
 
 
 ScalarProduct Distance_to_ScalarProduct (Distance me, int normalize);
-
-
-/************** DISTANCE & PROXIMITY ********************************/
-
-
-void Proximity_Distance_drawScatterDiagram (I, Distance thee, Graphics g, 
-	double xmin, double xmax, double ymin, double ymax, double size_mm, 
-	const wchar_t *mark, int garnish);  
 
 
 /********** COVARIANCE & CONFIGURATION ***************************/
@@ -478,10 +439,6 @@ Configuration Correlation_to_Configuration (Correlation me,
 Distance Configuration_to_Distance (Configuration me);
 /* Calculates distances between the points */
 
-void Distance_and_Configuration_drawScatterDiagram 
-	(Distance me, Configuration him, Graphics g, double xmin, double xmax, 
-	double ymin, double ymax, double size_mm, const wchar_t *mark, int garnish);
-
 Configuration Distance_to_Configuration_torsca (Distance me, 
 	int numberOfDimensions);
 
@@ -500,20 +457,11 @@ Configuration Dissimilarity_Configuration_kruskal
 double Dissimilarity_Configuration_getStress 
 	(Dissimilarity me, Configuration him, int processTies, int stress_formula);
 
-void Dissimilarity_Configuration_drawShepardDiagram 
-	(Dissimilarity me, Configuration him, Graphics g, double xmin, double xmax, 
-	double ymin, double ymax, double size_mm, const wchar_t *mark, int garnish);
-
 Distance Dissimilarity_Configuration_monotoneRegression 
 	(Dissimilarity dis, Configuration conf, int processTies);
 
 Distances Dissimilarities_Configuration_monotoneRegression 
 	(Dissimilarities dissims, Configuration conf, int processTies);
-
-void Dissimilarity_Configuration_drawMonotoneRegression 
-	(Dissimilarity me, Configuration him, Graphics g, int processTies, 
-	double xmin, double xmax, double ymin, double ymax,
-	double size_mm, const wchar_t *mark, int garnish);
 
 /************** SIMILARITY & TABLESOFREAL ********************************/
 
@@ -720,11 +668,6 @@ Dissimilarity Dissimilarity_createLetterRExample (double noiseRange);
 Collection INDSCAL_createCarrollWishExample (double noiseStd);
 
 Salience Salience_createCarrollWishExample (void);
-
-void drawSplines (Graphics g, double low, double high, double ymin, double ymax,
-	int type, long order, wchar_t *interiorKnots, int garnish);
-
-void drawMDSClassRelations (Graphics g);
 
 #ifdef __cplusplus
 	}

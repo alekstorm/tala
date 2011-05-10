@@ -29,9 +29,6 @@
 #ifndef _Matrix_h_
 	#include "fon/Matrix.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 #ifndef _TableOfReal_h_
 	#include "stat/TableOfReal.h"
 #endif
@@ -93,16 +90,6 @@ double FilterBank_getFrequencyInMel (I, double f, int scale_from);
 
 int FilterBank_getFrequencyScale (I);
 
-void FilterBank_drawFrequencyScales (I, Graphics g, int horizontalScale, double xmin, 
-	double xmax, int verticalScale, double ymin, double ymax, int garnish);
- 
-void BarkFilter_drawSekeyHansonFilterFunctions (BarkFilter me, Graphics g,
-	int freqScale,	int fromFilter, int toFilter, double zmin, double zmax, 
-	int dbScale, double ymin, double ymax, int garnish);
-
-void FilterBank_drawTimeSlice (I, Graphics g, double t, double fmin, double fmax,
-	double min, double max, wchar_t *xlabel, int garnish);
- 
 BarkFilter BarkFilter_create (double tmin, double tmax, long nt, double dt,
 	double t1, double fmin, double fmax, long nf, double df, long f1);
 
@@ -127,10 +114,6 @@ MelFilter MelFilter_create (double tmin, double tmax, long nt, double dt,
 
 MelFilter Matrix_to_MelFilter (I);
 
-void MelFilter_drawFilterFunctions (MelFilter me, Graphics g,
-	int freqScale, int fromFilter, int toFilter, double zmin, double zmax, 
-	int dbScale, double ymin, double ymax, int garnish);
-
 MFCC MelFilter_to_MFCC (MelFilter me, long numberOfCoefficients);
 
 #define FormantFilter_members FilterBank_members
@@ -142,10 +125,6 @@ FormantFilter FormantFilter_create (double tmin, double tmax, long nt,
 	double dt, double t1, double fmin, double fmax, long nf, double df, 
 	double f1);
 	
-void FormantFilter_drawFilterFunctions (FormantFilter me, Graphics g, double bandwidth,
-	int freqScale, int fromFilter, int toFilter, double zmin, double zmax, 
-	int dbScale, double ymin, double ymax, int garnish);
-
 FormantFilter Matrix_to_FormantFilter (I);
 
 void FilterBank_equalizeIntensities (I, double intensity_db);
@@ -162,9 +141,6 @@ Spectrum FormantFilter_to_Spectrum_slice (FormantFilter me, double t);
 */
 
 Intensity FilterBank_to_Intensity (I);
-
-void FilterBank_and_PCA_drawComponent (I, PCA thee, Graphics g, long component, double dblevel,
-	double frequencyOffset, double scale, double tmin, double tmax, double fmin, double fmax);
 
 #ifdef __cplusplus
 	}

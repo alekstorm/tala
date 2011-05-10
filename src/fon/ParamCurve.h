@@ -32,7 +32,6 @@
 */
 
 #include "Sound.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -58,22 +57,6 @@ Any ParamCurve_create (Any x, Any y);
 		(Result's domain is intersection of both domains:)
 		result -> xmin = max (x -> xmin, y -> xmin);
 		result -> xmax = min (x -> xmax, y -> xmax);
-*/
-
-int ParamCurve_draw (I, Graphics g, double t1, double t2, double dt,
-	double x1, double x2, double y1, double y2, int garnish);
-/*
-	Function:
-		draw the points of the curve between parameter values t1 and t2,
-		in time steps dt starting at t1 and including t2,
-		along the axes [x1, x2] x [y1, y2].
-	Defaults:
-		t2 <= t1: draw all (overlapping) points.
-		dt <= 0.0: time step is the smaller of my x -> dx and my y -> dx.
-		x2 <= x1: autoscaling along horizontal axis.
-		y2 <= y1: autoscaling along vertical axis.
-	Return value:
-		1 if OK, 0 if out of memory.
 */
 
 void ParamCurve_swapXY (I);

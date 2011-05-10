@@ -24,7 +24,6 @@
  */
 
 #include "Vector.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -63,8 +62,6 @@ VocalTract VocalTract_create (long nx, double dx);
 
 VocalTract VocalTract_createFromPhone (wchar_t *phone);
 /* 'phone' is one of the following: a e i o u y1 y2 y3 jery p t k x pa ta ka pi ti ki pu tu ku */
-
-void VocalTract_draw (VocalTract me, Graphics g);   /* Draw a VocalTract into a Graphics. */
 
 Matrix VocalTract_to_Matrix (VocalTract me);
 /*

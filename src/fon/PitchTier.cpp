@@ -56,12 +56,6 @@ end:
 	return me;
 }
 
-void PitchTier_draw (PitchTier me, Graphics g, double tmin, double tmax,
-	double fmin, double fmax, int garnish, const wchar_t *method)
-{
-	RealTier_draw (me, g, tmin, tmax, fmin, fmax, garnish, method, L"Frequency (Hz)");
-}
-
 PitchTier PointProcess_upto_PitchTier (PointProcess me, double frequency) {
 	PitchTier thee = (PitchTier) PointProcess_upto_RealTier (me, frequency);
 	if (! thee) return NULL;

@@ -70,9 +70,6 @@ int SSCP_init (I, long dimension, long storage);
 
 SSCP SSCP_create (long dimension);
 
-void SSCP_drawConcentrationEllipse (SSCP me, Graphics g, double scale, int confidence,
-	long d1, long d2, double xmin, double xmax, double ymin, double ymax, int garnish);
-
 void SSCP_setNumberOfObservations (I, double numberOfObservations);
 int SSCP_setCentroid (I, long component, double value); // only SSCP & Covariance
 int SSCP_setValue (I, long row, long col, double value); // only SSCP & Covariance
@@ -235,14 +232,14 @@ int SSCPs_getHomegeneityOfCovariances_box (SSCPs me, double *probability,
 
 SSCP SSCP_toTwoDimensions (I, double *v1, double *v2);
 SSCPs SSCPs_toTwoDimensions (SSCPs me, double *v1, double *v2);
+SSCP SSCP_extractTwoDimensions (SSCP me, long d1, long d2);
 SSCPs SSCPs_extractTwoDimensions (SSCPs me, long d1, long d2);
 
 /* For inheritors */
 
-void SSCPs_drawConcentrationEllipses (SSCPs me, Graphics g, double scale,
-	int confidence, wchar_t *label, long d1, long d2, double xmin, double xmax,
-	double ymin, double ymax, int fontSize, int garnish);
-
+double SSCP_ellipseScalefactor (I, double scale, int confidence);
+void SSCP_getEllipseBoundingBoxCoordinates (SSCP me, double scale, int confidence,
+	double *xmin, double *xmax, double *ymin, double *ymax);
 void SSCPs_getEllipsesBoundingBoxCoordinates (SSCPs me, double scale, int confidence,
 	double *xmin, double *xmax, double *ymin, double *ymax);
 

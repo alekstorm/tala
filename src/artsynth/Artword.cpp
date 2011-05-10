@@ -145,32 +145,4 @@ void Artword_intoArt (Artword me, Art art, double time) {
 	}
 }
 
-void Artword_draw (Artword me, Graphics g, int feature, int garnish) {
-	long numberOfTargets = my data [feature]. numberOfTargets;
-	if (numberOfTargets > 0) {
-		double *x = NULL, *y = NULL;
-		x = NUMdvector (1, numberOfTargets); cherror
-		y = NUMdvector (1, numberOfTargets); cherror
-		Graphics_setInner (g);
-		Graphics_setWindow (g, 0, my totalTime, -1, 1);
-		for (int i = 1; i <= numberOfTargets; i ++) {
-			x [i] = my data [feature]. times [i];
-			y [i] = my data [feature]. targets [i];
-		}
-		Graphics_polyline (g, numberOfTargets, & x [1], & y [1]);         
-		Graphics_unsetInner (g);
-	end:
-		NUMdvector_free (x, 1);
-		NUMdvector_free (y, 1);
-	}
-
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
-		Graphics_marksLeft (g, 3, TRUE, TRUE, TRUE);
-		Graphics_textTop (g, FALSE, kArt_muscle_getText (feature));
-		Graphics_textBottom (g, TRUE, L"Time (s)");
-	}
-}
-
 /* End of file Artword.cpp */

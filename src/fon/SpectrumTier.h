@@ -24,7 +24,6 @@
  */
 
 #include "RealTier.h"
-#include "ui/Graphics.h"
 #include "Spectrum.h"
 
 #ifdef __cplusplus
@@ -44,9 +43,6 @@ SpectrumTier SpectrumTier_create (double fmin, double fmax);
 		result -> xmax == fmax;
 		result -> points -> size == 0;
 */
-
-void SpectrumTier_draw (SpectrumTier me, Graphics g, double fmin, double fmax,
-	double pmin, double pmax, int garnish, const wchar_t *method);
 
 void SpectrumTier_list (SpectrumTier me, bool includeIndexes, bool includeFrequency, bool includePowerDensity);
 

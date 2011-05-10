@@ -70,8 +70,6 @@ long OrderedOfString_getNumberOfDifferences (I, thou);
 const wchar_t *OrderedOfString_itemAtIndex_c (I, long index);
 long OrderedOfString_indexOfItem_c (I, const wchar_t *str);
  
-void OrderedOfString_drawItem (I, Any graphics, long index, double xWC, double yWC);
-
 int OrderedOfString_sequentialNumbers (I, long n);
 
 void OrderedOfString_removeOccurrences (I, const wchar_t *search, int user_regexp);

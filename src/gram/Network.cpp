@@ -300,49 +300,6 @@ Network Network_create_rectangle_vertical_e (double minimumActivity, double maxi
 	}
 }
 
-void Network_draw (Network me, Graphics graphics, bool colour) {
-	double saveLineWidth = Graphics_inqLineWidth (graphics);
-	Graphics_setInner (graphics);
-	Graphics_setWindow (graphics, my xmin, my xmax, my ymin, my ymax);
-	Graphics_setColour (graphics, Graphics_SILVER);
-	Graphics_fillRectangle (graphics, my xmin, my xmax, my ymin, my ymax);
-	/*
-	 * Draw connections.
-	 */
-	for (long iconn = 1; iconn <= my numberOfConnections; iconn ++) {
-		NetworkConnection conn = & my connections [iconn];
-		if (conn -> weight != 0.0) {
-			NetworkNode nodeFrom = & my nodes [conn -> nodeFrom];
-			NetworkNode nodeTo = & my nodes [conn -> nodeTo];
-			Graphics_setLineWidth (graphics, fabs (conn -> weight) * 6.0);
-			Graphics_setColour (graphics, conn -> weight < 0.0 ? Graphics_WHITE : Graphics_BLACK);
-			Graphics_line (graphics, nodeFrom -> x, nodeFrom -> y, nodeTo -> x, nodeTo -> y);
-		}
-	}
-	Graphics_setLineWidth (graphics, 1.0);
-	/*
-	 * Draw nodes.
-	 */
-	for (long inode = 1; inode <= my numberOfNodes; inode ++) {
-		NetworkNode node = & my nodes [inode];
-		double diameter = fabs (node -> activity) * 5.0;
-		if (diameter != 0.0) {
-			Graphics_setColour (graphics,
-				colour ? ( node -> activity < 0.0 ? Graphics_BLUE : Graphics_RED )
-				: ( node -> activity < 0.0 ? Graphics_WHITE : Graphics_BLACK));
-			Graphics_fillCircle_mm (graphics, node -> x, node -> y, diameter);
-		}
-		if (node -> clamped) {
-			Graphics_setColour (graphics, Graphics_BLACK);
-			Graphics_setLineWidth (graphics, 2.0);
-			Graphics_circle_mm (graphics, node -> x, node -> y, 5.0);
-		}
-	}
-	Graphics_setColour (graphics, Graphics_BLACK);
-	Graphics_setLineWidth (graphics, saveLineWidth);
-	Graphics_unsetInner (graphics);
-}
-
 void Network_addNode_e (Network me, double x, double y, double activity, bool clamped) {
 	NUMstructvector_append_e (NetworkNode, & my nodes, 1, & my numberOfNodes); cherror
 	my nodes [my numberOfNodes]. x = x;

@@ -25,7 +25,6 @@
 */
 
 #include "sys/Data.h"
-#include "ui/Graphics.h"
 #include "sys/Simple.h"
 
 int SimpleString_init (SimpleString me, const wchar_t *value);
@@ -49,9 +48,6 @@ int SimpleString_replace_c (SimpleString me, const wchar_t *replacement);
 
 long SimpleString_length (SimpleString me);
 /* return my length */
-
-void SimpleString_draw (SimpleString me, Any g, double xWC, double yWC);
-/* draw the string */
 
 const wchar_t * SimpleString_nativize_c (SimpleString me, int educateQuotes);
 const wchar_t * SimpleString_genericize_c (SimpleString me);

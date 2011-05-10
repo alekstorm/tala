@@ -23,7 +23,6 @@
  * pb 2011/03/23
  */
 
-#include "ui/Graphics.h"
 #include "stat/PairDistribution.h"
 #include "stat/Distributions.h"
 #include "OTGrammar.h"
@@ -58,12 +57,9 @@ long OTMulti_getWinner (OTMulti me, const wchar_t *form1, const wchar_t *form2);
 #define OTMulti_LEARN_BIDIRECTIONALLY  3
 int OTMulti_learnOne (OTMulti me, const wchar_t *form1, const wchar_t *form2,
 	enum kOTGrammar_rerankingStrategy updateRule, int direction, double plasticity, double relativePlasticityNoise);
-int OTMulti_PairDistribution_learn (OTMulti me, PairDistribution thee,
-	double evaluationNoise, enum kOTGrammar_rerankingStrategy updateRule, int direction,
-	double initialPlasticity, long replicationsPerPlasticity, double plasticityDecrement,
-	long numberOfPlasticities, double relativePlasticityNoise, long storeHistoryEvery, Table *history_out);
 
-void OTMulti_drawTableau (OTMulti me, Graphics g, const wchar_t *form1, const wchar_t *form2, int showDisharmonies);
+Table OTMulti_createHistory (OTMulti me, long storeHistoryEvery, long numberOfData);
+int OTMulti_updateHistory (OTMulti me, Table thee, long storeHistoryEvery, long idatum, const wchar_t *form1, const wchar_t *form2);
 
 void OTMulti_reset (OTMulti me, double ranking);
 int OTMulti_setRanking (OTMulti me, long constraint, double ranking, double disharmony);

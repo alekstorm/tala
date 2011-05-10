@@ -28,6 +28,10 @@
 #include "dwtools/Strings_extensions.h"
 #include "stat/TableOfReal.h"
 
+void SSCPs_drawConcentrationEllipses (SSCPs me, Graphics g, double scale,
+	int confidence, wchar_t *label, long d1, long d2, double xmin, double xmax,
+	double ymin, double ymax, int fontSize, int garnish);
+
 #undef praat_HIDDEN
 #define praat_HIDDEN 0
 
@@ -41,6 +45,149 @@
 	OPTION (L"Complete-data ML")
 
 Correlation GaussianMixture_and_TableOfReal_to_Correlation2 (GaussianMixture me, thou);
+
+void GaussianMixture_and_PCA_drawMarginalPdf (GaussianMixture me, PCA thee, Graphics g, long d, double xmin, double xmax, double ymin, double ymax, long npoints, long nbins, int garnish)
+{
+	if (my dimension != thy dimension || d < 1 || d > my dimension)
+	{ Melder_warning1 (L"Dimensions don't agree."); return;}
+
+	if (npoints <= 1) npoints = 1000;
+	double *p = NUMdvector (1, npoints);
+	if (p == 0) return;
+	double nsigmas = 2;
+
+	if (xmax <= xmin &&
+		! GaussianMixture_and_PCA_getIntervalAlongDirection (me, thee, d, nsigmas, &xmin, &xmax)) goto end;
+
+	{
+		double pmax = 0, dx = (xmax - xmin) / npoints, x1 = xmin + 0.5 * dx;
+		double scalef = nbins <= 0 ? 1 : 1; // TODO
+		for (long i = 1; i <= npoints; i++)
+		{
+			double x = x1 + (i - 1) * dx;
+			p[i] = scalef * GaussianMixture_getMarginalProbabilityAtPosition (me, thy eigenvectors[d], x);
+			if (p[i] > pmax) pmax = p[i];
+		}
+		if (ymin >= ymax) { ymin = 0; ymax = pmax; }
+
+		Graphics_setInner (g);
+		Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+		Graphics_function (g, p, 1, npoints, x1, xmax - 0.5 * dx);
+		Graphics_unsetInner (g);
+
+		if (garnish)
+		{
+			Graphics_drawInnerBox (g);
+			Graphics_markBottom (g, xmin, 1, 1, 0, NULL);
+			Graphics_markBottom (g, xmax, 1, 1, 0, NULL);
+			Graphics_markLeft (g, ymin, 1, 1, 0, NULL);
+			Graphics_markLeft (g, ymax, 1, 1, 0, NULL);
+		}
+	}
+end:
+	NUMdvector_free (p, 1);
+}
+
+void GaussianMixture_drawMarginalPdf (GaussianMixture me, Graphics g, long d, double xmin, double xmax, double ymin, double ymax, long npoints, long nbins, int garnish)
+{
+	if (d < 1 || d > my dimension)
+	{ Melder_warning1 (L"Dimension doesn't agree."); return;}
+	if (npoints <= 1) npoints = 1000;
+	double *p = NUMdvector (1, npoints);
+	if (p == 0) return;
+	double nsigmas = 2, *v = NUMdvector (1, my dimension);
+	if (v == NULL) goto end;
+
+	if (xmax <= xmin &&
+		! GaussianMixture_getIntervalAlongDirection (me, d, nsigmas, &xmin, &xmax)) goto end;
+
+	{
+		double pmax = 0, dx = (xmax - xmin) / (npoints - 1);
+		double scalef = nbins <= 0 ? 1 : 1; // TODO
+		for (long i = 1; i <= npoints; i++)
+		{
+			double x = xmin + (i - 1) * dx;
+			for (long k = 1; k <= my dimension; k++) v[k] = k == d ? 1 : 0;
+			p[i] = scalef * GaussianMixture_getMarginalProbabilityAtPosition (me, v, x);
+			if (p[i] > pmax) pmax = p[i];
+		}
+		if (ymin >= ymax) { ymin = 0; ymax = pmax; }
+
+		Graphics_setInner (g);
+		Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+		Graphics_function (g, p, 1, npoints, xmin, xmax);
+		Graphics_unsetInner (g);
+
+		if (garnish)
+		{
+			Graphics_drawInnerBox (g);
+			Graphics_markBottom (g, xmin, 1, 1, 0, NULL);
+			Graphics_markBottom (g, xmax, 1, 1, 0, NULL);
+			Graphics_markLeft (g, ymin, 1, 1, 0, NULL);
+			Graphics_markLeft (g, ymax, 1, 1, 0, NULL);
+		}
+	}
+
+end:
+	NUMdvector_free (p, 1); NUMdvector_free (v, 1);
+}
+
+void GaussianMixture_and_PCA_drawConcentrationEllipses (GaussianMixture me, PCA him, Graphics g, double scale,
+	int confidence, wchar_t *label, long d1, long d2,
+	double xmin, double xmax, double ymin, double ymax, int fontSize, int garnish)
+{
+	if (my dimension != his dimension) { Melder_warning1 (L"Dimensions don't agree."); return;}
+	SSCPs thee = NULL;
+	int d1_inverted = 0, d2_inverted = 0;
+
+	if (d1 < 0) { d1 = abs(d1); Eigen_invertEigenvector (him, d1); d1_inverted = 1; }
+	if (d2 < 0) { d2 = abs(d2); Eigen_invertEigenvector (him, d2); d2_inverted = 1; }
+
+	if ((thee = SSCPs_toTwoDimensions ((SSCPs) my covariances, his eigenvectors[d1], his eigenvectors[d2])) == NULL) goto end;
+
+	if (d1_inverted) Eigen_invertEigenvector (him, d1);
+	if (d2_inverted) Eigen_invertEigenvector (him, d2);
+
+	SSCPs_drawConcentrationEllipses (thee, g, -scale, confidence, label, 1, 2,
+		xmin, xmax, ymin, ymax, fontSize, 0);
+
+	if (garnish)
+	{
+		wchar_t label[40];
+    	Graphics_drawInnerBox (g);
+    	Graphics_marksLeft (g, 2, 1, 1, 0);
+    	swprintf (label, 40, L"pc %ld", d2);
+    	Graphics_textLeft (g, 1, label);
+    	Graphics_marksBottom (g, 2, 1, 1, 0);
+    	swprintf (label, 40, L"pc %ld", d1);
+		Graphics_textBottom (g, 1, label);
+	}
+end:
+	forget (thee);
+}
+
+void GaussianMixture_drawConcentrationEllipses (GaussianMixture me, Graphics g,
+	double scale, int confidence, wchar_t *label, int pcaDirections, long d1, long d2,
+	double xmin, double xmax, double ymin, double ymax, int fontSize, int garnish)
+{
+	if (d1 == 0 && d2 == 0) { d1 = 1; d2 = 2; }
+	if (abs(d1) > my dimension || abs(d2) > my dimension) return;
+
+	if (! pcaDirections)
+	{
+		SSCPs_drawConcentrationEllipses ((SSCPs) my covariances, g, -scale, confidence, label,
+			abs(d1), abs(d2), xmin, xmax, ymin, ymax, fontSize, garnish);
+		return;
+	}
+
+	PCA him = GaussianMixture_to_PCA (me);
+	if (him == NULL) return;
+
+	GaussianMixture_and_PCA_drawConcentrationEllipses (me, him, g, scale, confidence, label, d1, d2,
+	xmin, xmax, ymin, ymax, fontSize, garnish);
+
+	forget (him);
+}
 
 DIRECT (GaussianMixture_help)
 	Melder_help (L"GaussianMixture");
@@ -227,6 +374,93 @@ DO
 		Melder_integer (thy numberOfRows), L")");
 END
 
+void HMM_draw (HMM me, Graphics g, int garnish)
+{
+	long is, js;
+	double *xs = NULL, *ys = NULL;
+	double xwidth = sqrt (my numberOfStates);
+	double rstate = 0.3 / xwidth, r = xwidth / 3.0;
+	double xmax = 1.2 * xwidth / 2, xmin = -xmax, ymin = xmin, ymax = xmax;
+
+	if (((xs = NUMdvector (1, my numberOfStates)) == NULL) ||
+		((ys = NUMdvector (1, my numberOfStates)) == NULL)) goto end;
+
+	{
+		Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+		// heuristic: all states on a circle until we have a better graph drawing algorithm.
+		xs[1] = ys[1] = 0;
+		if (my numberOfStates > 1)
+		{
+			for (is = 1; is <= my numberOfStates; is++)
+			{
+				double alpha = - NUMpi + NUMpi * 2 * (is - 1) / my numberOfStates;
+				xs[is] = r * cos (alpha); ys[is] = r * sin (alpha);
+			}
+		}
+		// reorder the positions such that state number 1 is most left and last state number is right.
+		// if > 5 may be one in the middle with the most connections
+		// ...
+		// find fontsize
+		int fontSize = Graphics_inqFontSize (g);
+		wchar_t *widest_label = L"";
+		double max_width = 0;
+		for (is = 1; is <= my numberOfStates; is++)
+		{
+			HMM_State hmms = (structHMM_State *)my states -> item[is];
+			double w = hmms -> label == NULL ? 0 : Graphics_textWidth (g, hmms -> label);
+			if (w > max_width)
+			{
+				widest_label = hmms -> label;
+				max_width = w;
+			}
+		}
+		int new_fontSize = fontSize;
+		while (max_width > 2 * rstate && new_fontSize > 4)
+		{
+			new_fontSize --;
+			Graphics_setFontSize (g, new_fontSize);
+			max_width = Graphics_textWidth (g, widest_label);
+		}
+		Graphics_setFontSize (g, new_fontSize);
+		Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+		for (is = 1; is <= my numberOfStates; is++)
+		{
+			HMM_State hmms = (structHMM_State *)my states -> item[is];
+			Graphics_circle (g, xs[is], ys[is], rstate);
+			Graphics_text (g, xs[is], ys[is], hmms -> label);
+		}
+
+		// draw connections from is to js
+		// 1 -> 2 / 2-> : increase / decrease angle between 1 and 2 with pi /10
+		// use cos(a+b) and cos(a -b) rules
+		double cosb = cos (NUMpi/10), sinb = sin (NUMpi / 10);
+		for (is = 1; is <= my numberOfStates; is++)
+		{
+			double x1 = xs[is], y1 = ys[is];
+			for (js = 1; js <= my numberOfStates; js++)
+			{
+				if (my transitionProbs[is][js] > 0 && is != js)
+				{
+					double x2 = xs[js], y2 = ys[js];
+					double dx = x2 - x1, dy = y2 - y1, h = sqrt (dx * dx + dy * dy), cosa = dx / h, sina = dy / h;
+					double cosabp = cosa * cosb - sina * sinb, cosabm = cosa * cosb + sina * sinb;
+					double sinabp = cosa * sinb + sina * cosb, sinabm = -cosa * sinb + sina * cosb;
+					Graphics_arrow (g, x1 + rstate * cosabp, y1 + rstate * sinabp, x2 - rstate * cosabm, y2 - rstate * sinabm);
+				}
+				if (is == js)
+				{
+					double dx = - x1, dy = - y1, h = sqrt (dx * dx + dy * dy), cosa = dx / h, sina = dy / h;
+					Graphics_doubleArrow (g, x1 - rstate * cosa, y1 - rstate * sina, x1 - 1.4 * rstate * cosa, y1 - 1.4 * rstate * sina);
+				}
+			}
+		}
+		if (garnish) Graphics_drawInnerBox (g);
+	}
+end:
+	NUMdvector_free (xs, 1);
+	NUMdvector_free (ys, 1);
+}
+
 DIRECT (HMM_help)
 	Melder_help (L"HMM");
 END
@@ -292,6 +526,63 @@ FORM (HMM_draw, L"HMM: Draw", 0)
 DO
 	EVERY_DRAW (HMM_draw ((structHMM *)OBJECT, GRAPHICS, GET_INTEGER (L"Garnish")))
 END
+
+// xc1 < xc2
+void HMM_and_HMM_StateSequence_drawTrellis (HMM me, HMM_StateSequence thee, Graphics g, int connect, int garnish)
+{
+	long numberOfTimes = thy numberOfStrings;
+	StringsIndex si = HMM_and_HMM_StateSequence_to_StringsIndex (me, thee);
+	double xmin = 0, xmax = numberOfTimes + 1, ymin = 0.5, ymax = my numberOfStates + 0.5;
+	if (si == NULL) return;
+
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+
+	double r = 0.2 / (numberOfTimes > my numberOfStates ? numberOfTimes : my numberOfStates);
+
+	for (long it = 1; it <= numberOfTimes; it++)
+	{
+		for (long js = 1; js <= my numberOfStates; js++)
+		{
+			double xc = it, yc = js, x2 = it, y2 = js;
+			Graphics_circle (g, xc, yc, r);
+			if (it > 1)
+			{
+				for (long is = 1; is <= my numberOfStates; is++)
+				{
+					bool indexedConnection = si -> classIndex[it - 1] == is && si -> classIndex[it] == js;
+					Graphics_setLineWidth (g, indexedConnection ? 2 : 1);
+					Graphics_setLineType (g, indexedConnection ? Graphics_DRAWN : Graphics_DOTTED);
+					double x1 = it - 1, y1 = is;
+					if (connect || indexedConnection)
+					{
+						double a = (y1 - y2) / (x1 - x2), b = y1 - a * x1;
+						// double xs11 = x1 - r / (a * a + 1), ys11 = a * xs11 + b;
+						double xs12 = x1 + r / (a * a + 1), ys12 = a * xs12 + b;
+						double xs21 = x2 - r / (a * a + 1), ys21 = a * xs21 + b;
+						// double xs22 = x2 + r / (a * a + 1), ys22 = a * xs22 + b;
+						Graphics_line (g, xs12, ys12, xs21, ys21);
+					}
+				}
+			}
+		}
+	}
+	Graphics_unsetInner (g);
+	Graphics_setLineWidth (g, 1);
+	Graphics_setLineType (g, Graphics_DRAWN);
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+		for (long js = 1; js <= my numberOfStates; js++)
+		{
+			HMM_State hmms = (structHMM_State *)my states -> item[js];
+			Graphics_markLeft (g, js, 0, 0, 0, hmms -> label);
+		}
+		Graphics_marksBottomEvery (g, 1, 1, 1, 1, 0);
+		Graphics_textBottom (g, 1, L"Time index");
+	}
+	forget (si);
+}
 
 FORM (HMM_and_HMM_StateSequence_drawTrellis, L"HMM & Strings: Draw trellis", 0)
 	BOOLEAN (L"Connect", 1);

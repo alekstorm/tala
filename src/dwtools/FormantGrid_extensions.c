@@ -24,32 +24,6 @@
 #include "FormantGrid_extensions.h"
 #include "num/NUM2.h"
 
-void FormantGrid_draw (FormantGrid me, Graphics g, double xmin, double xmax, double ymin, double ymax, bool bandwidths, bool garnish, const wchar_t *method)
-{
-	Ordered tiers = bandwidths ? my bandwidths : my formants;
-	
-	if (xmax <= xmin)
-	{
-		xmin = my xmin; xmax = my xmax;
-	}
-	if (ymax <= ymin)
-	{
-		ymin = 0; ymax = bandwidths ? 1000: 8000;
-	}
-	for (long iformant = 1; iformant <= my formants -> size; iformant++)
-	{
-		wchar_t *quantity = NULL;
-		bool garnish2 = false;
-		RealTier tier = tiers -> item[iformant];
-		if (iformant == my formants -> size)
-		{
-			quantity = L"Frequency (Hz)";
-			if (garnish) garnish2 = true;
-		} 
-		RealTier_draw (tier, g, xmin, xmax, ymin, ymax, garnish2, method, quantity);
-	}
-}
-
 static void FormantGrid_removeFormantTier (FormantGrid me, int position)
 {
 	if (position < 1 || position > my formants -> size) return;

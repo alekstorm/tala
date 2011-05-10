@@ -25,12 +25,17 @@
 #include "stat/LogisticRegression.h"
 #include "stat/PairDistribution.h"
 #include "fon/Matrix.h"
+#include "dwtools/SSCP.h"
 #include "kar/UnicodeData.h"
 #include "stat/Table.h"
 #include "ui/editors/TableEditor.h"
 #include "ui/UiFile.h"
 
 #include "ui/praat.h"
+
+void SSCP_drawConcentrationEllipse (SSCP me, Graphics g, double scale,
+	int confidence, long d1, long d2, double xmin, double xmax,
+	double ymin, double ymax, int garnish);
 
 static wchar_t formatBuffer [32] [40];
 static int formatIndex = 0;
@@ -103,6 +108,70 @@ DO
 END
 
 /***** LOGISTICREGRESSION *****/
+
+static inline double NUMmin2 (double a, double b) {
+	return a < b ? a : b;
+}
+
+static inline double NUMmax2 (double a, double b) {
+	return a > b ? a : b;
+}
+
+void LogisticRegression_drawBoundary (LogisticRegression me, Graphics graphics, long colx, double xleft, double xright,
+	long coly, double ybottom, double ytop, bool garnish)
+{
+	RegressionParameter parmx = static_cast<RegressionParameter> (my parameters -> item [colx]);
+	RegressionParameter parmy = static_cast<RegressionParameter> (my parameters -> item [coly]);
+	if (xleft == xright) {
+		xleft = parmx -> minimum;
+		xright = parmx -> maximum;
+	}
+	if (ybottom == ytop) {
+		ybottom = parmy -> minimum;
+		ytop = parmy -> maximum;
+	}
+	double intercept = my intercept;
+	for (long iparm = 1; iparm <= my parameters -> size; iparm ++) {
+		if (iparm != colx && iparm != coly) {
+			RegressionParameter parm = static_cast<RegressionParameter> (my parameters -> item [iparm]);
+			intercept += parm -> value * (0.5 * (parm -> minimum + parm -> maximum));
+		}
+	}
+	Graphics_setInner (graphics);
+	Graphics_setWindow (graphics, xleft, xright, ybottom, ytop);
+	double xbottom = (intercept + parmy -> value * ybottom) / - parmx -> value;
+	double xtop = (intercept + parmy -> value * ytop) / - parmx -> value;
+	double yleft = (intercept + parmx -> value * xleft) / - parmy -> value;
+	double yright = (intercept + parmx -> value * xright) / - parmy -> value;
+	double xmin = NUMmin2 (xleft, xright), xmax = NUMmax2 (xleft, xright);
+	double ymin = NUMmin2 (ybottom, ytop), ymax = NUMmax2 (ybottom, ytop);
+	//Melder_casual ("LogisticRegression_drawBoundary: %f %f %f %f %f %f %f %f",
+	//	xmin, xmax, xbottom, xtop, ymin, ymax, yleft, yright);
+	if (xbottom >= xmin && xbottom <= xmax) {   // line goes through bottom?
+		if (xtop >= xmin && xtop <= xmax)   // line goes through top?
+			Graphics_line (graphics, xbottom, ybottom, xtop, ytop);   // draw from bottom to top
+		else if (yleft >= ymin && yleft <= ymax)   // line goes through left?
+			Graphics_line (graphics, xbottom, ybottom, xleft, yleft);   // draw from bottom to left
+		else if (yright >= ymin && yright <= ymax)   // line goes through right?
+			Graphics_line (graphics, xbottom, ybottom, xright, yright);   // draw from bottom to right
+	} else if (yleft >= ymin && yleft <= ymax) {   // line goes through left?
+		if (yright >= ymin && yright <= ymax)   // line goes through right?
+			Graphics_line (graphics, xleft, yleft, xright, yright);   // draw from left to right
+		else if (xtop >= xmin && xtop <= xmax)   // line goes through top?
+			Graphics_line (graphics, xleft, yleft, xtop, ytop);   // draw from left to top
+	} else if (xtop >= xmin && xtop <= xmax) {   // line goes through top?
+		if (yright >= ymin && yright <= ymax)   // line goes through right?
+			Graphics_line (graphics, xtop, ytop, xright, yright);   // draw from top to right
+	}
+	Graphics_unsetInner (graphics);
+	if (garnish) {
+		Graphics_drawInnerBox (graphics);
+		Graphics_textBottom (graphics, true, parmx -> label);
+		Graphics_marksBottom (graphics, 2, true, true, false);
+		Graphics_textLeft (graphics, true, parmy -> label);
+		Graphics_marksLeft (graphics, 2, true, true, false);
+	}
+}
 
 FORM (LogisticRegression_drawBoundary, L"LogisticRegression: Draw boundary", 0)
 	WORD (L"Horizontal factor", L"ui/editors/AmplitudeTierEditor.h")
@@ -209,6 +278,136 @@ DO
 END
 
 /***** TABLE *****/
+
+long Table_drawRowFromDistribution (Table me, long columnNumber) {
+	try {
+		Table_checkSpecifiedColumnNumberWithinRange (me, columnNumber);
+		Table_numericize_checkDefined (me, columnNumber); therror
+		if (my rows -> size < 1)
+			Melder_throw (me, ": no rows.");
+		double total = 0.0;
+		for (long irow = 1; irow <= my rows -> size; irow ++) {
+			TableRow row = static_cast <TableRow> (my rows -> item [irow]);
+			total += row -> cells [columnNumber]. number;
+		}
+		if (total <= 0.0)
+			Melder_throw (me, ": the total weight of column ", columnNumber, " is not positive.");
+		long irow;
+		do {
+			double rand = NUMrandomUniform (0, total), sum = 0.0;
+			for (irow = 1; irow <= my rows -> size; irow ++) {
+				TableRow row = static_cast <TableRow> (my rows -> item [irow]);
+				sum += row -> cells [columnNumber]. number;
+				if (rand <= sum) break;
+			}
+		} while (irow > my rows -> size);   /* Guard against rounding errors. */
+		return irow;
+	} catch (...) {
+		rethrowmzero (me, ": cannot draw a row from the distribution of column ", columnNumber, ".");
+	}
+}
+
+void Table_drawEllipse_e (Table me, Graphics g, long xcolumn, long ycolumn,
+	double xmin, double xmax, double ymin, double ymax, double numberOfSigmas, int garnish)
+{
+	try {
+		if (xcolumn < 1 || xcolumn > my numberOfColumns || ycolumn < 1 || ycolumn > my numberOfColumns) return;
+		Table_numericize_Assert (me, xcolumn);
+		Table_numericize_Assert (me, ycolumn);
+		if (xmin == xmax) {
+			if (! Table_getExtrema (me, xcolumn, & xmin, & xmax)) return;
+			if (xmin == xmax) xmin -= 0.5, xmax += 0.5;
+		}
+		if (ymin == ymax) {
+			if (! Table_getExtrema (me, ycolumn, & ymin, & ymax)) return;
+			if (ymin == ymax) ymin -= 0.5, ymax += 0.5;
+		}
+		autoTableOfReal tableOfReal = TableOfReal_create (my rows -> size, 2);
+		for (long irow = 1; irow <= my rows -> size; irow ++) {
+			tableOfReal -> data [irow] [1] = Table_getNumericValue_Assert (me, irow, xcolumn);
+			tableOfReal -> data [irow] [2] = Table_getNumericValue_Assert (me, irow, ycolumn);
+		}
+		autoSSCP sscp = TableOfReal_to_SSCP (tableOfReal.peek(), 0, 0, 0, 0);
+		SSCP_drawConcentrationEllipse (sscp.peek(), g, numberOfSigmas, 0, 1, 2, xmin, xmax, ymin, ymax, garnish);
+	} catch (...) {
+		Melder_clearError ();   // drawing errors shall be ignored
+	}
+}
+
+void Table_scatterPlot_mark (Table me, Graphics g, long xcolumn, long ycolumn,
+	double xmin, double xmax, double ymin, double ymax, double markSize_mm, const wchar *mark, int garnish)
+{
+	long n = my rows -> size, irow;
+	if (xcolumn < 1 || xcolumn > my numberOfColumns || ycolumn < 1 || ycolumn > my numberOfColumns) return;
+	Table_numericize_Assert (me, xcolumn);
+	Table_numericize_Assert (me, ycolumn);
+	if (xmin == xmax) {
+		if (! Table_getExtrema (me, xcolumn, & xmin, & xmax)) return;
+		if (xmin == xmax) xmin -= 0.5, xmax += 0.5;
+	}
+	if (ymin == ymax) {
+		if (! Table_getExtrema (me, ycolumn, & ymin, & ymax)) return;
+		if (ymin == ymax) ymin -= 0.5, ymax += 0.5;
+	}
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	for (irow = 1; irow <= n; irow ++) {
+		TableRow row = static_cast <TableRow> (my rows -> item [irow]);
+		Graphics_mark (g, row -> cells [xcolumn]. number, row -> cells [ycolumn]. number, markSize_mm, mark);
+	}
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
+		if (my columnHeaders [xcolumn]. label)
+			Graphics_textBottom (g, TRUE, my columnHeaders [xcolumn]. label);
+		Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
+		if (my columnHeaders [ycolumn]. label)
+			Graphics_textLeft (g, TRUE, my columnHeaders [ycolumn]. label);
+	}
+}
+
+void Table_scatterPlot (Table me, Graphics g, long xcolumn, long ycolumn,
+	double xmin, double xmax, double ymin, double ymax, long markColumn, int fontSize, int garnish)
+{
+	long n = my rows -> size;
+	int saveFontSize = Graphics_inqFontSize (g);
+	if (xcolumn < 1 || xcolumn > my numberOfColumns || ycolumn < 1 || ycolumn > my numberOfColumns) return;
+	Table_numericize_Assert (me, xcolumn);
+	Table_numericize_Assert (me, ycolumn);
+	if (xmin == xmax) {
+		if (! Table_getExtrema (me, xcolumn, & xmin, & xmax)) return;
+		if (xmin == xmax) xmin -= 0.5, xmax += 0.5;
+	}
+	if (ymin == ymax) {
+		if (! Table_getExtrema (me, ycolumn, & ymin, & ymax)) return;
+		if (ymin == ymax) ymin -= 0.5, ymax += 0.5;
+	}
+	Graphics_setInner (g);
+	Graphics_setWindow (g, xmin, xmax, ymin, ymax);
+
+	Graphics_setTextAlignment (g, Graphics_CENTRE, Graphics_HALF);
+	Graphics_setFontSize (g, fontSize);
+	for (long irow = 1; irow <= n; irow ++) {
+		TableRow row = static_cast <TableRow> (my rows -> item [irow]);
+		const wchar *mark = row -> cells [markColumn]. string;
+		if (mark)
+			Graphics_text (g, row -> cells [xcolumn]. number, row -> cells [ycolumn]. number, mark);
+	}
+	Graphics_setFontSize (g, saveFontSize);
+	Graphics_unsetInner (g);
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
+		if (my columnHeaders [xcolumn]. label)
+			Graphics_textBottom (g, TRUE, my columnHeaders [xcolumn]. label);
+		Graphics_marksLeft (g, 2, TRUE, TRUE, FALSE);
+		if (my columnHeaders [ycolumn]. label)
+			Graphics_textLeft (g, TRUE, my columnHeaders [ycolumn]. label);
+	}
+}
 
 DIRECT (Tables_append)
 	autoCollection me = Collection_create (classTable, 10);
@@ -1014,6 +1213,274 @@ FORM_WRITE (Table_writeToTableFile, L"Save Table as table file", 0, L"Table")
 END
 
 /***** TABLEOFREAL *****/
+
+static void NUMrationalize (double x, long *numerator, long *denominator) {
+	double epsilon = 1e-6;
+	*numerator = 1;
+	for (*denominator = 1; *denominator <= 100000; (*denominator) ++) {
+		double numerator_d = x * *denominator, rounded = floor (numerator_d + 0.5);
+		if (fabs (rounded - numerator_d) < epsilon) {
+			*numerator = rounded;
+			return;
+		}
+	}
+	*denominator = 0;   /* Failure. */
+}
+
+static void print4 (wchar_t *buffer, double value, int iformat, int width, int precision) {
+	wchar_t formatString [40];
+	if (value == NUMundefined) wcscpy (buffer, L"undefined");
+	else if (iformat == 4) {
+		long numerator, denominator;
+		NUMrationalize (value, & numerator, & denominator);
+		if (numerator == 0)
+			swprintf (buffer, 40, L"0");
+		else if (denominator > 1)
+			swprintf (buffer, 40, L"%ld/%ld", numerator, denominator);
+		else
+			swprintf (buffer, 40, L"%.7g", value);
+	} else {
+		swprintf (formatString, 40, L"%%%d.%d%c", width, precision, iformat == 1 ? 'f' : iformat == 2 ? 'e' : 'g');
+		swprintf (buffer, 40, formatString, value);
+	}
+}
+
+static void fixRows (TableOfReal me, long *rowmin, long *rowmax) {
+	if (*rowmax < *rowmin) { *rowmin = 1; *rowmax = my numberOfRows; }
+	else if (*rowmin < 1) *rowmin = 1;
+	else if (*rowmax > my numberOfRows) *rowmax = my numberOfRows;
+}
+static void fixColumns (TableOfReal me, long *colmin, long *colmax) {
+	if (*colmax < *colmin) { *colmin = 1; *colmax = my numberOfColumns; }
+	else if (*colmin < 1) *colmin = 1;
+	else if (*colmax > my numberOfColumns) *colmax = my numberOfColumns;
+}
+
+static double getMaxRowLabelWidth (TableOfReal me, Graphics graphics, long rowmin, long rowmax) {
+	double maxWidth = 0.0;
+	if (! my rowLabels) return 0.0;
+	fixRows (me, & rowmin, & rowmax);
+	for (long irow = rowmin; irow <= rowmax; irow ++) if (my rowLabels [irow] && my rowLabels [irow] [0]) {
+		double textWidth = Graphics_textWidth_ps (graphics, my rowLabels [irow], TRUE);   /* SILIPA is bigger than XIPA */
+		if (textWidth > maxWidth) maxWidth = textWidth;
+	}
+	return maxWidth;
+}
+
+static double getLeftMargin (Graphics graphics) {
+	return Graphics_dxMMtoWC (graphics, 1);
+}
+
+static double getLineSpacing (Graphics graphics) {
+	return Graphics_dyMMtoWC (graphics, 1.5 * Graphics_inqFontSize (graphics) * 25.4 / 72);
+}
+
+static double getMaxColumnLabelHeight (TableOfReal me, Graphics graphics, long colmin, long colmax) {
+	double maxHeight = 0.0, lineSpacing = getLineSpacing (graphics);
+	if (! my columnLabels) return 0.0;
+	fixRows (me, & colmin, & colmax);
+	for (long icol = colmin; icol <= colmax; icol ++) if (my columnLabels [icol] && my columnLabels [icol] [0]) {
+		if (! maxHeight) maxHeight = lineSpacing;
+	}
+	return maxHeight;
+}
+
+void TableOfReal_drawAsNumbers (I, Graphics graphics, long rowmin, long rowmax, int iformat, int precision) {
+	iam (TableOfReal);
+	fixRows (me, & rowmin, & rowmax);
+	Graphics_setInner (graphics);
+	Graphics_setWindow (graphics, 0.5, my numberOfColumns + 0.5, 0, 1);
+	double leftMargin = getLeftMargin (graphics);   // not earlier!
+	double lineSpacing = getLineSpacing (graphics);   // not earlier!
+	double maxTextWidth = getMaxRowLabelWidth (me, graphics, rowmin, rowmax);
+	double maxTextHeight = getMaxColumnLabelHeight (me, graphics, 1, my numberOfColumns);
+
+	Graphics_setTextAlignment (graphics, Graphics_CENTRE, Graphics_BOTTOM);
+	for (long icol = 1; icol <= my numberOfColumns; icol ++) {
+		if (my columnLabels && my columnLabels [icol] && my columnLabels [icol] [0])
+			Graphics_text (graphics, icol, 1, my columnLabels [icol]);
+	}
+	for (long irow = rowmin; irow <= rowmax; irow ++) {
+		double y = 1 - lineSpacing * (irow - rowmin + 0.6);
+		Graphics_setTextAlignment (graphics, Graphics_RIGHT, Graphics_HALF);
+		if (my rowLabels && my rowLabels [irow] && my rowLabels [irow] [0])
+			Graphics_text (graphics, 0.5 - leftMargin, y, my rowLabels [irow]);
+		Graphics_setTextAlignment (graphics, Graphics_CENTRE, Graphics_HALF);
+		for (long icol = 1; icol <= my numberOfColumns; icol ++) {
+			wchar_t text [40];
+			print4 (text, my data [irow] [icol], iformat, 0, precision);
+			Graphics_text (graphics, icol, y, text);
+		}
+	}
+	if (maxTextHeight) {
+		double left = 0.5;
+		if (maxTextWidth > 0.0) left -= maxTextWidth + 2 * leftMargin;
+		Graphics_line (graphics, left, 1, my numberOfColumns + 0.5, 1);
+	}
+	Graphics_unsetInner (graphics);
+}
+
+void TableOfReal_drawAsNumbers_if (I, Graphics graphics, long rowmin, long rowmax, int iformat, int precision,
+	const wchar_t *conditionFormula, Interpreter *interpreter)
+{
+	iam (TableOfReal);
+	try {
+		autoMatrix original = TableOfReal_to_Matrix (me);
+		autoMatrix conditions = original.clone ();
+		fixRows (me, & rowmin, & rowmax);
+		Graphics_setInner (graphics);
+		Graphics_setWindow (graphics, 0.5, my numberOfColumns + 0.5, 0, 1);
+		double leftMargin = getLeftMargin (graphics);   // not earlier!
+		double lineSpacing = getLineSpacing (graphics);   // not earlier!
+		double maxTextWidth = getMaxRowLabelWidth (me, graphics, rowmin, rowmax);
+		double maxTextHeight = getMaxColumnLabelHeight (me, graphics, 1, my numberOfColumns);
+		Matrix_formula (original.peek(), conditionFormula, interpreter, conditions.peek()); therror
+
+		Graphics_setTextAlignment (graphics, Graphics_CENTRE, Graphics_BOTTOM);
+		for (long icol = 1; icol <= my numberOfColumns; icol ++) {
+			if (my columnLabels && my columnLabels [icol] && my columnLabels [icol] [0])
+				Graphics_text (graphics, icol, 1, my columnLabels [icol]);
+		}
+		for (long irow = rowmin; irow <= rowmax; irow ++) {
+			double y = 1 - lineSpacing * (irow - rowmin + 0.6);
+			Graphics_setTextAlignment (graphics, Graphics_RIGHT, Graphics_HALF);
+			if (my rowLabels && my rowLabels [irow] && my rowLabels [irow] [0])
+				Graphics_text (graphics, 0.5 - leftMargin, y, my rowLabels [irow]);
+			Graphics_setTextAlignment (graphics, Graphics_CENTRE, Graphics_HALF);
+			for (long icol = 1; icol <= my numberOfColumns; icol ++) if (conditions -> z [irow] [icol] != 0.0) {
+				wchar_t text [40];
+				print4 (text, my data [irow] [icol], iformat, 0, precision);
+				Graphics_text (graphics, icol, y, text);
+			}
+		}
+		if (maxTextHeight) {
+			double left = 0.5;
+			if (maxTextWidth > 0.0) left -= maxTextWidth + 2 * leftMargin;
+			Graphics_line (graphics, left, 1, my numberOfColumns + 0.5, 1);
+		}
+		Graphics_unsetInner (graphics);
+	} catch (...) {
+		rethrowm (me, ": numbers not drawn.");
+	}
+}
+
+void TableOfReal_drawVerticalLines (I, Graphics graphics, long rowmin, long rowmax) {
+	iam (TableOfReal);
+	long colmin = 1, colmax = my numberOfColumns;
+	fixRows (me, & rowmin, & rowmax);
+	Graphics_setInner (graphics);
+	Graphics_setWindow (graphics, colmin - 0.5, colmax + 0.5, 0, 1);
+	double lineSpacing = getLineSpacing (graphics);   // not earlier!
+	double maxTextWidth = getMaxRowLabelWidth (me, graphics, rowmin, rowmax);
+	double maxTextHeight = getMaxColumnLabelHeight (me, graphics, 1, my numberOfColumns);
+
+	if (maxTextWidth > 0.0) colmin -= 1;
+	for (long col = colmin + 1; col <= colmax; col ++)
+		Graphics_line (graphics, col - 0.5, 1 + maxTextHeight, col - 0.5, 1 - lineSpacing * (rowmax - rowmin + 1));
+	Graphics_unsetInner (graphics);
+}
+
+void TableOfReal_drawLeftAndRightLines (I, Graphics graphics, long rowmin, long rowmax) {
+	iam (TableOfReal);
+	long colmin = 1, colmax = my numberOfColumns;
+	fixRows (me, & rowmin, & rowmax);
+	Graphics_setInner (graphics);
+	Graphics_setWindow (graphics, colmin - 0.5, colmax + 0.5, 0, 1);
+	double lineSpacing = getLineSpacing (graphics);
+	double maxTextWidth = getMaxRowLabelWidth (me, graphics, rowmin, rowmax);
+	double maxTextHeight = getMaxColumnLabelHeight (me, graphics, 1, my numberOfColumns);
+
+	double left = 0.5;
+	if (maxTextWidth > 0.0) left -= maxTextWidth + 2 * lineSpacing;
+	double right = colmax + 0.5;
+	double top = 1 + maxTextHeight;
+	double bottom = 1 - lineSpacing * (rowmax - rowmin + 1);
+	Graphics_line (graphics, left, top, left, bottom);
+	Graphics_line (graphics, right, top, right, bottom);
+	Graphics_unsetInner (graphics);
+}
+
+void TableOfReal_drawHorizontalLines (I, Graphics graphics, long rowmin, long rowmax) {
+	iam (TableOfReal);
+	long colmin = 1, colmax = my numberOfColumns;
+	fixRows (me, & rowmin, & rowmax);
+	Graphics_setInner (graphics);
+	Graphics_setWindow (graphics, colmin - 0.5, colmax + 0.5, 0, 1);
+	double lineSpacing = getLineSpacing (graphics);
+	double maxTextWidth = getMaxRowLabelWidth (me, graphics, rowmin, rowmax);
+	double maxTextHeight = getMaxColumnLabelHeight (me, graphics, 1, my numberOfColumns);
+
+	double left = 0.5;
+	double top = rowmin;
+	if (maxTextWidth > 0.0) left -= maxTextWidth + 2 * lineSpacing;
+	if (maxTextHeight > 0.0) rowmin -= 1;
+	double right = colmax + 0.5;
+	for (long irow = rowmin; irow < rowmax; irow ++) {
+		double y = 1 - lineSpacing * (irow - top + 1);
+		Graphics_line (graphics, left, y, right, y);
+	}
+	Graphics_unsetInner (graphics);
+}
+
+void TableOfReal_drawTopAndBottomLines (I, Graphics graphics, long rowmin, long rowmax) {
+	iam (TableOfReal);
+	long colmin = 1, colmax = my numberOfColumns;
+	fixRows (me, & rowmin, & rowmax);
+	Graphics_setInner (graphics);
+	Graphics_setWindow (graphics, colmin - 0.5, colmax + 0.5, 0, 1);
+	double lineSpacing = getLineSpacing (graphics);
+	double maxTextWidth = getMaxRowLabelWidth (me, graphics, rowmin, rowmax);
+	double maxTextHeight = getMaxColumnLabelHeight (me, graphics, 1, my numberOfColumns);
+
+	double left = 0.5;
+	if (maxTextWidth > 0.0) left -= maxTextWidth + 2 * lineSpacing;
+	double right = colmax + 0.5;
+	double top = 1 + maxTextHeight;
+	double bottom = 1 - lineSpacing * (rowmax - rowmin + 1);
+	Graphics_line (graphics, left, top, right, top);
+	Graphics_line (graphics, left, bottom, right, bottom);
+	Graphics_unsetInner (graphics);
+}
+
+void TableOfReal_drawAsSquares (I, Graphics graphics, long rowmin, long rowmax,
+	long colmin, long colmax, int garnish)
+{
+	iam (TableOfReal);
+	double dx = 1, dy = 1;
+	Graphics_Colour colour = Graphics_inqColour (graphics);
+	fixRows (me, & rowmin, & rowmax);
+	fixColumns (me, & colmin, & colmax);
+	
+	Graphics_setInner (graphics);
+	Graphics_setWindow (graphics, colmin - 0.5, colmax + 0.5, rowmin - 0.5, rowmax + 0.5);
+	double datamax = my data [rowmin] [colmin];
+	for (long irow = 1; irow <= my numberOfRows; irow ++)
+		for (long icol = 1; icol <= my numberOfColumns; icol ++)
+			if (fabs (my data [irow] [icol]) > datamax) datamax = fabs (my data [irow] [icol]);
+	
+	for (long irow = rowmin; irow <= rowmax; irow ++) {
+		double y = rowmax + rowmin - irow;
+		for (long icol = colmin; icol <= colmax; icol ++) {
+			double x = icol;
+			/* two neighbouring squares should not touch -> 0.95 */
+			double d = 0.95 * sqrt (fabs (my data [irow] [icol]) / datamax);
+			double x1WC = x - d * dx / 2, x2WC = x + d * dx / 2;
+			double y1WC = y - d * dy / 2, y2WC = y + d * dy / 2;
+			if (my data [irow] [icol] > 0) Graphics_setColour (graphics, Graphics_WHITE);
+			Graphics_fillRectangle (graphics, x1WC, x2WC, y1WC, y2WC);
+			Graphics_setColour (graphics, colour);
+			Graphics_rectangle (graphics, x1WC, x2WC , y1WC, y2WC);
+		}
+	}
+	Graphics_setGrey (graphics, 0.0);
+	Graphics_unsetInner (graphics);
+	if (garnish) {
+		for (long irow = rowmin; irow <= rowmax; irow ++) if (my rowLabels [irow]) 
+			Graphics_markLeft (graphics, rowmax + rowmin - irow, 0, 0, 0, my rowLabels [irow]);
+		for (long icol = colmin; icol <= colmax; icol ++) if (my columnLabels [icol])
+			Graphics_markTop (graphics, icol, 0, 0, 0, my columnLabels [icol]);
+	}
+}
 
 DIRECT (TablesOfReal_append)
 	autoCollection tables = Collection_create (classTableOfReal, 10);

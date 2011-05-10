@@ -8,9 +8,6 @@ libartsynth_a_SOURCES =	\
 	Art_Speaker_to_VocalTract.cpp \
 	Articulation.cpp \
 	Artword.cpp \
-	Artword_Speaker.cpp \
-	Artword_Speaker_Sound.cpp \
-	Artword_Speaker_to_Sound.cpp \
 	Artword_to_Art.cpp \
 	Delta.cpp \
 	Speaker.cpp \

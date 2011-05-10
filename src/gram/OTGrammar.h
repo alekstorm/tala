@@ -24,7 +24,6 @@
  */
 
 #include "sys/Strings.h"
-#include "ui/Graphics.h"
 #include "stat/PairDistribution.h"
 #include "stat/Distributions.h"
 #include "stat/TableOfReal.h"
@@ -54,6 +53,7 @@ void OTGrammar_sort (OTGrammar me);
 void OTGrammar_newDisharmonies (OTGrammar me, double spreading);
 
 long OTGrammar_getTableau (OTGrammar me, const wchar_t *input);
+void OTGrammar_fillInHarmonies (OTGrammar me, long itab);
 int OTGrammar_compareCandidates (OTGrammar me, long itab1, long icand1, long itab2, long icand2);
 	/*
 	 * Function:
@@ -88,8 +88,7 @@ bool OTGrammar_isPartialOutputGrammatical (OTGrammar me, const wchar_t *partialO
 	/* Is there an input for which this partial output is contained in any of the optimal outputs? */
 bool OTGrammar_isPartialOutputSinglyGrammatical (OTGrammar me, const wchar_t *partialOutput);
 	/* Is every optimal output that contains this partial output the only optimal output in its tableau? */
-
-void OTGrammar_drawTableau (OTGrammar me, Graphics g, const wchar_t *input);
+int OTGrammar_crucialCell (OTGrammar me, long itab, long icand, long iwinner, long numberOfOptimalCandidates);
 
 Strings OTGrammar_generateInputs (OTGrammar me, long numberOfTrials);
 Strings OTGrammar_getInputs (OTGrammar me);
@@ -107,26 +106,25 @@ int OTGrammar_learnOne (OTGrammar me, const wchar_t *input, const wchar_t *adult
 int OTGrammar_learn (OTGrammar me, Strings inputs, Strings outputs,
 	double rankingSpreading, enum kOTGrammar_rerankingStrategy updateRule, int honourLocalRankings,
 	double demotionMean, double relativeDemotionSpreading, long numberOfChews);
-int OTGrammar_PairDistribution_learn (OTGrammar me, PairDistribution thee,
-	double evaluationNoise, enum kOTGrammar_rerankingStrategy updateRule, int honourLocalRankings,
-	double initialPlasticity, long replicationsPerPlasticity, double plasticityDecrement,
-	long numberOfPlasticities, double relativePlasticityNoise, long numberOfChews);
 bool OTGrammar_PairDistribution_findPositiveWeights_e (OTGrammar me, PairDistribution thee, double weightFloor, double marginOfSeparation);
 int OTGrammar_learnOneFromPartialOutput (OTGrammar me, const wchar_t *partialAdultOutput,
 	double rankingSpreading, enum kOTGrammar_rerankingStrategy updateRule, int honourLocalRankings,
 	double demotionMean, double relativeDemotionSpreading, long numberOfChews, int warnIfStalled);
+int OTGrammar_learnOneFromPartialOutput_opt (OTGrammar me, long ipartialAdultOutput,
+	double evaluationNoise, enum kOTGrammar_rerankingStrategy updateRule, int honourLocalRankings,
+	double plasticity, double relativePlasticityNoise, long numberOfChews, int warnIfStalled);
+OTHistory OTGrammar_createHistory (OTGrammar me, long storeHistoryEvery, long numberOfData);
+int OTGrammar_updateHistory (OTGrammar me, OTHistory thee, long storeHistoryEvery, long idatum, const wchar_t *input);
+int OTGrammar_finalizeHistory (OTGrammar me, OTHistory thee, long idatum);
 int OTGrammar_learnFromPartialOutputs (OTGrammar me, Strings partialOutputs,
 	double rankingSpreading, enum kOTGrammar_rerankingStrategy updateRule, int honourLocalRankings,
 	double demotionMean, double relativeDemotionSpreading, long numberOfChews, long storeHistoryEvery, OTHistory *history);
-int OTGrammar_Distributions_learnFromPartialOutputs (OTGrammar me, Distributions thee, long columnNumber,
-	double evaluationNoise, enum kOTGrammar_rerankingStrategy updateRule, int honourLocalRankings,
-	double initialPlasticity, long replicationsPerPlasticity, double plasticityDecrement,
-	long numberOfPlasticities, double relativePlasticityNoise, long numberOfChews,
-	long storeHistoryEvery, OTHistory *history_out);
 int OTGrammar_PairDistribution_getFractionCorrect (OTGrammar me, PairDistribution thee,
 	double evaluationNoise, long numberOfInputs, double *fractionCorrect);
 int OTGrammar_PairDistribution_getMinimumNumberCorrect (OTGrammar me, PairDistribution thee,
 	double evaluationNoise, long numberOfReplications, long *minimumNumberCorrect);
+void OTGrammar_opt_deleteOutputMatching (OTGrammar me);
+int OTGrammar_Distributions_opt_createOutputMatching (OTGrammar me, Distributions thee, long columnNumber);
 int OTGrammar_Distributions_getFractionCorrect (OTGrammar me, Distributions thee, long columnNumber,
 	double evaluationNoise, long numberOfInputs, double *fractionCorrect);
 
@@ -146,10 +144,12 @@ void OTGrammar_resetToRandomTotalRanking (OTGrammar me, double maximumRanking, d
 int OTGrammar_setRanking (OTGrammar me, long constraint, double ranking, double disharmony);
 int OTGrammar_setConstraintPlasticity (OTGrammar me, long constraint, double plasticity);
 
+int OTGrammar_save (OTGrammar me);
+void OTGrammar_restore (OTGrammar me);
+
 int OTGrammar_removeConstraint (OTGrammar me, const wchar_t *constraintName);
 int OTGrammar_removeHarmonicallyBoundedCandidates (OTGrammar me, int singly);
 int OTGrammar_PairDistribution_listObligatoryRankings (OTGrammar me, PairDistribution thee);
-int OTGrammar_Distributions_listObligatoryRankings (OTGrammar me, Distributions thee, long columnNumber);
 
 int OTGrammar_writeToHeaderlessSpreadsheetFile (OTGrammar me, MelderFile file);
 

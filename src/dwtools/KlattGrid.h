@@ -45,9 +45,6 @@
 #ifndef _KlattTable_h_
 	#include "KlattTable.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
@@ -107,8 +104,6 @@ void PhonationGrid_setNames (PhonationGrid me);
 
 Sound PhonationGrid_to_Sound_aspiration (PhonationGrid me, double samplingFrequency);
 
-void PhonationGrid_draw (PhonationGrid me, Graphics g);
-
 double PhonationGrid_getMaximumPeriod (PhonationGrid me);
 
 PhonationTier PhonationGrid_to_PhonationTier (PhonationGrid me);
@@ -119,7 +114,6 @@ VocalTractGrid VocalTractGrid_create (double tmin, double tmax, long numberOfFor
 	long numberOfNasalFormants,	long numberOfNasalAntiFormants);
 VocalTractGridPlayOptions VocalTractGridPlayOptions_create (void);
 void VocalTractGrid_setNames (VocalTractGrid me);
-void VocalTractGrid_draw (VocalTractGrid me, Graphics g, int filterModel);
 
 /************************ CouplingGrid *********************************************/
 	
@@ -145,7 +139,6 @@ Sound Sound_FormantGrid_Intensities_filter (Sound me, FormantGrid thee, Ordered 
 FricationGrid FricationGrid_create (double tmin, double tmax, long numberOfFormants);
 FricationGridPlayOptions FricationGridPlayOptions_create (void);
 void FricationGrid_setNames (FricationGrid me);
-void FricationGrid_draw (FricationGrid me, Graphics g);
 
 Sound FricationGrid_to_Sound (FricationGrid me, double samplingFrequency);
 
@@ -166,10 +159,6 @@ KlattGrid KlattGrid_createExample (void);
 KlattGridPlayOptions KlattGridPlayOptions_create (void);
 void KlattGrid_setNames (KlattGrid me);
 KlattGrid KlattTable_to_KlattGrid (KlattTable me, double frameDuration);
-
-void KlattGrid_draw (KlattGrid me, Graphics g, int filterModel);
-void klattGrid_drawPhonation (KlattGrid me, Graphics g);
-void KlattGrid_drawVocalTract (KlattGrid me, Graphics g, int filterModel, int withTrachea);
 
 #define KlattGrid_FILTER_CASCADE 0
 #define KlattGrid_FILTER_PARALLEL 1

@@ -27,9 +27,6 @@
 #ifndef _Spectrogram_h_
 	#include "fon/Spectrogram.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
 #ifndef _Polygon_h
 	#include "fon/Polygon.h"
 #endif
@@ -103,23 +100,9 @@ double DTW_getXTime (DTW me, double ty);
 
 long DTW_getMaximumConsecutiveSteps (DTW me, int direction);
 
-void DTW_paintDistances (DTW me, Any g, double xmin, double xmax, double ymin,
-	double ymax, double minimum, double maximum, int garnish);
-
-void DTW_drawPath (DTW me, Any g, double xmin, double xmax, double ymin,
-	double ymax, int garnish);
-void DTW_drawWarpX (DTW me, Graphics g, double xmin, double xmax, double ymin, double ymax, double tx, int garnish);	
 void DTW_pathRemoveRedundantNodes (DTW me);
 void DTW_pathQueryRecode (DTW me);
 
-void DTW_drawDistancesAlongPath (DTW me, Any g, double xmin, double xmax,
-	double dmin, double dmax, int garnish);
-	
-void DTW_and_Sounds_draw (DTW me, Sound yy, Sound xx, Graphics g, double xmin, double xmax, 
-	double ymin, double ymax, int garnish);
-void DTW_and_Sounds_drawWarpX (DTW me, Sound yy, Sound xx, Graphics g, double xmin, double xmax, 
-	double ymin, double ymax, double tx, int garnish);
-	
 Polygon DTW_to_Polygon_band (DTW me, double adjustment_window_duration, int adjustment_window_includes_end);
 Polygon DTW_to_Polygon_slopes (DTW me, long nsteps_xory, long nsteps_xandy);
 	

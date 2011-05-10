@@ -118,29 +118,6 @@ double Excitation_getLoudness (Excitation me) {
 	return my dx * loudness;
 }
 
-void Excitation_draw (Excitation me, Graphics g,
-	double fmin, double fmax, double minimum, double maximum, int garnish)
-{
-	long ifmin, ifmax;
-	if (fmax <= fmin) { fmin = my xmin; fmax = my xmax; }
-	Matrix_getWindowSamplesX (me, fmin, fmax, & ifmin, & ifmax);
-	if (maximum <= minimum)
-		Matrix_getWindowExtrema (me, ifmin, ifmax, 1, 1, & minimum, & maximum);
-	if (maximum <= minimum) { minimum -= 20; maximum += 20; }
-	Graphics_setInner (g);
-	Graphics_setWindow (g, fmin, fmax, minimum, maximum);
-	Graphics_function (g, my z [1], ifmin, ifmax,
-		Matrix_columnToX (me, ifmin), Matrix_columnToX (me, ifmax));
-	Graphics_unsetInner (g);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, 1, L"Frequency (Bark)");
-		Graphics_textLeft (g, 1, L"Excitation (phon)");
-		Graphics_marksBottomEvery (g, 1, 5, 1, 1, 0);
-		Graphics_marksLeftEvery (g, 1, 20, 1, 1, 0);
-	}
-}
-
 Matrix Excitation_to_Matrix (Excitation me) {
 	Matrix thee = (structMatrix *)Data_copy (me);
 	if (! thee) return NULL;

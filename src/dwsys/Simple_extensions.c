@@ -85,11 +85,6 @@ long SimpleString_length (SimpleString me)
     return wcslen (my string);
 }
 
-void SimpleString_draw (SimpleString me, Any g, double xWC, double yWC)
-{
-    Graphics_text (g, xWC, yWC, my string);
-}
-
 const wchar_t * SimpleString_nativize_c (SimpleString me, int educateQuotes)
 {
 	SimpleString thee = Data_copy (me);

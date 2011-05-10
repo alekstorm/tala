@@ -25,7 +25,6 @@
 
 /* Transition inherits from Data */
 #include "Matrix.h"
-#include "ui/Graphics.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -42,7 +41,6 @@ int Transition_init (I, long numberOfStates);
 Transition Transition_create (long numberOfStates);
 
 int Transition_formula (I, const wchar_t *formula);
-void Transition_drawAsNumbers (I, Graphics g, int iformat, int precision);
 
 int Transition_eigen (Transition me, Matrix *eigenvectors, Matrix *eigenvalues);
 Transition Transition_power (Transition me, long power);

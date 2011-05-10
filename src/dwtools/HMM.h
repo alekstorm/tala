@@ -96,12 +96,14 @@ Strings HMM_ObservationSequence_to_Strings (HMM_ObservationSequence me);
 HMM_ObservationSequence Strings_to_HMM_ObservationSequence (Strings me);
 StringsIndex HMM_ObservationSequence_to_StringsIndex (HMM_ObservationSequence me);
 StringsIndex HMM_and_HMM_ObservationSequence_to_StringsIndex (HMM me, HMM_ObservationSequence thee);
+StringsIndex HMM_and_HMM_StateSequence_to_StringsIndex (HMM me, HMM_StateSequence thee);
 TableOfReal HMM_ObservationSequence_to_TableOfReal_transitions (HMM_ObservationSequence me, int probabilities);
 TableOfReal HMM_and_HMM_ObservationSequence_to_TableOfReal_transitions (HMM me, HMM_ObservationSequence thee, int probabilities);
 
 HMM_ObservationSequences HMM_ObservationSequences_create (void);
 long HMM_ObservationSequence_getNumberOfObservations (HMM_ObservationSequence me);
 long HMM_ObservationSequences_getLongestSequence (HMM_ObservationSequences me);
+
 
 TableOfReal HMM_StateSequence_to_TableOfReal_transitions (HMM_StateSequence me);
 TableOfReal HMM_and_HMM_StateSequence_to_TableOfReal_transitions (HMM me, HMM_StateSequence thee, int probabilities);
@@ -118,7 +120,6 @@ HMM HMM_createContinuousModel (int leftToRight, long numberOfStates, long number
 HMM HMM_createFullContinuousModel (int leftToRight, long numberOfStates, long numberOfObservationSymbols,
 	long numberOfFeatureStreams, long *dimensionOfStream, long *numberOfGaussiansforStream);
 HMM HMM_createFromHMM_ObservationSequence (HMM_ObservationSequence me, long numberOfStates, int leftToRight);
-void HMM_draw (HMM me, Graphics g, int garnish);
 int HMM_addObservation (HMM me, thou);
 int HMM_addState (HMM me, thou);
 void HMM_setDefaultStates (HMM me);
@@ -158,7 +159,6 @@ HMM_ObservationSequence HMM_to_HMM_ObservationSequence (HMM me, long initialStat
 HMM_StateSequence HMM_and_HMM_ObservationSequence_to_HMM_StateSequence (HMM me, HMM_ObservationSequence thee);
 double HMM_and_HMM_StateSequence_getProbability (HMM me, HMM_StateSequence thee);
 int HMM_and_HMM_ObservationSequences_learn (HMM me, HMM_ObservationSequences thee, double delta_lnp, double minProb);
-void HMM_and_HMM_StateSequence_drawTrellis (HMM me, HMM_StateSequence thee, Graphics g, int connect, int garnish);
 double HMM_and_HMM_ObservationSequence_getProbability (HMM me, HMM_ObservationSequence thee);
 double HMM_and_HMM_ObservationSequence_getCrossEntropy (HMM me, HMM_ObservationSequence thee);
 double HMM_and_HMM_ObservationSequence_getPerplexity (HMM me, HMM_ObservationSequence thee);

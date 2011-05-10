@@ -37,10 +37,6 @@ Table Table_createFromPetersonBarneyData (void);
 Table Table_createFromPolsVanNieropData (void);
 Table Table_createFromWeeninkData (void);
 
-void Table_drawScatterPlotWithConfidenceIntervals (Table me, Graphics g, long xcolumn, long ycolumn,
-	double xmin, double xmax, double ymin, double ymax, long xci_min, long xci_max,
-	long yci_min, long yci_max, double bar_mm, int garnish);
-
 #ifdef __cplusplus
 	}
 #endif

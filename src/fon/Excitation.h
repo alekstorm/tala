@@ -26,9 +26,6 @@
 #ifndef _Vector_h_
 	#include "Vector.h"
 #endif
-#ifndef _Graphics_h_
-	#include "Graphics.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {
@@ -48,7 +45,6 @@ class_create (Excitation, Vector);
 Excitation Excitation_create (double df, long nf);
 double Excitation_getDistance (Excitation me, Excitation thee);
 double Excitation_getLoudness (Excitation me);
-void Excitation_draw (Excitation me, Graphics g, double fmin, double fmax, double minimum, double maximum, int garnish);
 Matrix Excitation_to_Matrix (Excitation me);
 Excitation Matrix_to_Excitation (Matrix me);
 

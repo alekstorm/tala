@@ -89,17 +89,6 @@ Ltas Ltas_create (long nx, double dx) {
 	return me;
 }
 
-void Ltas_draw (Ltas me, Graphics g, double fmin, double fmax, double minimum, double maximum, int garnish, const wchar_t *method) {
-	Vector_draw (me, g, & fmin, & fmax, & minimum, & maximum, 1.0, method);
-	if (garnish) {
-		Graphics_drawInnerBox (g);
-		Graphics_textBottom (g, 1, L"Frequency (Hz)");
-		Graphics_marksBottom (g, 2, 1, 1, 0);
-		Graphics_textLeft (g, 1, L"Sound pressure level (dB/Hz)");
-		Graphics_marksLeft (g, 2, 1, 1, 0);
-	}
-}
-
 double Ltas_getSlope (Ltas me, double f1min, double f1max, double f2min, double f2max, int averagingUnits) {
 	double low = Sampled_getMean (me, f1min, f1max, 0, averagingUnits, FALSE);
 	double high = Sampled_getMean (me, f2min, f2max, 0, averagingUnits, FALSE);

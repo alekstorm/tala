@@ -27,7 +27,6 @@
 
 #include "fon/Polygon.h"
 #include "Categories.h"
-#include "ui/Graphics.h"
 #include "fon/Sound.h"
 
 #ifdef __cplusplus
@@ -39,13 +38,6 @@ void Polygon_rotate (I, double alpha, double xc, double yc);
 void Polygon_scale (I, double xs, double ys);
 void Polygon_reverseX (I);
 void Polygon_reverseY (I);
-
-void Polygon_Categories_draw (I, Any categories, Any graphics, double xmin, double xmax,
-	double ymin, double ymax, int garnish);
-/* reverse axis when min > max */
-
-void Polygon_drawMarks (I, Graphics g, double xmin, double xmax,
-	double ymin, double ymax, double size_mm, const wchar_t *mark);
 
 Polygon Sound_to_Polygon (Sound me, int channel, double tmin, double tmax, double ymin, double ymax, double level);
 /*

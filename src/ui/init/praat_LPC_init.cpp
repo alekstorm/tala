@@ -48,6 +48,7 @@
 #include "dwtools/MelFilter_and_MFCC.h"
 #include "dwtools/MFCC.h"
 #include "dwtools/Sound_to_MFCC.h"
+#include "num/NUM2.h"
 
 #include <math.h>
 
@@ -60,6 +61,65 @@ extern "C" int praat_Fon_formula (UiForm *dia);
 
 /********************** Cepstrum  ****************************************/
 
+/*
+	Function:
+		draw a Cepstrum into a Graphics.
+	Preconditions:
+		maximum > minimum;
+	Arguments:
+		[qmin, qmax]: quefrencies; x domain of drawing;
+		Autowindowing: if qmax <= qmin, x domain of drawing is
+			[my xmin, my xmax].
+		[minimum, maximum]: amplitude; y range of drawing.
+*/
+void Cepstrum_draw (Cepstrum me, Graphics g, double qmin, double qmax,
+	double minimum, double maximum, int garnish)
+{
+	double *y = NULL, *z;
+	long i, imin, imax;
+	int autoscaling = minimum >= maximum;
+
+	Graphics_setInner (g);
+
+	if (qmax <= qmin)
+	{
+		qmin = my xmin; qmax = my xmax;
+	}
+	
+	if (! Matrix_getWindowSamplesX (me, qmin, qmax, & imin, & imax)) return;
+
+	if ((y = NUMdvector (imin, imax)) == NULL) return;
+	
+	z = my z[1];
+	
+	for (i = imin; i <= imax; i++)
+	{
+		y[i] = z[i];
+	}
+	
+	if (autoscaling) NUMdvector_extrema (y, imin, imax, & minimum, & maximum);
+
+	for (i = imin; i <= imax; i ++)
+	{
+		if (y[i] > maximum) y[i] = maximum;
+		else if (y[i] < minimum) y[i] = minimum;
+	}
+	
+	Graphics_setWindow (g, qmin, qmax, minimum, maximum);
+	Graphics_function (g, y, imin, imax, Matrix_columnToX (me, imin),
+		Matrix_columnToX (me, imax));
+
+	Graphics_unsetInner (g);
+	
+	if (garnish) {
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Quefrency");
+		Graphics_marksBottom (g, 2, TRUE, TRUE, FALSE);
+		Graphics_textLeft (g, 1, L"Amplitude");
+	}
+
+	NUMdvector_free (y, imin);
+}
 
 DIRECT (Cepstrum_help)
 	Melder_help (L"Cepstrum");
@@ -159,6 +219,54 @@ DO
 END
 
 /********************LPC ********************************************/
+
+void LPC_drawGain (LPC me, Graphics g, double tmin, double tmax, double gmin, double gmax, int garnish)
+{
+	long itmin, itmax, iframe; double *gain;
+	if (tmax <= tmin) { tmin = my xmin; tmax = my xmax; }
+	if (! Sampled_getWindowSamples (me, tmin, tmax, & itmin, & itmax)) return;
+	if ((gain = NUMdvector (itmin, itmax)) == NULL) return;
+	for (iframe=itmin; iframe <= itmax; iframe++) gain[iframe] = my frame[iframe].gain;
+	if (gmax <= gmin) NUMdvector_extrema (gain, itmin, itmax, & gmin, & gmax);
+	if (gmax == gmin) { gmin = 0; gmax += 0.5; }
+	Graphics_setInner (g);
+	Graphics_setWindow (g, tmin, tmax, gmin, gmax);
+	for (iframe=itmin; iframe <= itmax; iframe++)
+	{
+		double x = Sampled_indexToX (me, iframe);
+		Graphics_fillCircle_mm (g, x, gain[iframe], 1.0);
+	}
+	Graphics_unsetInner (g);
+	if (garnish)
+	{
+		Graphics_drawInnerBox (g);
+		Graphics_textBottom (g, 1, L"Time (seconds)");
+		Graphics_textLeft (g, 1, L"Gain");
+		Graphics_marksBottom (g, 2, 1, 1, 0);
+		Graphics_marksLeft (g, 2, 1, 1, 0);
+	}
+	NUMdvector_free (gain, itmin);
+}
+
+void Roots_draw (Roots me, Graphics g, double rmin, double rmax, double imin,
+	double imax, wchar_t *symbol, int fontSize, int garnish);
+
+void LPC_drawPoles (LPC me, Graphics g, double time, int garnish)
+{
+	Polynomial p = LPC_to_Polynomial (me, time);
+
+	if (p != NULL)
+	{
+		Roots r = Polynomial_to_Roots (p);
+		if (r != NULL)
+		{
+			Roots_draw (r, g, -1, 1, -1, 1, L"+", 12, garnish);
+			forget (r);
+		}
+		forget (p);
+	}
+	Melder_clearError ();
+}
 
 DIRECT (LPC_help) Melder_help (L"LPC"); END
 

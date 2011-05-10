@@ -31,9 +31,15 @@
 #ifndef _Sound_h_
 	#include "fon/Sound.h"
 #endif
-#ifndef _Graphics_h_
-	#include "ui/Graphics.h"
-#endif
+
+#define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))
+
+#define THLCON 0.5
+#define THLINC 1.5
+#define EXP2   12
+
+#define PPVPHA(x,y,test) ((test) ? atan2 (-(y),-(x)) : atan2 ((y),(x)))
+#define PHADVT(xr,xi,yr,yi,xa) ((xa) > 0 ? ((xr)*(yr)+(xi)*(yi))/ (xa) : 0)
 
 #ifdef __cplusplus
 	extern "C" {
@@ -52,9 +58,6 @@ Matrix Spectrum_unwrap (Spectrum me);
 	First row of returned matrix contains the amplitudes-squared,
 	second row contains the unwrapped phases.
 */
-
-void Spectrum_drawPhases (Spectrum me, Graphics g, double fmin, double fmax,
-	double phase_min, double phase_max, int unwrap, int garnish);
 
 Spectrum Spectra_multiply (Spectrum me, Spectrum thee);
 void Spectrum_conjugate (Spectrum me);
