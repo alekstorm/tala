@@ -23,9 +23,7 @@
  * pb 2011/03/03
  */
 
-#ifndef _Matrix_h_
-	#include "Matrix.h"
-#endif
+#include "Matrix.h"
 
 #ifdef __cplusplus
 	extern "C" {

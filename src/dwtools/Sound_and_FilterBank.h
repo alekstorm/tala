@@ -25,15 +25,9 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _FilterBank_h_
-	#include "FilterBank.h"
-#endif
-#ifndef _Pitch_h_
-	#include "fon/Pitch.h"
-#endif
-#ifndef _Sound_h_
-	#include "fon/Sound.h"
-#endif
+#include "FilterBank.h"
+#include "fon/Pitch.h"
+#include "fon/Sound.h"
 
 #ifdef __cplusplus
 	extern "C" {

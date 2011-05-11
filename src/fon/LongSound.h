@@ -23,12 +23,8 @@
  * pb 2011/03/03
  */
 
-#ifndef _Sound_h_
-	#include "Sound.h"
-#endif
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
+#include "Sound.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

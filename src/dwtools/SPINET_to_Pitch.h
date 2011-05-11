@@ -25,12 +25,8 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _SPINET_h_
-	#include "SPINET.h"
-#endif
-#ifndef _Pitch_h_
-	#include "fon/Pitch.h"
-#endif
+#include "SPINET.h"
+#include "fon/Pitch.h"
 
 #ifdef __cplusplus
 	extern "C" {

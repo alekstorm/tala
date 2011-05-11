@@ -26,9 +26,7 @@
  * pb 2007/12/09 enums
  */
 
-#ifndef _Graphics_h_
-	#include "Graphics.h"
-#endif
+#include "Graphics.h"
 #include "Interpreter.h"
 
 #ifdef __cplusplus

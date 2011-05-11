@@ -23,12 +23,8 @@
  * pb 2011/03/03
  */
 
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
-#ifndef _PointProcess_h_
-	#include "PointProcess.h"
-#endif
+#include "PointProcess.h"
+#include "sys/Collection.h"
 
 #include "AnyTier_def.h"
 

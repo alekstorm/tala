@@ -24,14 +24,10 @@
  djmw 20110308 Latest modification.
 */
 
-#ifndef _NUM_h_
-	#include "NUM.h"
-#endif
 #include "limits.h"
+#include "NUM.h"
+#include "dwsys/regularExp.h"
 
-#ifndef _regularExp_h_
-	#include "dwsys/regularExp.h"
-#endif
 /* machine precision */
 #define NUMeps 2.2e-16
 

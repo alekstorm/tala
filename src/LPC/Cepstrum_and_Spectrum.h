@@ -2,12 +2,8 @@
 #define _Cepstrum_and_Spectrum_h_
 /* David Weenink, 20010101 */
 
-#ifndef _Spectrum_h_
-	#include "fon/Spectrum.h"
-#endif
-#ifndef _Cepstrum_h_
-	#include "Cepstrum.h"
-#endif
+#include "Cepstrum.h"
+#include "fon/Spectrum.h"
 
 #ifdef __cplusplus
 	extern "C" {

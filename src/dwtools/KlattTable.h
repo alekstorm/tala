@@ -24,12 +24,8 @@
  djmw 20110306 Latest modification
 */
 
-#ifndef _TableOfReal_h
-	#include "stat/Table.h"
-#endif
-#ifndef _Sound_h
-	#include "fon/Sound.h"
-#endif
+#include "fon/Sound.h"
+#include "stat/Table.h"
 
 #ifdef __cplusplus
 	extern "C" {

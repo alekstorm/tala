@@ -25,17 +25,9 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Eigen_h_
-	#include "dwsys/Eigen.h"
-#endif
-
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
-
-#ifndef _Strings_h_
-	#include "sys/Strings.h"
-#endif
+#include "dwsys/Eigen.h"
+#include "stat/TableOfReal.h"
+#include "sys/Strings.h"
 
 #ifdef __cplusplus
 	extern "C" {

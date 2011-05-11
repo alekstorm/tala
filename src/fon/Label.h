@@ -23,12 +23,8 @@
  * pb 2011/03/03
  */
 
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
-#ifndef _Function_h_
-	#include "Function.h"
-#endif
+#include "Function.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

@@ -23,9 +23,7 @@
  * pb 2011/03/03
  */
 
-#ifndef _Vector_h_
-	#include "Vector.h"
-#endif
+#include "Vector.h"
 
 #ifdef __cplusplus
 	extern "C" {

@@ -24,15 +24,9 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _TableOfReal_extensions_h_
-	#include "TableOfReal_extensions.h"
-#endif
-#ifndef _PCA_h_
-	#include "PCA.h"
-#endif
-#ifndef _CCA_h_
-	#include "CCA.h"
-#endif
+#include "CCA.h"
+#include "PCA.h"
+#include "TableOfReal_extensions.h"
 
 #ifdef __cplusplus
 	extern "C" {

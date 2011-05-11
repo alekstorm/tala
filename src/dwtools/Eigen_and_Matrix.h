@@ -26,13 +26,8 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _Eigen_h_
-	#include "dwsys/Eigen.h"
-#endif
-
-#ifndef _Matrix_h_
-	#include "fon/Matrix.h"
-#endif
+#include "dwsys/Eigen.h"
+#include "fon/Matrix.h"
 
 #ifdef __cplusplus
 	extern "C" {

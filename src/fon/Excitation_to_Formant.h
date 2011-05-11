@@ -21,12 +21,8 @@
  * pb 2011/03/03
  */
 
-#ifndef _Excitation_h_
-	#include "Excitation.h"
-#endif
-#ifndef _Formant_h_
-	#include "Formant.h"
-#endif
+#include "Excitation.h"
+#include "Formant.h"
 
 #ifdef __cplusplus
 	extern "C" {

@@ -23,15 +23,9 @@
  * pb 2011/03/03
  */
 
-#ifndef _RealTier_h_
-	#include "RealTier.h"
-#endif
-#ifndef _Sound_h_
-	#include "Sound.h"
-#endif
-#ifndef _Formant_h_
-	#include "Formant.h"
-#endif
+#include "Formant.h"
+#include "RealTier.h"
+#include "Sound.h"
 
 #ifdef __cplusplus
 	extern "C" {

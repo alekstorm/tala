@@ -24,24 +24,12 @@
  djmw 20110105 Latest modification.
 */
 
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
-#ifndef _Pattern_h_
-	#include "Pattern.h"
-#endif
-#ifndef _Categories_h_
-	#include "Categories.h"
-#endif
-#ifndef _Strings_h_
-	#include "sys/Strings.h"
-#endif
-#ifndef _SSCP_h_
-	#include "SSCP.h"
-#endif
+#include "Categories.h"
+#include "Pattern.h"
+#include "SSCP.h"
+#include "stat/TableOfReal.h"
+#include "sys/Collection.h"
+#include "sys/Strings.h"
 
 #define EMPTY_STRING(s) ((s) == NULL || s[0] == '\0')
 

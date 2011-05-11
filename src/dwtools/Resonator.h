@@ -23,10 +23,8 @@
  * djmw 20081029
  * djmw 20110306 Latest modification
  */
-	
-#ifndef _Sound_h_
-	#include "fon/Sound.h"
-#endif
+
+#include "fon/Sound.h"
 
 #ifdef __cplusplus
 	extern "C" {

@@ -25,9 +25,7 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _AffineTransform_h_
-	#include "AffineTransform.h"
-#endif
+#include "AffineTransform.h"
 
 #ifdef __cplusplus
 	extern "C" {

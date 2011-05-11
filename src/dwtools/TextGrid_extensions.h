@@ -24,9 +24,7 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _TextGrid_h_
-	#include "fon/TextGrid.h"
-#endif
+#include "fon/TextGrid.h"
 
 #ifdef __cplusplus
 	extern "C" {

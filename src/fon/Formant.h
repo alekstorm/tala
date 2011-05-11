@@ -23,12 +23,8 @@
  * pb 2011/03/03
  */
 
-#ifndef _Matrix_h_
-	#include "Matrix.h"
-#endif
-#ifndef _Table_h_
-	#include "Table.h"
-#endif
+#include "Matrix.h"
+#include "stat/Table.h"
 
 #ifdef __cplusplus
 	extern "C" {

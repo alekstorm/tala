@@ -24,9 +24,7 @@
  */
 
 /* Sampled inherits from Function */
-#ifndef _Function_h_
-	#include "Function.h"
-#endif
+#include "Function.h"
 
 #ifdef __cplusplus
 	extern "C" {

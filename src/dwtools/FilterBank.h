@@ -26,24 +26,12 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Matrix_h_
-	#include "fon/Matrix.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
-#ifndef _Spectrum_h_
-	#include "fon/Spectrum.h"
-#endif
-#ifndef _MFCC_h_
-	#include "MFCC.h"
-#endif
-#ifndef _Intensity_h_
-	#include "fon/Intensity.h"
-#endif
-#ifndef _PCA_h_
-	#include "PCA.h"
-#endif
+#include "MFCC.h"
+#include "PCA.h"
+#include "fon/Intensity.h"
+#include "fon/Matrix.h"
+#include "fon/Spectrum.h"
+#include "stat/TableOfReal.h"
 
 #ifdef __cplusplus
 	extern "C" {

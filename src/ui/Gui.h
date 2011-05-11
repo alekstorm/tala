@@ -23,16 +23,14 @@
  * 2011/03/02
  */
 
+#include "sys/Collection.h"
+
 #if defined (UNIX)
 	#define gtk 1
 	#define motif 0
 #else
 	#define gtk 0
 	#define motif 1
-#endif
-
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
 #endif
 
 #if gtk

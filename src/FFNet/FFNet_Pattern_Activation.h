@@ -26,18 +26,10 @@
  djmw 20110307 Latest modification.
 */
 
-#ifndef _FFNet_h_
-	#include "FFNet.h"
-#endif
-#ifndef _Pattern_h_
-	#include "dwtools/Pattern.h"
-#endif
-#ifndef _Activation_h_	
-	#include "dwtools/Activation.h"
-#endif
-#ifndef _Minimizers_h_	
-	#include "dwtools/Minimizers.h"
-#endif
+#include "FFNet.h"
+#include "dwtools/Activation.h"
+#include "dwtools/Minimizers.h"
+#include "dwtools/Pattern.h"
 
 #ifdef __cplusplus
 	extern "C" {

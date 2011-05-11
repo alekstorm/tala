@@ -49,9 +49,7 @@
 	class Cyclic = Collection;   // The cyclic list (a, b, c, d) equals (b, c, d, a) but not (d, c, a, b).
 */
 
-#ifndef _Simple_h_
-	#include "Simple.h"
-#endif
+#include "Simple.h"
 
 #ifdef __cplusplus
 	extern "C" {

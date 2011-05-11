@@ -1,3 +1,5 @@
+#ifndef TableOfReal_and_SVD_h_
+#define TableOfReal_and_SVD_h_
 /* TableOfReal_and_SVD.h
  *
  * Copyright (C) 1993-2011 David Weenink
@@ -22,14 +24,8 @@
  djmw 20110397 Latest modification
 */
 
-#ifndef TableOfReal_and_SVD_h_
-	#define TableOfReal_and_SVD_h_
-#ifndef _SVD_h_
-	#include "dwsys/SVD.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
+#include "dwsys/SVD.h"
+#include "stat/TableOfReal.h"
 
 #ifdef __cplusplus
 	extern "C" {

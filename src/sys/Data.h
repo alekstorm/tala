@@ -25,9 +25,7 @@
 
 /* Data inherits from Thing. */
 /* It adds the functionality of reproduction, comparison, reading, and writing. */
-#ifndef _Thing_h_
-	#include "Thing.h"
-#endif
+#include "Thing.h"
 
 #ifdef __cplusplus
 	extern "C" {

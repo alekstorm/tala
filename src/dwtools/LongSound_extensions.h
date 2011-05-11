@@ -25,9 +25,7 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _LongSound_h_
-	#include "fon/LongSound.h"
-#endif
+#include "fon/LongSound.h"
 
 #ifdef __cplusplus
 	extern "C" {

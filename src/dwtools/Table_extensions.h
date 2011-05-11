@@ -1,3 +1,5 @@
+#ifndef _Table_extensions_h_
+#define _Table_extensions_h_
 /* Table_extensions.h
  *
  * Copyright (C) 1997-2011 David Weenink
@@ -22,12 +24,7 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _Table_extensions_h_
-#define _Table_extensions_h_
-
-#ifndef _Table_h_
-	#include "stat/Table.h"
-#endif
+#include "stat/Table.h"
 
 #ifdef __cplusplus
 	extern "C" {

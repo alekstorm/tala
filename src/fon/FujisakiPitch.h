@@ -24,12 +24,8 @@
  * pb 2002/07/16 GPL
  */
 
-#ifndef _Pitch_h_
-	#include "Pitch.h"
-#endif
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
+#include "Pitch.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

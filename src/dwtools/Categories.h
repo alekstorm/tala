@@ -24,15 +24,9 @@
   djmw 20070620 Latest modification.
 */
 
-#ifndef _Collection_extensions_h_
-	#include "dwsys/Collection_extensions.h"
-#endif
-#ifndef _Simple_extensions_h_
-	#include "dwsys/Simple_extensions.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
+#include "dwsys/Collection_extensions.h"
+#include "dwsys/Simple_extensions.h"
+#include "stat/TableOfReal.h"
 
 #ifdef __cplusplus
 	extern "C" {

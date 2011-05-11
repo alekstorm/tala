@@ -23,15 +23,9 @@
  * pb 2005/11/24
  */
 
-#ifndef _Sound_h_
-	#include "Sound.h"
-#endif
-#ifndef _Categories_h_
-	#include "dwtools/Categories.h"
-#endif
-#ifndef _Table_h_
-	#include "stat/Table.h"
-#endif
+#include "Sound.h"
+#include "dwtools/Categories.h"
+#include "stat/Table.h"
 
 #include "Experiment_enums.h"
 

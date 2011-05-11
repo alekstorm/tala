@@ -25,13 +25,8 @@
  djmw 20020315 GPL header
  */
 
-#ifndef _CC_h_
-	#include "CC.h"
-#endif
-
-#ifndef _DTW_h_
-	#include "DTW.h"
-#endif
+#include "CC.h"
+#include "DTW.h"
 
 #ifdef __cplusplus
 	extern "C" {

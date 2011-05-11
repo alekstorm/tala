@@ -27,21 +27,11 @@
  djmw 20050724 Index
  djmw 20110307 Latest modification
 */
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
 
-#ifndef _Strings_h_
-	#include "sys/Strings.h"
-#endif
-
-#ifndef _Permutation_h_
-	#include "dwsys/Permutation.h"
-#endif
-
-#ifndef _Index_h_
-	#include "dwsys/Index.h"
-#endif
+#include "dwsys/Index.h"
+#include "dwsys/Permutation.h"
+#include "sys/Collection.h"
+#include "sys/Strings.h"
 
 #ifdef __cplusplus
 	extern "C" {

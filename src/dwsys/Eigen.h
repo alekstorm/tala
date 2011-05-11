@@ -24,15 +24,9 @@
  djmw 20110306 Latest modification 
 */
 
-#ifndef _Data_h_
-	#include "sys/Data.h"
-#endif
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
-#ifndef _Strings_h_
-	#include "sys/Strings.h"
-#endif
+#include "sys/Collection.h"
+#include "sys/Data.h"
+#include "sys/Strings.h"
 
 #ifdef __cplusplus
 	extern "C" {

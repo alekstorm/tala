@@ -25,9 +25,7 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Sampled2_h_
-	#include "Sampled2.h"
-#endif
+#include "Sampled2.h"
 
 #ifdef __cplusplus
 	extern "C" {

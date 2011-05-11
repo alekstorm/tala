@@ -27,9 +27,7 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _CC_h_
-	#include "CC.h"
-#endif
+#include "CC.h"
 
 #ifdef __cplusplus
 	extern "C" {

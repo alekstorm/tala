@@ -24,21 +24,11 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _Sound_h_
-	#include "fon/Sound.h"
-#endif
-#ifndef _Pitch_h_
-	#include "fon/Pitch.h"
-#endif
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
-#ifndef _PointProcess_h_
-	#include "fon/PointProcess.h"
-#endif
-#ifndef _TextGrid_h_
-	#include "fon/TextGrid.h"
-#endif
+#include "fon/Pitch.h"
+#include "fon/PointProcess.h"
+#include "fon/Sound.h"
+#include "fon/TextGrid.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

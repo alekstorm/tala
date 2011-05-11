@@ -23,9 +23,7 @@
  * pb 2011/03/03
  */
 
-#ifndef _RealTier_h_
-	#include "RealTier.h"
-#endif
+#include "RealTier.h"
 
 #ifdef __cplusplus
 	extern "C" {

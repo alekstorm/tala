@@ -23,21 +23,11 @@
  * pb 2011/03/03
  */
 
-#ifndef _Spectrum_h_
-	#include "Spectrum.h"
-#endif
-#ifndef _Sound_h_
-	#include "Sound.h"
-#endif
-#ifndef _Vector_h_
-	#include "Vector.h"
-#endif
-#ifndef _PointProcess_h_
-	#include "PointProcess.h"
-#endif
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
+#include "PointProcess.h"
+#include "Spectrum.h"
+#include "Sound.h"
+#include "Vector.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

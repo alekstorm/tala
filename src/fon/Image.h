@@ -23,11 +23,9 @@
  * pb 2011/03/03
  */
 
-
 /* Image inherits from Sampled */
-#ifndef _Sampled_h_
-	#include "Sampled.h"
-#endif
+#include "Sampled.h"
+
 #ifdef __cplusplus
 	extern "C" {
 #endif

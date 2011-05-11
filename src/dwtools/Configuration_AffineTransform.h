@@ -24,13 +24,8 @@
  djmw 20110307 Latest modification
  */
 
-#ifndef _Configuration_h_
-	#include "Configuration.h"
-#endif
-#ifndef _AffineTransform_h_
-	#include "AffineTransform.h"
-#endif
-
+#include "AffineTransform.h"
+#include "Configuration.h"
 
 #ifdef __cplusplus
 	extern "C" {

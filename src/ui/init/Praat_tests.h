@@ -2,9 +2,7 @@
 #define _Praat_tests_h_
 /* Paul Boersma, 3 March 2011 */
 
-#ifndef _Thing_h_
-	#include "sys/Thing.h"
-#endif
+#include "sys/Thing.h"
 
 #include "Praat_tests_enums.h"
 

@@ -23,9 +23,7 @@
  * pb 2011/03/22
  */
 
-#ifndef _Thing_h_
-	#include "sys/Thing.h"
-#endif
+#include "sys/Thing.h"
 
 #ifdef __cplusplus
 	extern "C" {

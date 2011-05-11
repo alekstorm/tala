@@ -24,15 +24,9 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
-#ifndef _Categories_h_
-	#include "Categories.h"
-#endif
-#ifndef _Matrix_h_
-	#include "fon/Matrix.h"
-#endif
+#include "Categories.h"
+#include "fon/Matrix.h"
+#include "stat/TableOfReal.h"
 
 #ifdef __cplusplus
 	extern "C" {

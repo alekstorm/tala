@@ -23,9 +23,7 @@
  * pb 2011/03/02
  */
 
-#ifndef _melder_h_
-	#include "sys/melder/melder.h"   /* FILE * */
-#endif
+#include "sys/melder/melder.h"   /* FILE * */
 
 #ifdef __cplusplus
 	extern "C" {

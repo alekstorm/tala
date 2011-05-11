@@ -24,30 +24,16 @@
  djmw 20110306 Latest modification.
 */
 
+#include "Minimizers.h"
+#include "SSCP.h"
+#include "dwsys/SimpleVector.h"
+#include "fon/Function.h"
+#include "fon/RealTier.h"
+#include "fon/Spectrum.h"
+#include "stat/TableOfReal.h"
+
 #define FITTER_PARAMETER_FREE 0
 #define FITTER_PARAMETER_FIXED 1
-
-#ifndef _SimpleVector_h_
-	#include "dwsys/SimpleVector.h"
-#endif
-#ifndef _Function_h_
-	#include "fon/Function.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
-#ifndef _Minimizers_h_
-	#include "Minimizers.h"
-#endif
-#ifndef _Spectrum_h_
-	#include "fon/Spectrum.h"
-#endif
-#ifndef _RealTier_h_
-	#include "fon/RealTier.h"
-#endif
-#ifndef _SSCP_h_
-	#include "SSCP.h"
-#endif
 
 #ifdef __cplusplus
 	extern "C" {

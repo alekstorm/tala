@@ -25,9 +25,7 @@
 #define _SVD_h_
 
 #include "num/NUM2.h"
-#ifndef _Data_h_
-	#include "sys/Data.h"
-#endif
+#include "sys/Data.h"
 
 #ifdef __cplusplus
 	extern "C" {

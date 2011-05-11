@@ -33,9 +33,7 @@
 	z = intensity (dB relative to 2e-5 N/m2 or 1e-12 W/m2)
 */
 
-#ifndef _Vector_h_
-	#include "Vector.h"
-#endif
+#include "Vector.h"
 
 #ifdef __cplusplus
 	extern "C" {

@@ -24,21 +24,11 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Spectrogram_h_
-	#include "fon/Spectrogram.h"
-#endif
-#ifndef _Polygon_h
-	#include "fon/Polygon.h"
-#endif
-#ifndef _Pitch_h
-	#include "fon/Pitch.h"
-#endif
-#ifndef _DurationTier_h
-	#include "fon/DurationTier.h"
-#endif
-#ifndef _Sound_h
-	#include "fon/Sound.h"
-#endif
+#include "fon/DurationTier.h"
+#include "fon/Pitch.h"
+#include "fon/Polygon.h"
+#include "fon/Spectrogram.h"
+#include "fon/Sound.h"
 
 #ifdef __cplusplus
 	extern "C" {

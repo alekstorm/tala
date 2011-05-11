@@ -24,9 +24,7 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Sampled_h_
-	#include "fon/Sampled.h"
-#endif
+#include "fon/Sampled.h"
 
 #ifdef __cplusplus
 	extern "C" {

@@ -24,13 +24,8 @@
  djmw 20050719 Latest modification.
 */
 
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
-
-#ifndef _Permutation_h_
-	#include "Permutation.h"
-#endif
+#include "Permutation.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

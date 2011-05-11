@@ -25,12 +25,8 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _Spectrum_h_
-	#include "fon/Spectrum.h"
-#endif
-#ifndef _Sound_h_
-	#include "fon/Sound.h"
-#endif
+#include "fon/Spectrum.h"
+#include "fon/Sound.h"
 
 #define SIGN(x,s) ((s) < 0 ? -fabs (x) : fabs(x))
 

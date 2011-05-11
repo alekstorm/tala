@@ -24,12 +24,8 @@
  djmw 20110307 Latest modification.
 */
 
-#ifndef _Configuration_h_
-	#include "Configuration.h"
-#endif
-#ifndef _Procrustes_h_
-	#include "Procrustes.h"
-#endif
+#include "Configuration.h"
+#include "Procrustes.h"
 
 #ifdef __cplusplus
 	extern "C" {

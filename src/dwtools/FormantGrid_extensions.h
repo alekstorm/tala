@@ -24,9 +24,7 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _FormantGrid_h_
-	#include "fon/FormantGrid.h"
-#endif
+#include "fon/FormantGrid.h"
 
 #ifdef __cplusplus
 	extern "C" {

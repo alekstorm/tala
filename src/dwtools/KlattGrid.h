@@ -24,27 +24,13 @@
  * djmw 20110306 Latest modification
  */
 
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
-#ifndef _PointProcess_h_
-	#include "fon/PointProcess.h"
-#endif
-#ifndef _Sound_h_
-	#include "fon/Sound.h"
-#endif
-#ifndef _IntensityTier_h_
-	#include "fon/IntensityTier.h"
-#endif
-#ifndef _PitchTier_h_
-	#include "fon/PitchTier.h"
-#endif
-#ifndef _FormantGrid_h_
-	#include "fon/FormantGrid.h"
-#endif
-#ifndef _KlattTable_h_
-	#include "KlattTable.h"
-#endif
+#include "KlattTable.h"
+#include "fon/FormantGrid.h"
+#include "fon/IntensityTier.h"
+#include "fon/PitchTier.h"
+#include "fon/PointProcess.h"
+#include "fon/Sound.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

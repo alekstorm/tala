@@ -25,18 +25,10 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Configuration_h_
-	#include "Configuration.h"
-#endif
-#ifndef _ClassificationTable_h_
-	#include "ClassificationTable.h"
-#endif
-#ifndef _Eigen_h_
-	#include "Eigen.h"
-#endif
-#ifndef _SSCP_h_
-	#include "SSCP.h"
-#endif
+#include "ClassificationTable.h"
+#include "Configuration.h"
+#include "SSCP.h"
+#include "dwsys/Eigen.h"
 
 #ifdef __cplusplus
 	extern "C" {

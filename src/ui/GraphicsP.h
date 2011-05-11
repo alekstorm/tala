@@ -23,9 +23,7 @@
  * pb 2011/03/02
  */
 
-#ifndef _Graphics_h_
-	#include "Graphics.h"
-#endif
+#include "Graphics.h"
 
 #include "Gui.h"
 

@@ -25,9 +25,7 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Data_h_
-	#include "sys/Data.h"
-#endif
+#include "sys/Data.h"
 
 #ifdef __cplusplus
 	extern "C" {

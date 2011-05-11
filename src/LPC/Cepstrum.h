@@ -35,9 +35,7 @@
 
 */
 
-#ifndef _Matrix_h_
-	#include "fon/Matrix.h"
-#endif
+#include "fon/Matrix.h"
 
 #ifdef __cplusplus
 	extern "C" {

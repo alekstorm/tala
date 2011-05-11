@@ -24,12 +24,8 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _Permutation_h_
-	#include "dwsys/Permutation.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
+#include "dwsys/Permutation.h"
+#include "stat/TableOfReal.h"
 
 #ifdef __cplusplus
 	extern "C" {

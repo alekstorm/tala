@@ -25,13 +25,8 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _DTW_h_
-	#include "DTW.h"
-#endif
-
-#ifndef _TextGrid_h_
-	#include "fon/TextGrid.h"
-#endif
+#include "DTW.h"
+#include "fon/TextGrid.h"
 
 #ifdef __cplusplus
 	extern "C" {

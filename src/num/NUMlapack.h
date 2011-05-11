@@ -1,3 +1,5 @@
+#ifndef _NUMlapack_h_
+#define _NUMlapack_h_
 /* NUMlapack.h
  *
  * Copyright (C) 1994-2002 David Weenink
@@ -20,12 +22,8 @@
 /*
  djmw 20020418 Notify that product svd does not work.  
 */
-#ifndef _NUMlapack_h_
-#define _NUMlapack_h_
 
-#ifndef _NUM2_h_
-	#include "NUM2.h"
-#endif
+#include "NUM2.h"
 
 #define NUM_NOTRANSPOSE 0
 #define NUM_TRANSPOSE 1

@@ -25,13 +25,8 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _Pitch_h_
-	#include "fon/Pitch.h"
-#endif
-
-#ifndef _PitchTier_h_
-	#include "fon/PitchTier.h"
-#endif
+#include "fon/Pitch.h"
+#include "fon/PitchTier.h"
 
 #ifdef __cplusplus
 	extern "C" {

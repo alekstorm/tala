@@ -23,18 +23,10 @@
  * pb 2011/03/03
  */
 
-#ifndef _PointProcess_h_
-	#include "PointProcess.h"
-#endif
-#ifndef _Formant_h_
-	#include "Formant.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "TableOfReal.h"
-#endif
-#ifndef _Sound_h_
-	#include "Sound.h"
-#endif
+#include "Formant.h"
+#include "PointProcess.h"
+#include "Sound.h"
+#include "stat/TableOfReal.h"
 
 #ifdef __cplusplus
 	extern "C" {

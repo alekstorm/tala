@@ -24,13 +24,8 @@
  djmw 20040219 GPL header
 */
 
-#ifndef _Eigen_h_
-	#include "dwsys/Eigen.h"
-#endif
-
-#ifndef _SSCP_h_
-	#include "SSCP.h"
-#endif
+#include "SSCP.h"
+#include "dwsys/Eigen.h"
 
 #ifdef __cplusplus
 	extern "C" {

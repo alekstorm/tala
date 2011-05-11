@@ -1,3 +1,5 @@
+#ifndef _Function_h_
+#define _Function_h_
 /* Function.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -21,13 +23,8 @@
  * pb 2011/03/03
  */
 
-#ifndef _Function_h_
-#define _Function_h_
-
 /* Function inherits from Data */
-#ifndef _Data_h_
-	#include "sys/Data.h"
-#endif
+#include "sys/Data.h"
 
 #ifdef __cplusplus
 	extern "C" {

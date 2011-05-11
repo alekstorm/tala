@@ -24,13 +24,8 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Data_h_
-	#include "sys/Data.h"
-#endif
-
-#ifndef _Distributions_h_
-	#include "sys/Collection.h"
-#endif
+#include "sys/Collection.h"
+#include "sys/Data.h"
 
 #ifdef __cplusplus
 	extern "C" {

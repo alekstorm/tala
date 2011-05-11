@@ -30,18 +30,10 @@
  djmw 20080121 float -> double
 */
 
-#ifndef _Data_h_
-	#include "sys/Data.h"
-#endif
-#ifndef _Categories_h_
-	#include "dwtools/Categories.h"
-#endif
-#ifndef _Minimizers_h_
-	#include "dwtools/Minimizers.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
+#include "dwtools/Categories.h"
+#include "dwtools/Minimizers.h"
+#include "stat/TableOfReal.h"
+#include "sys/Data.h"
 
 #ifdef __cplusplus
 	extern "C" {

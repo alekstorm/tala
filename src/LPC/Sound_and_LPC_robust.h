@@ -24,12 +24,8 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _LPC_h_
-	#include "LPC.h"
-#endif
-#ifndef _Sound_h_
-	#include "Sound.h"
-#endif
+#include "LPC.h"
+#include "fon/Sound.h"
 
 #ifdef __cplusplus
 	extern "C" {

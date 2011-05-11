@@ -29,12 +29,8 @@
  * pb 2008/11/04 MelderReadText
  */
 
-#ifndef _complex_h_
-	#include "sys/complex.h"
-#endif
-#ifndef _melder_h_
-	#include "sys/melder/melder.h"
-#endif
+#include "sys/complex.h"
+#include "sys/melder/melder.h"
 
 #include "abcio_enums.h"
 

@@ -23,20 +23,13 @@
  djmw 20080124 
 */
 
-#ifndef _FormantTier_h_
-	#include "FormantTier.h"
-#endif
-#ifndef _PitchTier_h_
-	#include "fon/PitchTier.h"
-#endif
-#ifndef _IntensityTier_h_
-	#include "fon/IntensityTier.h"
-#endif
-#ifndef _Sound_h_
-	#include "Sound.h"
-#endif
-
 #include "Klatt_def.h"
+
+#include "FormantTier.h"
+#include "Sound.h"
+#include "fon/IntensityTier.h"
+#include "fon/PitchTier.h"
+
 #define GlottisControlPoint_methods Data_methods
 oo_CLASS_CREATE (GlottisControlPoint, Data);
 

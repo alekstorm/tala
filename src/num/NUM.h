@@ -41,11 +41,10 @@
 /* "NUM" = "NUMerics" */
 /* More mathematical and numerical things than there are in <math.h>. */
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+#include "sys/io/abcio.h"
 
-void NUMinit (void);
+#include <stdio.h>
+#include <wchar.h>
 
 /********** Inherit all the ANSI routines from math.h **********/
 
@@ -70,11 +69,13 @@ void NUMinit (void);
 	#undef j1
 	#undef jn
 #endif
-#include <stdio.h>
-#include <wchar.h>
-#ifndef _abcio_h_
-	#include "sys/io/abcio.h"
+
+#ifdef __cplusplus
+	extern "C" {
 #endif
+
+void NUMinit (void);
+
 #define NUMlog2(x)  (log (x) * NUMlog2e)
 double NUMpow (double base, double exponent);   /* Zero for non-positive base. */
 void NUMshift (double *x, double xfrom, double xto);

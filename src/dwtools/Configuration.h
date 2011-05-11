@@ -24,15 +24,9 @@
  djmw 20110306 Latest modification.
  */
 
-#ifndef _Data_h_
-	#include "sys/Data.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
+#include "stat/TableOfReal.h"
+#include "sys/Collection.h"
+#include "sys/Data.h"
 
 #ifdef __cplusplus
 	extern "C" {

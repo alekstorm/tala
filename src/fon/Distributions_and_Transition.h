@@ -21,12 +21,8 @@
  * pb 2011/03/03
  */
 
-#ifndef _Distributions_h_
-	#include "stat/Distributions.h"
-#endif
-#ifndef _Transition_h_
-	#include "Transition.h"
-#endif
+#include "Transition.h"
+#include "stat/Distributions.h"
 
 #ifdef __cplusplus
 	extern "C" {

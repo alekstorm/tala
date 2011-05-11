@@ -24,18 +24,10 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _Collection_h_
-	#include "sys/Collection.h"
-#endif
-#ifndef _Excitation_h_
-	#include "fon/Excitation.h"
-#endif
-#ifndef _Pattern_h_
-	#include "Pattern.h"
-#endif
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
+#include "Pattern.h"
+#include "fon/Excitation.h"
+#include "stat/TableOfReal.h"
+#include "sys/Collection.h"
 
 #ifdef __cplusplus
 	extern "C" {

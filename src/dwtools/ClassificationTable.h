@@ -27,18 +27,10 @@
  djmw 20110306 Latest modification.
  */
 
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
-#ifndef _SSCP_h_
-	#include "SSCP.h"
-#endif
-#ifndef _Confusion_h_
-	#include "Confusion.h"
-#endif
-#ifndef _Strings_h_
-	#include "sys/Strings.h"
-#endif
+#include "Confusion.h"
+#include "SSCP.h"
+#include "stat/TableOfReal.h"
+#include "sys/Strings.h"
 
 #ifdef __cplusplus
 	extern "C" {

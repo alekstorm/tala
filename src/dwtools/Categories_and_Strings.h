@@ -24,12 +24,8 @@
  djmw 20110305 Latest modification
  */
 
-#ifndef _Categories_h_
-	#include "Categories.h"
-#endif
-#ifndef _Strings_h_
-	#include "sys/Strings.h"
-#endif
+#include "Categories.h"
+#include "sys/Strings.h"
 
 #ifdef __cplusplus
 	extern "C" {

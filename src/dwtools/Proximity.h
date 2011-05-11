@@ -24,9 +24,7 @@
  djmw 20110306 Latest modification.
 */
 
-#ifndef _TableOfReal_h_
-	#include "stat/TableOfReal.h"
-#endif
+#include "stat/TableOfReal.h"
 
 #ifdef __cplusplus
 	extern "C" {

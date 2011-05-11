@@ -23,9 +23,7 @@
  * pb 2011/03/02
  */
 
-#ifndef _Data_h_
-	#include "Data.h"
-#endif
+#include "Data.h"
 
 #ifdef __cplusplus
 	extern "C" {

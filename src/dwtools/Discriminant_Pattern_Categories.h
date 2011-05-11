@@ -24,15 +24,9 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _Discriminant_h_
-	#include "Discriminant.h"
-#endif
-#ifndef _Pattern_h_
-	#include "Pattern.h"
-#endif
-#ifndef _Categories_h_	
-	#include "Categories.h"
-#endif
+#include "Categories.h"
+#include "Discriminant.h"
+#include "Pattern.h"
 
 #ifdef __cplusplus
 	extern "C" {

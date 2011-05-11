@@ -24,21 +24,11 @@
   djmw 20110306 Latest modification.
 */
 
-#ifndef _KlattGrid_h_
-	#include "dwtools/KlattGrid.h"
-#endif
-#ifndef _PitchTier_h_
-	#include "fon/PitchTier.h"
-#endif
-#ifndef _IntensityTier_h_
-	#include "fon/IntensityTier.h"
-#endif
-#ifndef _RealTierEditor_h_
-	#include "RealTierEditor.h"
-#endif
-#ifndef _FormantGridEditor_h_
-	#include "FormantGridEditor.h"
-#endif
+#include "FormantGridEditor.h"
+#include "RealTierEditor.h"
+#include "dwtools/KlattGrid.h"
+#include "fon/IntensityTier.h"
+#include "fon/PitchTier.h"
 
 class KlattGrid_realTierEditor : public RealTierEditor {
   public:

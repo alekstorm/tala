@@ -23,12 +23,9 @@
   djmw 20101202 Initial version
   djmw 20110306 Latest modification.
 */
-#ifndef _SSCP_h_
-	#include "SSCP.h"
-#endif
-#ifndef _Sound_h_
-	#include "fon/Sound.h"
-#endif
+
+#include "SSCP.h"
+#include "fon/Sound.h"
 
 #ifdef __cplusplus
 	extern "C" {

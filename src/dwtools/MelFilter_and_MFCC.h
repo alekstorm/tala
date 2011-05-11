@@ -25,12 +25,8 @@
  djmw 20110307 Latest modification
 */
 
-#ifndef _MelFilter_h_
-	#include "FilterBank.h"
-#endif
-#ifndef _MFCC_h_
-	#include "MFCC.h"
-#endif
+#include "FilterBank.h"
+#include "MFCC.h"
 
 #ifdef __cplusplus
 	extern "C" {
