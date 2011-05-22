@@ -1,3 +1,5 @@
+#ifndef _Sound_to_Pitch_h_
+#define _Sound_to_Pitch_h_
 /* Sound_to_Pitch.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -98,3 +100,4 @@ Pitch Sound_to_Pitch_any (Sound me,
 #endif
 
 /* End of file Sound_to_Pitch.h */
+#endif

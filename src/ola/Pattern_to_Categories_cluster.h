@@ -1,3 +1,5 @@
+#ifndef _Pattern_to_Categories_cluster_h_
+#define _Pattern_to_Categories_cluster_h_
 /* Pattern_to_Categories_cluster.h
  *
  * Copyright (C) 2007-2008 Ola Söder
@@ -61,4 +63,5 @@ Categories Pattern_to_Categories_cluster
 
 #ifdef __cplusplus
 	}
+#endif
 #endif

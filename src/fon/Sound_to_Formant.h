@@ -1,3 +1,5 @@
+#ifndef _Sound_to_Formant_h_
+#define _Sound_to_Formant_h_
 /* Sound_to_Formant.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -51,3 +53,4 @@ Formant Sound_to_Formant_willems (Sound me, double timeStep, double numberOfForm
 #endif
 
 /* End of file Sound_to_Formant.h */
+#endif

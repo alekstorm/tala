@@ -1,3 +1,5 @@
+#ifndef _Excitation_to_Formant_h_
+#define _Excitation_to_Formant_h_
 /* Excitation_to_Formant.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -35,3 +37,4 @@ Formant Excitation_to_Formant (Excitation, int maxnFormants);
 #endif
 
 /* End of file Excitation_to_Formant.h */
+#endif

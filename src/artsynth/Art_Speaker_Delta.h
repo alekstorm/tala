@@ -1,3 +1,5 @@
+#ifndef _Art_Speaker_Delta_h_
+#define _Art_Speaker_Delta_h_
 /* Art_Speaker_Delta.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -36,3 +38,4 @@ void Art_Speaker_intoDelta (Art art, Speaker speaker, Delta delta);
 #endif
 
 /* End of file Art_Speaker_Delta.h */
+#endif

@@ -1,3 +1,5 @@
+#ifndef _Sound_to_PointProcess_h_
+#define _Sound_to_PointProcess_h_
 /* Sound_to_PointProcess.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -44,3 +46,4 @@ PointProcess Sound_to_PointProcess_periodic_peaks (Sound me, double fmin, double
 #endif
 
 /* End of file Sound_to_PointProcess.h */
+#endif

@@ -1,3 +1,5 @@
+#ifndef _Pitch_AnyTier_to_PitchTier_h_
+#define _Pitch_AnyTier_to_PitchTier_h_
 /* Pitch_AnyTier_to_PitchTier.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -37,3 +39,4 @@ PitchTier PitchTier_AnyTier_to_PitchTier (PitchTier pitch, AnyTier tier);
 #endif
 
 /* End of file Pitch_AnyTier_to_PitchTier.h */
+#endif

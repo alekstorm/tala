@@ -1,3 +1,5 @@
+#ifndef _Spectrum_to_Formant_h_
+#define _Spectrum_to_Formant_h_
 /* Spectrum_to_Formant.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -35,3 +37,4 @@ Formant Spectrum_to_Formant (Spectrum me, int maxnFormants);
 #endif
 
 /* End of file Spectrum_to_Formant.h */
+#endif

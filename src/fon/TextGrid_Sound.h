@@ -1,3 +1,5 @@
+#ifndef _TextGrid_Sound_h_
+#define _TextGrid_Sound_h_
 /* TextGrid_Sound.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -41,3 +43,4 @@ int TextGrid_Sound_readFromBdfFile (MelderFile file, TextGrid *textGrid, Sound *
 #endif
 
 /* End of file TextGrid_Sound.h */
+#endif

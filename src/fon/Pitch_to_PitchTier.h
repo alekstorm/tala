@@ -1,3 +1,5 @@
+#ifndef _Pitch_to_PitchTier_h_
+#define _Pitch_to_PitchTier_h_
 /* Pitch_to_PitchTier.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -42,3 +44,4 @@ Pitch Pitch_PitchTier_to_Pitch (Pitch me, PitchTier tier);
 #endif
 
 /* End of file Pitch_to_PitchTier.h */
+#endif

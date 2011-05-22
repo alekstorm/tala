@@ -1,3 +1,5 @@
+#ifndef _Speaker_to_Delta_h_
+#define _Speaker_to_Delta_h_
 /* Speaker_to_Delta.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -35,3 +37,4 @@ Delta Speaker_to_Delta (Speaker me);
 #endif
 
 /* End of file Speaker_to_Delta.h */
+#endif

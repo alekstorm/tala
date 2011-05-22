@@ -1,3 +1,5 @@
+#ifndef Spectrum_and_Spectrogram_h_
+#define Spectrum_and_Spectrogram_h_
 /* Spectrum_and_Spectrogram.h
  *
  * Copyright (C) 1992-2011 David Weenink & Paul Boersma
@@ -65,3 +67,4 @@ Spectrogram Spectrum_to_Spectrogram (I);
 #endif
 
 /* End of file Spectrum_and_Spectrogram.h */
+#endif

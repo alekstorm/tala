@@ -1,3 +1,5 @@
+#ifndef _Pitch_to_PointProcess_h_
+#define _Pitch_to_PointProcess_h_
 /* Pitch_to_PointProcess.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -40,3 +42,4 @@ PointProcess Sound_Pitch_to_PointProcess_peaks (Sound sound, Pitch pitch, int in
 #endif
 
 /* End of file Pitch_to_PointProcess.h */
+#endif

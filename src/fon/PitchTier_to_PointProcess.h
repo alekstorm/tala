@@ -1,3 +1,5 @@
+#ifndef _PitchTier_to_PointProcess_h_
+#define _PitchTier_to_PointProcess_h_
 /* PitchTier_to_PointProcess.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -50,3 +52,4 @@ TableOfReal PitchTier_downto_TableOfReal (PitchTier me, int useSemitones);
 #endif
 
 /* End of file PitchTier_to_PointProcess.h */
+#endif

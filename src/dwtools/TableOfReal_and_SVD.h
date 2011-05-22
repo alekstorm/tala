@@ -1,5 +1,5 @@
-#ifndef TableOfReal_and_SVD_h_
-#define TableOfReal_and_SVD_h_
+#ifndef _TableOfReal_and_SVD_h_
+#define _TableOfReal_and_SVD_h_
 /* TableOfReal_and_SVD.h
  *
  * Copyright (C) 1993-2011 David Weenink

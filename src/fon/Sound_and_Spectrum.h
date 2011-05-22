@@ -1,3 +1,5 @@
+#ifndef _Sound_and_Spectrum_h_
+#define _Sound_and_Spectrum_h_
 /* Sound_and_Spectrum.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -44,3 +46,4 @@ Sound Sound_filter_formula (Sound me, const wchar_t *formula, Interpreter *inter
 #endif
 
 /* End of file Sound_and_Spectrum.h */
+#endif

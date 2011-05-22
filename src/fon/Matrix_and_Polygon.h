@@ -1,3 +1,5 @@
+#ifndef _Matrix_and_Polygon_h_
+#define _Matrix_and_Polygon_h_
 /* Matrix_and_Polygon.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -62,3 +64,4 @@ Matrix Polygon_to_Matrix (I);
 #endif
 
 /* End of file Matrix_and_Polygon.h */
+#endif

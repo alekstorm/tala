@@ -1,3 +1,5 @@
+#ifndef _Sound_PointProcess_h_
+#define _Sound_PointProcess_h_
 /* Sound_PointProcess.h
  *
  * Copyright (C) 2010-2011 Paul Boersma
@@ -35,3 +37,4 @@ Sound Sound_PointProcess_to_SoundEnsemble_correlate (Sound me, PointProcess thee
 #endif
 
 /* End of file Sound_PointProcess.h */
+#endif

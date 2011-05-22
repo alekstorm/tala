@@ -1,3 +1,5 @@
+#ifndef _PointProcess_and_Sound_h_
+#define _PointProcess_and_Sound_h_
 /* PointProcess_and_Sound.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -62,3 +64,4 @@ Sound PointProcess_to_Sound_hum (PointProcess me);
 #endif
 
 /* End of file PointProcess_and_Sound.h */
+#endif

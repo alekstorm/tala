@@ -1,3 +1,5 @@
+#ifndef _Ltas_to_SpectrumTier_h_
+#define _Ltas_to_SpectrumTier_h_
 /* Ltas_to_SpectrumTier.h
  *
  * Copyright (C) 2007-2011 Paul Boersma
@@ -35,3 +37,4 @@ SpectrumTier Ltas_to_SpectrumTier_peaks (Ltas me);
 #endif
 
 /* End of file Ltas_to_SpectrumTier.h */
+#endif

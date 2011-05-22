@@ -1,3 +1,5 @@
+#ifndef _Artword_to_Art_h_
+#define _Artword_to_Art_h_
 /* Artword_to_Art.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -38,3 +40,4 @@ Art Artword_to_Art (I, double time);
 #endif
 
 /* End of file Artword_to_Art.h */
+#endif

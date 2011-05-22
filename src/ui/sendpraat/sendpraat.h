@@ -1,3 +1,5 @@
+#ifndef _sendpraat_h_
+#define _sendpraat_h_
 /* sendpraat.h */
 /* Paul Boersma, September 27, 2000 */
 
@@ -12,3 +14,4 @@ char *sendpraat (void *display, const char *programName, long timeOut, const cha
 #endif
 
 /* End of file sendpraat.h */
+#endif

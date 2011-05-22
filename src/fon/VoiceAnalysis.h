@@ -1,3 +1,5 @@
+#ifndef _VoiceAnalysis_h_
+#define _VoiceAnalysis_h_
 /* VoiceAnalysis.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -66,3 +68,4 @@ void Sound_Pitch_PointProcess_voiceReport (Sound sound, Pitch pitch, PointProces
 #endif
 
 /* End of file VoiceAnalysis.h */
+#endif

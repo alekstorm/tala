@@ -1,3 +1,5 @@
+#ifndef _PitchTier_to_Sound_h_
+#define _PitchTier_to_Sound_h_
 /* PitchTier_to_Sound.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -47,3 +49,4 @@ int PitchTier_playPart_sine (I, double tmin, double tmax);
 #endif
 
 /* End of file PitchTier_to_Sound.h */
+#endif

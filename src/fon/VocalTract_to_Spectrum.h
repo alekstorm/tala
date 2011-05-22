@@ -1,3 +1,5 @@
+#ifndef _VocalTract_to_Spectrum_h_
+#define _VocalTract_to_Spectrum_h_
 /* VocalTract_to_Spectrum.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -37,3 +39,4 @@ Spectrum VocalTract_to_Spectrum
 #endif
 
 /* End of file VocalTract_to_Spectrum.h */
+#endif

@@ -1,3 +1,5 @@
+#ifndef _Art_Speaker_to_VocalTract_h_
+#define _Art_Speaker_to_VocalTract_h_
 /* Art_Speaker_to_VocalTract.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -36,3 +38,4 @@ VocalTract Art_Speaker_to_VocalTract (Art art, Speaker speaker);
 #endif
 
 /* End of file Art_Speaker_to_VocalTract.h */
+#endif

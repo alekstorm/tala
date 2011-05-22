@@ -1,3 +1,5 @@
+#ifndef _Matrix_and_PointProcess_h_
+#define _Matrix_and_PointProcess_h_
 /* Matrix_and_PointProcess.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -57,3 +59,4 @@ PointProcess Matrix_to_PointProcess (Matrix me);
 #endif
 
 /* End of file Matrix_and_PointProcess.h */
+#endif

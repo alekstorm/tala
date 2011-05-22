@@ -1,3 +1,5 @@
+#ifndef _Sound_to_Intensity_h_
+#define _Sound_to_Intensity_h_
 /* Sound_to_Intensity.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -61,3 +63,4 @@ IntensityTier Sound_to_IntensityTier (Sound me, double minimumPitch, double time
 #endif
 
 /* End of file Sound_to_Intensity.h */
+#endif

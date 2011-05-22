@@ -1,3 +1,5 @@
+#ifndef _Distributions_and_Strings_h_
+#define _Distributions_and_Strings_h_
 /* Distributions_and_Strings.h
  *
  * Copyright (C) 1997-2011 Paul Boersma
@@ -37,3 +39,4 @@ Distributions Strings_to_Distributions (Strings me);
 #endif
 
 /* End of file Distributions_and_Strings.h */
+#endif

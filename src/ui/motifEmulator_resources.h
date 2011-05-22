@@ -1,3 +1,5 @@
+#ifndef _motifEmulator_resources_h_
+#define _motifEmulator_resources_h_
 /* motifEmulator_resources.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -82,3 +84,4 @@ motif_RESOURCE (XmNx)   /* Core */
 motif_RESOURCE (XmNy)   /* Core */
 
 /* End of file motifEmulator_resources.h */
+#endif

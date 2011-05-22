@@ -1,3 +1,5 @@
+#ifndef _NUMfft_core_h_
+#define _NUMfft_core_h_
 /********************************************************************
  *                                                                  *
  * THIS FILE IS PART OF THE OggSQUISH SOFTWARE CODEC SOURCE CODE.   *
@@ -1378,3 +1380,4 @@ static void drftb1 (long n, FFT_DATA_TYPE * c, FFT_DATA_TYPE * ch, FFT_DATA_TYPE
 }
 
 /* End of file NUMfft_core.h */
+#endif

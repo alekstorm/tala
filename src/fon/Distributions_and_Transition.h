@@ -1,3 +1,5 @@
+#ifndef _Distributions_and_Transition_h_
+#define _Distributions_and_Transition_h_
 /* Distributions_and_Transition.h
  *
  * Copyright (C) 1997-2011 Paul Boersma
@@ -40,3 +42,4 @@ Distributions Transition_to_Distributions_conflate (Transition me);
 #endif
 
 /* End of file Distributions_and_Transition.h */
+#endif

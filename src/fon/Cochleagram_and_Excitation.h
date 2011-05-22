@@ -1,3 +1,5 @@
+#ifndef _Cochleagram_and_Excitation_h_
+#define _Cochleagram_and_Excitation_h_
 /* Cochleagram_and_Excitation.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -35,3 +37,4 @@ Any Cochleagram_to_Excitation (I, double t);
 #endif
 
 /* End of file Cochleagram_and_Excitation.h */
+#endif

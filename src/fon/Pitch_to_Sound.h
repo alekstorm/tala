@@ -1,3 +1,5 @@
+#ifndef _Pitch_to_Sound_h_
+#define _Pitch_to_Sound_h_
 /* Pitch_to_Sound.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -48,3 +50,4 @@ Sound Pitch_to_Sound_sine (Pitch me, double tmin, double tmax, double samplingFr
 #endif
 
 /* End of file Pitch_to_Sound.h */
+#endif

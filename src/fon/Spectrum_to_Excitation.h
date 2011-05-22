@@ -1,3 +1,5 @@
+#ifndef _Spectrum_to_Excitation_h_
+#define _Spectrum_to_Excitation_h_
 /* Spectrum_to_Excitation.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -39,3 +41,4 @@ Excitation Spectrum_to_Excitation (I, double df);
 #endif
 
 /* End of file Spectrum_to_Excitation.h */
+#endif

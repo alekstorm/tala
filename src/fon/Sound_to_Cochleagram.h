@@ -1,3 +1,5 @@
+#ifndef _Sound_to_Cochleagram_h_
+#define _Sound_to_Cochleagram_h_
 /* Sound_to_Cochleagram.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -39,3 +41,4 @@ Cochleagram Sound_to_Cochleagram_edb
 #endif
 
 /* End of file Sound_to_Cochleagram.h */
+#endif

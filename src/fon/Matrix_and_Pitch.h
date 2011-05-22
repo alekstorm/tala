@@ -1,3 +1,5 @@
+#ifndef _Matrix_and_Pitch_h_
+#define _Matrix_and_Pitch_h_
 /* Matrix_and_Pitch.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -37,3 +39,4 @@ Pitch Matrix_to_Pitch (Matrix me);
 #endif
 
 /* End of file Matrix_and_Pitch.h */
+#endif

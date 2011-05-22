@@ -1,3 +1,5 @@
+#ifndef _Sound_to_Harmonicity_h_
+#define _Sound_to_Harmonicity_h_
 /* Sound_to_Harmonicity.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
@@ -45,3 +47,4 @@ Matrix Sound_to_Harmonicity_GNE (Sound me,
 #endif
 
 /* End of file Sound_to_Harmonicity.h */
+#endif
