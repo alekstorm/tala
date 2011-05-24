@@ -29,9 +29,13 @@
 #include "kar/UnicodeData.h"
 #include "stat/Table.h"
 #include "ui/editors/TableEditor.h"
+#include "ui/Formula.h"
+#include "ui/Interpreter.h"
 #include "ui/UiFile.h"
 
 #include "ui/praat.h"
+
+int Matrix_formula (Matrix me, const wchar_t *expression, Interpreter *interpreter, Matrix target);
 
 void SSCP_drawConcentrationEllipse (SSCP me, Graphics g, double scale,
 	int confidence, long d1, long d2, double xmin, double xmax,
@@ -621,6 +625,37 @@ DO
 		praat_dataChanged (me);   // WHY?
 	}
 END
+
+int Table_formula_columnRange (Table me, long fromColumn, long toColumn, const wchar *expression, Interpreter *interpreter) {
+	try {
+		Table_checkSpecifiedColumnNumberWithinRange (me, fromColumn);
+		Table_checkSpecifiedColumnNumberWithinRange (me, toColumn);
+		Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_UNKNOWN, TRUE); therror
+		for (long irow = 1; irow <= my rows -> size; irow ++) {
+			for (long icol = fromColumn; icol <= toColumn; icol ++) {
+				struct Formula_Result result;
+				Formula_run (irow, icol, & result); therror
+				if (result. expressionType == kFormula_EXPRESSION_TYPE_STRING) {
+					Table_setStringValue (me, irow, icol, result. result.stringResult);
+					Melder_free (result. result.stringResult);
+				} else if (result. expressionType == kFormula_EXPRESSION_TYPE_NUMERIC) {
+					Table_setNumericValue (me, irow, icol, result. result.numericResult);
+				} else if (result. expressionType == kFormula_EXPRESSION_TYPE_NUMERIC_ARRAY) {
+					Melder_throw (me, ": cannot put arrays into cells.");
+				} else if (result. expressionType == kFormula_EXPRESSION_TYPE_STRING_ARRAY) {
+					Melder_throw (me, ": cannot put arrays into cells.");
+				}
+			}
+		}
+		return 1;
+	} catch (...) {
+		rethrowmzero (me, ": application of formula not completed.");
+	}
+}
+
+int Table_formula (Table me, long icol, const wchar *expression, Interpreter *interpreter) {
+	return Table_formula_columnRange (me, icol, icol, expression, interpreter);
+}
 
 FORM (Table_formula, L"Table: Formula", L"Table: Formula...")
 	WORD (L"Column label", L"ui/editors/AmplitudeTierEditor.h")
@@ -1632,6 +1667,51 @@ DO
 	}
 END
 
+TableOfReal TableOfReal_extractColumnsWhere (I, const wchar_t *condition, Interpreter *interpreter) {
+	iam (TableOfReal);
+	try {
+		Formula_compile (interpreter, me, condition, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); therror
+		/*
+		 * Count the new number of columns.
+		 */
+		long numberOfElements = 0;
+		for (long icol = 1; icol <= my numberOfColumns; icol ++) {
+			for (long irow = 1; irow <= my numberOfRows; irow ++) {
+				struct Formula_Result result;
+				Formula_run (irow, icol, & result); therror
+				if (result. result.numericResult != 0.0) {
+					numberOfElements ++;
+					break;
+				}
+			}
+		}
+		if (numberOfElements < 1) Melder_throw ("No columns match this condition.");
+
+		/*
+		 * Create room for the result.
+		 */	
+		autoTableOfReal thee = TableOfReal_create (my numberOfRows, numberOfElements);
+		TableOfReal_copyRowLabels (me, thee.peek()); therror
+		/*
+		 * Store the result.
+		 */
+		numberOfElements = 0;
+		for (long icol = 1; icol <= my numberOfColumns; icol ++) {
+			for (long irow = 1; irow <= my numberOfRows; irow ++) {
+				struct Formula_Result result;
+				Formula_run (irow, icol, & result); therror
+				if (result. result.numericResult != 0.0) {
+					TableOfReal_copyColumn (me, icol, thee.peek(), ++ numberOfElements); therror
+					break;
+				}
+			}
+		}
+		return thee.transfer();
+	} catch (...) {
+		rethrowmzero (me, ": columns not extracted.");
+	}
+}
+
 FORM (TableOfReal_extractColumnsWhere, L"Extract columns where", 0)
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"Extract all columns with at least one cell where:")
 	TEXTFIELD (L"condition", L"col mod 3 = 0 ; this example extracts every third column")
@@ -1693,6 +1773,51 @@ DO
 	}
 END
 
+TableOfReal TableOfReal_extractRowsWhere (I, const wchar_t *condition, Interpreter *interpreter) {
+	iam (TableOfReal);
+	try {
+		Formula_compile (interpreter, me, condition, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); therror
+		/*
+		 * Count the new number of rows.
+		 */
+		long numberOfElements = 0;
+		for (long irow = 1; irow <= my numberOfRows; irow ++) {
+			for (long icol = 1; icol <= my numberOfColumns; icol ++) {
+				struct Formula_Result result;
+				Formula_run (irow, icol, & result); therror
+				if (result. result.numericResult != 0.0) {
+					numberOfElements ++;
+					break;
+				}
+			}
+		}
+		if (numberOfElements < 1) Melder_throw ("No rows match this condition.");
+
+		/*
+		 * Create room for the result.
+		 */	
+		autoTableOfReal thee = TableOfReal_create (numberOfElements, my numberOfColumns);
+		TableOfReal_copyColumnLabels (me, thee.peek()); therror
+		/*
+		 * Store the result.
+		 */
+		numberOfElements = 0;
+		for (long irow = 1; irow <= my numberOfRows; irow ++) {
+			for (long icol = 1; icol <= my numberOfColumns; icol ++) {
+				struct Formula_Result result;
+				Formula_run (irow, icol, & result);
+				if (result. result.numericResult != 0.0) {
+					TableOfReal_copyRow (me, irow, thee.peek(), ++ numberOfElements); therror
+					break;
+				}
+			}
+		}
+		return thee.transfer();
+	} catch (...) {
+		rethrowmzero (me, ": rows not extracted.");
+	}
+}
+
 FORM (TableOfReal_extractRowsWhere, L"Extract rows where", 0)
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"Extract all rows with at least one cell where:")
 	TEXTFIELD (L"condition", L"row mod 3 = 0 ; this example extracts every third row")
@@ -1733,6 +1858,25 @@ DO
 		praat_new (thee.transfer(), my name, L"_", text);
 	}
 END
+
+int TableOfReal_formula (I, const wchar_t *expression, Interpreter *interpreter, thou) {
+	iam (TableOfReal);
+	thouart (TableOfReal);
+	try {
+		Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); therror
+		if (thee == NULL) thee = me;
+		for (long irow = 1; irow <= my numberOfRows; irow ++) {
+			for (long icol = 1; icol <= my numberOfColumns; icol ++) {
+				struct Formula_Result result;
+				Formula_run (irow, icol, & result); therror
+				thy data [irow] [icol] = result. result.numericResult;
+			}
+		}
+		return 1;
+	} catch (...) {
+		rethrowmzero (me, ": formula not completed.");
+	}
+}
 
 FORM (TableOfReal_formula, L"TableOfReal: Formula", L"Formula...")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"for row from 1 to nrow do for col from 1 to ncol do self [row, col] = ...")

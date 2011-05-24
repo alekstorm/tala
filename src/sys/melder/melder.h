@@ -691,25 +691,6 @@ extern char Melder_buffer1 [30001], Melder_buffer2 [30001];
 	the Longchar library.
 */
 
-/********** ENFORCE INTERACTIVE BEHAVIOUR **********/
-
-/* Procedures to enforce interactive behaviour of the Melder_XXXXXX routines. */
-
-void MelderGui_create (/* XtAppContext* */ void *appContext, /* GuiObject */ void *parent);
-/*
-	'appContext' is the XtAppContext* output from Xt(Va)AppInitialize;
-		if you used Xt(Va)Initialize it should be NULL.
-	'parent' is the top-level widget returned by Xt(Va)(App)Initialize.
-*/
-
-extern int Melder_batch;   /* True if run from the batch or from an interactive command-line interface. */
-extern int Melder_backgrounding;   /* True if running a script. */
-extern bool Melder_consoleIsAnsi;
-#ifndef CONTROL_APPLICATION
-	extern void *Melder_appContext;   /* XtAppContext* */
-	extern void *Melder_topShell;   /* GuiObject */
-#endif
-
 /********** OVERRIDE DEFAULT BEHAVIOUR **********/
 
 /* Procedures to override default message methods. */

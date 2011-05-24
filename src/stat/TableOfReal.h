@@ -48,6 +48,10 @@ void TableOfReal_insertRow (I, long irow);
 void TableOfReal_insertColumn (I, long icol);
 void TableOfReal_setRowLabel (I, long irow, const wchar_t *label);
 void TableOfReal_setColumnLabel (I, long icol, const wchar_t *label);
+void TableOfReal_copyRowLabels (TableOfReal me, TableOfReal thee);
+void TableOfReal_copyColumnLabels (TableOfReal me, TableOfReal thee);
+void TableOfReal_copyRow (TableOfReal me, long myRow, TableOfReal thee, long thyRow);
+void TableOfReal_copyColumn (TableOfReal me, long myCol, TableOfReal thee, long thyCol);
 long TableOfReal_rowLabelToIndex (I, const wchar_t *label);
 long TableOfReal_columnLabelToIndex (I, const wchar_t *label);
 double TableOfReal_getColumnMean (I, long icol);
@@ -55,7 +59,6 @@ double TableOfReal_getColumnStdev (I, long icol);
 
 TableOfReal Table_to_TableOfReal (Table me, long labelColumn);
 Table TableOfReal_to_Table (TableOfReal me, const wchar_t *labelOfFirstColumn);
-int TableOfReal_formula (I, const wchar_t *expression, Interpreter *interpreter, Any /* TableOfReal */ target);
 
 Any TablesOfReal_append (I, thou);
 Any TablesOfReal_appendMany (Collection me);
@@ -73,9 +76,6 @@ TableOfReal TableOfReal_extractColumnsWhereRow (I, long icol, int which_Melder_N
 
 TableOfReal TableOfReal_extractRowsWhereLabel (I, int which_Melder_STRING, const wchar_t *criterion);
 TableOfReal TableOfReal_extractColumnsWhereLabel (I, int which_Melder_STRING, const wchar_t *criterion);
-
-TableOfReal TableOfReal_extractRowsWhere (I, const wchar_t *condition, Interpreter *interpreter);
-TableOfReal TableOfReal_extractColumnsWhere (I, const wchar_t *condition, Interpreter *interpreter);
 
 Strings TableOfReal_extractRowLabelsAsStrings (I);
 Strings TableOfReal_extractColumnLabelsAsStrings (I);

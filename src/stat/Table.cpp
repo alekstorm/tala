@@ -58,7 +58,6 @@
 #include <ctype.h>
 #include "Table.h"
 #include "num/NUM2.h"
-#include "ui/Formula.h"
 #include "dwtools/SSCP.h"
 
 #include "sys/oo/oo_DESTROY.h"
@@ -1366,37 +1365,6 @@ void Table_appendQuotientColumn (Table me, long column1, long column2, const wch
 	} catch (...) {
 		rethrowm (me, ": quotient column not appended.");
 	}
-}
-
-int Table_formula_columnRange (Table me, long fromColumn, long toColumn, const wchar *expression, Interpreter *interpreter) {
-	try {
-		Table_checkSpecifiedColumnNumberWithinRange (me, fromColumn);
-		Table_checkSpecifiedColumnNumberWithinRange (me, toColumn);
-		Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_UNKNOWN, TRUE); therror
-		for (long irow = 1; irow <= my rows -> size; irow ++) {
-			for (long icol = fromColumn; icol <= toColumn; icol ++) {
-				struct Formula_Result result;
-				Formula_run (irow, icol, & result); therror
-				if (result. expressionType == kFormula_EXPRESSION_TYPE_STRING) {
-					Table_setStringValue (me, irow, icol, result. result.stringResult);
-					Melder_free (result. result.stringResult);
-				} else if (result. expressionType == kFormula_EXPRESSION_TYPE_NUMERIC) {
-					Table_setNumericValue (me, irow, icol, result. result.numericResult);
-				} else if (result. expressionType == kFormula_EXPRESSION_TYPE_NUMERIC_ARRAY) {
-					Melder_throw (me, ": cannot put arrays into cells.");
-				} else if (result. expressionType == kFormula_EXPRESSION_TYPE_STRING_ARRAY) {
-					Melder_throw (me, ": cannot put arrays into cells.");
-				}
-			}
-		}
-		return 1;
-	} catch (...) {
-		rethrowmzero (me, ": application of formula not completed.");
-	}
-}
-
-int Table_formula (Table me, long icol, const wchar *expression, Interpreter *interpreter) {
-	return Table_formula_columnRange (me, icol, icol, expression, interpreter);
 }
 
 double Table_getCorrelation_pearsonR (Table me, long column1, long column2, double significanceLevel,

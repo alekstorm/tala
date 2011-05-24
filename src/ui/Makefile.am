@@ -35,6 +35,7 @@ libui_a_SOURCES = \
 	GuiWindow.cpp \
 	Interpreter.cpp \
 	machine.cpp \
+	melder_gui.cpp \
 	Picture.cpp \
 	praat_actions.cpp \
 	praat.cpp \

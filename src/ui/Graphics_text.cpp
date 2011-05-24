@@ -83,11 +83,11 @@ extern "C" char * ipaSerifRegular24 [1 + 255-33+1 + 1] [24 + 1];
 	static int win_size2isize (int size) { return size > win_MAXIMUM_FONT_SIZE ? win_MAXIMUM_FONT_SIZE : size; }
 	static int win_isize2size (int isize) { return isize; }
 #elif mac
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	#include <Fonts.h>
 	#include <Gestalt.h>
 	#include <QDOffscreen.h>
-	#include "macport_off.h"
+	#include "sys/macport_off.h"
 	static int ipaAvailable = FALSE, ipaInited = FALSE;
 	static short int theTimesFont, theHelveticaFont, theCourierFont, theSymbolFont,
 		thePalatinoFont, theIpaTimesFont, theZapfDingbatsFont;

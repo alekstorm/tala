@@ -70,7 +70,7 @@
 #endif
 
 #if mac
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	#include <Movies.h>
 #endif
 

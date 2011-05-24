@@ -32,6 +32,7 @@
  */
 
 #include "machine.h"
+#include "melder_gui.h"
 #include "praatP.h"
 #include "praat_script.h"
 #include "UiHistory.h"

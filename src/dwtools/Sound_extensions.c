@@ -48,7 +48,6 @@
  djmw 20100325 -Cross-correlation, convolution and autocorrelation
 */
 
-#include "ui/Formula.h"
 #include "Intensity_extensions.h"
 #include "Sound_extensions.h"
 #include "fon/Sound_and_Spectrum.h"
@@ -1169,36 +1168,6 @@ int Sound_overwritePart (Sound me, double t1, double t2, Sound thee, double t3)
 		my z[1][i] = thy z[1][i - i1 + i3];
 	}
 	return 1;
-}
-
-int Sound_filter_part_formula (Sound me, double t1, double t2, const wchar_t *formula, Interpreter *interpreter)
-{
-	Sound part = NULL, filtered = NULL;
-	Spectrum spec = NULL;
-	int status = 0;
-
-	part = Sound_extractPart (me, t1, t2, kSound_windowShape_RECTANGULAR, 1, 1);
-	if (part == NULL) goto end;
-
-	spec = Sound_to_Spectrum (part, TRUE);
-	if (spec == NULL) goto end;
-
-	if (! Matrix_formula ((Matrix) spec, formula, interpreter, 0)) goto end;
-
-	filtered = Spectrum_to_Sound (spec);
-	if (filtered == NULL) goto end;
-
-	/* Overwrite part between t1 and t2 of original with the filtered signal */
-
-	status = Sound_overwritePart (me, t1, t2, filtered, 0);
-
-end:
-
-	forget (filtered);
-	forget (spec);
-	forget (part);
-
-	return status;
 }
 
 /*

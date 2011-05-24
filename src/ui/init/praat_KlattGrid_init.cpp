@@ -24,8 +24,13 @@
 #include "ui/editors/KlattGridEditors.h"
 #include "dwtools/KlattTable.h"
 #include "ui/editors/IntensityTierEditor.h"
+#include "ui/Formula.h"
+#include "ui/Interpreter.h"
 
 #include "ui/praat.h"
+
+int FormantGrid_formula_bandwidths (I, const wchar_t *expression, Interpreter *interpreter, thou);
+int FormantGrid_formula_frequencies (I, const wchar_t *expression, Interpreter *interpreter, thou);
 
 /******************* KlattGrid  *********************************/
 
@@ -350,6 +355,39 @@ KlattGrid_PHONATION_GET_ADD_REMOVE_EXTRACT_REPLACE (FricationBypass, frication b
 	(1), L"ui/editors/AmplitudeTierEditor.h", L"bypass", IntensityTier)
 
 #undef KlattGrid_PHONATION_GET_ADD_REMOVE_EXTRACT_REPLACE
+
+int KlattGrid_formula_frequencies (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter)
+{
+	FormantGrid *fg = (structFormantGrid **)KlattGrid_getAddressOfFormantGrid (me, formantType);
+	return FormantGrid_formula_frequencies (*fg, expression, interpreter, NULL);
+}
+
+int KlattGrid_formula_bandwidths (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter)
+{
+	FormantGrid *fg = (structFormantGrid **)KlattGrid_getAddressOfFormantGrid (me, formantType);
+	return FormantGrid_formula_bandwidths (*fg, expression, interpreter, NULL);
+}
+
+int KlattGrid_formula_amplitudes (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter)
+{
+	Ordered *ordered = (structOrdered **)KlattGrid_getAddressOfAmplitudes (me, formantType);
+	Formula_compile (interpreter, *ordered, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
+	for (long irow = 1; irow <= (*ordered) -> size; irow++)
+	{
+		RealTier amplitudes = (structRealTier *)(*ordered) -> item[irow];
+		for (long icol = 1; icol <= amplitudes -> points -> size; icol++)
+		{
+			struct Formula_Result result;
+			Formula_run (irow, icol, & result); cherror
+			if (result. result.numericResult == NUMundefined)
+				error1 (L"Cannot put an undefined value into the tier.\nFormula not finished.")
+			((RealPoint) amplitudes -> points -> item [icol]) -> value = result. result.numericResult;
+		}
+	}
+end:
+	iferror return 0;
+	return 1;
+}
 
 #define KlattGrid_FORMULA_FORMANT_FBA_VALUE(Name,namef,ForBs,forbs,textfield,formantType,label) \
 FORM (KlattGrid_formula##Name##Formant##ForBs, L"KlattGrid: Formula (" #namef "ormant " #forbs ")", L"Formant: Formula (" #forbs ")...") \

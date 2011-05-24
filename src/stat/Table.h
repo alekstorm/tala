@@ -24,7 +24,6 @@
  */
 
 #include "sys/Collection.h"
-#include "ui/Interpreter.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -106,9 +105,6 @@ double Table_getVarianceRatio (Table me, long column1, long column2, double sign
 	double *out_significance, double *out_lowerLimit, double *out_upperLimit);
 bool Table_getExtrema (Table me, long icol, double *minimum, double *maximum);
 
-int Table_formula (Table me, long column, const wchar_t *formula, Interpreter *interpreter);
-int Table_formula_columnRange (Table me, long column1, long column2, const wchar_t *expression, Interpreter *interpreter);
-
 void Table_sortRows_Assert (Table me, long *columns, long numberOfColumns);
 void Table_sortRows_string (Table me, const wchar_t *columns_string);
 void Table_randomizeRows (Table me);
@@ -125,10 +121,11 @@ Table Table_collapseRows (Table me, const wchar_t *factors_string, const wchar_t
 	const wchar_t *columnsToAverageLogarithmically_string, const wchar_t *columnsToMedianizeLogarithmically_string);
 Table Table_rowsToColumns (Table me, const wchar_t *factors_string, long columnToTranspose, const wchar_t *columnsToExpand_string);
 
-#ifdef __cplusplus
-	}
 void Table_checkSpecifiedRowNumberWithinRange (Table me, long rowNumber);
 void Table_checkSpecifiedColumnNumberWithinRange (Table me, long columnNumber);
+
+#ifdef __cplusplus
+	}
 #endif
 
 /* End of file Table.h */

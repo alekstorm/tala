@@ -34,7 +34,7 @@
 #include "Printer.h"
 
 #if mac
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	static RGBColor theBlackColour = { 0, 0, 0 };
 	static bool _GraphicsMacintosh_tryToInitializeQuartz (void) {
 		return _GraphicsMac_tryToInitializeAtsuiFonts ();

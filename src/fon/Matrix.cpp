@@ -36,7 +36,6 @@
 
 #include "Matrix.h"
 #include "num/NUM2.h"
-#include "ui/Formula.h"
 #include "dwsys/Eigen.h"
 
 #include "sys/oo/oo_DESTROY.h"
@@ -505,43 +504,6 @@ int Matrix_writeToHeaderlessSpreadsheetFile (Matrix me, MelderFile fs) {
 	}
 	if (! Melder_fclose (fs, f)) return 0;
 	MelderFile_setMacTypeAndCreator (fs, 'TEXT', 0);
-	return 1;
-}
-
-int Matrix_formula (Matrix me, const wchar_t *expression, Interpreter *interpreter, Matrix target) {
-	struct Formula_Result result;
-	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
-	if (target == NULL) target = me;
-	for (long irow = 1; irow <= my ny; irow ++) {
-		for (long icol = 1; icol <= my nx; icol ++) {
-			Formula_run (irow, icol, & result); cherror
-			target -> z [irow] [icol] = result. result.numericResult;
-		}
-	}
-end:
-	iferror return 0;
-	return 1;
-}
-
-int Matrix_formula_part (Matrix me, double xmin, double xmax, double ymin, double ymax,
-	const wchar_t *expression, Interpreter *interpreter, Matrix target)
-{
-	long ixmin, ixmax, iymin, iymax;
-	if (xmax <= xmin) { xmin = my xmin; xmax = my xmax; }
-	if (ymax <= ymin) { ymin = my ymin; ymax = my ymax; }
-	(void) Matrix_getWindowSamplesX (me, xmin, xmax, & ixmin, & ixmax);
-	(void) Matrix_getWindowSamplesY (me, ymin, ymax, & iymin, & iymax);
-	struct Formula_Result result;
-	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
-	if (target == NULL) target = me;
-	for (long irow = iymin; irow <= iymax; irow ++) {
-		for (long icol = ixmin; icol <= ixmax; icol ++) {
-			Formula_run (irow, icol, & result); cherror
-			target -> z [irow] [icol] = result. result.numericResult;
-		}
-	}
-end:
-	iferror return 0;
 	return 1;
 }
 

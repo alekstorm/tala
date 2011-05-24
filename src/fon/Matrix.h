@@ -188,24 +188,6 @@ long Matrix_getWindowExtrema (I, long ixmin, long ixmax, long iymin, long iymax,
 		if result == 0, *minimum and *maximum are not changed;
 */
 
-int Matrix_formula (Matrix me, const wchar_t *expression, Interpreter *interpreter, Matrix target);
-/*
-	Arguments:
-		"me" is the Matrix referred to as "self" or with "nx" etc. in the expression
-		"target" is the Matrix whose elements will change according to:
-			FOR row FROM 1 TO my ny
-				FOR col FROM 1 TO my nx
-					target -> z [row, col] = expression
-				ENDFOR
-			ENDFOR
-		"expression" is the text to be compiled and interpreted.
-		If "target" is NULL, the result will go to "me"; otherwise, to "target".
-	Return value:
-		0 in case of failure, otherwise 1.
-*/
-int Matrix_formula_part (Matrix me, double xmin, double xmax, double ymin, double ymax,
-	const wchar_t *expression, Interpreter *interpreter, Matrix target);
-
 Matrix Matrix_readFromRawTextFile (MelderFile file);
 Matrix Matrix_readAP (MelderFile file);
 Matrix Matrix_appendRows (I, thou);

@@ -31,14 +31,13 @@
  */
 
 #include "melder.h"
-#include "ui/Preferences.h"
 #include "kar/UnicodeData.h"
 #include "sys/io/abcio.h"
 
 #if defined (macintosh)
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	#include <Carbon/Carbon.h>
-	#include "macport_off.h"
+	#include "sys/macport_off.h"
 #endif
 
 static struct {
@@ -52,10 +51,11 @@ int Melder_getInputEncoding (void) { return preferences. inputEncoding; }
 void Melder_setOutputEncoding (enum kMelder_textOutputEncoding encoding) { preferences. outputEncoding = encoding; }
 int Melder_getOutputEncoding (void) { return preferences. outputEncoding; }
 
-void Melder_textEncoding_prefs (void) {
+// FIXME
+/*void Melder_textEncoding_prefs (void) {
 	Preferences_addEnum (L"TextEncoding.inputEncoding", & preferences. inputEncoding, kMelder_textInputEncoding, DEFAULT);
 	Preferences_addEnum (L"TextEncoding.outputEncoding", & preferences. outputEncoding, kMelder_textOutputEncoding, DEFAULT);
-}
+}*/
 
 bool Melder_isValidAscii (const wchar_t *text) {
 	for (; *text != '\0'; text ++) {

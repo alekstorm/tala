@@ -27,6 +27,7 @@
 #include "dwtools/HMM.h"
 #include "dwtools/Strings_extensions.h"
 #include "stat/TableOfReal.h"
+#include "ui/Interpreter.h"
 
 void SSCPs_drawConcentrationEllipses (SSCPs me, Graphics g, double scale,
 	int confidence, wchar_t *label, long d1, long d2, double xmin, double xmax,
@@ -789,6 +790,66 @@ FORM (HMM_setEmissionProbabilities, L"HMM: Set emission probabilities", L"HMM: S
 DO
 	if (! HMM_setEmissionProbabilities ((structHMM *)ONLY_OBJECT, GET_INTEGER (L"State number"), GET_STRING (L"Probabilities"))) return 0;
 END
+
+// evaluate the numbers given to probabilities
+static double *NUMwstring_to_probs (wchar_t *prob_string, long nwanted)
+{
+	double *p = NULL, psum = 0;
+	long ip = 1;
+
+	p = NUMdvector (1, nwanted);
+	if (p == NULL) return NULL;
+
+	for (wchar_t *token = Melder_firstToken (prob_string); token != NULL && ip <= nwanted; token = Melder_nextToken (), ip++)
+	{
+		double prob;
+		if (! Interpreter_numericExpression_FIXME (token, &prob))
+		{
+			Melder_error5 (L"Item ", Melder_integer (ip), L" \"", token, L"\"is not a number.");
+			goto end;
+		}
+		p[ip] = prob;
+		psum += prob;
+	}
+	ip--;
+	for (long i = 1; i <= ip; i++) p[i] /= psum; // to probabilities
+end:
+	if (Melder_hasError ()) NUMdvector_free (p, 1);
+	return p;
+}
+
+int HMM_setStartProbabilities (HMM me, wchar_t *probs)
+{
+	double *p = NUMwstring_to_probs (probs, my numberOfStates);
+	if (p == NULL) return 0;
+	for (long i = 1; i <= my numberOfStates; i++) my transitionProbs[0][i] = p[i];
+	NUMdvector_free (p, 1);
+	return 1;
+}
+
+int HMM_setTransitionProbabilities (HMM me, long state_number, wchar_t *state_probs)
+{
+	if (state_number > my states -> size) return Melder_error1 (L"State number too large.");
+	double *p = NUMwstring_to_probs (state_probs, my numberOfStates + 1); // 1 extra for final state
+	if (p == NULL) return 0;
+	for (long i = 1; i <= my numberOfStates + 1; i++) { my transitionProbs[state_number][i] = p[i]; }
+	NUMdvector_free (p, 1);
+	return 1;
+}
+
+int HMM_setEmissionProbabilities (HMM me, long state_number, wchar_t *emission_probs)
+{
+	if (state_number > my states -> size) return Melder_error1 (L"State number too large.");
+	if (my notHidden) return Melder_error1 (L"The emission probs of this model are fixed.");
+	double *p = NUMwstring_to_probs (emission_probs, my numberOfObservationSymbols);
+	if (p == NULL) return 0;
+	for (long i = 1; i <= my numberOfObservationSymbols; i++)
+	{
+		my emissionProbs[state_number][i] = p[i];
+	}
+	NUMdvector_free (p, 1);
+	return 1;
+}
 
 FORM (HMM_setStartProbabilities, L"HMM: Set start probabilities", L"HMM: Set start probabilities...")
 	SENTENCE (L"Probabilities", L"0.1 0.9")

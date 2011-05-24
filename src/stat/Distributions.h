@@ -45,10 +45,10 @@ double Distributionses_getMeanAbsoluteDifference (Distributions me, Distribution
 Distributions Distributions_addTwo (Distributions me, Distributions thee);
 Distributions Distributions_addMany (Collection me);
 
-#ifdef __cplusplus
-	}
 void Distributions_checkSpecifiedColumnNumberWithinRange (Distributions me, long columnNumber);
 
+#ifdef __cplusplus
+	}
 #endif
 
 /* End of file Distributions.h */

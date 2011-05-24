@@ -80,7 +80,7 @@ const wchar_t * Graphics_Colour_name (Graphics_Colour colour) {
 }
 
 #if mac
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	#include <LowMem.h>
 #endif
 

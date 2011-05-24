@@ -31,7 +31,7 @@
 
 #if mac
 	#include <time.h>
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	#include <QDOffscreen.h>
 	static RGBColor theBlackColour = { 0, 0, 0 };
 	static void _mac_releaseDataCallback (void *info, const void *data, size_t size) {

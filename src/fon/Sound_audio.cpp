@@ -48,17 +48,16 @@
  * In the new Mac SDK/ CodeWarrior, the following must be included before <Sound.h> and <Resources.h>...???
  */
 #include "Sound.h"
-#include "ui/Preferences.h"
 #include <portaudio.h>
 
 #if defined (sgi)
 	#include <audio.h>
 	#include <unistd.h>   /* sginap (): nap while waiting for a sound to finish playing. */
 #elif defined (macintosh)
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	#include <Carbon/Carbon.h>
 	#include "pa_mac_core.h"
-	#include "macport_off.h"
+	#include "sys/macport_off.h"
 #elif defined (sun)
 	#include <fcntl.h>
 	#include <stropts.h>

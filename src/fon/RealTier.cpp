@@ -35,7 +35,6 @@
  */
 
 #include "RealTier.h"
-#include "ui/Formula.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "RealTier_def.h"
@@ -472,23 +471,6 @@ RealTier PointProcess_upto_RealTier (PointProcess me, double value) {
 end:
 	iferror forget (thee);
 	return thee;
-}
-
-int RealTier_formula (I, const wchar_t *expression, Interpreter *interpreter, thou) {
-	iam (RealTier);
-	thouart (RealTier);
-	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
-	if (thee == NULL) thee = me;
-	for (long icol = 1; icol <= my points -> size; icol ++) {
-		struct Formula_Result result;
-		Formula_run (0, icol, & result); cherror
-		if (result. result.numericResult == NUMundefined)
-			error1 (L"Cannot put an undefined value into the tier.\nFormula not finished.")
-		((RealPoint) thy points -> item [icol]) -> value = result. result.numericResult;
-	}
-end:
-	iferror return 0;
-	return 1;
 }
 
 void RealTier_removePointsBelow (RealTier me, double level) {

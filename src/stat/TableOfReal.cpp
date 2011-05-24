@@ -41,7 +41,6 @@
 #include "TableOfReal.h"
 #include "num/NUM2.h"
 #include "fon/Matrix.h"
-#include "ui/Formula.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "TableOfReal_def.h"
@@ -374,28 +373,9 @@ void TableOfReal_setColumnLabel (I, long columnNumber, const wchar_t *label) {
 	}
 }
 
-int TableOfReal_formula (I, const wchar_t *expression, Interpreter *interpreter, thou) {
-	iam (TableOfReal);
-	thouart (TableOfReal);
-	try {
-		Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); therror
-		if (thee == NULL) thee = me;
-		for (long irow = 1; irow <= my numberOfRows; irow ++) {
-			for (long icol = 1; icol <= my numberOfColumns; icol ++) {
-				struct Formula_Result result;
-				Formula_run (irow, icol, & result); therror
-				thy data [irow] [icol] = result. result.numericResult;
-			}
-		}
-		return 1;
-	} catch (...) {
-		rethrowmzero (me, ": formula not completed.");
-	}
-}
-
 /***** EXTRACT PART *****/
 
-static void copyRowLabels (TableOfReal me, TableOfReal thee) {
+void TableOfReal_copyRowLabels (TableOfReal me, TableOfReal thee) {
 	try {
 		Melder_assert (me != thee);
 		Melder_assert (my numberOfRows == thy numberOfRows);
@@ -407,7 +387,7 @@ static void copyRowLabels (TableOfReal me, TableOfReal thee) {
 	}
 }
 
-static void copyColumnLabels (TableOfReal me, TableOfReal thee) {
+void TableOfReal_copyColumnLabels (TableOfReal me, TableOfReal thee) {
 	try {
 		Melder_assert (me != thee);
 		Melder_assert (my numberOfColumns == thy numberOfColumns);
@@ -419,7 +399,7 @@ static void copyColumnLabels (TableOfReal me, TableOfReal thee) {
 	}
 }
 
-static void copyRow (TableOfReal me, long myRow, TableOfReal thee, long thyRow) {
+void TableOfReal_copyRow (TableOfReal me, long myRow, TableOfReal thee, long thyRow) {
 	try {
 		Melder_assert (me != thee);
 		Melder_assert (my numberOfColumns == thy numberOfColumns);
@@ -432,7 +412,7 @@ static void copyRow (TableOfReal me, long myRow, TableOfReal thee, long thyRow) 
 	}
 }
 
-static void copyColumn (TableOfReal me, long myCol, TableOfReal thee, long thyCol) {
+void TableOfReal_copyColumn (TableOfReal me, long myCol, TableOfReal thee, long thyCol) {
 	try {
 		Melder_assert (me != thee);
 		Melder_assert (my numberOfRows == thy numberOfRows);
@@ -458,11 +438,11 @@ TableOfReal TableOfReal_extractRowsWhereColumn (I, long column, int which_Melder
 		}
 		if (n == 0) Melder_throw ("No row matches this criterion.");
 		autoTableOfReal thee = TableOfReal_create (n, my numberOfColumns);
-		copyColumnLabels (me, thee.peek()); therror
+		TableOfReal_copyColumnLabels (me, thee.peek()); therror
 		n = 0;
 		for (long irow = 1; irow <= my numberOfRows; irow ++) {
 			if (Melder_numberMatchesCriterion (my data [irow] [column], which_Melder_NUMBER, criterion)) {
-				copyRow (me, irow, thee.peek(), ++ n); therror
+				TableOfReal_copyRow (me, irow, thee.peek(), ++ n); therror
 			}
 		}
 		return thee.transfer();
@@ -482,11 +462,11 @@ TableOfReal TableOfReal_extractRowsWhereLabel (I, int which_Melder_STRING, const
 		}
 		if (n == 0) Melder_throw (L"No row matches this criterion.");
 		autoTableOfReal thee = TableOfReal_create (n, my numberOfColumns);
-		copyColumnLabels (me, thee.peek()); therror
+		TableOfReal_copyColumnLabels (me, thee.peek()); therror
 		n = 0;
 		for (long irow = 1; irow <= my numberOfRows; irow ++) {
 			if (Melder_stringMatchesCriterion (my rowLabels [irow], which_Melder_STRING, criterion)) {
-				copyRow (me, irow, thee.peek(), ++ n); therror
+				TableOfReal_copyRow (me, irow, thee.peek(), ++ n); therror
 			}
 		}
 		return thee.transfer();
@@ -509,11 +489,11 @@ TableOfReal TableOfReal_extractColumnsWhereRow (I, long row, int which_Melder_NU
 		if (n == 0) Melder_throw ("No column matches this criterion.");
 
 		autoTableOfReal thee = TableOfReal_create (my numberOfRows, n);
-		copyRowLabels (me, thee.peek()); therror
+		TableOfReal_copyRowLabels (me, thee.peek()); therror
 		n = 0;
 		for (long icol = 1; icol <= my numberOfColumns; icol ++) {
 			if (Melder_numberMatchesCriterion (my data [row] [icol], which_Melder_NUMBER, criterion)) {
-				copyColumn (me, icol, thee.peek(), ++ n); therror
+				TableOfReal_copyColumn (me, icol, thee.peek(), ++ n); therror
 			}
 		}
 		return thee.transfer();
@@ -534,11 +514,11 @@ TableOfReal TableOfReal_extractColumnsWhereLabel (I, int which_Melder_STRING, co
 		if (n == 0) Melder_throw ("No column matches this criterion.");
 
 		autoTableOfReal thee = TableOfReal_create (my numberOfRows, n);
-		copyRowLabels (me, thee.peek()); therror
+		TableOfReal_copyRowLabels (me, thee.peek()); therror
 		n = 0;
 		for (long icol = 1; icol <= my numberOfColumns; icol ++) {
 			if (Melder_stringMatchesCriterion (my columnLabels [icol], which_Melder_STRING, criterion)) {
-				copyColumn (me, icol, thee.peek(), ++ n); therror
+				TableOfReal_copyColumn (me, icol, thee.peek(), ++ n); therror
 			}
 		}
 		return thee.transfer();
@@ -642,9 +622,9 @@ TableOfReal TableOfReal_extractRowRanges (I, const wchar_t *ranges) {
 		long numberOfElements;
 		autoNUMvector <long> elements (getElementsOfRanges (ranges, my numberOfRows, & numberOfElements, L"row"), 1);
 		autoTableOfReal thee = TableOfReal_create (numberOfElements, my numberOfColumns);
-		copyColumnLabels (me, thee.peek()); therror
+		TableOfReal_copyColumnLabels (me, thee.peek()); therror
 		for (long ielement = 1; ielement <= numberOfElements; ielement ++) {
-			copyRow (me, elements [ielement], thee.peek(), ielement); therror
+			TableOfReal_copyRow (me, elements [ielement], thee.peek(), ielement); therror
 		}
 		return thee.transfer();
 	} catch (...) {
@@ -658,103 +638,13 @@ TableOfReal TableOfReal_extractColumnRanges (I, const wchar_t *ranges) {
 		long numberOfElements;
 		autoNUMvector <long> elements (getElementsOfRanges (ranges, my numberOfColumns, & numberOfElements, L"column"), 1);
 		autoTableOfReal thee = TableOfReal_create (my numberOfRows, numberOfElements);
-		copyRowLabels (me, thee.peek()); therror
+		TableOfReal_copyRowLabels (me, thee.peek()); therror
 		for (long ielement = 1; ielement <= numberOfElements; ielement ++) {
-			copyColumn (me, elements [ielement], thee.peek(), ielement); therror
+			TableOfReal_copyColumn (me, elements [ielement], thee.peek(), ielement); therror
 		}
 		return thee.transfer();
 	} catch (...) {
 		rethrowmzero (me, ": column ranges not extracted.");
-	}
-}
-
-TableOfReal TableOfReal_extractRowsWhere (I, const wchar_t *condition, Interpreter *interpreter) {
-	iam (TableOfReal);
-	try {
-		Formula_compile (interpreter, me, condition, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); therror
-		/*
-		 * Count the new number of rows.
-		 */
-		long numberOfElements = 0;
-		for (long irow = 1; irow <= my numberOfRows; irow ++) {
-			for (long icol = 1; icol <= my numberOfColumns; icol ++) {
-				struct Formula_Result result;
-				Formula_run (irow, icol, & result); therror
-				if (result. result.numericResult != 0.0) {
-					numberOfElements ++;
-					break;
-				}
-			}
-		}
-		if (numberOfElements < 1) Melder_throw ("No rows match this condition.");
-
-		/*
-		 * Create room for the result.
-		 */	
-		autoTableOfReal thee = TableOfReal_create (numberOfElements, my numberOfColumns);
-		copyColumnLabels (me, thee.peek()); therror
-		/*
-		 * Store the result.
-		 */
-		numberOfElements = 0;
-		for (long irow = 1; irow <= my numberOfRows; irow ++) {
-			for (long icol = 1; icol <= my numberOfColumns; icol ++) {
-				struct Formula_Result result;
-				Formula_run (irow, icol, & result);
-				if (result. result.numericResult != 0.0) {
-					copyRow (me, irow, thee.peek(), ++ numberOfElements); therror
-					break;
-				}
-			}
-		}
-		return thee.transfer();
-	} catch (...) {
-		rethrowmzero (me, ": rows not extracted.");
-	}
-}
-
-TableOfReal TableOfReal_extractColumnsWhere (I, const wchar_t *condition, Interpreter *interpreter) {
-	iam (TableOfReal);
-	try {
-		Formula_compile (interpreter, me, condition, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); therror
-		/*
-		 * Count the new number of columns.
-		 */
-		long numberOfElements = 0;
-		for (long icol = 1; icol <= my numberOfColumns; icol ++) {
-			for (long irow = 1; irow <= my numberOfRows; irow ++) {
-				struct Formula_Result result;
-				Formula_run (irow, icol, & result); therror
-				if (result. result.numericResult != 0.0) {
-					numberOfElements ++;
-					break;
-				}
-			}
-		}
-		if (numberOfElements < 1) Melder_throw ("No columns match this condition.");
-
-		/*
-		 * Create room for the result.
-		 */	
-		autoTableOfReal thee = TableOfReal_create (my numberOfRows, numberOfElements);
-		copyRowLabels (me, thee.peek()); therror
-		/*
-		 * Store the result.
-		 */
-		numberOfElements = 0;
-		for (long icol = 1; icol <= my numberOfColumns; icol ++) {
-			for (long irow = 1; irow <= my numberOfRows; irow ++) {
-				struct Formula_Result result;
-				Formula_run (irow, icol, & result); therror
-				if (result. result.numericResult != 0.0) {
-					copyColumn (me, icol, thee.peek(), ++ numberOfElements); therror
-					break;
-				}
-			}
-		}
-		return thee.transfer();
-	} catch (...) {
-		rethrowmzero (me, ": columns not extracted.");
 	}
 }
 

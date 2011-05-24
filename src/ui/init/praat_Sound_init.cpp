@@ -42,6 +42,8 @@
 #include "fon/TextGrid_Sound.h"
 #include "dwtools/Sound_extensions.h"
 #include "sys/io/mp3.h"
+#include "ui/Formula.h"
+#include "ui/Interpreter.h"
 #include "ui/UiFile.h"
 
 #include "ui/praat.h"
@@ -49,6 +51,10 @@
 #ifndef LONG_MAX
 	#define LONG_MAX  2147483647
 #endif
+
+int Matrix_formula (Matrix me, const wchar_t *expression, Interpreter *interpreter, Matrix target);
+int Matrix_formula_part (Matrix me, double xmin, double xmax, double ymin, double ymax,
+	const wchar_t *expression, Interpreter *interpreter, Matrix target);
 
 extern "C" int praat_Fon_formula (UiForm *dia, Interpreter *interpreter);
 void praat_TimeFunction_query_init (void *klas);
@@ -244,9 +250,9 @@ FORM (LongSoundPrefs, L"LongSound preferences", L"LongSound")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"Note: this setting works for the next long sound file that you open,")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"not for currently existing LongSound objects.")
 	OK
-SET_INTEGER (L"Maximum viewable part", LongSound_getBufferSizePref_seconds ())
+//SET_INTEGER (L"Maximum viewable part", LongSound_getBufferSizePref_seconds ()) // FIXME
 DO
-	LongSound_setBufferSizePref_seconds (GET_INTEGER (L"Maximum viewable part"));
+	//LongSound_setBufferSizePref_seconds (GET_INTEGER (L"Maximum viewable part")); // FIXME
 END
 
 /********** LONGSOUND & SOUND **********/
@@ -1223,6 +1229,63 @@ DO
 			NAME, L"_deemp")) return 0;
 	}
 END
+
+int Sound_filter_part_formula (Sound me, double t1, double t2, const wchar_t *formula, Interpreter *interpreter)
+{
+	Sound part = NULL, filtered = NULL;
+	Spectrum spec = NULL;
+	int status = 0;
+
+	part = Sound_extractPart (me, t1, t2, kSound_windowShape_RECTANGULAR, 1, 1);
+	if (part == NULL) goto end;
+
+	spec = Sound_to_Spectrum (part, TRUE);
+	if (spec == NULL) goto end;
+
+	if (! Matrix_formula ((Matrix) spec, formula, interpreter, 0)) goto end;
+
+	filtered = Spectrum_to_Sound (spec);
+	if (filtered == NULL) goto end;
+
+	/* Overwrite part between t1 and t2 of original with the filtered signal */
+
+	status = Sound_overwritePart (me, t1, t2, filtered, 0);
+
+end:
+
+	forget (filtered);
+	forget (spec);
+	forget (part);
+
+	return status;
+}
+
+Sound Sound_filter_formula (Sound me, const wchar_t *formula, Interpreter *interpreter) {
+	Spectrum spec = NULL;
+	Sound thee = (structSound *)Data_copy (me), him = NULL; cherror
+	if (my ny == 1) {
+		spec = Sound_to_Spectrum (me, TRUE); cherror
+		Matrix_formula ((Matrix) spec, formula, interpreter, NULL); cherror
+		him = Spectrum_to_Sound (spec); cherror
+		NUMdvector_copyElements (his z [1], thy z [1], 1, thy nx);
+	} else {
+		for (long channel = 1; channel <= my ny; channel ++) {
+			forget (him);
+			him = Sound_extractChannel (me, channel); cherror
+			forget (spec);
+			spec = Sound_to_Spectrum (him, TRUE); cherror
+			Matrix_formula ((Matrix) spec, formula, interpreter, NULL); cherror
+			forget (him);
+			him = Spectrum_to_Sound (spec); cherror
+			NUMdvector_copyElements (his z [1], thy z [channel], 1, thy nx);
+		}
+	}
+end:
+	forget (spec);
+	forget (him);
+	iferror forget (thee);
+	return thee;
+}
 
 FORM (Sound_filter_formula, L"Sound: Filter (formula)...", L"Formula...")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"Frequency-domain filtering with a formula (uses Sound-to-Spectrum and Spectrum-to-Sound): x is frequency in Hertz")
@@ -2688,7 +2751,7 @@ void praat_uvafon_Sound_init (void) {
 
 	SoundRecorder::prefs ();
 	FunctionEditor::prefs ();
-	LongSound_prefs ();
+	//LongSound_prefs (); // FIXME
 	TimeSoundEditor::prefs ();
 	TimeSoundAnalysisEditor::prefs ();
 

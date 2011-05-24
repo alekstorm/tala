@@ -38,9 +38,9 @@
 	#include <gdk/gdk.h>
 	#include <cairo/cairo.h>
 #elif defined (macintosh)
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	#include <Carbon/Carbon.h>
-	#include "macport_off.h"
+	#include "sys/macport_off.h"
 #elif defined (_WIN32)
 	#define Polygon PolygonNotWin
 	#include <windows.h>

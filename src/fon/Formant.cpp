@@ -131,50 +131,6 @@ long Formant_getMaxNumFormants (Formant me) {
 	return maxNumFormants;
 }
 
-int Formant_formula_bandwidths (Formant me, const wchar_t *formula, Interpreter *interpreter) {
-	long iframe, iformant, nrow = Formant_getMaxNumFormants (me);
-	Matrix mat = NULL;
-	if (nrow < 1) return Melder_error1 (L"(Formant_formula_bandwidths:) No formants available.");
-	mat = Matrix_create (my xmin, my xmax, my nx, my dx, my x1, 0.5, nrow + 0.5, nrow, 1, 1); cherror
-	for (iframe = 1; iframe <= my nx; iframe ++) {
-		Formant_Frame frame = & my frame [iframe];
-		for (iformant = 1; iformant <= frame -> nFormants; iformant ++)
-			mat -> z [iformant] [iframe] = frame -> formant [iformant]. bandwidth;
-	}
-	Matrix_formula (mat, formula, interpreter, NULL); cherror
-	for (iframe = 1; iframe <= my nx; iframe ++) {
-		Formant_Frame frame = & my frame [iframe];
-		for (iformant = 1; iformant <= frame -> nFormants; iformant ++)
-			frame -> formant [iformant]. bandwidth = mat -> z [iformant] [iframe];
-	}
-end:
-	forget (mat);
-	iferror return 0;
-	return 1;
-}
-
-int Formant_formula_frequencies (Formant me, const wchar_t *formula, Interpreter *interpreter) {
-	long iframe, iformant, nrow = Formant_getMaxNumFormants (me);
-	Matrix mat = NULL;
-	if (nrow < 1) return Melder_error1 (L"(Formant_formula_frequencies:) No formants available.");
-	mat = Matrix_create (my xmin, my xmax, my nx, my dx, my x1, 0.5, nrow + 0.5, nrow, 1, 1); cherror
-	for (iframe = 1; iframe <= my nx; iframe ++) {
-		Formant_Frame frame = & my frame [iframe];
-		for (iformant = 1; iformant <= frame -> nFormants; iformant ++)
-			mat -> z [iformant] [iframe] = frame -> formant [iformant]. frequency;
-	}
-	Matrix_formula (mat, formula, interpreter, NULL); cherror
-	for (iframe = 1; iframe <= my nx; iframe ++) {
-		Formant_Frame frame = & my frame [iframe];
-		for (iformant = 1; iformant <= frame -> nFormants; iformant ++)
-			frame -> formant [iformant]. frequency = mat -> z [iformant] [iframe];
-	}
-end:
-	forget (mat);
-	iferror return 0;
-	return 1;
-}
-
 void Formant_getExtrema (Formant me, int iformant, double tmin, double tmax, double *fmin, double *fmax) {
 	long itmin, itmax, iframe;
 	if (fmin) *fmin = 0.0;

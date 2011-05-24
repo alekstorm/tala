@@ -40,20 +40,20 @@
  */
 
 #include "LongSound.h"
-#include "ui/Preferences.h"
 #include "FLAC/stream_decoder.h"
 #include "sys/io/mp3.h"
 #define MARGIN  0.01
 #define USE_MEMMOVE  1
 
-static long prefs_bufferLength;
+static long prefs_bufferLength = 60; // FIXME
 
-void LongSound_prefs (void) {
+// FIXME
+/*void LongSound_prefs (void) {
 	Preferences_addLong (L"LongSound.bufferLength", & prefs_bufferLength, 60);   // seconds
 }
 
 long LongSound_getBufferSizePref_seconds (void) { return prefs_bufferLength; }
-void LongSound_setBufferSizePref_seconds (long size) { prefs_bufferLength = size < 10 ? 10 : size > 10000 ? 10000: size; }
+void LongSound_setBufferSizePref_seconds (long size) { prefs_bufferLength = size < 10 ? 10 : size > 10000 ? 10000: size; }*/
 
 static void destroy (I) {
 	iam (LongSound);

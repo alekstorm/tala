@@ -30,10 +30,10 @@
 #if defined (_WIN32)
 	#include <windowsx.h>
 #elif defined (macintosh)
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	#include <Quickdraw.h>
 	#include <MacWindows.h>
-	#include "macport_off.h"
+	#include "sys/macport_off.h"
 #endif
 
 #ifdef __cplusplus

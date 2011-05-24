@@ -30,6 +30,7 @@
 #include "InfoEditor.h"
 
 #include "ui/machine.h"
+#include "ui/melder_gui.h"
 #include "ui/Preferences.h"
 
 // FIXME

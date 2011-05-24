@@ -59,23 +59,4 @@ end:
 	return thee;
 }
 
-int Pitch_formula (Pitch me, const wchar_t *formula, Interpreter *interpreter) {
-	Matrix m = Matrix_create (my xmin, my xmax, my nx, my dx, my x1, 1, my maxnCandidates, my maxnCandidates, 1, 1); cherror
-	for (long iframe = 1; iframe <= my nx; iframe ++) {
-		Pitch_Frame frame = & my frame [iframe];
-		for (long icand = 1; icand <= frame -> nCandidates; icand ++)
-			m -> z [icand] [iframe] = frame -> candidate [icand]. frequency;
-	}
-	Matrix_formula (m, formula, interpreter, NULL); cherror
-	for (long iframe = 1; iframe <= my nx; iframe ++) {
-		Pitch_Frame frame = & my frame [iframe];
-		for (long icand = 1; icand <= frame -> nCandidates; icand ++)
-			frame -> candidate [icand]. frequency = m -> z [icand] [iframe];
-	}
-end:
-	forget (m);
-	iferror return Melder_error1 (L"(Pitch_formula:) Not performed.");
-	return 1;
-}
-
 /* End of file Matrix_and_Pitch.c */

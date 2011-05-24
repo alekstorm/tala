@@ -31,14 +31,13 @@
  */
 
 #include "melder.h"
-#include "ui/Preferences.h"
 #include "kar/UnicodeData.h"
 #include "sys/io/abcio.h"
 
 #if defined (macintosh)
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	//#include <Carbon/Carbon.h>
-	#include "macport_off.h"
+	#include "sys/macport_off.h"
 #endif
 
 static void Melder_fwriteUnicodeAsUtf8 (unsigned long unicode, FILE *f) {

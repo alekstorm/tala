@@ -59,9 +59,9 @@
 	#include <windows.h>
 #endif
 #if defined (macintosh)
-	#include "ui/macport_on.h"
+	#include "sys/macport_on.h"
 	#include <Folders.h>
-	#include "ui/macport_off.h"
+	#include "sys/macport_off.h"
 #endif
 #include <errno.h>
 #include "melder.h"

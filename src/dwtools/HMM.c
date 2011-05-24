@@ -23,7 +23,6 @@
 #include "stat/Distributions_and_Strings.h"
 #include "HMM.h"
 #include "dwsys/Index.h"
-#include "ui/Interpreter.h"
 #include "num/NUM2.h"
 #include "Strings_extensions.h"
 
@@ -82,33 +81,6 @@ StringsIndex HMM_and_HMM_StateSequence_to_StringsIndex (HMM me, HMM_StateSequenc
 
 HMM_Viterbi HMM_Viterbi_create (long nstates, long ntimes);
 HMM_Viterbi HMM_to_HMM_Viterbi (HMM me, long *obs, long ntimes);
-
-// evaluate the numbers given to probabilities
-static double *NUMwstring_to_probs (wchar_t *prob_string, long nwanted)
-{
-	double *p = NULL, psum = 0;
-	long ip = 1;
-
-	p = NUMdvector (1, nwanted);
-	if (p == NULL) return NULL;
-
-	for (wchar_t *token = Melder_firstToken (prob_string); token != NULL && ip <= nwanted; token = Melder_nextToken (), ip++)
-	{
-		double prob;
-		if (! Interpreter_numericExpression_FIXME (token, &prob))
-		{
-			Melder_error5 (L"Item ", Melder_integer (ip), L" \"", token, L"\"is not a number.");
-			goto end;
-		}
-		p[ip] = prob;
-		psum += prob;
-	}
-	ip--;
-	for (long i = 1; i <= ip; i++) p[i] /= psum; // to probabilities
-end:
-	if (Melder_hasError ()) NUMdvector_free (p, 1);
-	return p;
-}
 
 int NUMget_line_intersection_with_circle (double xc, double yc, double r, double a, double b,
 	double *x1, double *y1, double *x2, double *y2)
@@ -674,39 +646,6 @@ void HMM_setDefaultMixingProbabilities (HMM me)
 		HMM_Observation hmmo = my observationSymbols -> item[is];
 		for (long im = 1; im <= my numberOfMixtureComponents; im++) hmmo -> gm -> mixingProbabilities[im] = mp;
 	}
-}
-
-int HMM_setStartProbabilities (HMM me, wchar_t *probs)
-{
-	double *p = NUMwstring_to_probs (probs, my numberOfStates);
-	if (p == NULL) return 0;
-	for (long i = 1; i <= my numberOfStates; i++) my transitionProbs[0][i] = p[i];
-	NUMdvector_free (p, 1);
-	return 1;
-}
-
-int HMM_setTransitionProbabilities (HMM me, long state_number, wchar_t *state_probs)
-{
-	if (state_number > my states -> size) return Melder_error1 (L"State number too large.");
-	double *p = NUMwstring_to_probs (state_probs, my numberOfStates + 1); // 1 extra for final state
-	if (p == NULL) return 0;
-	for (long i = 1; i <= my numberOfStates + 1; i++) { my transitionProbs[state_number][i] = p[i]; }
-	NUMdvector_free (p, 1);
-	return 1;
-}
-
-int HMM_setEmissionProbabilities (HMM me, long state_number, wchar_t *emission_probs)
-{
-	if (state_number > my states -> size) return Melder_error1 (L"State number too large.");
-	if (my notHidden) return Melder_error1 (L"The emission probs of this model are fixed.");
-	double *p = NUMwstring_to_probs (emission_probs, my numberOfObservationSymbols);
-	if (p == NULL) return 0;
-	for (long i = 1; i <= my numberOfObservationSymbols; i++)
-	{
-		my emissionProbs[state_number][i] = p[i];
-	}
-	NUMdvector_free (p, 1);
-	return 1;
 }
 
 int HMM_addObservation (HMM me, thou)

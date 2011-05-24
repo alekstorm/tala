@@ -1,6 +1,6 @@
-#ifndef _Sound_and_Spectrum_h_
-#define _Sound_and_Spectrum_h_
-/* Sound_and_Spectrum.h
+#ifndef _melder_gui_h_
+#define _melder_gui_h_
+/* melder.h
  *
  * Copyright (C) 1992-2011 Paul Boersma
  *
@@ -19,30 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+/* Procedures to enforce interactive behaviour of the Melder_XXXXXX routines. */
+
+void MelderGui_create (/* XtAppContext* */ void *appContext, /* GuiObject */ void *parent);
 /*
- * pb 2009/01/18
- */
+	'appContext' is the XtAppContext* output from Xt(Va)AppInitialize;
+		if you used Xt(Va)Initialize it should be NULL.
+	'parent' is the top-level widget returned by Xt(Va)(App)Initialize.
+*/
 
-#include "Sound.h"
-#include "Spectrum.h"
+extern int Melder_batch;   /* True if run from the batch or from an interactive command-line interface. */
+extern int Melder_backgrounding;   /* True if running a script. */
+extern bool Melder_consoleIsAnsi;
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+extern void *Melder_appContext;   /* XtAppContext* */
+extern void *Melder_topShell;   /* GuiObject */
 
-Spectrum Sound_to_Spectrum_at (Sound me, double tim, double windowDuration, int windowType);
-
-Spectrum Sound_to_Spectrum (Sound me, int fast);
-Sound Spectrum_to_Sound (Spectrum me);
-
-Spectrum Spectrum_lpcSmoothing (Spectrum me, int numberOfPeaks, double preemphasisFrequency);
-
-Sound Sound_filter_passHannBand (Sound me, double fmin, double fmax, double smooth);
-Sound Sound_filter_stopHannBand (Sound me, double fmin, double fmax, double smooth);
-
-#ifdef __cplusplus
-	}
-#endif
-
-/* End of file Sound_and_Spectrum.h */
 #endif

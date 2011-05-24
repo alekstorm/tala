@@ -24,6 +24,7 @@
  * pb 2011/02/01 cancelContinueButton
  */
 
+#include "melder_gui.h"
 #include "UiPause.h"
 #include "praatP.h"
 #include "UiForm.h"

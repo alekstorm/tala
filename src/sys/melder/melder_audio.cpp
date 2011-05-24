@@ -42,8 +42,6 @@
  */
 
 #include "melder.h"
-#include "ui/Gui.h"
-#include "ui/Preferences.h"
 #include "num/NUM.h"
 #include <time.h>
 #define my  me ->
@@ -118,7 +116,8 @@ static struct {
 	double silenceBefore, silenceAfter;
 } preferences;
 
-void Melder_audio_prefs (void) {
+// FIXME
+/*void Melder_audio_prefs (void) {
 	Preferences_addEnum (L"Audio.maximumAsynchronicity", & preferences. maximumAsynchronicity, kMelder_asynchronicityLevel, DEFAULT);
 	Preferences_addBool (L"Audio.useInternalSpeaker", & preferences. useInternalSpeaker, true);
 	Preferences_addBool (L"Audio.outputUsesPortAudio", & preferences. outputUsesPortAudio, kMelderAudio_outputUsesPortAudio_DEFAULT);
@@ -126,7 +125,7 @@ void Melder_audio_prefs (void) {
 	Preferences_addDouble (L"Audio.silenceBefore", & preferences. silenceBefore, 0.0);
 	Preferences_addDouble (L"Audio.silenceAfter", & preferences. silenceAfter, 0.5);
 	Preferences_addBool (L"Audio.inputUsesPortAudio", & preferences.inputUsesPortAudio, kMelderAudio_inputUsesPortAudio_DEFAULT);
-}
+}*/
 
 void MelderAudio_setOutputMaximumAsynchronicity (enum kMelder_asynchronicityLevel maximumAsynchronicity) {
 	MelderAudio_stopPlaying (MelderAudio_IMPLICIT);
@@ -631,9 +630,9 @@ int MelderAudio_play16 (const short *buffer, long sampleRate, long numberOfSampl
 	my callback = playCallback;
 	my closure = playClosure;
 	my asynchronicity =
-		Melder_batch ? kMelder_asynchronicityLevel_SYNCHRONOUS :
-		Melder_backgrounding ? kMelder_asynchronicityLevel_INTERRUPTABLE :
-		kMelder_asynchronicityLevel_ASYNCHRONOUS;
+		//Melder_batch ? kMelder_asynchronicityLevel_SYNCHRONOUS :
+		//Melder_backgrounding ? kMelder_asynchronicityLevel_INTERRUPTABLE :
+		kMelder_asynchronicityLevel_ASYNCHRONOUS; // FIXME
 	if (my asynchronicity > preferences. maximumAsynchronicity)
 		my asynchronicity = preferences. maximumAsynchronicity;
 	my usePortAudio = preferences. outputUsesPortAudio;

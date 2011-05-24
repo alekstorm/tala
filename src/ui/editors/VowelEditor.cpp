@@ -63,6 +63,7 @@ trajectory --> path ????
 #include "fon/PointProcess_and_Sound.h"
 #include "fon/Polygon.h"
 #include "EditorM.h"
+#include "ui/Interpreter.h"
 #include "ui/machine.h"
 #include "ui/Preferences.h"
 

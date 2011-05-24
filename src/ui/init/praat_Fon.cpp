@@ -66,9 +66,13 @@
 #include "stat/Distributions_and_Strings.h"
 #include "stat/Table.h"
 #include "ui/editors/StringsEditor.h"
+#include "ui/Formula.h"
+#include "ui/Interpreter.h"
 #include "ui/UiFile.h"
 
 #include "ui/praat.h"
+
+int Matrix_formula (Matrix me, const wchar_t *expression, Interpreter *interpreter, Matrix target);
 
 static const wchar_t *STRING_FROM_TIME_SECONDS = L"left Time range (s)";
 static const wchar_t *STRING_TO_TIME_SECONDS = L"right Time range (s)";
@@ -162,6 +166,23 @@ Graphics Movie_create (const wchar_t *title, int width, int height) {
 }
 
 /***** AMPLITUDETIER *****/
+
+int RealTier_formula (I, const wchar_t *expression, Interpreter *interpreter, thou) {
+	iam (RealTier);
+	thouart (RealTier);
+	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
+	if (thee == NULL) thee = me;
+	for (long icol = 1; icol <= my points -> size; icol ++) {
+		struct Formula_Result result;
+		Formula_run (0, icol, & result); cherror
+		if (result. result.numericResult == NUMundefined)
+			error1 (L"Cannot put an undefined value into the tier.\nFormula not finished.")
+		((RealPoint) thy points -> item [icol]) -> value = result. result.numericResult;
+	}
+end:
+	iferror return 0;
+	return 1;
+}
 
 FORM (AmplitudeTier_addPoint, L"Add one point", L"AmplitudeTier: Add point...")
 	REAL (L"Time (s)", L"0.5")
@@ -750,6 +771,28 @@ DO
 		GET_INTEGER (L"Garnish")))
 END
 
+int Formant_formula_bandwidths (Formant me, const wchar_t *formula, Interpreter *interpreter) {
+	long iframe, iformant, nrow = Formant_getMaxNumFormants (me);
+	Matrix mat = NULL;
+	if (nrow < 1) return Melder_error1 (L"(Formant_formula_bandwidths:) No formants available.");
+	mat = Matrix_create (my xmin, my xmax, my nx, my dx, my x1, 0.5, nrow + 0.5, nrow, 1, 1); cherror
+	for (iframe = 1; iframe <= my nx; iframe ++) {
+		Formant_Frame frame = & my frame [iframe];
+		for (iformant = 1; iformant <= frame -> nFormants; iformant ++)
+			mat -> z [iformant] [iframe] = frame -> formant [iformant]. bandwidth;
+	}
+	Matrix_formula (mat, formula, interpreter, NULL); cherror
+	for (iframe = 1; iframe <= my nx; iframe ++) {
+		Formant_Frame frame = & my frame [iframe];
+		for (iformant = 1; iformant <= frame -> nFormants; iformant ++)
+			frame -> formant [iformant]. bandwidth = mat -> z [iformant] [iframe];
+	}
+end:
+	forget (mat);
+	iferror return 0;
+	return 1;
+}
+
 FORM (Formant_formula_bandwidths, L"Formant: Formula (bandwidths)", L"Formant: Formula (bandwidths)...")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"row is formant number, col is frame number: for row from 1 to nrow do for col from 1 to ncol do B (row, col) :=")
 	TEXTFIELD (L"formula", L"self / 2 ; sharpen all peaks")
@@ -760,6 +803,28 @@ DO
 		praat_dataChanged (OBJECT);
 	}
 END
+
+int Formant_formula_frequencies (Formant me, const wchar_t *formula, Interpreter *interpreter) {
+	long iframe, iformant, nrow = Formant_getMaxNumFormants (me);
+	Matrix mat = NULL;
+	if (nrow < 1) return Melder_error1 (L"(Formant_formula_frequencies:) No formants available.");
+	mat = Matrix_create (my xmin, my xmax, my nx, my dx, my x1, 0.5, nrow + 0.5, nrow, 1, 1); cherror
+	for (iframe = 1; iframe <= my nx; iframe ++) {
+		Formant_Frame frame = & my frame [iframe];
+		for (iformant = 1; iformant <= frame -> nFormants; iformant ++)
+			mat -> z [iformant] [iframe] = frame -> formant [iformant]. frequency;
+	}
+	Matrix_formula (mat, formula, interpreter, NULL); cherror
+	for (iframe = 1; iframe <= my nx; iframe ++) {
+		Formant_Frame frame = & my frame [iframe];
+		for (iformant = 1; iformant <= frame -> nFormants; iformant ++)
+			frame -> formant [iformant]. frequency = mat -> z [iformant] [iframe];
+	}
+end:
+	forget (mat);
+	iferror return 0;
+	return 1;
+}
 
 FORM (Formant_formula_frequencies, L"Formant: Formula (frequencies)", L"Formant: Formula (frequencies)...")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"row is formant number, col is frame number: for row from 1 to nrow do for col from 1 to ncol do F (row, col) :=")
@@ -1115,6 +1180,26 @@ DIRECT (FormantGrid_edit)
 	}
 END
 
+int FormantGrid_formula_bandwidths (I, const wchar_t *expression, Interpreter *interpreter, thou) {
+	iam (FormantGrid);
+	thouart (FormantGrid);
+	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
+	if (thee == NULL) thee = me;
+	for (long irow = 1; irow <= my formants -> size; irow ++) {
+		RealTier bandwidth = (structRealTier *)thy bandwidths -> item [irow];
+		for (long icol = 1; icol <= bandwidth -> points -> size; icol ++) {
+			struct Formula_Result result;
+			Formula_run (irow, icol, & result); cherror
+			if (result. result.numericResult == NUMundefined)
+				error1 (L"Cannot put an undefined value into the tier.\nFormula not finished.")
+			((RealPoint) bandwidth -> points -> item [icol]) -> value = result. result.numericResult;
+		}
+	}
+end:
+	iferror return 0;
+	return 1;
+}
+
 FORM (FormantGrid_formula_bandwidths, L"FormantGrid: Formula (bandwidths)", L"Formant: Formula (bandwidths)...")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"row is formant number, col is point number: for row from 1 to nrow do for col from 1 to ncol do B (row, col) :=")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"self [] is the FormantGrid itself, so it returns frequencies, not bandwidths!")
@@ -1126,6 +1211,26 @@ DO
 		praat_dataChanged (OBJECT);
 	}
 END
+
+int FormantGrid_formula_frequencies (I, const wchar_t *expression, Interpreter *interpreter, thou) {
+	iam (FormantGrid);
+	thouart (FormantGrid);
+	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
+	if (thee == NULL) thee = me;
+	for (long irow = 1; irow <= my formants -> size; irow ++) {
+		RealTier formant = (structRealTier *)thy formants -> item [irow];
+		for (long icol = 1; icol <= formant -> points -> size; icol ++) {
+			struct Formula_Result result;
+			Formula_run (irow, icol, & result); cherror
+			if (result. result.numericResult == NUMundefined)
+				error1 (L"Cannot put an undefined value into the tier.\nFormula not finished.")
+			((RealPoint) formant -> points -> item [icol]) -> value = result. result.numericResult;
+		}
+	}
+end:
+	iferror return 0;
+	return 1;
+}
 
 FORM (FormantGrid_formula_frequencies, L"FormantGrid: Formula (frequencies)", L"Formant: Formula (frequencies)...")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"row is formant number, col is point number: for row from 1 to nrow do for col from 1 to ncol do F (row, col) :=")
@@ -2598,6 +2703,57 @@ DIRECT (Matrix_eigen)
 	}
 END
 
+/*
+	Arguments:
+		"me" is the Matrix referred to as "self" or with "nx" etc. in the expression
+		"target" is the Matrix whose elements will change according to:
+			FOR row FROM 1 TO my ny
+				FOR col FROM 1 TO my nx
+					target -> z [row, col] = expression
+				ENDFOR
+			ENDFOR
+		"expression" is the text to be compiled and interpreted.
+		If "target" is NULL, the result will go to "me"; otherwise, to "target".
+	Return value:
+		0 in case of failure, otherwise 1.
+*/
+int Matrix_formula (Matrix me, const wchar_t *expression, Interpreter *interpreter, Matrix target) {
+	struct Formula_Result result;
+	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
+	if (target == NULL) target = me;
+	for (long irow = 1; irow <= my ny; irow ++) {
+		for (long icol = 1; icol <= my nx; icol ++) {
+			Formula_run (irow, icol, & result); cherror
+			target -> z [irow] [icol] = result. result.numericResult;
+		}
+	}
+end:
+	iferror return 0;
+	return 1;
+}
+
+int Matrix_formula_part (Matrix me, double xmin, double xmax, double ymin, double ymax,
+	const wchar_t *expression, Interpreter *interpreter, Matrix target)
+{
+	long ixmin, ixmax, iymin, iymax;
+	if (xmax <= xmin) { xmin = my xmin; xmax = my xmax; }
+	if (ymax <= ymin) { ymin = my ymin; ymax = my ymax; }
+	(void) Matrix_getWindowSamplesX (me, xmin, xmax, & ixmin, & ixmax);
+	(void) Matrix_getWindowSamplesY (me, ymin, ymax, & iymin, & iymax);
+	struct Formula_Result result;
+	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
+	if (target == NULL) target = me;
+	for (long irow = iymin; irow <= iymax; irow ++) {
+		for (long icol = ixmin; icol <= ixmax; icol ++) {
+			Formula_run (irow, icol, & result); cherror
+			target -> z [irow] [icol] = result. result.numericResult;
+		}
+	}
+end:
+	iferror return 0;
+	return 1;
+}
+
 FORM (Matrix_formula, L"Matrix Formula", L"Formula...")
 	LABEL (L"label", L"y := y1; for row := 1 to nrow do { x := x1; "
 		"for col := 1 to ncol do { self [row, col] := `formula' ; x := x + dx } y := y + dy }")
@@ -3124,6 +3280,25 @@ DIRECT (Pitch_edit)
 			if (! praat_installEditor (new PitchEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, (structPitch *)OBJECT), IOBJECT))
 				return 0;
 END
+
+int Pitch_formula (Pitch me, const wchar_t *formula, Interpreter *interpreter) {
+	Matrix m = Matrix_create (my xmin, my xmax, my nx, my dx, my x1, 1, my maxnCandidates, my maxnCandidates, 1, 1); cherror
+	for (long iframe = 1; iframe <= my nx; iframe ++) {
+		Pitch_Frame frame = & my frame [iframe];
+		for (long icand = 1; icand <= frame -> nCandidates; icand ++)
+			m -> z [icand] [iframe] = frame -> candidate [icand]. frequency;
+	}
+	Matrix_formula (m, formula, interpreter, NULL); cherror
+	for (long iframe = 1; iframe <= my nx; iframe ++) {
+		Pitch_Frame frame = & my frame [iframe];
+		for (long icand = 1; icand <= frame -> nCandidates; icand ++)
+			frame -> candidate [icand]. frequency = m -> z [icand] [iframe];
+	}
+end:
+	forget (m);
+	iferror return Melder_error1 (L"(Pitch_formula:) Not performed.");
+	return 1;
+}
 
 FORM (Pitch_formula, L"Pitch: Formula", L"Formula...")
 	LABEL (L"ui/editors/AmplitudeTierEditor.h", L"x = time; col = frame; row = candidate (1 = current path); frequency (time, candidate) :=")

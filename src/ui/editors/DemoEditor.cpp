@@ -31,6 +31,7 @@
 
 #include "ui/Interpreter.h"
 #include "ui/machine.h"
+#include "ui/melder_gui.h"
 #include "ui/praatP.h"
 #include "kar/UnicodeData.h"
 

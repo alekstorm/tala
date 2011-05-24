@@ -45,6 +45,8 @@
 
 #include <math.h>
 
+int TableOfReal_formula (I, const wchar_t *expression, Interpreter *interpreter, thou);
+
 void praat_TableOfReal_init (void *klas);
 
 void SSCPs_drawConcentrationEllipses (SSCPs me, Graphics g, double scale,

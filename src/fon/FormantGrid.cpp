@@ -30,7 +30,6 @@
 
 #include "FormantGrid.h"
 #include "PitchTier_to_Sound.h"
-#include "ui/Formula.h"
 
 #include "sys/oo/oo_DESTROY.h"
 #include "FormantGrid_def.h"
@@ -282,46 +281,6 @@ int FormantGrid_playPart (FormantGrid me, double tmin, double tmax, double sampl
 	Sound_playPart (sound, tmin, tmax, playCallback, playClosure);
 end:
 	forget (sound);
-	iferror return 0;
-	return 1;
-}
-
-int FormantGrid_formula_bandwidths (I, const wchar_t *expression, Interpreter *interpreter, thou) {
-	iam (FormantGrid);
-	thouart (FormantGrid);
-	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
-	if (thee == NULL) thee = me;
-	for (long irow = 1; irow <= my formants -> size; irow ++) {
-		RealTier bandwidth = (structRealTier *)thy bandwidths -> item [irow];
-		for (long icol = 1; icol <= bandwidth -> points -> size; icol ++) {
-			struct Formula_Result result;
-			Formula_run (irow, icol, & result); cherror
-			if (result. result.numericResult == NUMundefined)
-				error1 (L"Cannot put an undefined value into the tier.\nFormula not finished.")
-			((RealPoint) bandwidth -> points -> item [icol]) -> value = result. result.numericResult;
-		}
-	}
-end:
-	iferror return 0;
-	return 1;
-}
-
-int FormantGrid_formula_frequencies (I, const wchar_t *expression, Interpreter *interpreter, thou) {
-	iam (FormantGrid);
-	thouart (FormantGrid);
-	Formula_compile (interpreter, me, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
-	if (thee == NULL) thee = me;
-	for (long irow = 1; irow <= my formants -> size; irow ++) {
-		RealTier formant = (structRealTier *)thy formants -> item [irow];
-		for (long icol = 1; icol <= formant -> points -> size; icol ++) {
-			struct Formula_Result result;
-			Formula_run (irow, icol, & result); cherror
-			if (result. result.numericResult == NUMundefined)
-				error1 (L"Cannot put an undefined value into the tier.\nFormula not finished.")
-			((RealPoint) formant -> points -> item [icol]) -> value = result. result.numericResult;
-		}
-	}
-end:
 	iferror return 0;
 	return 1;
 }

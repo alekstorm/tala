@@ -63,9 +63,9 @@ static void Sound_alawDecode (Sound me) {
 #include "Sound.h"
 
 #if defined (macintosh)
-	#include "macport_on.h"
+	#include "sys/macport_on.h"
 	#include <Carbon/Carbon.h>
-	#include "macport_off.h"
+	#include "sys/macport_off.h"
 	typedef struct SndResource {
 		short formatType; /* Always 1, because 2 is obsolete. */
 		short numberOfSynthesizers; /* 1, namely: */
@@ -86,12 +86,12 @@ static void Sound_alawDecode (Sound me) {
 		#define TARGET_API_MAC_CARBON  0
 	#endif
 	#if ! defined (DONT_INCLUDE_QUICKTIME)
-		#include "macport_on.h"
+		#include "sys/macport_on.h"
 		#if defined (macintosh) && defined (__MWERKS__)
 			typedef unsigned char Boolean;
 		#endif
 		#include <QuickTime.h>
-		#include "macport_off.h"
+		#include "sys/macport_off.h"
 	#endif
 #endif
 #define PtoCstr(p)  (p [p [0] + 1] = '\0', (char *) p + 1)

@@ -29,10 +29,9 @@
   djmw 20110308 struc connections -> struct structconnections
 */
 
-#include "FormantGrid_extensions.h"
-#include "ui/Formula.h"
 #include "KlattGrid.h"
 #include "KlattTable.h"
+#include "FormantGrid_extensions.h"
 #include "Resonator.h"
 #include "fon/Pitch_to_PitchTier.h"
 #include "fon/PitchTier_to_Sound.h"
@@ -1915,39 +1914,6 @@ void KlattGrid_remove##Name##Points (KlattGrid me, int formantType, long iforman
 // 6 functions
 KlattGrid_QUERY_ADD_REMOVE(Formant)
 KlattGrid_QUERY_ADD_REMOVE(Bandwidth)
-
-int KlattGrid_formula_frequencies (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter)
-{
-	FormantGrid *fg = KlattGrid_getAddressOfFormantGrid (me, formantType);
-	return FormantGrid_formula_frequencies (*fg, expression, interpreter, NULL);
-}
-
-int KlattGrid_formula_bandwidths (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter)
-{
-	FormantGrid *fg = KlattGrid_getAddressOfFormantGrid (me, formantType);
-	return FormantGrid_formula_bandwidths (*fg, expression, interpreter, NULL);
-}
-
-int KlattGrid_formula_amplitudes (KlattGrid me, int formantType, const wchar_t *expression, Interpreter *interpreter)
-{
-	Ordered *ordered = KlattGrid_getAddressOfAmplitudes (me, formantType);
-	Formula_compile (interpreter, *ordered, expression, kFormula_EXPRESSION_TYPE_NUMERIC, TRUE); cherror
-	for (long irow = 1; irow <= (*ordered) -> size; irow++)
-	{
-		RealTier amplitudes = (*ordered) -> item[irow];
-		for (long icol = 1; icol <= amplitudes -> points -> size; icol++)
-		{
-			struct Formula_Result result;
-			Formula_run (irow, icol, & result); cherror
-			if (result. result.numericResult == NUMundefined)
-				error1 (L"Cannot put an undefined value into the tier.\nFormula not finished.")
-			((RealPoint) amplitudes -> points -> item [icol]) -> value = result. result.numericResult;
-		}
-	}
-end:
-	iferror return 0;
-	return 1;
-}
 
 double KlattGrid_getAmplitudeAtTime (KlattGrid me, int formantType, long iformant, double t)
 {

@@ -27,6 +27,7 @@
 #include "dwtools/ICA.h"
 #include "dwtools/PCA.h"
 #include "fon/Sound.h"
+#include "ui/Interpreter.h"
 
 extern "C" void praat_SSCP_as_TableOfReal_init (void *klas);
 extern "C" void praat_TableOfReal_init (void *klas);
@@ -46,6 +47,55 @@ DO
 		GET_INTEGER (L"Number of matrices"), GET_INTEGER (L"First is positive definite"), GET_REAL (L"Sigma")), GET_STRING (L"Name"))) return 0;
 END
 
+CrossCorrelationTable CrossCorrelationTable_createSimple (wchar_t *covars, wchar_t *centroid, long numberOfSamples)
+{
+	long dimension = Melder_countTokens (centroid);
+	long ncovars = Melder_countTokens (covars);
+	long ncovars_wanted = dimension * (dimension + 1) / 2;
+	if (ncovars != ncovars_wanted) return (structCrossCorrelationTable *)Melder_errorp1 (L"The number of matrix elements and the number of "
+		"centroid elements are not in concordance. There should be \"d(d+1)/2\" matrix values and \"d\" centroid values.");
+
+	CrossCorrelationTable me = CrossCorrelationTable_create (dimension); cherror
+
+	// Construct the full matrix from the upper-diagonal elements
+
+	{
+		long inum = 1, irow = 1, icol, nmissing, inumc;
+		for (wchar_t *token = Melder_firstToken (covars); token != NULL && inum <= ncovars_wanted; token = Melder_nextToken (), inum++)
+		{
+			double number;
+			nmissing = (irow - 1) * irow / 2;
+			inumc = inum + nmissing;
+			irow = (inumc - 1) / dimension + 1;
+			icol = ((inumc - 1) % dimension) + 1;
+			if (! Interpreter_numericExpression_FIXME (token, &number))
+			{
+				Melder_error5 (L"CrossCorrelationTable: item ", Melder_integer (inum), L" \"", token, L"\"is not a number.");
+				goto end;
+			}
+			my data[irow][icol] = my data[icol][irow] = number;
+			if (icol == dimension) irow++;
+		}
+
+
+		inum = 1;
+		for (wchar_t *token = Melder_firstToken (centroid); token != NULL && inum <= dimension; token = Melder_nextToken (), inum++)
+		{
+			double number;
+			if (! Interpreter_numericExpression_FIXME (token, &number))
+			{
+				Melder_error5 (L"Centroid: item ", Melder_integer (inum), L" \"", token, L"\"is not a number.");
+				goto end;
+			}
+			my centroid[inum] = number;
+		}
+		my numberOfObservations = numberOfSamples;
+	}
+end:
+	if (Melder_hasError ()) forget (me);
+	return me;
+}
+
 FORM (CrossCorrelationTable_createSimple, L"Create simple CrossCorrelationTable", 0)
 	WORD (L"Name", L"ct")
 	SENTENCE (L"Cross correlations", L"1.0 0.0 1.0")
@@ -56,6 +106,42 @@ DO
 	if (! praat_new1 (CrossCorrelationTable_createSimple (GET_STRING (L"Cross correlations"), GET_STRING (L"Centroid"),
 		GET_REAL (L"Number of samples")), GET_STRING (L"Name"))) return 0;
 END
+
+MixingMatrix MixingMatrix_createSimple (long numberOfChannels, long numberOfComponents, wchar_t *elements)
+{
+	long inum = 1, irow, icol, ntokens = Melder_countTokens (elements);
+	if (ntokens == 0) return (structMixingMatrix *)Melder_errorp1 (L"No matrix elements.");
+	long nwanted = numberOfChannels * numberOfComponents;
+
+	MixingMatrix me = MixingMatrix_create (numberOfChannels, numberOfComponents);
+	if (me == NULL) return NULL;
+
+	// Construct the full matrix from the elements
+	double number;
+	for (wchar_t *token = Melder_firstToken (elements); token != NULL && inum <= ntokens; token = Melder_nextToken (), inum++)
+	{
+		irow = (inum - 1) / numberOfComponents + 1;
+		icol = (inum - 1) % numberOfComponents + 1;
+		if (! Interpreter_numericExpression_FIXME (token, &number))
+		{
+			Melder_error5 (L"MixingMatrix: item ", Melder_integer (inum), L" \"", token, L"\"is not a number.");
+			goto end;
+		}
+		my data[irow][icol] = number;
+	}
+	if (ntokens < nwanted)
+	{
+		for (long i = inum; i <= nwanted; i++)
+		{
+			irow = (inum - 1) / numberOfComponents + 1;
+			icol = (inum - 1) % numberOfComponents + 1;
+			my data[irow][icol] = number; // repeat the last number given!
+		}
+	}
+end:
+	if (Melder_hasError ()) forget (me);
+	return me;
+}
 
 FORM (MixingMatrix_createSimple, L"Create simple MixingMatrix", 0)
 	WORD (L"Name", L"mm")

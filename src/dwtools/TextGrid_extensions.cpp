@@ -34,7 +34,6 @@
 #include <ctype.h>
 #include "TextGrid_extensions.h"
 #include "num/NUM2.h"
-#include "ui/praat.h"
 
 struct TIMIT_key {const char *timitLabel, *ipaLabel;} TIMIT_toIpaTable[] =
 {	{"",""},

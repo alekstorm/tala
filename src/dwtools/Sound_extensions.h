@@ -160,8 +160,6 @@ PointProcess Sound_to_PointProcess_getJumps (Sound me, double minimumJump, doubl
 	within time dt
 */
 
-int Sound_filter_part_formula (Sound me, double t1, double t2, const wchar_t *formula, Interpreter *interpreter);
-
 Sound Sound_changeSpeaker (Sound me, double pitchMin, double pitchMax,
 	double formantMultiplier, // > 0
 	double pitchMultiplier, // > 0

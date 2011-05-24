@@ -57,7 +57,6 @@
 #include "TableOfReal_extensions.h"
 #include "TableOfReal_and_Permutation.h"
 #include "dwsys/regularExp.h"
-#include "ui/Formula.h"
 #include "Table_extensions.h"
 
 #define MAX(m,n) ((m) > (n) ? (m) : (n))

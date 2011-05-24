@@ -24,7 +24,6 @@
  */
 
 #include "Sampled.h"
-#include "ui/Interpreter.h"
 
 #ifdef __cplusplus
 	extern "C" {
@@ -197,8 +196,6 @@ void Pitch_step (Pitch me, double step, double precision, double tmin, double tm
 	Take the candidate nearest to targetFrequency,
 	as long as that candidate is in between 0 and my ceiling.
 */
-
-int Pitch_formula (Pitch me, const wchar_t *formula, Interpreter *interpreter);
 
 #ifdef __cplusplus
 	}

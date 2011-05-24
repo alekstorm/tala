@@ -30,7 +30,6 @@
 */
 
 #include "Table_extensions.h"
-#include "ui/GraphicsP.h"
 #include "num/NUM2.h"
 
 /* 
