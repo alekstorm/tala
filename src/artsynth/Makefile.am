@@ -1,8 +1,8 @@
 AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
 AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
-noinst_LIBRARIES = libartsynth.a
-libartsynth_a_SOURCES =	\
+noinst_LTLIBRARIES = libartsynth.la
+libartsynth_la_SOURCES =	\
 	Art_Speaker.cpp \
 	Art_Speaker_Delta.cpp \
 	Art_Speaker_to_VocalTract.cpp \

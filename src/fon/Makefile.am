@@ -1,8 +1,8 @@
 AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
 AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
-noinst_LIBRARIES = libfon.a
-libfon_a_SOURCES = \
+noinst_LTLIBRARIES = libfon.la
+libfon_la_SOURCES = \
 	AmplitudeTier.cpp \
 	AnyTier.cpp \
 	Cochleagram_and_Excitation.cpp \

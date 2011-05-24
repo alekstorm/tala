@@ -1,8 +1,8 @@
 AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
 AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
-noinst_LIBRARIES = libmelder.a
-libmelder_a_SOURCES = \
+noinst_LTLIBRARIES = libmelder.la
+libmelder_la_SOURCES = \
 	melder.cpp \
 	melder_alloc.cpp \
 	melder_atof.cpp \

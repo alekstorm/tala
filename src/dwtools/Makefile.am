@@ -1,8 +1,8 @@
 AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
 AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
-noinst_LIBRARIES = libdwtools.a
-libdwtools_a_SOURCES = \
+noinst_LTLIBRARIES = libdwtools.la
+libdwtools_la_SOURCES = \
 	Activation.cpp \
 	AffineTransform.cpp \
 	Categories.cpp \

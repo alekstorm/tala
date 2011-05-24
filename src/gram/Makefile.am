@@ -1,8 +1,8 @@
 AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
 AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
-noinst_LIBRARIES = libgram.a
-libgram_a_SOURCES = \
+noinst_LTLIBRARIES = libgram.la
+libgram_la_SOURCES = \
 	Network.cpp \
 	OTGrammar.cpp \
 	OTMulti.cpp \

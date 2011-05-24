@@ -76,7 +76,6 @@
 #include "praatP.h"
 #include "kar/UnicodeData.h"
 #include "UiPause.h"
-#include "editors/DemoEditor.h"
 
 static Interpreter *theInterpreter;
 static Data theSource;
@@ -3609,7 +3608,8 @@ static void do_chooseDirectoryStr (void) {
 	}
 end: return;
 }
-static void do_demoWindowTitle (void) {
+// FIXME
+/*static void do_demoWindowTitle (void) {
 	Stackel* n = pop;
 	if (n->content.number == 1) {
 		Stackel* title = pop;
@@ -3761,7 +3761,7 @@ static void do_demoExtraControlKeyPressed (void) {
 		pushNumber (result);
 	}
 end: return;
-}
+}*/
 static long Stackel_getRowNumber (Stackel* row, Data thee) {
 	long result;
 	if (row->which == Stackel_NUMBER) {
@@ -4536,7 +4536,7 @@ case NUMBER_: { pushNumber (f [programPointer]. content.number);
 } break; case CHOOSE_WRITE_FILESTR_: { do_chooseWriteFileStr ();
 } break; case CHOOSE_DIRECTORYSTR_: { do_chooseDirectoryStr ();
 /********** Demo window functions: **********/
-} break; case DEMO_WINDOW_TITLE_: { do_demoWindowTitle ();
+} break; /*case DEMO_WINDOW_TITLE_: { do_demoWindowTitle ();
 } break; case DEMO_SHOW_: { do_demoShow ();
 } break; case DEMO_WAIT_FOR_INPUT_: { do_demoWaitForInput ();
 } break; case DEMO_INPUT_: { do_demoInput ();
@@ -4549,9 +4549,9 @@ case NUMBER_: { pushNumber (f [programPointer]. content.number);
 } break; case DEMO_SHIFT_KEY_PRESSED_: { do_demoShiftKeyPressed ();
 } break; case DEMO_COMMAND_KEY_PRESSED_: { do_demoCommandKeyPressed ();
 } break; case DEMO_OPTION_KEY_PRESSED_: { do_demoOptionKeyPressed ();
-} break; case DEMO_EXTRA_CONTROL_KEY_PRESSED_: { do_demoExtraControlKeyPressed ();
-/********** **********/
-} break; case TRUE_: {
+} break; case DEMO_EXTRA_CONTROL_KEY_PRESSED_: { do_demoExtraControlKeyPressed ();*/
+/********** *********
+} break;*/ case TRUE_: {
 	pushNumber (1.0);
 } break; case FALSE_: {
 	pushNumber (0.0);

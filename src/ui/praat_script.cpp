@@ -185,9 +185,9 @@ int praat_executeCommand (Interpreter *interpreter, wchar_t *command) {
 			(void) praat_executeCommand (interpreter, command + 8);
 			Melder_clearError ();
 		} else if (wcsnequ (command, L"demo ", 5)) {
-			if (! DemoEditor::open ()) return 0;
+			/*if (! DemoEditor::open ()) return 0; // FIXME
 			(void) praat_executeCommand (interpreter, command + 5);
-			DemoEditor::close ();
+			DemoEditor::close ();*/
 		} else if (wcsnequ (command, L"pause ", 6) || wcsequ (command, L"pause")) {
 			if (theCurrentPraatApplication -> batch) return 1;
 			UiPause::begin (theCurrentPraatApplication -> topShell, L"stop or continue", interpreter); iferror return 0;
@@ -238,7 +238,7 @@ int praat_executeCommand (Interpreter *interpreter, wchar_t *command) {
 				return Melder_error4 (Melder_peekUtf8ToWcs (result), L"\nMessage to ", programName, L" not completed.");
 			#endif
 		} else if (wcsnequ (command, L"sendsocket ", 11)) {
-			if (theCurrentPraatObjects != & theForegroundPraatObjects)
+			/*if (theCurrentPraatObjects != & theForegroundPraatObjects) // FIXME
 				return Melder_error1 (L"The script command \"sendsocket\" is not available inside manuals.");
 			wchar_t hostName [61], *q = & hostName [0];
 			const wchar_t *p = command + 11;
@@ -252,7 +252,7 @@ int praat_executeCommand (Interpreter *interpreter, wchar_t *command) {
 				return Melder_error1 (L"Missing command after `sendsocket'.");
 			char *result = sendsocket (Melder_peekWcsToUtf8 (hostName), Melder_peekWcsToUtf8 (p));
 			if (result)
-				return Melder_error4 (Melder_peekUtf8ToWcs (result), L"\nMessage to ", hostName, L" not completed.");
+				return Melder_error4 (Melder_peekUtf8ToWcs (result), L"\nMessage to ", hostName, L" not completed.");*/
 		} else if (wcsnequ (command, L"filedelete ", 11)) {
 			if (theCurrentPraatObjects != & theForegroundPraatObjects)
 				return Melder_error1 (L"The script command \"filedelete\" is not available inside manuals.");

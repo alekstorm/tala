@@ -3,8 +3,8 @@ AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
 SUBDIRS = init editors sendpraat
 
-noinst_LIBRARIES = libui.a
-libui_a_SOURCES = \
+noinst_LTLIBRARIES = libui.la
+libui_la_SOURCES = \
 	Formula.cpp \
 	Graphics_altitude.cpp \
 	Graphics_colour.cpp \

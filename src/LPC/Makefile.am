@@ -1,8 +1,8 @@
 AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
 AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
-noinst_LIBRARIES = libLPC.a
-libLPC_a_SOURCES = \
+noinst_LTLIBRARIES = libLPC.la
+libLPC_la_SOURCES = \
 	Cepstrum.c \
 	Cepstrum_and_Spectrum.c \
 	Cepstrumc.c \

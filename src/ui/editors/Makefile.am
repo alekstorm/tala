@@ -1,8 +1,8 @@
 AM_CFLAGS = $(COMMON) -I @abs_top_srcdir@/src -std=gnu99
 AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
-noinst_LIBRARIES = libeditors.a
-libeditors_a_SOURCES = \
+noinst_LTLIBRARIES = libeditors.la
+libeditors_la_SOURCES = \
 	AmplitudeTierEditor.cpp \
 	ArtwordEditor.cpp \
 	ButtonEditor.cpp \

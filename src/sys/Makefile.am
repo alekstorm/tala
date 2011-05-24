@@ -3,8 +3,8 @@ AM_CPPFLAGS = $(COMMON) -I @abs_top_srcdir@/src
 
 SUBDIRS = melder io
 
-noinst_LIBRARIES = libsys.a
-libsys_a_SOURCES = \
+noinst_LTLIBRARIES = libsys.la
+libsys_la_SOURCES = \
 	Collection.cpp \
 	complex.cpp \
 	Data.cpp \

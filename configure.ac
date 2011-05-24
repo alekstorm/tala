@@ -92,7 +92,7 @@ AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([alarm bzero clock_gettime fesetround floor getcwd gethostbyname gettimeofday memchr memmove memset mkdir pow select setlocale socket sqrt strchr strdup strerror strrchr strstr strtol strtoul utime])
 
-AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 #AC_PROG_SED # FIXME use this when upgraded to 2.60
 
 AC_CONFIG_FILES([Makefile

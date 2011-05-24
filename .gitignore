@@ -1,8 +1,11 @@
 *.o
+*.lo
 *.a
+*.la
 *.in
 *~
 .deps/
+.libs/
 a
 Makefile
 /aclocal.m4
@@ -11,6 +14,8 @@ Makefile
 /configure
 /depcomp
 /install-sh
+/libtool
+/ltmain.sh
 /missing
 /notes
 /stamp-h1

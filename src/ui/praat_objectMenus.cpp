@@ -108,7 +108,7 @@ DIRECT (Info)
 	WHERE (SELECTED) Thing_infoWithId (OBJECT, ID);
 END
 
-DIRECT (Inspect)
+/*DIRECT (Inspect)
 	if (theCurrentPraatObjects -> totalSelection == 0)
 		return Melder_error1 (L"Selection changed!\nNo object selected. Cannot inspect.");
 	if (theCurrentPraatApplication -> batch) {
@@ -117,7 +117,7 @@ DIRECT (Inspect)
 		WHERE (SELECTED)
 			if (! praat_installEditor (new DataEditor (theCurrentPraatApplication -> topShell, ID_AND_FULL_NAME, OBJECT), IOBJECT)) return 0;
 	}
-END
+END*/
 
 /********** The fixed menus. **********/
 
@@ -178,14 +178,15 @@ DO
 	Melder_debug = GET_INTEGER (L"Debug option");
 END
 
-DIRECT (praat_editButtons)
+// FIXME
+/*DIRECT (praat_editButtons)
 	if (theButtonEditor) {
 		theButtonEditor->raise ();
 	} else {
 		theButtonEditor = new ButtonEditor (theCurrentPraatApplication -> topShell);
 		theButtonEditor->setDestroyCallback (cb_ButtonEditor_destroy, NULL);
 	}
-END
+END*/
 
 FORM (praat_addMenuCommand, L"Add menu command", L"Add menu command...")
 	WORD (L"Window", L"Objects")
@@ -462,13 +463,13 @@ void praat_addFixedButtons (GuiObject form) {
 	}
 	praat_addFixedButtonCommand (buttons1, L"Rename...", DO_Rename, 8, 70);
 	praat_addFixedButtonCommand (buttons1, L"Copy...", DO_Copy, 98, 70);
-	praat_addFixedButtonCommand (buttons2, L"Inspect", DO_Inspect, 8, 40);
+	//praat_addFixedButtonCommand (buttons2, L"Inspect", DO_Inspect, 8, 40); // FIXME
 	praat_addFixedButtonCommand (buttons2, L"Info", DO_Info, 98, 40);
 	praat_addFixedButtonCommand (buttons3, L"Remove", DO_Remove, 8, 10);
 #else
 	praat_addFixedButtonCommand (form, L"Rename...", DO_Rename, 8, 70);
 	praat_addFixedButtonCommand (form, L"Copy...", DO_Copy, 98, 70);
-	praat_addFixedButtonCommand (form, L"Inspect", DO_Inspect, 8, 40);
+	//praat_addFixedButtonCommand (form, L"Inspect", DO_Inspect, 8, 40); // FIXME
 	praat_addFixedButtonCommand (form, L"Info", DO_Info, 98, 40);
 	praat_addFixedButtonCommand (form, L"Remove", DO_Remove, 8, 10);
 #endif
@@ -553,7 +554,7 @@ void praat_addMenus (GuiObject bar) {
 	#elif motif
 		if (button) XtVaGetValues (button, XmNsubMenuId, & preferencesMenu, NULL);
 	#endif
-	praat_addMenuCommand (L"Objects", L"Preferences", L"Buttons...", 0, praat_UNHIDABLE, DO_praat_editButtons);   /* Cannot be hidden. */
+	//praat_addMenuCommand (L"Objects", L"Preferences", L"Buttons...", 0, praat_UNHIDABLE, DO_praat_editButtons); // FIXME  /* Cannot be hidden. */
 	praat_addMenuCommand (L"Objects", L"Preferences", L"-- encoding prefs --", 0, 0, 0);
 	praat_addMenuCommand (L"Objects", L"Preferences", L"Text reading preferences...", 0, 0, DO_TextInputEncodingSettings);
 	praat_addMenuCommand (L"Objects", L"Preferences", L"Text writing preferences...", 0, 0, DO_TextOutputEncodingSettings);
