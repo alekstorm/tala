@@ -54,11 +54,9 @@
 
 static void commonCallback (GUI_ARGS) {
 	EditorCommand *cmd = (EditorCommand *)void_me;
-	#if gtk
-		if (G_OBJECT_TYPE (w) == GTK_TYPE_RADIO_MENU_ITEM && ! gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (w))) {
-			return;
-		}
-	#endif
+	if (G_OBJECT_TYPE (w) == GTK_TYPE_RADIO_MENU_ITEM && ! gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (w))) {
+		return;
+	}
 	if (cmd->_editor && cmd->_editor->isScriptable() && ! wcsstr (cmd->_itemTitle, L"...")) {
 		UiForm::history.write (L"\n");
 		UiForm::history.write (cmd->_itemTitle);
@@ -185,20 +183,15 @@ Editor::Editor (GuiObject parent, int x, int y, int width, int height, const wch
 	  _publishClosure(NULL),
 	  _publish2Callback(NULL),
 	  _publish2Closure(NULL) {
-	#if gtk
-		GdkScreen *screen = gdk_screen_get_default ();
-		if (parent != NULL) {
-			GuiObject parent_win = gtk_widget_get_ancestor (parent, GTK_TYPE_WINDOW);
-			if (parent_win != NULL) {
-				screen = gtk_window_get_screen (GTK_WINDOW (parent_win));
-			}
+	GdkScreen *screen = gdk_screen_get_default ();
+	if (parent != NULL) {
+		GuiObject parent_win = gtk_widget_get_ancestor (parent, GTK_TYPE_WINDOW);
+		if (parent_win != NULL) {
+			screen = gtk_window_get_screen (GTK_WINDOW (parent_win));
 		}
-		int screenWidth = gdk_screen_get_width (screen);
-		int screenHeight = gdk_screen_get_height (screen);
-	#elif motif
-		int screenWidth = WidthOfScreen (DefaultScreenOfDisplay (XtDisplay (parent)));
-		int screenHeight = HeightOfScreen (DefaultScreenOfDisplay (XtDisplay (parent)));
-	#endif
+	}
+	int screenWidth = gdk_screen_get_width (screen);
+	int screenHeight = gdk_screen_get_height (screen);
 	int left, right, top, bottom;
 	screenHeight -= Machine_getTitleBarHeight ();
 	if (width < 0) width += screenWidth;
@@ -347,12 +340,8 @@ void Editor::goAway () {
 	 */
 	forget (_menus);
 	if (_shell) {
-		#if gtk
-			Melder_assert (GTK_IS_WIDGET (_shell));
-			gtk_widget_destroy (_shell);
-		#else
-			XtDestroyWidget (_shell);
-		#endif
+		Melder_assert (GTK_IS_WIDGET (_shell));
+		gtk_widget_destroy (_shell);
 	}
 	if (_destroyCallback) _destroyCallback (this, _destroyClosure);
 	forget (_previousData);
@@ -379,12 +368,7 @@ int Editor::menu_cb_undo (EDITOR_ARGS) {
 	if (wcsnequ (editor_me->_undoText, L"Undo", 4)) editor_me->_undoText [0] = 'R', editor_me->_undoText [1] = 'e';
 	else if (wcsnequ (editor_me->_undoText, L"Redo", 4)) editor_me->_undoText [0] = 'U', editor_me->_undoText [1] = 'n';
 	else wcscpy (editor_me->_undoText, L"Undo?");
-	#if gtk
-		gtk_label_set_label (GTK_LABEL(gtk_bin_get_child(GTK_BIN(editor_me->_undoButton))), Melder_peekWcsToUtf8 (editor_me->_undoText));
-	#elif motif
-		char *text_utf8 = Melder_peekWcsToUtf8 (editor_me->_undoText);
-		XtVaSetValues (editor_me->_undoButton, motif_argXmString (XmNlabelString, text_utf8), NULL);
-	#endif
+	gtk_label_set_label (GTK_LABEL(gtk_bin_get_child(GTK_BIN(editor_me->_undoButton))), Melder_peekWcsToUtf8 (editor_me->_undoText));
 	/*
 	 * Send a message to myself (e.g., I will redraw myself).
 	 */
@@ -493,12 +477,7 @@ void Editor::save (const wchar_t *text) {
 	if (! _undoButton) return;
 	GuiObject_setSensitive (_undoButton, True);
 	swprintf (_undoText, 100, L"Undo %ls", text);
-	#if gtk
-		gtk_label_set_label (GTK_LABEL(gtk_bin_get_child(GTK_BIN(_undoButton))), Melder_peekWcsToUtf8 (_undoText));
-	#elif motif
-		char *text_utf8 = Melder_peekWcsToUtf8 (_undoText);
-		XtVaSetValues (_undoButton, motif_argXmString (XmNlabelString, text_utf8), NULL);
-	#endif
+	gtk_label_set_label (GTK_LABEL(gtk_bin_get_child(GTK_BIN(_undoButton))), Melder_peekWcsToUtf8 (_undoText));
 }
 
 void Editor::openPraatPicture () {

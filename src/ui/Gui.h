@@ -25,28 +25,9 @@
 
 #include "sys/Collection.h"
 
-#if defined (UNIX)
-	#define gtk 1
-	#define motif 0
-#else
-	#define gtk 0
-	#define motif 1
-#endif
-
-#if gtk
-	#include <gtk/gtk.h>
-	#include <gdk/gdk.h>
-	#include <cairo/cairo.h>
-#elif defined (macintosh)
-	#include "sys/macport_on.h"
-	#include <Carbon/Carbon.h>
-	#include "sys/macport_off.h"
-#elif defined (_WIN32)
-	#define Polygon PolygonNotWin
-	#include <windows.h>
-	#include <windowsx.h>
-	#undef Polygon
-#endif
+#include <gtk/gtk.h>
+#include <gdk/gdk.h>
+#include <cairo/cairo.h>
 
 #ifdef __cplusplus
 	extern "C" {
@@ -78,195 +59,13 @@
 #define Gui_AUTOMATIC  -32768
 #define Gui_HOMOGENEOUS  1
 
-#if gtk
-	typedef GMainContext *AppContext;
-	typedef void *XtPointer;
-	typedef gint Dimension;
-	typedef gboolean Boolean;
-	#define True 1
-	#define False 0
-	typedef GtkWidget *GuiObject;
-#elif motif
-	typedef struct structGuiObject *GuiObject;   // Opaque
-
-	/*
-	 * Definitions of X11 types.
-	 */
-	#if defined (macintosh)
-		typedef struct EventRecord XEvent;
-	#else
-		typedef MSG XEvent;
-	#endif
-	typedef unsigned char Boolean;
-	typedef long Cardinal;
-	typedef unsigned int Dimension;
-	typedef int Position;
-	typedef long Window;
-	typedef char *String;
-	typedef struct Display Display;
-	/*typedef long Time;*/
-	typedef long Atom;
-	typedef struct { int /* elsewhere: char* */ name; long value; } Arg, *ArgList;
-
-	/*
-	 * Declarations of X11 functions.
-	 */
-	void XMapRaised (int displayDummy, Window window);
-	#define DefaultScreenOfDisplay(d)  0
-	int WidthOfScreen (int screen);
-	int HeightOfScreen (int screen);
-
-	/*
-	 * Definitions of Xt types.
-	 */
-	typedef void *XtPointer;
-	typedef GuiObject *GuiObjectList;
-	typedef void *XtAppContext;
-	typedef XtAppContext Context;
-	typedef long XtWorkProcId, XtIntervalId;
-	typedef void (*XtCallbackProc) (GuiObject w, XtPointer client_data, XtPointer call_data);
-	typedef Boolean (*XtWorkProc) (XtPointer client_data);
-	typedef void (*XtTimerCallbackProc) (XtPointer, XtIntervalId *);
-	typedef unsigned long WidgetClass;
-	#define False 0
-	#define True 1
-
-	/*
-	 * Declarations of Xt functions.
-	 */
-	void XtAddCallback (GuiObject w, int kind, XtCallbackProc proc, XtPointer closure);
-	XtIntervalId XtAppAddTimeOut (XtAppContext appContext, unsigned long interval,
-		XtTimerCallbackProc timerProc, XtPointer closure);
-	XtWorkProcId XtAppAddWorkProc (XtAppContext appContext, XtWorkProc workProc, XtPointer closure);
-	void XtAppMainLoop (XtAppContext appContext);
-	void XtAppNextEvent (XtAppContext appContext, XEvent *event);
-	#define XtCalloc  Melder_calloc
-	#define XtClass(w)  (w) -> widgetClass
-	void XtDestroyWidget (GuiObject w);
-	void XtDispatchEvent (XEvent *event);
-	#define XtDisplay(w)  0
-	GuiObject XtInitialize (void *dum1, const char *name,
-		void *dum2, int dum3, unsigned int *argc, char **argv);
-	Boolean XtIsManaged (GuiObject w);
-	Boolean XtIsShell (GuiObject w);
-	void XtManageChild (GuiObject w);
-	void XtManageChildren (GuiObjectList children, Cardinal num_children);
-	void XtMapWidget (GuiObject w);
-	void XtNextEvent (XEvent *event);
-	void XtRemoveTimeOut (XtIntervalId id);
-	void XtRemoveWorkProc (XtWorkProcId id);
-	void XtSetKeyboardFocus (GuiObject tree, GuiObject descendant);
-	void XtSetSensitive (GuiObject w, Boolean value);
-	void XtUnmanageChild (GuiObject self);
-	void XtUnmanageChildren (GuiObjectList children, Cardinal num_children);
-	GuiObject XtVaAppInitialize (XtAppContext *appContext, const char *name,
-		void *dum1, int dum2, unsigned int *argc, char **argv, void *dum3, void *dum4);
-	GuiObject XtVaCreateWidget (const char *name, int widgetClass, GuiObject parent, ...);
-	GuiObject XtVaCreateManagedWidget (const char *name, int widgetClass, GuiObject parent, ...);
-	void XtVaGetValues (GuiObject w, ...);
-	void XtVaSetValues (GuiObject w, ...);
-	Window XtWindow (GuiObject w);
-	long Gui_getNumberOfMotifWidgets (void);
-
-	/*
-	 * Xm widget classes.
-	 */
-	#define xmBulletinBoardWidgetClass  0x00000001
-	#define xmDrawingAreaWidgetClass  0x00000002
-	#define xmFormWidgetClass  0x00000004
-	#define xmFrameWidgetClass  0x00000008
-	#define xmLabelWidgetClass  0x00000010
-	#define xmListWidgetClass  0x00000020
-	#define xmMenuBarWidgetClass  0x00000040
-	#define xmPulldownMenuWidgetClass  0x00000100
-	#define xmPushButtonWidgetClass  0x00000200
-	#define xmRowColumnWidgetClass  0x00000400
-	#define xmScaleWidgetClass  0x00000800
-	#define xmScrollBarWidgetClass  0x00001000
-	#define xmScrolledWindowWidgetClass  0x00002000
-	#define xmSeparatorWidgetClass  0x00004000
-	#define xmShellWidgetClass  0x00008000
-	#define xmTextWidgetClass  0x00010000
-	#define xmToggleButtonWidgetClass  0x00020000
-	#define xmCascadeButtonWidgetClass  0x00040000
-	#define topLevelShellWidgetClass  xmShellWidgetClass
-	#define xmPushButtonGadgetClass  xmPushButtonWidgetClass
-	#define xmCascadeButtonGadgetClass  xmCascadeButtonWidgetClass
-	#define xmSeparatorGadgetClass  xmSeparatorWidgetClass
-	#define xmToggleButtonGadgetClass  xmToggleButtonWidgetClass
-
-	/*
-	 * Xm resource names.
-	 */
-	enum {
-		XmNnull,
-		#define motif_RESOURCE(xxx)  xxx,
-		#include "motifEmulator_resources.h"
-		#undef motif_RESOURCE
-		XmNend
-	};
-
-	/*
-	 * Xm enumerated types.
-	 * All start at 1, because we have to reserve zero for the dynamic default value.
-	 * This is important for the resources set during creation.
-	 */
-	enum /* dialog styles */ { XmDIALOG_MODELESS = 1, XmDIALOG_FULL_APPLICATION_MODAL };
-	enum /* orientation */ { XmVERTICAL = 1, XmHORIZONTAL };
-	enum /* attachment */ { XmATTACH_NONE = 1, XmATTACH_FORM, XmATTACH_POSITION };
-	enum /* rowColumn types */ { XmWORK_AREA = 1, XmMENU_BAR };
-	enum /* delete responses */ { XmDESTROY = 1, XmUNMAP, XmDO_NOTHING };
-	enum /* indicator types */ { XmONE_OF_MANY = 1, XmN_OF_MANY };
-
-	/*
-	 * Declarations of Xm functions.
-	 */
-	void XmAddWMProtocolCallback (GuiObject shell, Atom protocol, XtCallbackProc callback, char *closure);
-	GuiObject XmCreateBulletinBoard (GuiObject, const char *, ArgList, int);  
-	GuiObject XmCreateBulletinBoardDialog (GuiObject, const char *, ArgList, int);  
-	GuiObject XmCreateCascadeButton (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateCascadeButtonGadget (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateDialogShell (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateForm (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateFormDialog (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateMenuBar (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreatePulldownMenu (GuiObject, const char *, ArgList, int);   
-	GuiObject XmCreateRadioBox (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateRowColumn (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateScale (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateScrolledWindow (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateScrollBar (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateSeparator (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateSeparatorGadget (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateShell (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateToggleButton (GuiObject, const char *, ArgList, int);
-	GuiObject XmCreateToggleButtonGadget (GuiObject, const char *, ArgList, int);   
-	void XmScaleGetValue (GuiObject widget, int *value_return);
-	void XmScaleSetValue (GuiObject widget, int value);
-	void XmScrollBarGetValues (GuiObject me, int *value, int *sliderSize, int *increment, int *pageIncrement);
-	void XmScrollBarSetValues (GuiObject me, int value, int sliderSize, int increment, int pageIncrement, Boolean notify);
-	Boolean XmToggleButtonGadgetGetState (GuiObject widget);
-	#define XmToggleButtonGetState XmToggleButtonGadgetGetState
-	void XmToggleButtonGadgetSetState (GuiObject widget, Boolean value, Boolean notify);
-	#define XmToggleButtonSetState XmToggleButtonGadgetSetState
-	void XmUpdateDisplay (GuiObject dummy);
-
-	#if defined (macintosh)
-		#define motif_argXmString(r,t)  r, t
-		void motif_mac_defaultFont (void);
-		void GuiMac_clipOn (GuiObject widget);   /* Clip to the inner area of a drawingArea (for drawing);
-			used by graphics drivers for Macintosh (clipping is automatic for Xwindows). */
-		int GuiMac_clipOn_graphicsContext (GuiObject me, void *graphicsContext);
-		void GuiMac_clipOff (void);
-		void motif_mac_setUserMessageCallbackA (int (*userMessageCallback) (char *message));
-		void motif_mac_setUserMessageCallbackW (int (*userMessageCallback) (wchar_t *message));
-	#elif defined (_WIN32)
-		#define motif_argXmString(r,t)  r, t
-		int motif_win_mouseStillDown (void);
-		void motif_win_setUserMessageCallback (int (*userMessageCallback) (void));
-	#endif
-
-#endif
+typedef GMainContext *AppContext;
+typedef void *XtPointer;
+typedef gint Dimension;
+typedef gboolean Boolean;
+#define True 1
+#define False 0
+typedef GtkWidget *GuiObject;
 
 /* Button layout and state: */
 #define GuiMenu_INSENSITIVE  (1 << 8)
@@ -423,9 +222,7 @@ void GuiList_setDoubleClickCallback (GuiObject me, void (*callback) (void *boss,
 
 GuiObject GuiMenuBar_addMenu (GuiObject bar, const wchar_t *title, long flags);
 GuiObject GuiMenuBar_addMenu2 (GuiObject bar, const wchar_t *title, long flags, GuiObject *menuTitle);
-#if gtk
 GuiObject GuiMenuBar_addMenu3 (GuiObject parent, const wchar_t *title, long flags, GuiObject *button);
-#endif
 
 /* Flags is a combination of the above defines. */
 
@@ -448,10 +245,8 @@ GuiObject GuiRadioButton_createShown (GuiObject parent, int left, int right, int
 bool GuiRadioButton_getValue (GuiObject widget);
 void GuiRadioButton_setValue (GuiObject widget, bool value);
 
-#if gtk
 void * GuiRadioButton_getGroup (GuiObject widget);
 void GuiRadioButton_setGroup (GuiObject widget, void *group);
-#endif
 
 typedef struct structGuiTextEvent {
 	GuiObject text;

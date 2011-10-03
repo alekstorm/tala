@@ -45,7 +45,7 @@ int Graphics_mouseStillDown (I) {
 			if (mouseDown) return TRUE;
 			else { mouseDown = true; return FALSE; }
 		#elif win
-			return motif_win_mouseStillDown ();
+			// FIXME
 		#elif mac
 			return StillDown ();
 		#endif

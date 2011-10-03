@@ -37,84 +37,12 @@ void *Melder_appContext;   /* XtAppContext* */
 void *Melder_topShell;   /* GuiObject */
 
 static int waitWhileProgress (double progress, const wchar_t *message, GuiObject dia, GuiObject scale, GuiObject label1, GuiObject label2, GuiObject cancelButton) {
-	#if gtk
-		// Wait for all pending events to be processed. If anybody knows how to inspect GTK's
-		// event queue for specific events, dump the code here, please.
-		// Until then, the button click attaches a g_object data key named "pressed" to the cancelButton
-		// which this function reads out in order to tell whether interruption has occurred
-		while (gtk_events_pending ())
-			gtk_main_iteration ();
-	#elif defined (macintosh)
-	{
-		EventRecord event;
-		while (GetNextEvent (mDownMask, & event)) {
-			WindowPtr macWindow;
-			int part = FindWindow (event. where, & macWindow);
-			if (part == inContent) {
-				if (GetWindowKind (macWindow) == userKind) {
-					SetPortWindowPort (macWindow);
-					GlobalToLocal (& event. where);
-					ControlPartCode controlPart;
-					ControlHandle macControl = FindControlUnderMouse (event. where, macWindow, & controlPart);
-					if (macControl) {
-						GuiObject control = (GuiObject) GetControlReference (macControl);
-						if (control == cancelButton) {
-							FlushEvents (everyEvent, 0);
-							XtUnmanageChild (dia);
-							return 0;
-						} else {
-							break;
-						}
-					} else {
-						XtDispatchEvent ((XEvent *) & event);
-					}
-				} else {
-					XtDispatchEvent ((XEvent *) & event);
-				}
-			} else {
-				XtDispatchEvent ((XEvent *) & event);
-			}
-		}
-		do { XtNextEvent ((XEvent *) & event); XtDispatchEvent ((XEvent *) & event); } while (event.what);
-	}
-	#elif defined (_WIN32)
-	{
-		XEvent event;
-		while (PeekMessage (& event, 0, 0, 0, PM_REMOVE)) {
-			if (event. message == WM_KEYDOWN) {
-				/*
-				 * Ignore all key-down messages, except Escape.
-				 */
-				if (LOWORD (event. wParam) == VK_ESCAPE) {
-					XtUnmanageChild (dia);
-					return 0;
-				}
-			} else if (event. message == WM_LBUTTONDOWN) {
-				/*
-				 * Ignore all mouse-down messages, except click in Interrupt button.
-				 */
-				GuiObject me = (GuiObject) GetWindowLong (event. hwnd, GWL_USERDATA);
-				if (me == cancelButton) {
-					XtUnmanageChild (dia);
-					return 0;
-				}
-			} else if (event. message != WM_SYSKEYDOWN) {
-				/*
-				 * Process paint messages etc.
-				 */
-				DispatchMessage (& event);
-			}
-		}
-	}
-	#else
-	{
-		XEvent event;
-		if (XCheckTypedWindowEvent (XtDisplay (cancelButton), XtWindow (cancelButton), ButtonPress, & event)) {
-			XtUnmanageChild (dia);
-			return 0;
-		}
-	}
-	#endif
+	// Wait for all pending events to be processed. If anybody knows how to inspect GTK's
+	// event queue for specific events, dump the code here, please.
+	// Until then, the button click attaches a g_object data key named "pressed" to the cancelButton
+	// which this function reads out in order to tell whether interruption has occurred
+	while (gtk_events_pending ())
+		gtk_main_iteration ();
 	if (progress >= 1.0) {
 		GuiObject_hide (dia);
 	} else {
@@ -132,23 +60,17 @@ static int waitWhileProgress (double progress, const wchar_t *message, GuiObject
 			GuiLabel_setString (label1, message);
 			GuiLabel_setString (label2, L"");
 		}
-		#if gtk
-			// update progress bar
-			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (scale), progress);
-			while (gtk_events_pending ())
-				gtk_main_iteration ();
-			// check whether cancelButton has the "pressed" key set
-			if (g_object_steal_data (G_OBJECT (cancelButton), "pressed"))
-				return 0;
-		#else
-			XmScaleSetValue (scale, floor (progress * 1000.0));
-			XmUpdateDisplay (dia);
-		#endif
+		// update progress bar
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (scale), progress);
+		while (gtk_events_pending ())
+			gtk_main_iteration ();
+		// check whether cancelButton has the "pressed" key set
+		if (g_object_steal_data (G_OBJECT (cancelButton), "pressed"))
+			return 0;
 	}
 	return 1;
 }
 
-#if gtk
 static void progress_dia_close (void *wid) {
 	g_object_set_data (G_OBJECT (* (GuiObject *) wid), "pressed", (gpointer) 1);
 }
@@ -156,16 +78,10 @@ static void progress_cancel_btn_press (void *wid, GuiButtonEvent event) {
 	(void) event;
 	g_object_set_data (G_OBJECT (* (GuiObject *) wid), "pressed", (gpointer) 1);
 }
-#endif
 
 static void _Melder_dia_init (GuiObject *dia, GuiObject *scale, GuiObject *label1, GuiObject *label2, GuiObject *cancelButton) {
 	*dia = GuiDialog_create ((GtkWidget*)Melder_topShell, 200, 100, Gui_AUTOMATIC, Gui_AUTOMATIC, L"Work in progress",
-		#if gtk
-			progress_dia_close, cancelButton,
-		#else
-			NULL, NULL,
-		#endif
-		0);
+			progress_dia_close, cancelButton, 0);
 
 	GuiObject form = *dia;
 	GuiObject buttons = GuiDialog_getButtonArea (*dia);
@@ -173,30 +89,13 @@ static void _Melder_dia_init (GuiObject *dia, GuiObject *scale, GuiObject *label
 	*label1 = GuiLabel_createShown (form, 3, 403, 0, Gui_AUTOMATIC, L"label1", 0);
 	*label2 = GuiLabel_createShown (form, 3, 403, 30, Gui_AUTOMATIC, L"label2", 0);
 
-	#if gtk
-		*scale = gtk_progress_bar_new ();
-		gtk_container_add (GTK_CONTAINER (form), *scale);
-		GuiObject_show (*scale);
-	#elif motif
-		*scale = XmCreateScale (*dia, "scale", NULL, 0);
-		XtVaSetValues (*scale, XmNy, 70, XmNwidth, 400, XmNminimum, 0, XmNmaximum, 1000,
-			XmNorientation, XmHORIZONTAL,
-			#if ! defined (macintosh)
-				XmNscaleHeight, 20,
-			#endif
-			NULL);
-		GuiObject_show (*scale);
-	#endif
+	*scale = gtk_progress_bar_new ();
+	gtk_container_add (GTK_CONTAINER (form), *scale);
+	GuiObject_show (*scale);
 
 	#if ! defined (macintoshXXX)
 		*cancelButton = GuiButton_createShown (buttons, 0, 400, 170, Gui_AUTOMATIC,
-			L"Interrupt",
-			#if gtk
-				progress_cancel_btn_press, cancelButton,
-			#else
-				NULL, NULL,
-			#endif
-			0);
+			L"Interrupt", progress_cancel_btn_press, cancelButton, 0);
 	#endif
 }
 
@@ -280,17 +179,10 @@ static char * theMessageFund = NULL;
 
 static void gui_fatal (wchar_t *message) {
 	free (theMessageFund);
-	#if gtk
-		GuiObject dialog = gtk_message_dialog_new (GTK_WINDOW (Melder_topShell), GTK_DIALOG_DESTROY_WITH_PARENT,
-			GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", Melder_peekWcsToUtf8 (message));
-		gtk_dialog_run (GTK_DIALOG (dialog));
-		gtk_widget_destroy (dialog);
-	#elif defined (macintosh)
-		mac_message (kAlertStopAlert, message);
-		SysError (11);
-	#elif defined (_WIN32)
-		MessageBox (NULL, message, L"Fatal error", MB_OK);
-	#endif
+	GuiObject dialog = gtk_message_dialog_new (GTK_WINDOW (Melder_topShell), GTK_DIALOG_DESTROY_WITH_PARENT,
+		GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", Melder_peekWcsToUtf8 (message));
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
 }
 
 static void gui_error (wchar_t *message) {
@@ -298,47 +190,26 @@ static void gui_error (wchar_t *message) {
 	if (memoryIsLow) {
 		free (theMessageFund);
 	}
-	#if gtk
-		GuiObject dialog = gtk_message_dialog_new (GTK_WINDOW (Melder_topShell), GTK_DIALOG_DESTROY_WITH_PARENT,
-			GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", Melder_peekWcsToUtf8 (message));
-		gtk_dialog_run (GTK_DIALOG (dialog));
-		gtk_widget_destroy (dialog);
-	#elif defined (macintosh)
-		mac_message (kAlertStopAlert, message);
-		XmUpdateDisplay (0);
-	#elif defined (_WIN32)
-		MessageBox (NULL, message, L"Message", MB_OK);
-	#endif
+	GuiObject dialog = gtk_message_dialog_new (GTK_WINDOW (Melder_topShell), GTK_DIALOG_DESTROY_WITH_PARENT,
+		GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s", Melder_peekWcsToUtf8 (message));
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
 	if (memoryIsLow) {
 		theMessageFund = (char*)malloc (theMessageFund_SIZE);
 		if (theMessageFund == NULL) {
-			#if gtk
-				GuiObject dialog = gtk_message_dialog_new (GTK_WINDOW (Melder_topShell), GTK_DIALOG_DESTROY_WITH_PARENT,
-					GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Praat is very low on memory.\nSave your work and quit Praat.\nIf you don't do that, Praat may crash.");
-				gtk_dialog_run (GTK_DIALOG (dialog));
-				gtk_widget_destroy (dialog);
-			#elif defined (macintosh)
-				mac_message (kAlertStopAlert, L"Praat is very low on memory.\nSave your work and quit Praat.\nIf you don't do that, Praat may crash.");
-				XmUpdateDisplay (0);
-			#elif defined (_WIN32)
-				MessageBox (NULL, L"Praat is very low on memory.\nSave your work and quit Praat.\nIf you don't do that, Praat may crash.", L"Message", MB_OK);
-			#endif
+			GuiObject dialog = gtk_message_dialog_new (GTK_WINDOW (Melder_topShell), GTK_DIALOG_DESTROY_WITH_PARENT,
+				GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Praat is very low on memory.\nSave your work and quit Praat.\nIf you don't do that, Praat may crash.");
+			gtk_dialog_run (GTK_DIALOG (dialog));
+			gtk_widget_destroy (dialog);
 		}
 	}
 }
 
 static void gui_warning (wchar_t *message) {
-	#if gtk
-		GuiObject dialog = gtk_message_dialog_new (GTK_WINDOW (Melder_topShell), GTK_DIALOG_DESTROY_WITH_PARENT,
-			GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "%s", Melder_peekWcsToUtf8 (message));
-		gtk_dialog_run (GTK_DIALOG (dialog));
-		gtk_widget_destroy (dialog);
-	#elif defined (macintosh)
-		mac_message (kAlertNoteAlert, message);
-		XmUpdateDisplay (0);
-	#elif defined (_WIN32)
-		MessageBox (NULL, message, L"Warning", MB_OK);
-	#endif
+	GuiObject dialog = gtk_message_dialog_new (GTK_WINDOW (Melder_topShell), GTK_DIALOG_DESTROY_WITH_PARENT,
+		GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "%s", Melder_peekWcsToUtf8 (message));
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
 }
 
 void MelderGui_create (void *appContext, void *parent) {

@@ -78,9 +78,7 @@
 	#include <unistd.h>
 #endif
 
-#if gtk
-	#include <gdk/gdkx.h>
-#endif
+#include <gdk/gdkx.h>
 
 #define EDITOR  theCurrentPraatObjects -> list [IOBJECT]. editors
 
@@ -367,11 +365,6 @@ bool praat_newWithFile1 (I, const wchar_t *myName, MelderFile file) {
 	++ theCurrentPraatObjects -> uniqueId;
 
 	if (! theCurrentPraatApplication -> batch) {   /* Put a new object on the screen, at the bottom of the list. */
-		#ifdef UNIX
-			#if motif
-				XtVaSetValues (praatList_objects, XmNvisibleItemCount, theCurrentPraatObjects -> n + 2, NULL);
-			#endif
-		#endif
 		MelderString listName = { 0 };
 		MelderString_append3 (& listName, Melder_integer (theCurrentPraatObjects -> uniqueId), L". ", name.string);
 		GuiList_insertItem (praatList_objects, listName.string, theCurrentPraatObjects -> n);
@@ -854,68 +847,35 @@ static void gui_cb_quit (GUI_ARGS) {
 	DO_Quit (NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
-#if gtk
 static void gui_cb_quit_gtk (void *p) {
-  DO_Quit (NULL, NULL, NULL, NULL, NULL, NULL);
+	DO_Quit (NULL, NULL, NULL, NULL, NULL, NULL);
 }
-#endif
 
 void praat_dontUsePictureWindow (void) { praatP.dontUsePictureWindow = TRUE; }
 
 /********** INITIALIZATION OF THE PRAAT SHELL **********/
 
 #if defined (UNIX)
-	#if gtk
-		static gboolean cb_userMessage (GtkWidget widget, GdkEventClient *event, gpointer user_data) {
-			FILE *f;
-			(void) widget;
-			(void) user_data;
-			if ((f = Melder_fopen (& messageFile, "r")) != NULL) {
-				long pid;
-				int narg = fscanf (f, "#%ld", & pid);
-				fclose (f);
-				praat_background ();
-				if (! praat_executeScriptFromFile (& messageFile, NULL)) {
-					Melder_error2 (Melder_peekUtf8ToWcs (praatP.title), L": message not completely handled.");
-					Melder_flushError (NULL);
-				}
-				praat_foreground ();
-				if (narg) kill (pid, SIGUSR2);
-			} else {
-				Melder_clearError ();
+	static gboolean cb_userMessage (GtkWidget widget, GdkEventClient *event, gpointer user_data) {
+		FILE *f;
+		(void) widget;
+		(void) user_data;
+		if ((f = Melder_fopen (& messageFile, "r")) != NULL) {
+			long pid;
+			int narg = fscanf (f, "#%ld", & pid);
+			fclose (f);
+			praat_background ();
+			if (! praat_executeScriptFromFile (& messageFile, NULL)) {
+				Melder_error2 (Melder_peekUtf8ToWcs (praatP.title), L": message not completely handled.");
+				Melder_flushError (NULL);
 			}
-			return TRUE;
+			praat_foreground ();
+			if (narg) kill (pid, SIGUSR2);
+		} else {
+			Melder_clearError ();
 		}
-	#elif motif
-		int haveMessage = FALSE;
-		static void timerProc_userMessage (XtPointer dummy, XtIntervalId *id) {
-			FILE *f;
-			(void) dummy;
-			(void) id;
-			if ((f = Melder_fopen (& messageFile, "r")) != NULL) {
-				long pid;
-				int narg = fscanf (f, "#%ld", & pid);
-				fclose (f);
-				praat_background ();
-				if (! praat_executeScriptFromFile (& messageFile, NULL)) {
-					Melder_error2 (Melder_peekUtf8ToWcs (praatP.title), L": message not completely handled.");
-					Melder_flushError (NULL);
-				}
-				praat_foreground ();
-				if (narg) kill (pid, SIGUSR2);
-			} else {
-				Melder_clearError ();
-			}
-		}
-		static void handleMessage (int message) {
-			(void) message;
-			signal (SIGUSR1, handleMessage);   /* Keep this handler in the air. */
-			haveMessage = TRUE;
-			/* Trial: */
-			haveMessage = FALSE;
-			XtAppAddTimeOut (theCurrentPraatApplication -> context, 100, timerProc_userMessage, 0);
-		}
-	#endif
+		return TRUE;
+	}
 #elif defined (_WIN32)
 	static int cb_userMessage (void) {
 		praat_background ();
@@ -1138,35 +1098,21 @@ void praat_init (const char *title, unsigned int argc, char **argv) {
 			MelderDir_getFile (& praatDir, L"Buttons5", & buttons5File);
 		#endif
 	}
-	#if defined (UNIX)
-		if (! Melder_batch) {
-			/*
-			 * Make sure that the directory /u/miep/.myProg-dir exists,
-			 * and write our process id into the pid file.
-			 * Messages from "sendpraat" are caught very early this way,
-			 * though they will be responded to much later.
-			 */
-			FILE *f;
-			if ((f = Melder_fopen (& pidFile, "w")) != NULL) {
-				fprintf (f, "%ld", (long) getpid ());
-				fclose (f);
-				#if motif
-					signal (SIGUSR1, handleMessage);
-				#endif
-			} else {
-				Melder_clearError ();
-			}
+	if (! Melder_batch) {
+		/*
+		 * Make sure that the directory /u/miep/.myProg-dir exists,
+		 * and write our process id into the pid file.
+		 * Messages from "sendpraat" are caught very early this way,
+		 * though they will be responded to much later.
+		 */
+		FILE *f;
+		if ((f = Melder_fopen (& pidFile, "w")) != NULL) {
+			fprintf (f, "%ld", (long) getpid ());
+			fclose (f);
+		} else {
+			Melder_clearError ();
 		}
-	#elif defined (_WIN32)
-		if (! Melder_batch)
-			motif_win_setUserMessageCallback (cb_userMessage);
-	#elif defined (macintosh)
-		if (! Melder_batch) {
-			motif_mac_setUserMessageCallbackA (cb_userMessageA);
-			motif_mac_setUserMessageCallbackW (cb_userMessageW);
-			Gui_setQuitApplicationCallback (cb_quitApplication);
-		}
-	#endif
+	}
 
 	/*
 	 * Make room for commands.
@@ -1192,26 +1138,12 @@ void praat_init (const char *title, unsigned int argc, char **argv) {
 		char objectWindowTitle [100];
 		Machine_initLookAndFeel (argc, argv);
 		sprintf (objectWindowTitle, "%s Objects", praatP.title);
-		#if gtk
-			gtk_init_check (NULL, NULL);
-			g_set_application_name (title);
-			raam = GuiWindow_create (NULL, -1, Gui_AUTOMATIC, -1, 600, Melder_peekUtf8ToWcs (objectWindowTitle), gui_cb_quit_gtk, NULL, 0);
-			theCurrentPraatApplication -> topShell = gtk_widget_get_parent (raam);
-			theCurrentPraatApplication -> context = g_main_context_default ();
-			GuiObject_show (theCurrentPraatApplication -> topShell);
-		#else
-			#ifdef _WIN32
-				argv [0] = & praatP. title [0];   /* argc == 4 */
-				Gui_setOpenDocumentCallback (cb_openDocument);
-			#endif
-			theCurrentPraatApplication -> topShell = XtVaAppInitialize (& theCurrentPraatApplication -> context, "Praatwulg", NULL, 0, & argc, argv, Machine_getXresources (), NULL);
-			XtVaSetValues (theCurrentPraatApplication -> topShell, XmNdeleteResponse, XmDO_NOTHING, XmNtitle, objectWindowTitle, XmNx, 10, NULL);
-			#if defined (macintosh) || defined (_WIN32)
-				XtVaSetValues (theCurrentPraatApplication -> topShell, XmNheight, WINDOW_HEIGHT, NULL);
-			#endif
-			/* Catch Window Manager "Close" and "Quit". */
-			XmAddWMProtocolCallback (theCurrentPraatApplication -> topShell, 'delw', gui_cb_quit, 0);
-		#endif
+		gtk_init_check (NULL, NULL);
+		g_set_application_name (title);
+		raam = GuiWindow_create (NULL, -1, Gui_AUTOMATIC, -1, 600, Melder_peekUtf8ToWcs (objectWindowTitle), gui_cb_quit_gtk, NULL, 0);
+		theCurrentPraatApplication -> topShell = gtk_widget_get_parent (raam);
+		theCurrentPraatApplication -> context = g_main_context_default ();
+		GuiObject_show (theCurrentPraatApplication -> topShell);
 	}
 	Thing_recognizeClassesByName (classCollection, classStrings, classSortedSetOfString, NULL);
 	if (Melder_batch) {
@@ -1220,21 +1152,12 @@ void praat_init (const char *title, unsigned int argc, char **argv) {
 		praat_addFixedButtons (NULL);
 	} else {
 		GuiObject Raam = NULL;
-		#if gtk
-			GuiObject raHoriz, raLeft; /* I want to have more possibilities for GTK widgets */
-		#else
-			#define raHoriz Raam 
-			#define raLeft Raam 
-		#endif
+		GuiObject raHoriz, raLeft; /* I want to have more possibilities for GTK widgets */
 
 		#ifdef macintosh
 			MelderGui_create (theCurrentPraatApplication -> context, theCurrentPraatApplication -> topShell);   /* BUG: default Melder_assert would call printf recursively!!! */
 		#endif
-		#if gtk
-			Raam = raam;
-		#elif motif
-			Raam = XmCreateForm (theCurrentPraatApplication -> topShell, "raam", NULL, 0);
-		#endif
+		Raam = raam;
 		#ifdef macintosh
 			GuiObject_size (Raam, WINDOW_WIDTH, Gui_AUTOMATIC);
 			praatP.topBar = Gui_addMenuBar (Raam);
@@ -1247,34 +1170,24 @@ void praat_init (const char *title, unsigned int argc, char **argv) {
 		#ifndef UNIX
 			GuiObject_size (Raam, WINDOW_WIDTH, Gui_AUTOMATIC);
 		#endif
-		#if gtk
-			raHoriz = gtk_hpaned_new ();
-			gtk_container_add (GTK_CONTAINER (Raam), raHoriz);
-			raLeft = gtk_vbox_new (FALSE, 0);
-			gtk_container_add (GTK_CONTAINER (raHoriz), raLeft);
-		#else
-			GuiLabel_createShown (raLeft, 3, -250, Machine_getMainWindowMenuBarHeight () + 5, Gui_AUTOMATIC, L"Objects:", 0);
-		#endif
+		raHoriz = gtk_hpaned_new ();
+		gtk_container_add (GTK_CONTAINER (Raam), raHoriz);
+		raLeft = gtk_vbox_new (FALSE, 0);
+		gtk_container_add (GTK_CONTAINER (raHoriz), raLeft);
 		praatList_objects = GuiList_create (raLeft, 0, -250, Machine_getMainWindowMenuBarHeight () + 26, -100, true, L" Objects ");
 		GuiList_setSelectionChangedCallback (praatList_objects, gui_cb_list, 0);
 		//XtVaSetValues (praatList_objects, XmNvisibleItemCount, 20, NULL);
 		GuiObject_show (praatList_objects);
 		praat_addFixedButtons (raLeft);
 		praat_actions_createDynamicMenu (raHoriz, 250);
-		#if gtk
-			GuiObject_show (raLeft);
-			GuiObject_show (raHoriz);
-		#endif
+		GuiObject_show (raLeft);
+		GuiObject_show (raHoriz);
 		GuiObject_show (Raam);
 		#ifdef UNIX
 		{
 			FILE *f;
 			if ((f = Melder_fopen (& pidFile, "a")) != NULL) {
-				#if gtk
-					fprintf (f, " %ld", (long) GDK_WINDOW_XID (GDK_DRAWABLE (theCurrentPraatApplication -> topShell -> window)));
-				#else
-					fprintf (f, " %ld", (long) XtWindow (theCurrentPraatApplication -> topShell));
-				#endif
+				fprintf (f, " %ld", (long) GDK_WINDOW_XID (GDK_DRAWABLE (theCurrentPraatApplication -> topShell -> window)));
 				fclose (f);
 			} else {
 				Melder_clearError ();
@@ -1438,36 +1351,9 @@ void praat_run (void) {
 
 		praatP.phase = praat_HANDLING_EVENTS;
 		
-		#if gtk
-			//gtk_widget_add_events (G_OBJECT (theCurrentPraatApplication -> topShell), GDK_ALL_EVENTS_MASK);
-			g_signal_connect (G_OBJECT (theCurrentPraatApplication -> topShell), "client-event", G_CALLBACK (cb_userMessage), NULL);
-			gtk_main ();
-		#else
-			#if defined (_WIN32)
-				if (theCurrentPraatApplication -> batchName.string [0] != '\0') {
-					wchar_t text [500];
-					/*
-					 * The user dropped a file on the Praat icon, while Praat was not running yet.
-					 * Windows may have enclosed the path between quotes;
-					 * this is especially likely to happen if the path contains spaces (which is usual).
-					 * And sometimes, Windows prepends a space before the quote.
-					 * Peel all that off.
-					 */
-					wchar_t *s = theCurrentPraatApplication -> batchName.string;
-					swprintf (text, 500, L"Read from file... %ls", s [0] == ' ' && s [1] == '\"' ? s + 2 : s [0] == '\"' ? s + 1 : s);
-					long l = wcslen (text);
-					if (l > 0 && text [l - 1] == '\"') text [l - 1] = '\0';
-					//Melder_error3 (L"command <<", text, L">>");
-					//Melder_flushError (NULL);
-					if (! praat_executeScriptFromText (text)) Melder_error1 (NULL);   // BUG
-				}
-			#endif
-			for (;;) {
-				XEvent event;
-				XtAppNextEvent (theCurrentPraatApplication -> context, & event);
-				XtDispatchEvent (& event);
-			}
-		#endif
+		//gtk_widget_add_events (G_OBJECT (theCurrentPraatApplication -> topShell), GDK_ALL_EVENTS_MASK);
+		g_signal_connect (G_OBJECT (theCurrentPraatApplication -> topShell), "client-event", G_CALLBACK (cb_userMessage), NULL);
+		gtk_main ();
 	}
 }
 

@@ -117,9 +117,6 @@ void UiForm::okOrApply (GuiObject button, int hide) {
 	if (_cancelButton) GuiObject_setSensitive (_cancelButton, false);
 	if (_revertButton) GuiObject_setSensitive (_revertButton, false);
 	if (_helpButton) GuiObject_setSensitive (_helpButton, false);
-	#if motif
-	XmUpdateDisplay (_dialog);
-	#endif
 	if (_isPauseForm) {
 		for (int i = 1; i <= _numberOfContinueButtons; i ++) {
 			if (button == _continueButtons [i]) {
@@ -417,12 +414,6 @@ static void appendColon (void) {
 
 // FIXME wrong number of parameters
 static void gui_radiobutton_cb_toggled (void *field, GuiRadioButtonEvent event) {
-	#if !gtk
-	for (int i = 1; i <= _options -> size; i ++) {
-		UiOption *b = (UiOption *)_options -> item [i];
-		GuiRadioButton_setValue (b -> _toggle, b -> _toggle == event -> _toggle);
-	}
-	#endif
 }
 
 void UiForm::finish () {
@@ -434,12 +425,8 @@ void UiForm::finish () {
 	int dialogWidth = 520, dialogCentre = dialogWidth / 2, fieldX = dialogCentre + Gui_LABEL_SPACING / 2;
 	int labelWidth = fieldX - Gui_LABEL_SPACING - x, fieldWidth = labelWidth, halfFieldWidth = fieldWidth / 2 - 6;
 
-	#if gtk
-		GuiObject form, buttons;
-		int numberOfRows = 0, row = 0;
-	#else
-		GuiObject form, buttons; // Define?
-	#endif
+	GuiObject form, buttons;
+	int numberOfRows = 0, row = 0;
 
 	/*
 		Compute height. Cannot leave this to the default geometry management system.
@@ -467,23 +454,16 @@ void UiForm::finish () {
 					- 10 :
 				#endif
 			textFieldHeight;
-		#if gtk
-			numberOfRows += wcsnequ (field -> _name, L"left ", 5);
-		#endif
+		numberOfRows += wcsnequ (field -> _name, L"left ", 5);
 	}
 	dialogHeight += 2 * Gui_BOTTOM_DIALOG_SPACING + Gui_PUSHBUTTON_HEIGHT;
 	_dialog = GuiDialog_create (_parent, DIALOG_X, DIALOG_Y, dialogWidth, dialogHeight, _name, gui_dialog_cb_close, this, 0);
 
-	#if gtk
-		form = gtk_table_new (numberOfRows, 3, false);
-		gtk_table_set_col_spacing (GTK_TABLE (form), 0, 5);
-		gtk_container_add (GTK_CONTAINER (_dialog), form);
-		gtk_widget_show (form);
-		buttons = GTK_DIALOG (GuiObject_parent (_dialog)) -> action_area;
-	#else
-		form = _dialog;
-		buttons = _dialog;
-	#endif
+	form = gtk_table_new (numberOfRows, 3, false);
+	gtk_table_set_col_spacing (GTK_TABLE (form), 0, 5);
+	gtk_container_add (GTK_CONTAINER (_dialog), form);
+	gtk_widget_show (form);
+	buttons = GTK_DIALOG (GuiObject_parent (_dialog)) -> action_area;
 
 	for (long ifield = 1; ifield <= size; ifield ++) {
 		UiField *field = _field [ifield];
@@ -508,45 +488,33 @@ void UiForm::finish () {
 					appendColon ();
 					GuiObject label = GuiLabel_createShown (form, x, x + labelWidth, ylabel, ylabel + textFieldHeight,
 						theFinishBuffer.string, GuiLabel_RIGHT);
-					#if gtk
-						gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
-					#endif
+					gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
 					field -> _text = GuiText_createShown (form, fieldX, fieldX + halfFieldWidth, y, Gui_AUTOMATIC, 0);
-					#if gtk
-						gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 1, 2, row, row + 1);
-					#endif
+					gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 1, 2, row, row + 1);
 				} else if (wcsnequ (field -> _name, L"right ", 6)) {
 					field -> _text = GuiText_createShown (form, fieldX + halfFieldWidth + 12, fieldX + fieldWidth,
 						y, Gui_AUTOMATIC, 0);
-					#if gtk
-						gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 2, 3, row, row + 1);
-						row += 1;
-					#endif
+					gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 2, 3, row, row + 1);
+					row += 1;
 				} else {
 					MelderString_copy (& theFinishBuffer, field -> _formLabel);
 					appendColon ();
 					GuiObject label = GuiLabel_createShown (form, x, x + labelWidth,
 						ylabel, ylabel + textFieldHeight,
 						theFinishBuffer.string, GuiLabel_RIGHT);
-					#if gtk
-						gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
-					#endif
+					gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
 					field -> _text = GuiText_createShown (form, fieldX, fieldX + fieldWidth, // or once the dialog is a Form: - Gui_RIGHT_DIALOG_SPACING,
 						y, Gui_AUTOMATIC, 0);
-					#if gtk
-						gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 1, 3, row, row + 1);
+					gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 1, 3, row, row + 1);
 						row += 1;
-					#endif
 				}
 			} break;
 			case UI_TEXT:
 			{
 				field -> _text = GuiText_createShown (form, x, x + dialogWidth - Gui_LEFT_DIALOG_SPACING - Gui_RIGHT_DIALOG_SPACING,
 					y, Gui_AUTOMATIC, 0);
-				#if gtk
-					gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 0, 3, row, row + 1);
-					row += 1;
-				#endif
+				gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 0, 3, row, row + 1);
+				row += 1;
 			} break;
 			case UI_LABEL:
 			{
@@ -554,17 +522,13 @@ void UiForm::finish () {
 				field -> _text = GuiLabel_createShown (form,
 					x, dialogWidth /* allow to extend into the margin */, y + 5, y + 5 + textFieldHeight,
 					theFinishBuffer.string, 0);
-				#if gtk
-					gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 0, 3, row, row + 1);
-					row += 1;
-				#endif
+				gtk_table_attach_defaults (GTK_TABLE (form), field -> _text, 0, 3, row, row + 1);
+				row += 1;
 			} break;
 			case UI_RADIO:
 			{
 				int ylabel = y;
-				#if gtk
-					 void *group = NULL;
-				#endif
+				void *group = NULL;
 				#if defined (macintosh)
 					ylabel += 1;
 				#endif
@@ -572,9 +536,7 @@ void UiForm::finish () {
 				appendColon ();
 				GuiObject label = GuiLabel_createShown (form, x, x + labelWidth, ylabel, ylabel + Gui_RADIOBUTTON_HEIGHT,
 					theFinishBuffer.string, GuiLabel_RIGHT);
-				#if gtk
-					gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
-				#endif
+				gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
 				for (long ibutton = 1; ibutton <= field -> _options -> size; ibutton ++) {
 					UiOption *button = (UiOption *)field -> _options -> item [ibutton];
 					MelderString_copy (& theFinishBuffer, button -> _name);
@@ -582,14 +544,12 @@ void UiForm::finish () {
 						fieldX, dialogWidth /* allow to extend into the margin */,
 						y + (ibutton - 1) * (Gui_RADIOBUTTON_HEIGHT + Gui_RADIOBUTTON_SPACING), Gui_AUTOMATIC,
 						theFinishBuffer.string, gui_radiobutton_cb_toggled, field, 0);
-					#if gtk
-						if (group != NULL) {
-							GuiRadioButton_setGroup (button -> _toggle, group);
-						} 
-						group = GuiRadioButton_getGroup (button -> _toggle);
-						gtk_table_attach_defaults (GTK_TABLE (form), button -> _toggle, 1, 3, row, row + 1);
-						row += 1;
-					#endif
+					if (group != NULL) {
+						GuiRadioButton_setGroup (button -> _toggle, group);
+					} 
+					group = GuiRadioButton_getGroup (button -> _toggle);
+					gtk_table_attach_defaults (GTK_TABLE (form), button -> _toggle, 1, 3, row, row + 1);
+					row += 1;
 				}
 			} break; 
 			case UI_OPTIONMENU:
@@ -603,45 +563,20 @@ void UiForm::finish () {
 				appendColon ();
 				GuiObject label = GuiLabel_createShown (form, x, x + labelWidth, ylabel, ylabel + Gui_OPTIONMENU_HEIGHT,
 					theFinishBuffer.string, GuiLabel_RIGHT);
-				#if gtk
-					gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
-				#endif
+				gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
 
-				#if motif
-					bar = XmCreateMenuBar (form, "UiOptionMenu", NULL, 0);
-					XtVaSetValues (bar, XmNx, fieldX - 4, XmNy, y - 4
-						#if defined (macintosh)
-							- 1
-						#endif
-						, XmNwidth, fieldWidth + 8, XmNheight, Gui_OPTIONMENU_HEIGHT + 8, NULL);
-				#endif
 				// TODO: dit wil natuurlijk heel graag in GuiComboBox.c ;)
-				#if gtk
-					field -> _cascadeButton = gtk_combo_box_new_text ();
-					gtk_combo_box_set_focus_on_click (GTK_COMBO_BOX (field -> _cascadeButton), false);
-					GTK_WIDGET_UNSET_FLAGS (field -> _cascadeButton, GTK_CAN_DEFAULT);
-					gtk_table_attach_defaults (GTK_TABLE (form), field -> _cascadeButton, 1, 3, row, row + 1);
-					row += 1;
-				#elif motif
-					box = GuiMenuBar_addMenu2 (bar, L"choice", 0, & field -> _cascadeButton);
-					XtVaSetValues (bar, XmNwidth, fieldWidth + 8, NULL);
-					XtVaSetValues (field -> _cascadeButton, XmNx, 4, XmNy, 4, XmNwidth, fieldWidth, XmNheight, Gui_OPTIONMENU_HEIGHT, NULL);
-				#endif
+				field -> _cascadeButton = gtk_combo_box_new_text ();
+				gtk_combo_box_set_focus_on_click (GTK_COMBO_BOX (field -> _cascadeButton), false);
+				GTK_WIDGET_UNSET_FLAGS (field -> _cascadeButton, GTK_CAN_DEFAULT);
+				gtk_table_attach_defaults (GTK_TABLE (form), field -> _cascadeButton, 1, 3, row, row + 1);
+				row += 1;
 				for (long ibutton = 1; ibutton <= field -> _options -> size; ibutton ++) {
 					UiOption *button = (UiOption *)field -> _options -> item [ibutton];
 					MelderString_copy (& theFinishBuffer, button -> _name);
-					#if gtk
-						gtk_combo_box_append_text (GTK_COMBO_BOX (field -> _cascadeButton), Melder_peekWcsToUtf8 (theFinishBuffer.string));
-					#elif motif
-						button -> _toggle = XtVaCreateManagedWidget (Melder_peekWcsToUtf8 (theFinishBuffer.string), xmToggleButtonWidgetClass, box, NULL);
-						XtAddCallback (button -> _toggle, XmNvalueChangedCallback, cb_optionChanged, (XtPointer) field);
-					#endif
+					gtk_combo_box_append_text (GTK_COMBO_BOX (field -> _cascadeButton), Melder_peekWcsToUtf8 (theFinishBuffer.string));
 				}
-				#if gtk
-					GuiObject_show (field -> _cascadeButton);
-				#elif motif
-					GuiObject_show (bar);
-				#endif
+				GuiObject_show (field -> _cascadeButton);
 			} break;
 			case UI_BOOLEAN:
 			{
@@ -651,10 +586,8 @@ void UiForm::finish () {
 				field -> _toggle = GuiCheckButton_createShown (form,
 					fieldX, dialogWidth /* allow to extend into the margin */, y, Gui_AUTOMATIC,
 					theFinishBuffer.string, NULL, NULL, 0);
-				#if gtk
-					gtk_table_attach_defaults (GTK_TABLE (form), field -> _toggle, 1, 3, row, row + 1);
-					row += 1;
-				#endif
+				gtk_table_attach_defaults (GTK_TABLE (form), field -> _toggle, 1, 3, row, row + 1);
+				row += 1;
 			} break;
 			case UI_LIST:
 			{
@@ -663,18 +596,14 @@ void UiForm::finish () {
 				appendColon ();
 				GuiObject label = GuiLabel_createShown (form, x, x + labelWidth, y + 1, y + 21,
 					theFinishBuffer.string, GuiLabel_RIGHT);
-				#if gtk
-					gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
-				#endif
+				gtk_table_attach_defaults (GTK_TABLE (form), label, 0, 1, row, row + 1);
 				field -> _list = GuiList_create (form, fieldX, fieldX + listWidth, y, y + LIST_HEIGHT, false, theFinishBuffer.string);
 				for (long i = 1; i <= field -> _numberOfStrings; i ++) {
 					GuiList_insertItem (field -> _list, field -> _strings [i], 0);
 				}
 				GuiObject_show (field -> _list);
-				#if gtk
-					gtk_table_attach_defaults (GTK_TABLE (form), gtk_widget_get_parent (field -> _list), 1, 3, row, row + 1);
-					row += 1;
-				#endif
+				gtk_table_attach_defaults (GTK_TABLE (form), gtk_widget_get_parent (field -> _list), 1, 3, row, row + 1);
+				row += 1;
 			} break;
 		}
 	}
@@ -685,9 +614,7 @@ void UiForm::finish () {
 	if (_helpTitle) {
 		_helpButton = GuiButton_createShown (buttons, HELP_BUTTON_X, HELP_BUTTON_X + HELP_BUTTON_WIDTH, y, Gui_AUTOMATIC,
 			L"Help", gui_button_cb_help, this, 0);
-		#if gtk
-			gtk_button_box_set_child_secondary(GTK_BUTTON_BOX(buttons), _helpButton, TRUE);
-		#endif
+		gtk_button_box_set_child_secondary(GTK_BUTTON_BOX(buttons), _helpButton, TRUE);
 	}
 	if (_numberOfFields > 1 || (_numberOfFields > 0 && _field [1] -> _type != UI_LABEL)) {
 		if (_isPauseForm) {
@@ -700,9 +627,7 @@ void UiForm::finish () {
 				HELP_BUTTON_X + HELP_BUTTON_WIDTH + Gui_HORIZONTAL_DIALOG_SPACING + STANDARDS_BUTTON_WIDTH,
 				y, Gui_AUTOMATIC, L"Standards", gui_button_cb_revert, this, 0);
 		}
-		#if gtk
-			gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (buttons), _revertButton, TRUE);
-		#endif
+		gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (buttons), _revertButton, TRUE);
 	}
 	if (_isPauseForm) {
 		x = HELP_BUTTON_X + REVERT_BUTTON_WIDTH + Gui_HORIZONTAL_DIALOG_SPACING;
@@ -865,12 +790,6 @@ void UiForm::setInteger (const wchar_t *fieldName, long value) {
 			if (value < 1 || value > field -> _options -> size) value = 1;   /* Guard against incorrect prefs file. */
 			for (int i = 1; i <= field -> _options -> size; i ++) {
 				UiOption *b = (UiOption *) field -> _options -> item [i];
-				#if motif
-				XmToggleButtonSetState (b -> _toggle, i == value, False);
-				if (i == value) {
-					XtVaSetValues (field -> _cascadeButton, motif_argXmString (XmNlabelString, Melder_peekWcsToUtf8 (b -> _name)), NULL);
-				}
-				#endif
 			}
 		} break; case UI_LIST: {
 			if (value < 1 || value > field -> _numberOfStrings) value = 1;   /* Guard against incorrect prefs file. */
@@ -910,19 +829,7 @@ void UiForm::setString (const wchar_t *fieldName, const wchar_t *value) {
 			for (int i = 1; i <= field -> _options -> size; i ++) {
 				UiOption *b = (UiOption *) field -> _options -> item [i];
 				if (wcsequ (value, b -> _name)) {
-					#if motif
-					XmToggleButtonSetState (b -> _toggle, True, False);
-					#endif
 					found = true;
-					if (field -> _type == UI_OPTIONMENU) {
-						#if motif
-						XtVaSetValues (field -> _cascadeButton, motif_argXmString (XmNlabelString, Melder_peekWcsToUtf8 (value)), NULL);
-						#endif
-					}
-				} else {
-					#if motif
-						XmToggleButtonSetState (b -> _toggle, False, False);
-					#endif
 				}
 			}
 			/* If not found: do nothing (guard against incorrect prefs file). */
@@ -1131,30 +1038,3 @@ end:
 int UiForm::getClickedContinueButton () {
 	return _clickedContinueButton;
 }
-
-
-
-
-/***** class UiOption: radio buttons and menu options *****/
-
-#if motif
-// TODO: Ik denk dat dit Native GTK gedrag is (als dit alleen het label update)
-static void cb_optionChanged (GuiObject w, XtPointer void_me, XtPointer call) {
-	int i;
-	(void) call;
-	for (i = 1; i <= _options -> size; i ++) {
-		UiOption *b = (UiOption *)_options -> item [i];
-		#if motif
-		if (b -> _toggle == w) {
-			XtVaSetValues (_cascadeButton, motif_argXmString (XmNlabelString, Melder_peekWcsToUtf8 (b -> _name)), NULL);
-			XmToggleButtonSetState (b -> _toggle, TRUE, FALSE);
-			if (Melder_debug == 11) {
-				Melder_warning4 (Melder_integer (i), L" \"", b -> _name, L"\"");
-			}
-		} else {
-			XmToggleButtonSetState (b -> _toggle, FALSE, FALSE);
-		}
-		#endif
-	}
-}
-#endif

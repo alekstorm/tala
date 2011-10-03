@@ -245,13 +245,6 @@ int ButtonEditor::goToPage (const wchar_t *title) {
 
 void ButtonEditor::which (int show) {
 	_show = show;
-	#if motif
-	GuiRadioButton_setValue (_button1, show == 1);
-	GuiRadioButton_setValue (_button2, show == 2);
-	GuiRadioButton_setValue (_button3, show == 3);
-	GuiRadioButton_setValue (_button4, show == 4);
-	GuiRadioButton_setValue (_button5, show == 5);
-	#endif
 	goToPage (L"Buttons");
 }
 
@@ -262,9 +255,7 @@ void ButtonEditor::gui_radiobutton_cb_actionsAM (I, GuiRadioButtonEvent event) {
 void ButtonEditor::gui_radiobutton_cb_actionsNZ (I, GuiRadioButtonEvent event) { (void) event; ((ButtonEditor*)void_me)->which (5); }
 
 void ButtonEditor::createChildren () {
-	#if gtk
-		void *group = NULL;
-	#endif
+	void *group = NULL;
 	int x = 3, y = Machine_getMenuBarHeight () + 4;
 	_button1 = GuiRadioButton_createShown (_holder, x, x + BUTTON_WIDTH, y, Gui_AUTOMATIC,
 		L"Objects", gui_radiobutton_cb_objects, this, GuiRadioButton_SET);
@@ -281,16 +272,14 @@ void ButtonEditor::createChildren () {
 	_button5 = GuiRadioButton_createShown (_holder, x, x + BUTTON_WIDTH + 30, y, Gui_AUTOMATIC,
 		L"Actions N-Z", gui_radiobutton_cb_actionsNZ, this, 0);
 	
-	#if gtk
-		group = GuiRadioButton_getGroup(_button1);
-		GuiRadioButton_setGroup(_button2, group);
-		group = GuiRadioButton_getGroup(_button2);
-		GuiRadioButton_setGroup(_button3, group);
-		group = GuiRadioButton_getGroup(_button3);
-		GuiRadioButton_setGroup(_button4, group);
-		group = GuiRadioButton_getGroup(_button4);
-		GuiRadioButton_setGroup(_button5, group);
-	#endif
+	group = GuiRadioButton_getGroup(_button1);
+	GuiRadioButton_setGroup(_button2, group);
+	group = GuiRadioButton_getGroup(_button2);
+	GuiRadioButton_setGroup(_button3, group);
+	group = GuiRadioButton_getGroup(_button3);
+	GuiRadioButton_setGroup(_button4, group);
+	group = GuiRadioButton_getGroup(_button4);
+	GuiRadioButton_setGroup(_button5, group);
 }
 
 int ButtonEditor::menu_cb_ButtonEditorHelp (EDITOR_ARGS) { Melder_help (L"ButtonEditor"); return 1; }

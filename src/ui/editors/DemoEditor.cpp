@@ -110,7 +110,7 @@ void DemoEditor::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) 
 void DemoEditor::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	DemoEditor *demoEditor = (DemoEditor *)void_me;
 	if (demoEditor->_graphics == NULL) return;   // Could be the case in the very beginning.
-	if (gtk && event -> type != BUTTON_PRESS) return;
+	if (event -> type != BUTTON_PRESS) return;
 	demoEditor->_clicked = true;
 	demoEditor->_keyPressed = false;
 	demoEditor->_x = event -> x;
@@ -139,9 +139,7 @@ void DemoEditor::gui_drawingarea_cb_key (I, GuiDrawingAreaKeyEvent event) {
 void DemoEditor::createChildren () {
 	_drawingArea = GuiDrawingArea_createShown (_dialog, 0, 0, 0, 0,
 		gui_drawingarea_cb_expose, gui_drawingarea_cb_click, gui_drawingarea_cb_key, gui_drawingarea_cb_resize, this, 0);
-	#if gtk
-		gtk_widget_set_double_buffered (_drawingArea, FALSE);
-	#endif
+	gtk_widget_set_double_buffered (_drawingArea, FALSE);
 }
 
 int DemoEditor::open (void) {
@@ -208,17 +206,9 @@ bool DemoEditor::waitForInput (Interpreter *interpreter) {
 		structMelderDir dir = { { 0 } };
 		Melder_getDefaultDir (& dir);
 		if (wasBackgrounding) praat_foreground ();
-		#if gtk
-			do {
-				gtk_main_iteration ();
-			} while (! _clicked && ! _keyPressed && ! _userWantsToClose);
-		#else
-			do {
-				XEvent event;
-				XtAppNextEvent (Melder_appContext, & event);
-				XtDispatchEvent (& event);
-			} while (! _clicked && ! _keyPressed && ! _userWantsToClose);
-		#endif
+		do {
+			gtk_main_iteration ();
+		} while (! _clicked && ! _keyPressed && ! _userWantsToClose);
 		if (wasBackgrounding) praat_background ();
 		Melder_setDefaultDir (& dir);
 	#endif

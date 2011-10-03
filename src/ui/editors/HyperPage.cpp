@@ -79,7 +79,6 @@ void HyperPage::gui_drawingarea_cb_resize (void *void_me, GuiDrawingAreaResizeEv
 	editor->updateVerticalScrollBar ();
 }
 
-#if gtk
 void HyperPage::gui_cb_verticalScroll (GtkRange *rng, gpointer void_me) {
 	HyperPage *editor= (HyperPage *)void_me;
 	double value = gtk_range_get_value (GTK_RANGE (rng));
@@ -91,31 +90,11 @@ void HyperPage::gui_cb_verticalScroll (GtkRange *rng, gpointer void_me) {
 		editor->updateVerticalScrollBar ();
 	}
 }
-#else
-void HyperPage::gui_cb_verticalScroll (GUI_ARGS) {
-	int value, sliderSize, incr, pincr;
-	#if gtk
-		double value = gtk_range_get_value (GTK_RANGE (w));
-	#elif motif
-		XmScrollBarGetValues (w, & value, & sliderSize, & incr, & pincr);
-	#endif
-	if (value != editor->_top) {
-		editor->_top = value;
-		Graphics_clearWs (editor->_g);
-		editor->initScreen ();
-		editor->draw ();   /* Do not wait for expose event. */
-		editor->updateVerticalScrollBar ();
-	}
-}
-#endif
 
 HyperPage::HyperPage (GuiObject parent, const wchar_t *title, Any data)
 	: Editor (parent, 0, 0, 6 * resolution + 30, 800, title, data) {
 	createMenus ();
 	resolution = Gui_getResolution (parent);
-	#if motif
-		Melder_assert (XtWindow (_drawingArea));
-	#endif
 	_g = Graphics_create_xmdrawingarea (_drawingArea);
 	Graphics_setAtSignIsLink (_g, TRUE);
 	Graphics_setDollarSignIsCode (_g, TRUE);
@@ -130,12 +109,7 @@ HyperPage::HyperPage (GuiObject parent, const wchar_t *title, Any data)
 	event. height = GuiObject_getHeight (_drawingArea);
 	gui_drawingarea_cb_resize (this, & event);
 
-	#if gtk
-		g_signal_connect (G_OBJECT (_verticalScrollBar), "value-changed", G_CALLBACK (gui_cb_verticalScroll), this);
-	#elif motif
-		XtAddCallback (_verticalScrollBar, XmNvalueChangedCallback, gui_cb_verticalScroll, (XtPointer) this);
-		XtAddCallback (_verticalScrollBar, XmNdragCallback, gui_cb_verticalScroll, (XtPointer) this);
-	#endif
+	g_signal_connect (G_OBJECT (_verticalScrollBar), "value-changed", G_CALLBACK (gui_cb_verticalScroll), this);
 	updateVerticalScrollBar ();   /* Scroll to the top (_top == 0). */
 }
 
@@ -701,7 +675,7 @@ void HyperPage::gui_drawingarea_cb_expose (void *void_me, GuiDrawingAreaExposeEv
 void HyperPage::gui_drawingarea_cb_click (void *void_me, GuiDrawingAreaClickEvent event) {
 	HyperPage *editor= (HyperPage *)void_me;
 	if (editor->_g == NULL) return;   // Could be the case in the very beginning.
-	if (gtk && event -> type != BUTTON_PRESS) return;
+	if (event -> type != BUTTON_PRESS) return;
 	if (! editor->_links) return;
 	for (long ilink = 1; ilink <= editor->_links -> size; ilink ++) {
 		HyperLink link = (structHyperLink*)editor->_links -> item [ilink];
@@ -827,26 +801,11 @@ int HyperPage::menu_cb_searchForPage (EDITOR_ARGS) {
  */
 
 void HyperPage::createVerticalScrollBar (GuiObject parent) {
-	#if gtk
-		int maximumScrollBarValue = (int) (PAGE_HEIGHT * 5);
-		GtkObject *adj = gtk_adjustment_new (1, 1, maximumScrollBarValue, 1, 1, maximumScrollBarValue - 1);
-		_verticalScrollBar = gtk_vscrollbar_new (GTK_ADJUSTMENT (adj));
-		GuiObject_show (_verticalScrollBar);
-		gtk_box_pack_end (GTK_BOX (parent), _verticalScrollBar, false, false, 3);
-	#elif motif
-		// TODO: Kan dit niet een algemele gui klasse worden?
-		_verticalScrollBar = XtVaCreateManagedWidget ("verticalScrollBar",
-			xmScrollBarWidgetClass, parent, XmNorientation, XmVERTICAL,
-			XmNrightAttachment, XmATTACH_FORM,
-			XmNtopAttachment, XmATTACH_FORM,
-				XmNtopOffset, Machine_getMenuBarHeight () + Machine_getTextHeight () + 12,
-			XmNbottomAttachment, XmATTACH_FORM, XmNbottomOffset, Machine_getScrollBarWidth (),
-			XmNwidth, Machine_getScrollBarWidth (),
-			XmNminimum, 0, XmNmaximum, (int) (PAGE_HEIGHT * 5),
-			XmNsliderSize, 25, XmNvalue, 0,
-			XmNincrement, 1, XmNpageIncrement, 24,
-			NULL);
-	#endif
+	int maximumScrollBarValue = (int) (PAGE_HEIGHT * 5);
+	GtkObject *adj = gtk_adjustment_new (1, 1, maximumScrollBarValue, 1, 1, maximumScrollBarValue - 1);
+	_verticalScrollBar = gtk_vscrollbar_new (GTK_ADJUSTMENT (adj));
+	GuiObject_show (_verticalScrollBar);
+	gtk_box_pack_end (GTK_BOX (parent), _verticalScrollBar, false, false, 3);
 }
 
 void HyperPage::updateVerticalScrollBar ()
@@ -855,19 +814,12 @@ void HyperPage::updateVerticalScrollBar ()
 {
 	Dimension width, height;
 	int sliderSize;
-	#if motif
-		XtVaGetValues (_drawingArea, XmNwidth, & width, XmNheight, & height, NULL);
-	#endif
 	sliderSize = 25 /*height / resolution * 5*/;   /* Don't change slider unless you clip value! */
-	#if gtk
-		GtkAdjustment *adj = gtk_range_get_adjustment (GTK_RANGE (_verticalScrollBar));
-		adj -> page_size = sliderSize;
-		//gtk_adjustment_set_value (adj, value);
-		gtk_adjustment_changed (adj);
-		gtk_range_set_increments (GTK_RANGE (_verticalScrollBar), 1, sliderSize - 1);
-	#elif motif
-		XmScrollBarSetValues (_verticalScrollBar, _top, sliderSize, 1, sliderSize - 1, False);
-	#endif
+	GtkAdjustment *adj = gtk_range_get_adjustment (GTK_RANGE (_verticalScrollBar));
+	adj -> page_size = sliderSize;
+	//gtk_adjustment_set_value (adj, value);
+	gtk_adjustment_changed (adj);
+	gtk_range_set_increments (GTK_RANGE (_verticalScrollBar), 1, sliderSize - 1);
 	_history [_historyPointer]. top = 0/*_top*/;
 }
 
@@ -875,13 +827,9 @@ int HyperPage::menu_cb_pageUp (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	int value, sliderSize, incr, pincr;
 	if (! editor->_verticalScrollBar) return 0;
-	#if	gtk
-		value = gtk_range_get_value (GTK_RANGE (editor->_verticalScrollBar));
-		sliderSize = 1;
-		pincr = PAGE_HEIGHT * 5 - 1;
-	#elif motif
-		XmScrollBarGetValues (editor->_verticalScrollBar, & value, & sliderSize, & incr, & pincr);
-	#endif
+	value = gtk_range_get_value (GTK_RANGE (editor->_verticalScrollBar));
+	sliderSize = 1;
+	pincr = PAGE_HEIGHT * 5 - 1;
 	value -= pincr;
 	if (value < 0) value = 0;
 	if (value != editor->_top) {
@@ -898,13 +846,9 @@ int HyperPage::menu_cb_pageDown (EDITOR_ARGS) {
 	HyperPage *editor = (HyperPage *)editor_me;
 	int value, sliderSize, incr, pincr;
 	if (! editor->_verticalScrollBar) return 0;
-	#if	gtk
-		value = gtk_range_get_value (GTK_RANGE (editor->_verticalScrollBar));
-		sliderSize = 1;
-		pincr = PAGE_HEIGHT * 5 - 1;
-	#elif motif
-		XmScrollBarGetValues (editor->_verticalScrollBar, & value, & sliderSize, & incr, & pincr);
-	#endif
+	value = gtk_range_get_value (GTK_RANGE (editor->_verticalScrollBar));
+	sliderSize = 1;
+	pincr = PAGE_HEIGHT * 5 - 1;
 	value += pincr;
 	if (value > (int) (PAGE_HEIGHT * 5) - sliderSize) value = (int) (PAGE_HEIGHT * 5) - sliderSize;
 	if (value != editor->_top) {
@@ -1023,13 +967,9 @@ void HyperPage::createChildren () {
 	int height = Machine_getTextHeight ();
 	int y = Machine_getMenuBarHeight () + 4;
 
-	#if gtk
-		_holder = gtk_hbox_new (FALSE, 0);
-		gtk_box_pack_start (GTK_BOX (_dialog), _holder, false, false, 0);
-		GuiObject_show (_holder);
-	#elif motif
-		_holder = _dialog;
-	#endif
+	_holder = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (_dialog), _holder, false, false, 0);
+	GuiObject_show (_holder);
 
 	/***** Create navigation buttons. *****/
 
@@ -1045,25 +985,16 @@ void HyperPage::createChildren () {
 		GuiButton_createShown (_holder, 224, 268, y, y + height,
 			L"1 >", gui_button_cb_nextPage, this, 0);
 	}
-	#if gtk
-		GuiObject scrollBox = gtk_hbox_new (false, 0);
-		gtk_box_pack_end (GTK_BOX (_dialog), scrollBox, true, true, 0);
-		_drawingArea = GuiDrawingArea_create (GTK_WIDGET (scrollBox), 0, 600, 0, 800,
-			gui_drawingarea_cb_expose, gui_drawingarea_cb_click, NULL, gui_drawingarea_cb_resize, this, GuiDrawingArea_BORDER);
-		gtk_widget_set_double_buffered (_drawingArea, FALSE);
-		gtk_box_pack_start (GTK_BOX (scrollBox), _drawingArea, true, true, 0);
-		createVerticalScrollBar (scrollBox);
-		GuiObject_show (_drawingArea);
-		GuiObject_show (scrollBox);
-	#elif motif
-		/***** Create scroll bar. *****/
 
-		createVerticalScrollBar (_dialog);
-
-		/***** Create drawing area. *****/
-		_drawingArea = GuiDrawingArea_createShown (_dialog, 0, - Machine_getScrollBarWidth (), y + height + 8, - Machine_getScrollBarWidth (),
-			gui_drawingarea_cb_expose, gui_drawingarea_cb_click, NULL, gui_drawingarea_cb_resize, me, GuiDrawingArea_BORDER);
-	#endif
+	GuiObject scrollBox = gtk_hbox_new (false, 0);
+	gtk_box_pack_end (GTK_BOX (_dialog), scrollBox, true, true, 0);
+	_drawingArea = GuiDrawingArea_create (GTK_WIDGET (scrollBox), 0, 600, 0, 800,
+		gui_drawingarea_cb_expose, gui_drawingarea_cb_click, NULL, gui_drawingarea_cb_resize, this, GuiDrawingArea_BORDER);
+	gtk_widget_set_double_buffered (_drawingArea, FALSE);
+	gtk_box_pack_start (GTK_BOX (scrollBox), _drawingArea, true, true, 0);
+	createVerticalScrollBar (scrollBox);
+	GuiObject_show (_drawingArea);
+	GuiObject_show (scrollBox);
 }
 
 void HyperPage::clear () {

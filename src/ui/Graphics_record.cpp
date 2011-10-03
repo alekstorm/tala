@@ -252,13 +252,6 @@ void Graphics_play (Graphics me, Graphics thee) {
 			{  double x1 = get, x2 = get, y1 = get, y2 = get;
 				Graphics_unhighlight (thee, x1, x2, y1, y2);
 			}  break;
-#if motif
-			case XOR_ON:
-			{  Graphics_Colour colour; colour. red = get, colour. green = get, colour. blue = get;
-				Graphics_xorOn (thee, colour);
-			}  break;
-			case XOR_OFF: Graphics_xorOff (thee); break;
-#endif
 			case RECTANGLE_MM:
 			{  double x = get, y = get, horSide = get, vertSide = get;
 				Graphics_rectangle_mm (thee, x, y, horSide, vertSide);

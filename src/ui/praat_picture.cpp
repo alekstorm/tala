@@ -1502,12 +1502,7 @@ void praat_picture_exit (void) {
 void praat_picture_open (void) {
 	Graphics_markGroup (GRAPHICS);   // we start a group of graphics output here
 	if (theCurrentPraatPicture == & theForegroundPraatPicture && ! theCurrentPraatApplication -> batch) {
-		#if gtk
-			gtk_window_present (GTK_WINDOW (shell));
-		#elif motif
-			XtMapWidget (shell);
-			XMapRaised (XtDisplay (shell), XtWindow (shell));
-		#endif
+		gtk_window_present (GTK_WINDOW (shell));
 		Picture_unhighlight (praat_picture);
 	}
 	/* Foregoing drawing routines may have changed some of the output attributes */
@@ -1534,12 +1529,10 @@ void praat_picture_close (void) {
 	if (theCurrentPraatPicture != & theForegroundPraatPicture) return;
 	if (! theCurrentPraatApplication -> batch) {
 		Picture_highlight (praat_picture);
-		#if gtk
-			// TODO: Tijdelijke fix; dit exposed de selectie, maar voor bijvoorbeeld 'text' die buiten
-			// de selectie valt is dit geen optie. Het mooiste zou zijn als na praat_picture_close
-			// bekend zou zijn wat de 'dirty' regio is van het scherm. Om vervolgens alleen dat te exposen
-			Picture_selfExpose (praat_picture);
-		#endif
+		// TODO: Tijdelijke fix; dit exposed de selectie, maar voor bijvoorbeeld 'text' die buiten
+		// de selectie valt is dit geen optie. Het mooiste zou zijn als na praat_picture_close
+		// bekend zou zijn wat de 'dirty' regio is van het scherm. Om vervolgens alleen dat te exposen
+		Picture_selfExpose (praat_picture);
 	}
 }
 
@@ -1569,13 +1562,9 @@ void praat_picture_init (void) {
 	if (! theCurrentPraatApplication -> batch) {
 		char pictureWindowTitle [100];
 		// Ook al eerder gezien... Migreren naar UI?
-		#if gtk
-			GdkScreen *screen = gtk_window_get_screen (GTK_WINDOW (theCurrentPraatApplication -> topShell));
-			int screenWidth = gdk_screen_get_width (screen);
+		GdkScreen *screen = gtk_window_get_screen (GTK_WINDOW (theCurrentPraatApplication -> topShell));
+		int screenWidth = gdk_screen_get_width (screen);
 //	        int screenHeight = gdk_screen_get_height (screen);
-		#elif motif
-			int screenWidth = WidthOfScreen (DefaultScreenOfDisplay (XtDisplay (theCurrentPraatApplication -> topShell)));
-		#endif
 		resolution = Gui_getResolution (theCurrentPraatApplication -> topShell);
 		#if defined (macintosh)
 			margin = 2, width = 6 * resolution + 20;
@@ -1595,11 +1584,6 @@ void praat_picture_init (void) {
 		sprintf (pictureWindowTitle, "%s Picture", praatP.title);
 		dialog = GuiWindow_create (theCurrentPraatApplication -> topShell, x, Gui_AUTOMATIC, width, height, Melder_peekUtf8ToWcs (pictureWindowTitle), NULL, NULL, 0);
 		shell = GuiObject_parent (dialog);
-		#ifdef UNIX
-			#if motif
-			XtVaSetValues (dialog, XmNhighlightThickness, 1, NULL);
-			#endif
-		#endif
 		menuBar = Gui_addMenuBar (dialog);
 	}
 	if (! theCurrentPraatApplication -> batch) {
@@ -1798,37 +1782,15 @@ void praat_picture_init (void) {
 
 	if (! theCurrentPraatApplication -> batch) {
 		width = height = resolution * 12;
-		#if gtk
-			// TODO: GuiScrollWindow
-			scrollWindow = gtk_scrolled_window_new (NULL, NULL);
-			gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrollWindow), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-		#elif motif
-			XtManageChild (menuBar);
-			#if defined (macintosh) || defined (_WIN32)
-				scrollWindow = XmCreateScrolledWindow (dialog, "scrolledWindow", NULL, 0);
-				XtVaSetValues (scrollWindow,
-					XmNleftAttachment, XmATTACH_FORM, XmNleftOffset, margin,
-					XmNrightAttachment, XmATTACH_FORM,
-					XmNtopAttachment, XmATTACH_FORM, XmNtopOffset, Machine_getMenuBarHeight () + margin,
-					XmNbottomAttachment, XmATTACH_FORM, NULL);
-			#else
-				scrollWindow = XtVaCreateWidget (
-					"scrolledWindow", xmScrolledWindowWidgetClass, dialog,
-					XmNscrollingPolicy, XmAUTOMATIC, XmNrightAttachment, XmATTACH_FORM,
-					XmNbottomAttachment, XmATTACH_FORM, XmNleftAttachment, XmATTACH_FORM,
-					XmNtopAttachment, XmATTACH_FORM, XmNtopOffset, Machine_getMenuBarHeight (), NULL);
-			#endif
-		#endif
-		#if gtk
-			drawingArea = GuiDrawingArea_create (scrollWindow, 0, width, 0, height, NULL, NULL, NULL, NULL, NULL, 0);
-			gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrollWindow), drawingArea);
-			gtk_container_add (GTK_CONTAINER (dialog), scrollWindow);
+		// TODO: GuiScrollWindow
+		scrollWindow = gtk_scrolled_window_new (NULL, NULL);
+		gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrollWindow), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+		drawingArea = GuiDrawingArea_create (scrollWindow, 0, width, 0, height, NULL, NULL, NULL, NULL, NULL, 0);
+		gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrollWindow), drawingArea);
+		gtk_container_add (GTK_CONTAINER (dialog), scrollWindow);
 
-			GuiObject_show (menuBar);
-			GuiObject_show (drawingArea);
-		#elif motif
-			drawingArea = GuiDrawingArea_createShown (scrollWindow, 0, width, 0, height, NULL, NULL, NULL, NULL, NULL, 0);
-		#endif
+		GuiObject_show (menuBar);
+		GuiObject_show (drawingArea);
 		GuiObject_show (scrollWindow);
 		GuiObject_show (dialog);
 	}

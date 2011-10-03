@@ -95,20 +95,7 @@
 	#include <math.h>
 #endif
 
-#ifdef UNIX
-	#if motif
-		static Bool predicateProcedure (Display *display, XEvent *event, char *arg) {
-			char buffer [20];
-			KeySym key;
-			XComposeStatus compose;
-			(void) display;
-			(void) arg;
-			if (event -> type != KeyPress) return False;
-			XLookupString ((XKeyEvent *) event, buffer, 20, & key, & compose);
-			return key == 0xFF1B || key == 0xFF09;   /* Escape key or Tab key. */
-		}
-	#endif
-#endif
+#include <gtk/gtk.h>
 
 static struct {
 	enum kMelder_asynchronicityLevel maximumAsynchronicity;
@@ -202,11 +189,7 @@ static struct MelderPlay {
 	bool explicit_, fakeMono;
 	int (*callback) (void *closure, long samplesPlayed);
 	void *closure;
-	#if motif
-		XtWorkProcId workProcId_motif;
-	#elif gtk
-		gint workProcId_gtk;
-	#endif
+	gint workProcId_gtk;
 	bool usePortAudio, blocking, supports_paComplete;
 	PaStream *stream;
 	double paStartingTime;
@@ -331,11 +314,7 @@ int MelderAudio_stopPlaying (bool explicit_) {
 	my explicit_ = explicit_;
 	if (! MelderAudio_isPlaying || my asynchronicity < kMelder_asynchronicityLevel_ASYNCHRONOUS) return 0;
 	(void) flush ();
-	#if motif
-		XtRemoveWorkProc (thePlay. workProcId_motif);
-	#elif gtk
-		gtk_idle_remove (thePlay. workProcId_gtk);
-	#endif
+	gtk_idle_remove (thePlay. workProcId_gtk);
 	return 1;
 }
 
@@ -508,15 +487,9 @@ n ++;
 	(void) closure;
 	return false;
 }
-#if motif
-static Boolean workProc_motif (XtPointer closure) {
-	return workProc ((void *) closure);
-}
-#elif gtk
 static gint workProc_gtk (gpointer closure) {
 	return ! workProc ((void *) closure);
 }
-#endif
 
 #if defined (HPUX) || defined (sun) || defined (linux)
 static void cancelPlay16 (void) {
@@ -721,11 +694,7 @@ if (my usePortAudio) {
 			}
 			Pa_StopStream (my stream);
 		} else {
-			#if motif
-				my workProcId_motif = XtAppAddWorkProc (0, workProc_motif, NULL);
-			#elif gtk
-				my workProcId_gtk = gtk_idle_add (workProc_gtk, NULL);
-			#endif
+			my workProcId_gtk = gtk_idle_add (workProc_gtk, NULL);
 			return 1;
 		}
 	} else {
@@ -788,11 +757,7 @@ if (my usePortAudio) {
 			}
 			Pa_AbortStream (my stream);
 		} else /* my asynchronicity == kMelder_asynchronicityLevel_ASYNCHRONOUS */ {
-			#if motif
-				my workProcId_motif = XtAppAddWorkProc (0, workProc_motif, NULL);
-			#elif gtk
-				my workProcId_gtk = gtk_idle_add (workProc_gtk, NULL);
-			#endif
+			my workProcId_gtk = gtk_idle_add (workProc_gtk, NULL);
 			return 1;
 		}
 	}
@@ -1195,9 +1160,6 @@ if (my usePortAudio) {
 		int interrupted = 0;
 		while (my samplesLeft && ! interrupted) {
 			int dsamples = my samplesLeft > 500 ? 500 : my samplesLeft;
-			#if motif
-				XEvent event;
-			#endif
 			if (write (my audio_fd, (char *) & my buffer [my samplesSent * my numberOfChannels], 2 * dsamples * my numberOfChannels) == -1)
 				return cancelPlay16 (), Melder_error1 (L"Cannot write audio output.");
 			my samplesLeft -= dsamples;
@@ -1205,10 +1167,6 @@ if (my usePortAudio) {
 			my samplesPlayed = (Melder_clock () - theStartingTime) * my sampleRate;
 			if (my callback && ! my callback (my closure, my samplesPlayed))
 				interrupted = 1;
-			#if motif
-				if (my asynchronicity == kMelder_asynchronicityLevel_INTERRUPTABLE && XCheckIfEvent (XtDisplay (Melder_topShell), & event, predicateProcedure, 0))
-					my explicit_ = MelderAudio_EXPLICIT, interrupted = 1;
-			#endif
 		}
 		if (! interrupted) {
 			/*
@@ -1218,11 +1176,7 @@ if (my usePortAudio) {
 			my samplesPlayed = my numberOfSamples;
 		}
 	} else /* my asynchronicity == kMelder_asynchronicityLevel_ASYNCHRONOUS */ {
-		#if motif
-			my workProcId_motif = XtAppAddWorkProc (Melder_appContext, workProc_motif, NULL);
-		#elif gtk
-			my workProcId_gtk = gtk_idle_add (workProc_gtk, NULL);
-		#endif
+		my workProcId_gtk = gtk_idle_add (workProc_gtk, NULL);
 		return 1;
 	}
 	flush ();

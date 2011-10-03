@@ -231,12 +231,6 @@ int praat_executeCommand (Interpreter *interpreter, wchar_t *command) {
 			while (*p == ' ' || *p == '\t') p ++;
 			if (*p == '\0')
 				return Melder_error1 (L"Missing command after `sendpraat'.");
-			#if motif
-			char *result = sendpraat (XtDisplay (theCurrentPraatApplication -> topShell), Melder_peekWcsToUtf8 (programName),
-				SENDPRAAT_TIMEOUT, Melder_peekWcsToUtf8 (p));
-			if (result)
-				return Melder_error4 (Melder_peekUtf8ToWcs (result), L"\nMessage to ", programName, L" not completed.");
-			#endif
 		} else if (wcsnequ (command, L"sendsocket ", 11)) {
 			/*if (theCurrentPraatObjects != & theForegroundPraatObjects) // FIXME
 				return Melder_error1 (L"The script command \"sendsocket\" is not available inside manuals.");

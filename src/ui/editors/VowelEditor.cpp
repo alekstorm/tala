@@ -191,9 +191,6 @@ VowelEditor::VowelEditor (GuiObject parent, const wchar_t *title, Any data)
 	  _grid(griddefault) {
 	createMenus ();
 	createChildren ();
-	#if motif
-	Melder_assert (XtWindow (_drawingArea));
-	#endif
 	_g = Graphics_create_xmdrawingarea (_drawingArea);
 	Graphics_setFontSize (_g, 10);
 	prefs ();
@@ -1439,7 +1436,6 @@ void VowelEditor::createChildren ()
 
 	// Origin is top left!
 
-#if gtk
 	guint nrows = 25, ncols = 7, ileft, iright = 0, itop, ibottom;
 	form = _dialog;
 	GuiObject table = gtk_table_new (nrows, ncols, TRUE);
@@ -1501,71 +1497,6 @@ void VowelEditor::createChildren ()
 	gtk_table_attach_defaults (GTK_TABLE (table), _drawingArea, 0, ncols, 0, nrows - 3);
 
 	gtk_widget_show_all (form);
-
-#elif motif
-
-	double button_width = 60, text_width = 95, status_info_width = 290;
-	double left, right, top, bottom, bottom_widgets_top, bottom_widgets_bottom, bottom_widgets_halfway;
-
-	form = XmCreateForm (_dialog, "buttons", NULL, 0);
-	XtVaSetValues (form,
-		XmNleftAttachment, XmATTACH_FORM, XmNrightAttachment, XmATTACH_FORM,
-		XmNtopAttachment, XmATTACH_FORM, XmNtopOffset, Machine_getMenuBarHeight (),
-		XmNbottomAttachment, XmATTACH_FORM,
-		XmNtraversalOn, False,   /* Needed in order to redirect all keyboard input to the text widget?? */
-		NULL);
-
-	// Three buttons on a row: Play, Reverse, Publish
-	left = 10; right = left + button_width;
-	bottom_widgets_top = top = -MARGIN_BOTTOM +10; bottom_widgets_bottom = bottom = -STATUS_INFO;
-	_playButton = GuiButton_createShown (form, left, right, top, bottom, L"Play", gui_button_cb_play, me, 0);
-	left = right + 10; right = left + button_width;
-	_reverseButton = GuiButton_createShown (form, left, right, top, bottom, L"Reverse", gui_button_cb_reverse, me, 0);
-	left = right + 10; right = left + button_width;
-	_publishButton = GuiButton_createShown (form, left, right, top, bottom, L"Publish", gui_button_cb_publish, me, 0);
-	// Four Text widgets with the label on top: Duration, Extend, F0, Slope
-	// Make the F0 slope button 10 wider to accomodate the text
-	// We wil not use a callback from a Text widget. It will get called multiple times during the editing
-	// of the text. Better to have all editing done and then query the widget for its value!
-	left = right + 10; right = left + text_width; bottom_widgets_halfway = bottom = (top + bottom) / 2; top = bottom_widgets_top;
-	_durationLabel = GuiLabel_createShown (form, left, right, top , bottom, L"Duration (s):", 0);
-	top = bottom; bottom = bottom_widgets_bottom;
-	_durationTextField = GuiText_createShown (form, left, right, top, bottom, 0);
-
-	left = right + 10; right = left + text_width; top = bottom_widgets_top; bottom = bottom_widgets_halfway;
-	_extendLabel = GuiLabel_createShown (form, left, right, top, bottom, L"Extend (s):", 0);
-	top = bottom; bottom = bottom_widgets_bottom;
-	_extendTextField = GuiText_createShown (form, left, right, top, bottom, 0);
-
-	left = right + 10; right = left + text_width; top = bottom_widgets_top; bottom = bottom_widgets_halfway;
-	_f0Label = GuiLabel_createShown (form, left, right, top, bottom, L"Start F0 (Hz):", 0);
-	top = bottom; bottom = bottom_widgets_bottom;
-	_f0TextField = GuiText_createShown (form, left, right, top, bottom, 0);
-
-	left = right + 10; right = left + text_width + 10; top = bottom_widgets_top; bottom = bottom_widgets_halfway;
-	_f0SlopeLabel = GuiLabel_createShown (form, left, right, top, bottom, L"F0 slope (oct/s):", 0);
-	top = bottom; bottom = bottom_widgets_bottom;
-	_f0SlopeTextField = GuiText_createShown (form, left, right, top, bottom, 0);
-
-	// The status startInfo and endInfo widget at the bottom:
-
-	bottom = -(STATUS_INFO - Gui_LABEL_HEIGHT) / 2; top = bottom - Gui_LABEL_HEIGHT; left = MARGIN_LEFT; right = left + status_info_width;
-	_startInfo = GuiLabel_createShown (form, left, right, top, bottom, L"", 0);
-
-	left = right; right = left + status_info_width;
-	_endInfo = GuiLabel_createShown (form, left, right, top, bottom, L"", 0);
-
-	/***** Create drawing area. *****/
-	// Approximately square because for our defaults: f1min=200, f1max=1000 and f2min = 500, f2mx = 2500,
-	// log distances are equal (log (1000/200) == log (2500/500) ).
-	_drawingArea = GuiDrawingArea_createShown (form, 0, 0, 0, -MARGIN_BOTTOM,
-		gui_drawingarea_cb_expose, gui_drawingarea_cb_click, gui_drawingarea_cb_key, gui_drawingarea_cb_resize, me, 0);
-	_height = GuiObject_getHeight (_drawingArea);
-	_width = GuiObject_getWidth (_drawingArea);
-
-	GuiObject_show (form);
-
-#endif
 }
 
 void VowelEditor::dataChanged () {}

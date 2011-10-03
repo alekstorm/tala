@@ -39,37 +39,21 @@ typedef struct structGuiWindow {
 	void *goAwayBoss;
 } *GuiWindow;
 
-#if gtk
-	static gboolean _GuiWindow_destroyCallback (GuiObject widget, GdkEvent *event, gpointer void_me) {
-		(void) widget;
-		iam (GuiWindow);
-		Melder_free (me);
-		return TRUE;
-	}
+static gboolean _GuiWindow_destroyCallback (GuiObject widget, GdkEvent *event, gpointer void_me) {
+	(void) widget;
+	iam (GuiWindow);
+	Melder_free (me);
+	return TRUE;
+}
 
-	static gboolean _GuiWindow_goAwayCallback (GuiObject widget, GdkEvent *event, gpointer void_me) {
-		(void) widget;
-		iam (GuiWindow);
-		if (my goAwayCallback != NULL) {
-			my goAwayCallback (my goAwayBoss);
-		}
-		return TRUE;
+static gboolean _GuiWindow_goAwayCallback (GuiObject widget, GdkEvent *event, gpointer void_me) {
+	(void) widget;
+	iam (GuiWindow);
+	if (my goAwayCallback != NULL) {
+		my goAwayCallback (my goAwayBoss);
 	}
-#elif win || mac
-	static void _GuiMotifWindow_destroyCallback (GuiObject widget, XtPointer void_me, XtPointer call) {
-		(void) widget; (void) call;
-		iam (GuiWindow);
-		//Melder_casual ("destroying window widget");
-		Melder_free (me);
-	}
-	static void _GuiMotifWindow_goAwayCallback (GuiObject widget, XtPointer void_me, XtPointer call) {
-		(void) widget; (void) call;
-		iam (GuiWindow);
-		if (my goAwayCallback != NULL) {
-			my goAwayCallback (my goAwayBoss);
-		}
-	}
-#endif
+	return TRUE;
+}
 
 GuiObject GuiWindow_create (GuiObject parent, int x, int y, int width, int height,
 	const wchar_t *title, void (*goAwayCallback) (void *goAwayBoss), void *goAwayBoss, unsigned long flags)
@@ -77,50 +61,26 @@ GuiObject GuiWindow_create (GuiObject parent, int x, int y, int width, int heigh
 	GuiWindow me = Melder_calloc_f (struct structGuiWindow, 1);
 	my goAwayCallback = goAwayCallback;
 	my goAwayBoss = goAwayBoss;
-	#if gtk
-		(void) parent;
-		GuiObject shell = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-		g_signal_connect (G_OBJECT (shell), "delete-event", goAwayCallback ? G_CALLBACK (_GuiWindow_goAwayCallback) : G_CALLBACK (gtk_widget_hide), me);
-		g_signal_connect (G_OBJECT (shell), "destroy-event", G_CALLBACK (_GuiWindow_destroyCallback), me);
+	(void) parent;
+	GuiObject shell = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	g_signal_connect (G_OBJECT (shell), "delete-event", goAwayCallback ? G_CALLBACK (_GuiWindow_goAwayCallback) : G_CALLBACK (gtk_widget_hide), me);
+	g_signal_connect (G_OBJECT (shell), "destroy-event", G_CALLBACK (_GuiWindow_destroyCallback), me);
 
-		// TODO: Paul ik denk dat Gui_AUTOMATIC voor GTK gewoon -1 moet zijn veel minder (onnodig) gezeur
-		if (width == Gui_AUTOMATIC) width = -1;
-		if (height == Gui_AUTOMATIC) height = -1;
+	// TODO: Paul ik denk dat Gui_AUTOMATIC voor GTK gewoon -1 moet zijn veel minder (onnodig) gezeur
+	if (width == Gui_AUTOMATIC) width = -1;
+	if (height == Gui_AUTOMATIC) height = -1;
 
-		gtk_window_set_default_size (GTK_WINDOW (shell), width, height);
-		GuiWindow_setTitle (shell, title);
+	gtk_window_set_default_size (GTK_WINDOW (shell), width, height);
+	GuiWindow_setTitle (shell, title);
 
-		my widget = gtk_vbox_new (FALSE, 0);
-		gtk_container_add (GTK_CONTAINER (shell), my widget);
-		_GuiObject_setUserData (my widget, me);
-	#elif win || mac
-		(void) parent;
-		GuiObject shell = XmCreateShell (NULL, flags & GuiWindow_FULLSCREEN ? "Praatwulgfullscreen" : "Praatwulg", NULL, 0);
-		XtVaSetValues (shell, XmNdeleteResponse, goAwayCallback ? XmDO_NOTHING : XmUNMAP, NULL);
-		if (x != Gui_AUTOMATIC) XtVaSetValues (shell, XmNx, x, NULL);
-		if (y != Gui_AUTOMATIC) XtVaSetValues (shell, XmNy, y, NULL);
-		if (width != Gui_AUTOMATIC) XtVaSetValues (shell, XmNwidth, (Dimension) width, NULL);
-		if (height != Gui_AUTOMATIC) XtVaSetValues (shell, XmNheight, (Dimension) height, NULL);
-		if (goAwayCallback) {
-			XmAddWMProtocolCallback (shell, 'delw', _GuiMotifWindow_goAwayCallback, (void *) me);
-		}
-		GuiWindow_setTitle (shell, title);
-		my widget = XmCreateForm (shell, "dialog", NULL, 0);
-		_GuiObject_setUserData (my widget, me);
-		XtAddCallback (my widget, XmNdestroyCallback, _GuiMotifWindow_destroyCallback, me);
-		XtVaSetValues (my widget, XmNdialogStyle, XmDIALOG_MODELESS, XmNautoUnmanage, False, NULL);
-	#endif
+	my widget = gtk_vbox_new (FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (shell), my widget);
+	_GuiObject_setUserData (my widget, me);
 	return my widget;
 }
 
 void GuiWindow_setTitle (GuiObject shell, const wchar_t *title) {
-	#if gtk
-		gtk_window_set_title (GTK_WINDOW (shell), Melder_peekWcsToUtf8 (title));
-	#elif mac
-		SetWindowTitleWithCFString (shell -> nat.window.ptr, Melder_peekWcsToCfstring (title));
-	#elif win
-		SetWindowText (shell -> window, title);
-	#endif
+	gtk_window_set_title (GTK_WINDOW (shell), Melder_peekWcsToUtf8 (title));
 }
 
 int GuiWindow_setDirty (GuiObject shell, int dirty) {
@@ -135,26 +95,8 @@ int GuiWindow_setDirty (GuiObject shell, int dirty) {
 }
 
 void GuiWindow_drain (GuiObject me) {
-	#if gtk
-		//gdk_window_flush (gtk_widget_get_window (me));
-		gdk_flush ();
-	#elif mac
-		QDFlushPortBuffer (GetWindowPort (my macWindow), NULL);
-		/*
-		 * The following TRICK cost me half a day to work out.
-		 * It turns out that after a call to QDFlushPortBuffer (),
-		 * it takes MacOS ages to compute a new dirty region while
-		 * the next graphics commands are executed. Such a dirty region
-		 * could well be the region that includes all the pixels drawn by
-		 * the graphics commands, and nothing else. One can imagine
-		 * that such a thing takes five seconds when the graphics is
-		 * a simple Graphics_function () of e.g. noise.
-		 */
-		static Rect bounds = { -32768, -32768, 32767, 32767 };
-		QDAddRectToDirtyRegion (GetWindowPort (my macWindow), & bounds);
-	#else
-		(void) me;
-	#endif
+	//gdk_window_flush (gtk_widget_get_window (me));
+	gdk_flush ();
 }
 
 /* End of file GuiWindow.c */

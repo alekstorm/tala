@@ -171,46 +171,33 @@ void Graphics_updateWs (I) {
 	iam (Graphics);
 	if (me && my screen) {
 		iam (GraphicsScreen);
-		#if gtk
-			//GdkWindow *window = gtk_widget_get_parent_window (my drawingArea);
-			GdkRectangle rect;
+		//GdkWindow *window = gtk_widget_get_parent_window (my drawingArea);
+		GdkRectangle rect;
 
-			if (my x1DC < my x2DC) {
-				rect.x = my x1DC;
-				rect.width = my x2DC - my x1DC;
-			} else {
-				rect.x = my x2DC;
-				rect.width = my x1DC - my x2DC;
-			}
+		if (my x1DC < my x2DC) {
+			rect.x = my x1DC;
+			rect.width = my x2DC - my x1DC;
+		} else {
+			rect.x = my x2DC;
+			rect.width = my x1DC - my x2DC;
+		}
 
-			if (my y1DC < my y2DC) {
-				rect.y = my y1DC;
-				rect.height = my y2DC - my y1DC;
-			} else {
-				rect.y = my y2DC;
-				rect.height = my y1DC - my y2DC;
-			}
+		if (my y1DC < my y2DC) {
+			rect.y = my y1DC;
+			rect.height = my y2DC - my y1DC;
+		} else {
+			rect.y = my y2DC;
+			rect.height = my y1DC - my y2DC;
+		}
 
-			if (my cr && my drawingArea) {  // update clipping rectangle to new graphics size
-				cairo_reset_clip (my cr);
-				cairo_rectangle (my cr, rect.x, rect.y, rect.width, rect.height);
-				cairo_clip (my cr);
-			}
-			gdk_window_clear (my window);
-			gdk_window_invalidate_rect (my window, & rect, true);
-			//gdk_window_process_updates (window, true);
-		#elif win
-			//clear (me); // lll
-			if (my window) InvalidateRect (my window, NULL, TRUE);
-		#elif mac
-			Rect r;
-			if (my drawingArea) GuiMac_clipOn (my drawingArea);   // to prevent invalidating invisible parts of the canvas
-			SetRect (& r, my x1DC, my y1DC, my x2DC, my y2DC);
-			SetPort (my macPort);
-			/*EraseRect (& r);*/
-			InvalWindowRect (GetWindowFromPort ((CGrafPtr) my macPort), & r);
-			if (my drawingArea) GuiMac_clipOff ();
-		#endif
+		if (my cr && my drawingArea) {  // update clipping rectangle to new graphics size
+			cairo_reset_clip (my cr);
+			cairo_rectangle (my cr, rect.x, rect.y, rect.width, rect.height);
+			cairo_clip (my cr);
+		}
+		gdk_window_clear (my window);
+		gdk_window_invalidate_rect (my window, & rect, true);
+		//gdk_window_process_updates (window, true);
 	}
 }
 
@@ -344,11 +331,7 @@ static void cb_move (GUI_ARGS) {
 
 Graphics Graphics_create_xmdrawingarea (void *w) {   /* w = XmDrawingArea widget */
 	GraphicsScreen me = Thing_new (GraphicsScreen);
-	#if gtk
-		GtkRequisition realsize;
-	#elif motif
-		Dimension width, height;
-	#endif
+	GtkRequisition realsize;
 
 	my drawingArea = static_cast <GuiObject> (w);   /* Now !!!!!!!!!! */
 	my screen = true;
@@ -360,23 +343,14 @@ Graphics Graphics_create_xmdrawingarea (void *w) {   /* w = XmDrawingArea widget
 	#ifdef macintosh
 		GraphicsScreen_init (me, XtDisplay (my drawingArea), (unsigned long) GetWindowPort ((WindowRef) XtWindow (my drawingArea)), Gui_getResolution (my drawingArea));
 	#else
-		#if gtk
-			GraphicsScreen_init (me, GTK_WIDGET (my drawingArea), (unsigned long) GTK_WIDGET (my drawingArea), Gui_getResolution(my drawingArea));
-		#elif motif
-			GraphicsScreen_init (me, XtDisplay (my drawingArea), (unsigned long) XtWindow (my drawingArea), Gui_getResolution (my drawingArea));
-		#endif
+		GraphicsScreen_init (me, GTK_WIDGET (my drawingArea), (unsigned long) GTK_WIDGET (my drawingArea), Gui_getResolution(my drawingArea));
 	#endif
 
-	#if gtk
-		// fb: is really the request meant or rather the actual size, aka allocation?
-		gtk_widget_size_request (my drawingArea, &realsize);
-		// HIER WAS IK
-		//	g_debug("--> %d %d", realsize.width, realsize.height);
-		Graphics_setWsViewport ((Graphics) me, 0, realsize.width, 0, realsize.height);
-	#elif motif
-		XtVaGetValues (my drawingArea, XmNwidth, & width, XmNheight, & height, NULL);
-		Graphics_setWsViewport ((Graphics) me, 0, width, 0, height);
-	#endif
+	// fb: is really the request meant or rather the actual size, aka allocation?
+	gtk_widget_size_request (my drawingArea, &realsize);
+	// HIER WAS IK
+	//	g_debug("--> %d %d", realsize.width, realsize.height);
+	Graphics_setWsViewport ((Graphics) me, 0, realsize.width, 0, realsize.height);
 	#ifdef macintosh
 		XtAddCallback (my drawingArea, XmNmoveCallback, cb_move, (XtPointer) me);
 	#endif

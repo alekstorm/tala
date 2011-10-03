@@ -54,9 +54,7 @@ RunnerMFC::RunnerMFC (GuiObject parent, const wchar_t *title, Ordered experiment
 	createChildren ();
 	//try { // FIXME exception
 		_graphics = Graphics_create_xmdrawingarea (_drawingArea);
-		#if gtk
-			gtk_widget_set_double_buffered (_drawingArea, FALSE);
-		#endif
+		gtk_widget_set_double_buffered (_drawingArea, FALSE);
 
 struct structGuiDrawingAreaResizeEvent event = { _drawingArea, 0 };
 event. width = GuiObject_getWidth (_drawingArea);
@@ -270,7 +268,7 @@ void RunnerMFC::do_replay () {
 void RunnerMFC::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	RunnerMFC *editor = (RunnerMFC *)void_me;
 	if (editor->_graphics == NULL) return;   // Could be the case in the very beginning.
-if (gtk && event -> type != BUTTON_PRESS) return;
+if (event -> type != BUTTON_PRESS) return;
 	ExperimentMFC experiment = (ExperimentMFC) editor->_data;
 	if (editor->_data == NULL) return;
 	double reactionTime = Melder_clock () - experiment -> startingTime - experiment -> stimulusInitialSilenceDuration;

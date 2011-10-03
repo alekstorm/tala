@@ -80,17 +80,7 @@ void UiForm::UiField::setDefault () {
 				GuiRadioButton_setValue (b -> _toggle, i == _integerDefaultValue);
 			}
 		} break; case UI_OPTIONMENU: {
-			#if gtk
-				gtk_combo_box_set_active (GTK_COMBO_BOX (_cascadeButton), (_integerDefaultValue - 1));
-			#elif motif
-				for (int i = 1; i <= _options -> size; i ++) {
-					UiOption *b = (UiOption *) _options -> item [i];
-					XmToggleButtonSetState (b -> _toggle, i == _integerDefaultValue, False);
-					if (i == _integerDefaultValue) {
-						XtVaSetValues (_cascadeButton, motif_argXmString (XmNlabelString, Melder_peekWcsToUtf8 (b - > _name)), NULL);
-					}
-				}
-			#endif
+			gtk_combo_box_set_active (GTK_COMBO_BOX (_cascadeButton), (_integerDefaultValue - 1));
 		} break; case UI_LIST: {
 			GuiList_selectItem (_list, _integerDefaultValue);
 		}
@@ -205,16 +195,8 @@ int UiForm::UiField::widgetToValue () {
 				return Melder_error3 (L"No option chosen for `", _name, L"'.");
 		} break; case UI_OPTIONMENU: {
 			_integerValue = 0;
-			#if gtk
-				// TODO: Graag even een check :)
-				_integerValue = gtk_combo_box_get_active (GTK_COMBO_BOX (_cascadeButton)) + 1;
-			#elif motif
-			for (int i = 1; i <= _options -> size; i ++) {
-				UiOption *b = (UiOption *)_options -> item [i];
-				if (XmToggleButtonGetState (b -> _toggle))
-					_integerValue = i;
-			}
-			#endif
+			// TODO: Graag even een check :)
+			_integerValue = gtk_combo_box_get_active (GTK_COMBO_BOX (_cascadeButton)) + 1;
 			if (_integerValue == 0)
 				return Melder_error3 (L"No option chosen for `", _name, L"'.");
 		} break; case UI_LIST: {

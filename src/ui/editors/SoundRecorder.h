@@ -122,9 +122,6 @@ class SoundRecorder : public Editor {
 	const PaDeviceInfo *_deviceInfos [1+SoundRecorder_IDEVICE_MAX];
 	PaDeviceIndex _deviceIndices [1+SoundRecorder_IDEVICE_MAX];
 	PaStream *_portaudioStream;
-#if motif
-	XtWorkProcId _workProcId;
-#endif
 
 #if defined (sgi)
 	ALconfig _audio;

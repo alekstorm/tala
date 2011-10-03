@@ -255,9 +255,6 @@ void TextEditor::nameChanged () {
 	GuiWindow_setTitle (_shell, windowTitle.string);
 	MelderString_empty (& windowTitle);
 	MelderString_append2 (& windowTitle, _dirty && ! dirtinessAlreadyShown ? L"*" : L"", _name == NULL ? L"(untitled)" : MelderFile_name (& _file));
-	#if motif	
-		XtVaSetValues (_shell, XmNiconName, Melder_peekWcsToUtf8 (windowTitle.string), NULL);
-	#endif
 }
 
 void TextEditor::newDocument () {

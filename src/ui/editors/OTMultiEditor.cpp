@@ -195,15 +195,7 @@ void OTMultiEditor::createChildren () {
 		#endif
 		);
 	_form1Text = GuiText_createShown (_dialog, 124 + STRING_SPACING, 274 + STRING_SPACING, y, Gui_AUTOMATIC, 0);
-	#if motif
-	/* TODO */
-	XtAddCallback (_form1Text, XmNactivateCallback, gui_cb_limit, (XtPointer) me);
-	#endif
 	_form2Text = GuiText_createShown (_dialog, 274 + 2 * STRING_SPACING, 424 + 2 * STRING_SPACING, y, Gui_AUTOMATIC, 0);
-	#if motif
-	/* TODO */
-	XtAddCallback (_form2Text, XmNactivateCallback, gui_cb_limit, (XtPointer) me);
-	#endif
 }
 
 void OTMultiEditor::createMenus () {

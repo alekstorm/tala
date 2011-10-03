@@ -47,14 +47,9 @@ class TableEditor : public Editor {
 	virtual void updateHorizontalScrollBar ();
 
   private:
-#if gtk
 	static void gui_cb_horizontalScroll(GtkRange *rng, gpointer void_me);
 	static void gui_cb_verticalScroll(GtkRange *rng, gpointer void_me);
 	static gboolean gui_cb_drawing_area_scroll(GuiObject w, GdkEventScroll *event, gpointer void_me);
-#elif motif
-	static void gui_cb_horizontalScroll(GUI_ARGS);
-	static void gui_cb_verticalScroll(GUI_ARGS);
-#endif
 
 #ifndef macintosh
 	static int menu_cb_Cut (EDITOR_ARGS);

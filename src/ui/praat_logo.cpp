@@ -57,14 +57,6 @@ static struct {
 	Graphics graphics;
 } theLogo = { 90, 40, logo_defaultDraw };
 
-#if motif
-static void logo_timeOut (XtPointer closure, XtIntervalId *id) {
-	(void) closure;
-	(void) id;
- 	GuiObject_hide (theLogo.form);
-}
-#endif
-
 void praat_setLogo (double width_mm, double height_mm, void (*draw) (Graphics g)) {
 	theLogo.width_mm = width_mm;
 	theLogo.height_mm = height_mm;
@@ -74,19 +66,11 @@ void praat_setLogo (double width_mm, double height_mm, void (*draw) (Graphics g)
 static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	if (theLogo.graphics == NULL)
 		theLogo.graphics = Graphics_create_xmdrawingarea (theLogo.drawingArea);
-#if gtk
-	Graphics_x_setCR (theLogo.graphics, gdk_cairo_create (GDK_DRAWABLE (event -> widget -> window)));
-	cairo_rectangle ((cairo_t *) Graphics_x_getCR (theLogo.graphics), (double) event->x, (double) event->y, (double) event->width, (double) event->height);
-	cairo_clip ((cairo_t *) Graphics_x_getCR (theLogo.graphics));
-	theLogo.draw (theLogo.graphics);
-	cairo_destroy ((cairo_t *) Graphics_x_getCR (theLogo.graphics));
-#elif motif
-	(void) void_me;
-	(void) event;
-	if (theLogo.graphics == NULL)
-		theLogo.graphics = Graphics_create_xmdrawingarea (theLogo.drawingArea);
-	theLogo.draw (theLogo.graphics);
-#endif
+Graphics_x_setCR (theLogo.graphics, gdk_cairo_create (GDK_DRAWABLE (event -> widget -> window)));
+cairo_rectangle ((cairo_t *) Graphics_x_getCR (theLogo.graphics), (double) event->x, (double) event->y, (double) event->width, (double) event->height);
+cairo_clip ((cairo_t *) Graphics_x_getCR (theLogo.graphics));
+theLogo.draw (theLogo.graphics);
+cairo_destroy ((cairo_t *) Graphics_x_getCR (theLogo.graphics));
 }
 
 static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
@@ -101,44 +85,19 @@ static void gui_cb_goAway (I) {
 }
 
 void praat_showLogo (int autoPopDown) {
-	#if gtk
-		static const gchar *authors [3] = { "Paul Boersma", "David Weenink", NULL };
+	static const gchar *authors [3] = { "Paul Boersma", "David Weenink", NULL };
 
-		GuiObject dialog = gtk_about_dialog_new ();
-		#define xstr(s) str(s)
-		#define str(s) #s
-		gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (dialog), xstr (PRAAT_VERSION_STR));
-		gtk_about_dialog_set_copyright (GTK_ABOUT_DIALOG (dialog), "Copyright (C) 1992-" xstr(PRAAT_YEAR) " by Paul Boersma and David Weenink");
-		gtk_about_dialog_set_license (GTK_ABOUT_DIALOG (dialog), "GPL");
-		gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (dialog), "http://www.praat.org");
-		//gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (dialog), authors);
-		g_signal_connect (GTK_DIALOG (dialog), "response", G_CALLBACK (gtk_widget_destroy), NULL);
+	GuiObject dialog = gtk_about_dialog_new ();
+	#define xstr(s) str(s)
+	#define str(s) #s
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (dialog), xstr (PRAAT_VERSION_STR));
+	gtk_about_dialog_set_copyright (GTK_ABOUT_DIALOG (dialog), "Copyright (C) 1992-" xstr(PRAAT_YEAR) " by Paul Boersma and David Weenink");
+	gtk_about_dialog_set_license (GTK_ABOUT_DIALOG (dialog), "GPL");
+	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (dialog), "http://www.praat.org");
+	//gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (dialog), authors);
+	g_signal_connect (GTK_DIALOG (dialog), "response", G_CALLBACK (gtk_widget_destroy), NULL);
 
-		gtk_dialog_run (GTK_DIALOG (dialog));
-
-	#else
-		if (theCurrentPraatApplication -> batch || ! theLogo.draw) return;
-		if (! theLogo.dia) {
-			theLogo.dia = GuiDialog_create (theCurrentPraatApplication -> topShell, 100, 100, Gui_AUTOMATIC, Gui_AUTOMATIC, L"About", gui_cb_goAway, NULL, 0);
-			#if gtk
-				theLogo.form = GTK_DIALOG (theLogo.dia) -> vbox;
-			#else
-				theLogo.form = theLogo.dia;
-			#endif
-			theLogo.drawingArea = GuiDrawingArea_createShown (theLogo.form,
-				0, (int) (theLogo.width_mm / 25.4 * Gui_getResolution (theLogo.drawingArea)),
-				0, (int) (theLogo.height_mm / 25.4 * Gui_getResolution (theLogo.drawingArea)),
-				gui_drawingarea_cb_expose, gui_drawingarea_cb_click, NULL, NULL, NULL, 0);
-		}
-
-		GuiObject_show (theLogo.form);
-		GuiObject_show (theLogo.dia);
-		
-		#if motif
-			if (autoPopDown)
-				XtAppAddTimeOut (theCurrentPraatApplication -> context, 2000, logo_timeOut, (XtPointer) NULL);
-		#endif
-	#endif
+	gtk_dialog_run (GTK_DIALOG (dialog));
 }
 
 /* End of file praat_logo.c */

@@ -73,20 +73,10 @@ void praat_memoryInfo (void) {
 	MelderInfo_writeLine2 (L"   Arrays: ", Melder_integer (NUM_getTotalNumberOfArrays ()));
 	MelderInfo_writeLine5 (L"   Things: ", Melder_integer (Thing_getTotalNumberOfThings ()),
 		L" (objects in list: ", Melder_integer (theCurrentPraatObjects -> n), L")");
-	long numberOfMotifWidgets =
-		#if motif && (defined (_WIN32) || defined (macintosh))
-			Gui_getNumberOfMotifWidgets ();
-		#else
-			0;
-		#endif
-	if (numberOfMotifWidgets > 0) {
-		MelderInfo_writeLine2 (L"   Motif widgets: ", Melder_integer (numberOfMotifWidgets));
-	}
 	MelderInfo_writeLine2 (L"   Other: ",
 		Melder_bigInteger (Melder_allocationCount () - Melder_deallocationCount ()
 			- Thing_getTotalNumberOfThings () - NUM_getTotalNumberOfArrays ()
-			- (MelderString_allocationCount () - MelderString_deallocationCount ())
-			- numberOfMotifWidgets));
+			- (MelderString_allocationCount () - MelderString_deallocationCount ())));
 	MelderInfo_writeLine5 (
 		L"\nMemory history of this session:\n"
 		L"   Total created: ", Melder_bigInteger (Melder_allocationCount ()), L" (", Melder_bigInteger (Melder_allocationSize ()), L" bytes)");

@@ -80,9 +80,6 @@ void ScriptEditor::nameChanged () {
 	if (_dirty && ! dirtinessAlreadyShown)
 		MelderString_append (& buffer, L" (modified)");
 	GuiWindow_setTitle (_shell, buffer.string);
-	#if motif
-	XtVaSetValues (_shell, XmNiconName, "Script", NULL);
-	#endif
 }
 
 void ScriptEditor::goAway () {

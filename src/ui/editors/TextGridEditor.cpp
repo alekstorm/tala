@@ -1435,13 +1435,9 @@ void TextGridEditor::gui_text_cb_change (I, GuiTextEvent event) {
 }
 
 void TextGridEditor::createChildren () {
-	#if gtk
-		_text = GuiText_create (NULL, 0, 0, 0, TEXT_HEIGHT, GuiText_WORDWRAP | GuiText_MULTILINE);
-		gtk_box_pack_start (GTK_BOX (_dialog), _text, FALSE, FALSE, 3);
-		GuiObject_show (_text);
-	#else
-		_text = GuiText_createShown (_dialog, 0, 0, 0, TEXT_HEIGHT, GuiText_WORDWRAP | GuiText_MULTILINE); // FIXME motif XmCreateForm
-	#endif
+	_text = GuiText_create (NULL, 0, 0, 0, TEXT_HEIGHT, GuiText_WORDWRAP | GuiText_MULTILINE);
+	gtk_box_pack_start (GTK_BOX (_dialog), _text, FALSE, FALSE, 3);
+	GuiObject_show (_text);
 	/*
 	 * X Toolkit 4:184,461 says: "you should never call XtSetKeyboardFocus",
 	 * "since it interferes with the keyboard traversal code".
@@ -1450,11 +1446,7 @@ void TextGridEditor::createChildren () {
 	 * Our simple and natural desire is that all keyboard input shall go to the only text widget
 	 * in the window (in Motif emulator, this is the automatic behaviour).
 	 */
-	#if gtk
-		gtk_widget_grab_focus (_text);   // BUG: can hardly be correct (the text should grab the focus of the window, not the global focus)
-	#elif motif && defined (UNIX)
-		XtSetKeyboardFocus (form, _text);
-	#endif
+	gtk_widget_grab_focus (_text);   // BUG: can hardly be correct (the text should grab the focus of the window, not the global focus)
 
 	int top = TEXT_HEIGHT;
 	int bottom = GuiObject_getY(_drawingArea)+GuiObject_getHeight(_drawingArea);
@@ -1489,11 +1481,6 @@ void TextGridEditor::prepareDraw () {
 }
 
 void TextGridEditor::do_drawIntervalTier (IntervalTier tier, int itier) {
-	#if gtk || defined (macintosh)
-		bool platformUsesAntiAliasing = true;
-	#else
-		bool platformUsesAntiAliasing = false;
-	#endif
 	long x1DC, x2DC, yDC;
 	int selectedInterval = itier == _selectedTier ? getSelectedInterval () : 0, iinterval, ninterval = tier -> intervals -> size;
 	Graphics_WCtoDC (_graphics, _startWindow, 0.0, & x1DC, & yDC);
@@ -1544,7 +1531,7 @@ void TextGridEditor::do_drawIntervalTier (IntervalTier tier, int itier) {
 		if (! cursorAtBoundary) {
 			double dy = Graphics_dyMMtoWC (_graphics, 1.5);
 			Graphics_setGrey (_graphics, 0.8);
-			Graphics_setLineWidth (_graphics, platformUsesAntiAliasing ? 6.0 : 5.0);
+			Graphics_setLineWidth (_graphics, 6.0);
 			Graphics_line (_graphics, _startSelection, 0.0, _startSelection, 1.0);
 			Graphics_setLineWidth (_graphics, 1.0);
 			Graphics_setColour (_graphics, Graphics_BLUE);
@@ -1567,7 +1554,7 @@ void TextGridEditor::do_drawIntervalTier (IntervalTier tier, int itier) {
 		if (tmin >= _startWindow && tmin <= _endWindow && iinterval > 1) {
 			int selected = ( _selectedTier == itier && tmin == _startSelection );
 			Graphics_setColour (_graphics, selected ? Graphics_RED : Graphics_BLUE);
-			Graphics_setLineWidth (_graphics, platformUsesAntiAliasing ? 6.0 : 5.0);
+			Graphics_setLineWidth (_graphics, 6.0);
 			Graphics_line (_graphics, tmin, 0.0, tmin, 1.0);
 
 			/*
@@ -1575,7 +1562,7 @@ void TextGridEditor::do_drawIntervalTier (IntervalTier tier, int itier) {
 			 */
 			if (tmin == _startSelection) {
 				Graphics_setColour (_graphics, Graphics_YELLOW);
-				Graphics_setLineWidth (_graphics, platformUsesAntiAliasing ? 2.0 : 1.0);
+				Graphics_setLineWidth (_graphics, 2.0);
 				Graphics_line (_graphics, tmin, 0.0, tmin, 1.0);
 			}
 		}
@@ -1600,11 +1587,6 @@ void TextGridEditor::do_drawIntervalTier (IntervalTier tier, int itier) {
 }
 
 void TextGridEditor::do_drawTextTier (TextTier tier, int itier) {
-	#if gtk || defined (macintosh)
-		bool platformUsesAntiAliasing = true;
-	#else
-		bool platformUsesAntiAliasing = false;
-	#endif
 	int ipoint, npoint = tier -> points -> size;
 	Graphics_setPercentSignIsItalic (_graphics, _useTextStyles);
 	Graphics_setNumberSignIsBold (_graphics, _useTextStyles);
@@ -1623,7 +1605,7 @@ void TextGridEditor::do_drawTextTier (TextTier tier, int itier) {
 		if (! cursorAtPoint) {
 			double dy = Graphics_dyMMtoWC (_graphics, 1.5);
 			Graphics_setGrey (_graphics, 0.8);
-			Graphics_setLineWidth (_graphics, platformUsesAntiAliasing ? 6.0 : 5.0);
+			Graphics_setLineWidth (_graphics, 6.0);
 			Graphics_line (_graphics, _startSelection, 0.0, _startSelection, 1.0);
 			Graphics_setLineWidth (_graphics, 1.0);
 			Graphics_setColour (_graphics, Graphics_BLUE);
@@ -1638,7 +1620,7 @@ void TextGridEditor::do_drawTextTier (TextTier tier, int itier) {
 		if (t >= _startWindow && t <= _endWindow) {
 			int selected = ( itier == _selectedTier && t == _startSelection );
 			Graphics_setColour (_graphics, selected ? Graphics_RED : Graphics_BLUE);
-			Graphics_setLineWidth (_graphics, platformUsesAntiAliasing ? 6.0 : 5.0);
+			Graphics_setLineWidth (_graphics, 6.0);
 			Graphics_line (_graphics, t, 0.0, t, 0.2);
 			Graphics_line (_graphics, t, 0.8, t, 1);
 			Graphics_setLineWidth (_graphics, 1.0);
@@ -1654,7 +1636,7 @@ void TextGridEditor::do_drawTextTier (TextTier tier, int itier) {
 			 */
 			if (_startSelection == _endSelection && t == _startSelection) {
 				Graphics_setColour (_graphics, Graphics_YELLOW);
-				Graphics_setLineWidth (_graphics, platformUsesAntiAliasing ? 2.0 : 1.0);
+				Graphics_setLineWidth (_graphics, 2.0);
 				Graphics_line (_graphics, t, 0.0, t, 0.2);
 				Graphics_line (_graphics, t, 0.8, t, 1.0);
 			}

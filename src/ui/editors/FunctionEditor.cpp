@@ -92,9 +92,8 @@ void FunctionEditor::gui_drawingarea_cb_resize (I, GuiDrawingAreaResizeEvent eve
 	editor->_height = event -> height + 111;
 	Graphics_setWsWindow (editor->_graphics, 0, editor->_width, 0, editor->_height);
 	Graphics_setViewport (editor->_graphics, 0, editor->_width, 0, editor->_height);
-	#if gtk
-		// updateWs() also resizes the cairo clipping context to the new window size
-	#endif
+
+	// updateWs() also resizes the cairo clipping context to the new window size
 	Graphics_updateWs (editor->_graphics);
 
 	/* Save the current shell size as the user's preference for a new FunctionEditor. */
@@ -158,9 +157,6 @@ FunctionEditor::FunctionEditor (GuiObject parent, const wchar_t *title, Any data
 	  _startSelection = _endSelection = 0.5 * (_tmin + _tmax);
 	createMenus ();
 	createChildren ();
-	#if motif
-		Melder_assert (XtWindow (_drawingArea));
-	#endif
 	_graphics = Graphics_create_xmdrawingarea (_drawingArea);
 	Graphics_setFontSize (_graphics, 12);
 
@@ -197,20 +193,13 @@ void FunctionEditor::updateScrollBar () {
 	if (value > maximumScrollBarValue - slider_size)
 		value = maximumScrollBarValue - slider_size;
 	if (value < 1) value = 1;
-	#if motif
-		XtVaSetValues (_scrollBar, XmNmaximum, maximumScrollBarValue, NULL);
-	#endif
 	increment = slider_size / SCROLL_INCREMENT_FRACTION + 1;
 	page_increment = RELATIVE_PAGE_INCREMENT * slider_size + 1;
-	#if gtk
-		GtkAdjustment *adj = gtk_range_get_adjustment (GTK_RANGE (_scrollBar));
-		adj -> page_size = slider_size;
-		gtk_adjustment_set_value (adj, value);
-		gtk_adjustment_changed (adj);
-		gtk_range_set_increments (GTK_RANGE (_scrollBar), increment, page_increment);
-	#elif motif
-		XmScrollBarSetValues (_scrollBar, value, slider_size, increment, page_increment, False);
-	#endif
+	GtkAdjustment *adj = gtk_range_get_adjustment (GTK_RANGE (_scrollBar));
+	adj -> page_size = slider_size;
+	gtk_adjustment_set_value (adj, value);
+	gtk_adjustment_changed (adj);
+	gtk_range_set_increments (GTK_RANGE (_scrollBar), increment, page_increment);
 }
 
 void FunctionEditor::updateGroup () {
@@ -972,7 +961,6 @@ int FunctionEditor::menu_cb_moveEright (EDITOR_ARGS) {
 
 /********** GUI CALLBACKS **********/
 
-#if gtk
 void FunctionEditor::gui_cb_scroll (GtkRange *rng, gpointer void_me) {
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	if (editor->_graphics == NULL) return;   // ignore events during creation
@@ -998,34 +986,6 @@ void FunctionEditor::gui_cb_scroll (GtkRange *rng, gpointer void_me) {
 		}
 	}
 }
-#else
-void FunctionEditor::gui_cb_scroll (GUI_ARGS) {
-	GUI_IAM (FunctionEditor);
-	if (_graphics == NULL) return;   // ignore events during creation
-	int value, slider, incr, pincr;
-	XmScrollBarGetValues (w, & value, & slider, & incr, & pincr);
-	double shift = editor->_tmin + (value - 1) * (editor->_tmax - editor->_tmin) / maximumScrollBarValue - _startWindow;
-	if (shift != 0.0) {
-		int i;
-		_startWindow += shift;
-		if (_startWindow < editor->_tmin + 1e-12) _startWindow = editor->_tmin;
-		_endWindow += shift;
-		if (_endWindow > editor->_tmax - 1e-12) _endWindow = editor->_tmax;
-		updateText ();
-		/*Graphics_clearWs (_graphics);*/
-		drawNow ();   /* Do not wait for expose event. */
-		if (! _group || ! preferences.synchronizedZoomAndScroll) return;
-		for (i = 1; i <= maxGroup; i ++) if (group [i] && group [i] != me) {
-			group [i] -> startWindow = _startWindow;
-			group [i] -> endWindow = _endWindow;
-			FunctionEditor_updateText (group [i]);
-			updateScrollBar (group [i]);
-			Graphics_clearWs (group [i] -> graphics);
-			drawNow (group [i]);
-		}
-	}
-}
-#endif
 
 int FunctionEditor::menu_cb_intro (EDITOR_ARGS) {
 	FunctionEditor *editor = (FunctionEditor *)editor_me;
@@ -1052,8 +1012,8 @@ void FunctionEditor::createMenus () {
 	menu->addCommand (L"-- play --", 0, 0);
 	menu->addCommand (L"Audio:", GuiMenu_INSENSITIVE, menu_cb_play /* dummy */);
 	menu->addCommand (L"Play...", 0, menu_cb_play);
-	menu->addCommand (L"Play or stop", gtk ? 0 : GuiMenu_TAB, menu_cb_playOrStop);
-	menu->addCommand (L"Play window", gtk ? 0 : GuiMenu_SHIFT + GuiMenu_TAB, menu_cb_playWindow);
+	menu->addCommand (L"Play or stop", 0, menu_cb_playOrStop);
+	menu->addCommand (L"Play window", 0, menu_cb_playWindow);
 	menu->addCommand (L"Interrupt playing", GuiMenu_ESCAPE, menu_cb_interruptPlaying);
 
 	menu = getMenu (L"Query");
@@ -1099,7 +1059,7 @@ void FunctionEditor::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent eve
 void FunctionEditor::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	FunctionEditor *editor = (FunctionEditor *)void_me;
 	if (editor->_graphics == NULL) return;   // Could be the case in the very beginning.
-	if (gtk && event -> type != BUTTON_PRESS) return;
+	if (event -> type != BUTTON_PRESS) return;
 	double xWC, yWC;
 	editor->_shiftKeyPressed = event -> shiftKeyPressed;
 	Graphics_setWindow (editor->_graphics, 0, editor->_width, 0, editor->_height);
@@ -1168,110 +1128,56 @@ void FunctionEditor::createChildren () {
 	GuiObject form;
 	int x = BUTTON_X;
 
-	#if gtk
-		form = _dialog;
-		GuiObject hctl_box = gtk_hbox_new (FALSE, BUTTON_SPACING);
-		gtk_box_pack_end (GTK_BOX (form), hctl_box, FALSE, FALSE, 0);
-		GuiObject leftbtn_box = gtk_hbox_new (TRUE, 3);
-		gtk_box_pack_start (GTK_BOX (hctl_box), leftbtn_box, FALSE, FALSE, 0);
+	form = _dialog;
+	GuiObject hctl_box = gtk_hbox_new (FALSE, BUTTON_SPACING);
+	gtk_box_pack_end (GTK_BOX (form), hctl_box, FALSE, FALSE, 0);
+	GuiObject leftbtn_box = gtk_hbox_new (TRUE, 3);
+	gtk_box_pack_start (GTK_BOX (hctl_box), leftbtn_box, FALSE, FALSE, 0);
 
-		/***** Create zoom buttons. *****/
+	/***** Create zoom buttons. *****/
 
-		gtk_box_pack_start (GTK_BOX (leftbtn_box),
-			GuiButton_create (NULL, 0, 0, 0, 0, L"all", gui_button_cb_showAll, this, 0), TRUE, TRUE, 0);
-		gtk_box_pack_start (GTK_BOX (leftbtn_box),
-			GuiButton_create (NULL, 0, 0, 0, 0, L"in", gui_button_cb_zoomIn, this, 0), TRUE, TRUE, 0);
-		gtk_box_pack_start (GTK_BOX (leftbtn_box),
-			GuiButton_create (NULL, 0, 0, 0, 0, L"out", gui_button_cb_zoomOut, this, 0), TRUE, TRUE, 0);
-		gtk_box_pack_start (GTK_BOX (leftbtn_box),
-			GuiButton_create (NULL, 0, 0, 0, 0, L"sel", gui_button_cb_zoomToSelection, this, 0), TRUE, TRUE, 0);
-		gtk_box_pack_start (GTK_BOX (leftbtn_box),
-			GuiButton_create (NULL, 0, 0, 0, 0, L"bak", gui_button_cb_zoomBack, this, 0), TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (leftbtn_box),
+		GuiButton_create (NULL, 0, 0, 0, 0, L"all", gui_button_cb_showAll, this, 0), TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (leftbtn_box),
+		GuiButton_create (NULL, 0, 0, 0, 0, L"in", gui_button_cb_zoomIn, this, 0), TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (leftbtn_box),
+		GuiButton_create (NULL, 0, 0, 0, 0, L"out", gui_button_cb_zoomOut, this, 0), TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (leftbtn_box),
+		GuiButton_create (NULL, 0, 0, 0, 0, L"sel", gui_button_cb_zoomToSelection, this, 0), TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (leftbtn_box),
+		GuiButton_create (NULL, 0, 0, 0, 0, L"bak", gui_button_cb_zoomBack, this, 0), TRUE, TRUE, 0);
 
-		GuiObject_show (leftbtn_box);
-	#elif motif
-		form = XmCreateForm (_dialog, "buttons", NULL, 0);
-		XtVaSetValues (form,
-			XmNleftAttachment, XmATTACH_FORM, XmNrightAttachment, XmATTACH_FORM,
-			XmNtopAttachment, XmATTACH_FORM, XmNtopOffset, Machine_getMenuBarHeight (),
-			XmNbottomAttachment, XmATTACH_FORM,
-			XmNtraversalOn, False,   /* Needed in order to redirect all keyboard input to the text widget. */
-			NULL);
-
-		/***** Create zoom buttons. *****/
-
-		GuiButton_createShown (form, x, x + BUTTON_WIDTH, -6 - Machine_getScrollBarWidth (), -4,
-			L"all", gui_button_cb_showAll, this, 0);
-		x += BUTTON_WIDTH + BUTTON_SPACING;
-		GuiButton_createShown (form, x, x + BUTTON_WIDTH, -6 - Machine_getScrollBarWidth (), -4,
-			L"in", gui_button_cb_zoomIn, this, 0);
-		x += BUTTON_WIDTH + BUTTON_SPACING;
-		GuiButton_createShown (form, x, x + BUTTON_WIDTH, -6 - Machine_getScrollBarWidth (), -4,
-			L"out", gui_button_cb_zoomOut, this, 0);
-		x += BUTTON_WIDTH + BUTTON_SPACING;
-		GuiButton_createShown (form, x, x + BUTTON_WIDTH, -6 - Machine_getScrollBarWidth (), -4,
-			L"sel", gui_button_cb_zoomToSelection, this, 0);
-		x += BUTTON_WIDTH + BUTTON_SPACING;
-		GuiButton_createShown (form, x, x + BUTTON_WIDTH, -6 - Machine_getScrollBarWidth (), -4,
-			L"bak", gui_button_cb_zoomBack, this, 0);
-	#endif
+	GuiObject_show (leftbtn_box);
 
 	/***** Create scroll bar. *****/
 
-	#if gtk
-		GtkObject *adj = gtk_adjustment_new (1, 1, maximumScrollBarValue, 1, 1, maximumScrollBarValue - 1);
-		_scrollBar = gtk_hscrollbar_new (GTK_ADJUSTMENT (adj));
-		g_signal_connect (G_OBJECT (_scrollBar), "value-changed", G_CALLBACK (gui_cb_scroll), this);
-		GuiObject_show (_scrollBar);
-		gtk_box_pack_start (GTK_BOX (hctl_box), _scrollBar, TRUE, TRUE, 3);
-	#elif motif
-		_scrollBar = XtVaCreateManagedWidget ("scrollBar",
-			xmScrollBarWidgetClass, form,
-			XmNorientation, XmHORIZONTAL,
-			XmNleftAttachment, XmATTACH_FORM, XmNleftOffset, x += BUTTON_WIDTH + BUTTON_SPACING,
-			XmNrightAttachment, XmATTACH_FORM, XmNrightOffset, 80 + BUTTON_SPACING,
-			XmNbottomAttachment, XmATTACH_FORM,
-			XmNheight, Machine_getScrollBarWidth (),
-			XmNminimum, 1,
-			XmNmaximum, maximumScrollBarValue,
-			XmNvalue, 1,
-			XmNsliderSize, maximumScrollBarValue - 1,
-			NULL);
-		XtAddCallback (_scrollBar, XmNvalueChangedCallback, gui_cb_scroll, (XtPointer) this);
-		XtAddCallback (_scrollBar, XmNdragCallback, gui_cb_scroll, (XtPointer) this);
-	#endif
+	GtkObject *adj = gtk_adjustment_new (1, 1, maximumScrollBarValue, 1, 1, maximumScrollBarValue - 1);
+	_scrollBar = gtk_hscrollbar_new (GTK_ADJUSTMENT (adj));
+	g_signal_connect (G_OBJECT (_scrollBar), "value-changed", G_CALLBACK (gui_cb_scroll), this);
+	GuiObject_show (_scrollBar);
+	gtk_box_pack_start (GTK_BOX (hctl_box), _scrollBar, TRUE, TRUE, 3);
 
 	/***** Create Group button. *****/
 
-	#if gtk
-		_groupButton = GuiCheckButton_create (NULL, 0, 0, 0, 0, L"Group",
-			gui_checkbutton_cb_group, this, group_equalDomain (_tmin, _tmax) ? GuiCheckButton_SET : 0);
-		gtk_box_pack_start (GTK_BOX (hctl_box), _groupButton, FALSE, FALSE, 0);
-		gtk_widget_show_all (hctl_box);
-	#else
-		_groupButton = GuiCheckButton_createShown (form, -80, 0, - Machine_getScrollBarWidth () - 5, -4,
-			L"Group", gui_checkbutton_cb_group, this, group_equalDomain (_tmin, _tmax) ? GuiCheckButton_SET : 0);
-	#endif
+	_groupButton = GuiCheckButton_create (NULL, 0, 0, 0, 0, L"Group",
+		gui_checkbutton_cb_group, this, group_equalDomain (_tmin, _tmax) ? GuiCheckButton_SET : 0);
+	gtk_box_pack_start (GTK_BOX (hctl_box), _groupButton, FALSE, FALSE, 0);
+	gtk_widget_show_all (hctl_box);
 
 	/***** Create drawing area. *****/
 
-	#if gtk
-		_drawingArea = GuiDrawingArea_create (NULL, 0, 0, 0, - Machine_getScrollBarWidth () - 9,
-			gui_drawingarea_cb_expose, gui_drawingarea_cb_click, gui_drawingarea_cb_key, gui_drawingarea_cb_resize, this, 0);
+	_drawingArea = GuiDrawingArea_create (NULL, 0, 0, 0, - Machine_getScrollBarWidth () - 9,
+		gui_drawingarea_cb_expose, gui_drawingarea_cb_click, gui_drawingarea_cb_key, gui_drawingarea_cb_resize, this, 0);
 		
-		// turn off double-buffering, otherwise the reaction to the expose-events gets
-		// delayed by one event (TODO: figure out, why)
-		gtk_widget_set_double_buffered (_drawingArea, FALSE);
+	// turn off double-buffering, otherwise the reaction to the expose-events gets
+	// delayed by one event (TODO: figure out, why)
+	gtk_widget_set_double_buffered (_drawingArea, FALSE);
 		
-		// turn off clearing window to background colbefore an expose event
-		// gtk_widget_set_app_paintable (_drawingArea, FALSE);
+	// turn off clearing window to background colbefore an expose event
+	// gtk_widget_set_app_paintable (_drawingArea, FALSE);
 		
-		gtk_box_pack_start (GTK_BOX (form), _drawingArea, TRUE, TRUE, 0);
-		GuiObject_show (_drawingArea);
-	#else
-		_drawingArea = GuiDrawingArea_createShown (form, 0, 0, 0, - Machine_getScrollBarWidth () - 9,
-			gui_drawingarea_cb_expose, gui_drawingarea_cb_click, gui_drawingarea_cb_key, gui_drawingarea_cb_resize, this, 0);
-	#endif
+	gtk_box_pack_start (GTK_BOX (form), _drawingArea, TRUE, TRUE, 0);
+	GuiObject_show (_drawingArea);
 
 	GuiObject_show (form);
 }

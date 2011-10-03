@@ -264,11 +264,7 @@ class FunctionEditor : public Editor {
 	static int menu_cb_moveBright (EDITOR_ARGS);
 	static int menu_cb_moveEleft (EDITOR_ARGS);
 	static int menu_cb_moveEright (EDITOR_ARGS);
-	#if gtk
 	static void gui_cb_scroll (GtkRange *rng, gpointer void_me);
-	#else
-	static void gui_cb_scroll (GUI_ARGS);
-	#endif
 	static int menu_cb_intro (EDITOR_ARGS);
 	static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event);
 	static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event);

@@ -47,23 +47,11 @@ typedef struct structGuiRowColumn {
 
 GuiObject GuiColumn_createShown (GuiObject parent, unsigned long flags) {
 	GuiRowColumn me = Melder_calloc_f (struct structGuiRowColumn, 1);
-	#if gtk
-	#elif win || mac
-		my widget = XtVaCreateManagedWidget ("column1", xmRowColumnWidgetClass, parent, XmNorientation, XmVERTICAL, NULL);
-		_GuiObject_setUserData (my widget, me);
-		XtAddCallback (my widget, XmNdestroyCallback, _GuiMotifRowColumn_destroyCallback, me);
-	#endif
 	return my widget;
 }
 
 GuiObject GuiRow_createShown (GuiObject parent, unsigned long flags) {
 	GuiRowColumn me = Melder_calloc_f (struct structGuiRowColumn, 1);
-	#if gtk
-	#elif win || mac
-		my widget = XtVaCreateManagedWidget ("column1", xmRowColumnWidgetClass, parent, XmNorientation, XmHORIZONTAL, NULL);
-		_GuiObject_setUserData (my widget, me);
-		XtAddCallback (my widget, XmNdestroyCallback, _GuiMotifRowColumn_destroyCallback, me);
-	#endif
 	return my widget;
 }
 

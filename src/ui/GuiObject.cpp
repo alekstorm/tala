@@ -46,207 +46,75 @@ static int _Gui_defaultHeight (GuiObject me) {
 }
 
 void _GuiObject_position (GuiObject me, int left, int right, int top, int bottom) {
-	#if gtk
-		// TODO: ...nog even te creatief
-	#else
-		if (left >= 0) {
-			if (right > 0) {
-				XtVaSetValues (me, XmNx, left, XmNwidth, right - left, NULL);
-			} else if (right == Gui_AUTOMATIC) {
-				XtVaSetValues (me, XmNx, left, NULL);
-			} else {
-				XtVaSetValues (me, XmNleftAttachment, XmATTACH_FORM, XmNleftOffset, left,
-					XmNrightAttachment, XmATTACH_FORM, XmNrightOffset, - right, NULL);
-			}
-		} else if (left == Gui_AUTOMATIC) {
-			Melder_assert (right <= 0);
-			if (right > Gui_AUTOMATIC + 3000)
-				XtVaSetValues (me, XmNrightAttachment, XmATTACH_FORM, XmNrightOffset, - right, NULL);
-			else if (right != Gui_AUTOMATIC)
-				XtVaSetValues (me, XmNwidth, right - Gui_AUTOMATIC, NULL);
-		} else {
-			Melder_assert (right <= 0);
-			XtVaSetValues (me, XmNrightAttachment, XmATTACH_FORM, XmNrightOffset, - right, XmNwidth, right - left, NULL);
-		}
-		if (top >= 0) {
-			if (bottom > 0) {
-				XtVaSetValues (me, XmNy, top, XmNheight, bottom - top, NULL);
-			} else if (bottom == Gui_AUTOMATIC) {
-				XtVaSetValues (me, XmNy, top, XmNheight, _Gui_defaultHeight (me), NULL);
-			} else {
-				XtVaSetValues (me, XmNtopAttachment, XmATTACH_FORM, XmNtopOffset, top,
-					XmNbottomAttachment, XmATTACH_FORM, XmNbottomOffset, - bottom, NULL);
-			}
-		} else if (top == Gui_AUTOMATIC) {
-			Melder_assert (bottom <= 0);
-			if (bottom > Gui_AUTOMATIC + 3000)
-				XtVaSetValues (me, XmNbottomAttachment, XmATTACH_FORM, XmNbottomOffset, - bottom, XmNheight, _Gui_defaultHeight (me), NULL);
-			else if (bottom != Gui_AUTOMATIC)
-				XtVaSetValues (me, XmNheight, bottom - Gui_AUTOMATIC, NULL);
-		} else {
-			Melder_assert (bottom <= 0);
-			XtVaSetValues (me, XmNbottomAttachment, XmATTACH_FORM, XmNbottomOffset, - bottom, XmNheight, bottom - top, NULL);
-		}
-	#endif
+	// TODO: ...nog even te creatief
 }
 
 void * _GuiObject_getUserData (GuiObject me) {
-	void *userData = NULL;
-	#if gtk
-		userData = (void *) g_object_get_data (G_OBJECT (me), "praat");
-	#else
-		XtVaGetValues (me, XmNuserData, & userData, NULL);
-	#endif
-	return userData;
+	return (void *) g_object_get_data (G_OBJECT (me), "praat");
 }
 
 void _GuiObject_setUserData (GuiObject me, void *userData) {
-	#if gtk
-		g_object_set_data (G_OBJECT (me), "praat", userData);
-	#else
-		XtVaSetValues (me, XmNuserData, userData, NULL);
-	#endif
+	g_object_set_data (G_OBJECT (me), "praat", userData);
 }
 
 void GuiObject_destroy (GuiObject me) {
-	#if gtk
-		gtk_widget_destroy (me);
-	#else
-		XtDestroyWidget (me);
-	#endif
+	gtk_widget_destroy (me);
 }
 
 long GuiObject_getHeight (GuiObject me) {
-	long height = 0;
-	#if gtk
-		height = my allocation.height;
-	#elif win || mac
-		height = my height;
-	#endif
-	return height;
+	return my allocation.height;
 }
 
 long GuiObject_getWidth (GuiObject me) {
-	long width = 0;
-	#if gtk
-		width = my allocation.width;
-	#elif win || mac
-		width = my width;
-	#endif
-	return width;
+	return my allocation.width;
 }
 
 long GuiObject_getX (GuiObject me) {
-	long x = 0;
-	#if gtk
-		x = my allocation.x;
-	#elif win || mac
-		x = my x;
-	#endif
-	return x;
+	return my allocation.x;
 }
 
 long GuiObject_getY (GuiObject me) {
-	long y = 0;
-	#if gtk
-		y = my allocation.y;
-	#elif win || mac
-		y = my y;
-	#endif
-	return y;
+	return my allocation.y;
 }
 
 void GuiObject_move (GuiObject me, long x, long y) {
-	#if gtk
-	#elif win || mac
-		if (x != Gui_AUTOMATIC) {
-			if (y != Gui_AUTOMATIC) {
-				XtVaSetValues (me, XmNx, (Position) x, XmNy, (Position) y, NULL);   // 64-bit-compatible
-			} else {
-				XtVaSetValues (me, XmNx, (Position) x, NULL);   // 64-bit-compatible
-			}
-		} else if (y != Gui_AUTOMATIC) {
-			XtVaSetValues (me, XmNy, (Position) y, NULL);   // 64-bit-compatible
-		}
-	#endif
 }
 
 void GuiObject_hide (GuiObject me) {
-	#if gtk
-		GuiObject parent = gtk_widget_get_parent (me);
-		if (parent != NULL && GTK_IS_DIALOG (parent)) {   // I am the top vbox of a dialog
-			gtk_widget_hide (parent);
-		} else {
-			gtk_widget_hide (GTK_WIDGET (me));
-		}
-	#else
-		XtUnmanageChild (me);
-		#if win
-			// nothing, because the scrolled window is not a widget
-		#elif mac
-			if (my widgetClass == xmListWidgetClass) {
-				XtUnmanageChild (my parent);   // the containing scrolled window; BUG if created with XmScrolledList?
-			}
-		#endif
-	#endif
+	GuiObject parent = gtk_widget_get_parent (me);
+	if (parent != NULL && GTK_IS_DIALOG (parent)) {   // I am the top vbox of a dialog
+		gtk_widget_hide (parent);
+	} else {
+		gtk_widget_hide (GTK_WIDGET (me));
+	}
 }
 
 GuiObject GuiObject_parent (GuiObject me) {
-	#if gtk
-		return gtk_widget_get_parent (me);
-	#elif win || mac
-		return my parent;
-	#endif
+	return gtk_widget_get_parent (me);
 }
 
 void GuiObject_setSensitive (GuiObject me, bool sensitive) {
-	#if gtk
-		gtk_widget_set_sensitive (me, sensitive);
-	#else
-		XtSetSensitive (me, sensitive);
-	#endif
+	gtk_widget_set_sensitive (me, sensitive);
 }
 
 void GuiObject_show (GuiObject me) {
-	#if gtk
-		GuiObject parent = gtk_widget_get_parent (me);
-		if (GTK_IS_WINDOW (parent)) {
-			// I am a window's vbox
-			gtk_widget_show (me);
-			gtk_window_present (GTK_WINDOW (parent));
-		} else if (GTK_IS_DIALOG (parent)) {
-			// I am a dialog's vbox, and therefore automatically shown
-			gtk_window_present (GTK_WINDOW (parent));
-		} else {
-			gtk_widget_show (me);
-		}
-	#elif win || mac
-		XtManageChild (me);
-		GuiObject parent = my parent;
-		if (parent -> widgetClass == xmShellWidgetClass) {
-			XMapRaised (XtDisplay (parent), XtWindow (parent));
-		} else if (mac && my widgetClass == xmListWidgetClass) {
-			XtManageChild (parent);   // the containing scrolled window; BUG if created with XmScrolledList?
-		}
-	#endif
+	GuiObject parent = gtk_widget_get_parent (me);
+	if (GTK_IS_WINDOW (parent)) {
+		// I am a window's vbox
+		gtk_widget_show (me);
+		gtk_window_present (GTK_WINDOW (parent));
+	} else if (GTK_IS_DIALOG (parent)) {
+		// I am a dialog's vbox, and therefore automatically shown
+		gtk_window_present (GTK_WINDOW (parent));
+	} else {
+		gtk_widget_show (me);
+	}
 }
 
 void GuiObject_size (GuiObject me, long width, long height) {
-	#if gtk
-		if (width == Gui_AUTOMATIC || width <= 0) width = -1;
-		if (height == Gui_AUTOMATIC || height <= 0) height = -1;
-		gtk_widget_set_size_request (me, width, height);
-	#elif win || mac
-		if (width != Gui_AUTOMATIC) {
-			if (height != Gui_AUTOMATIC) {
-				XtVaSetValues (me, XmNwidth, (Dimension) width, XmNheight, (Dimension) height, NULL);   // 64-bit-compatible
-			} else {
-				XtVaSetValues (me, XmNwidth, (Dimension) width, NULL);   // 64-bit-compatible
-			}
-		} else if (height != Gui_AUTOMATIC) {
-			XtVaSetValues (me, XmNheight, (Dimension) height, NULL);   // 64-bit-compatible
-		}
-	#endif
+	if (width == Gui_AUTOMATIC || width <= 0) width = -1;
+	if (height == Gui_AUTOMATIC || height <= 0) height = -1;
+	gtk_widget_set_size_request (me, width, height);
 }
 
 /* End of file GuiObject.c */

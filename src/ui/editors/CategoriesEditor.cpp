@@ -865,23 +865,6 @@ void CategoriesEditor::createChildren ()
 			drag, decrement, increment, pageIncrement & pageDecrement
 	*/
 
-	#ifndef _WIN32
-		#if motif
-		XtVaGetValues (GuiObject_parent (_list), XmNverticalScrollBar, & vertScrollBar, NULL);
-		XtAddCallback (vertScrollBar, XmNvalueChangedCallback, gui_cb_scroll,
-			(XtPointer) me);
-		XtAddCallback (vertScrollBar, XmNdragCallback, gui_cb_scroll, (XtPointer) me);
-		XtAddCallback (vertScrollBar, XmNdecrementCallback, gui_cb_scroll,
-			(XtPointer) me);
-		XtAddCallback (vertScrollBar, XmNincrementCallback, gui_cb_scroll,
-			(XtPointer) me);
-		XtAddCallback (vertScrollBar, XmNpageIncrementCallback, gui_cb_scroll,
-			(XtPointer) me);
-		XtAddCallback (vertScrollBar, XmNpageDecrementCallback, gui_cb_scroll,
-			(XtPointer) me);
-		#endif
-	#endif
-
 	buttons_left = left = right + 2*delta_x; right = left + button_width; bottom = top + button_height;
 	GuiLabel_createShown (_dialog, left, right, top, bottom, L"Value:", 0);
 	left = right + delta_x; right = left + button_width;

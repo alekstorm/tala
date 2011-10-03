@@ -148,13 +148,9 @@ void DataSubEditor::gui_button_cb_change (I, GuiButtonEvent event) {
 	int i;   // has to be declared here
 	for (i = 1; i <= MAXNUM_ROWS; i ++) {
 	
-	#if motif
-	if (XtIsManaged (editor->_fieldData [i]. _text)) {
-	#elif gtk
 	gboolean visible;
 	g_object_get(G_OBJECT(editor->_fieldData[i]. _text), "visible", &visible, NULL);
 	if (visible) {
-	#endif
 		int type = editor->_fieldData [i]. _description -> type;
 		wchar_t *text;
 		if (type > maxsingletypewa) continue;
@@ -257,9 +253,7 @@ void DataSubEditor::gui_button_cb_change (I, GuiButtonEvent event) {
 			default: break;
 		}
 		Melder_free (text);
-	#if motif || gtk
 	}
-	#endif
 	}
 	/* Several collaborators have to be notified of this change:
 	 * 1. The owner (creator) of our root DataEditor: so that she can notify other editors, if any.
@@ -286,9 +280,6 @@ void DataSubEditor::gui_button_cb_cancel (I, GuiButtonEvent event) {
 void DataSubEditor::gui_cb_scroll (GUI_ARGS) {
 	DataSubEditor *editor = (DataSubEditor *)void_me;
 	int value, slider, incr, pincr;
-	#if motif
-		XmScrollBarGetValues (w, & value, & slider, & incr, & pincr);
-	#endif
 	editor->_topField = value + 1;
 	editor->update ();
 }
@@ -346,36 +337,6 @@ void DataSubEditor::gui_button_cb_open (I, GuiButtonEvent event) {
 void DataSubEditor::createChildren () {
 	int x = Gui_LEFT_DIALOG_SPACING, y = Gui_TOP_DIALOG_SPACING + Machine_getMenuBarHeight (), buttonWidth = 120;
 
-	#if motif
-	GuiButton_createShown (_dialog, x, x + buttonWidth, y, Gui_AUTOMATIC,
-		L"Change", gui_button_cb_change, me, 0);
-	x += buttonWidth + Gui_HORIZONTAL_DIALOG_SPACING;
-	GuiButton_createShown (_dialog, x, x + buttonWidth, y, Gui_AUTOMATIC,
-		L"Cancel", gui_button_cb_cancel, me, 0);
-	
-	GuiObject scrolledWindow = XmCreateScrolledWindow (_dialog, "list", NULL, 0);
-	XtVaSetValues (scrolledWindow, 
-		XmNrightAttachment, XmATTACH_FORM,
-		XmNtopAttachment, XmATTACH_FORM, XmNtopOffset, LIST_Y + Machine_getMenuBarHeight (),
-		XmNbottomAttachment, XmATTACH_FORM,
-		XmNleftAttachment, XmATTACH_FORM, NULL);
-
-	_scrollBar = XtVaCreateManagedWidget ("verticalScrollBar",
-		xmScrollBarWidgetClass, scrolledWindow,
-		XmNheight, SCROLL_BAR_WIDTH,
-		XmNminimum, 0,
-		XmNmaximum, _numberOfFields,
-		XmNvalue, 0,
-		XmNsliderSize, _numberOfFields < MAXNUM_ROWS ? _numberOfFields : MAXNUM_ROWS,
-		XmNincrement, 1, XmNpageIncrement, MAXNUM_ROWS - 1,
-		NULL);
-	XtVaSetValues (scrolledWindow, XmNverticalScrollBar, _scrollBar, NULL);
-	GuiObject_show (scrolledWindow);
-	XtAddCallback (_scrollBar, XmNvalueChangedCallback, gui_cb_scroll, (XtPointer) me);
-	XtAddCallback (_scrollBar, XmNdragCallback, gui_cb_scroll, (XtPointer) me);
-	GuiObject form = XmCreateForm (scrolledWindow, "list", NULL, 0);
-	
-	#elif gtk
 	GuiObject outerBox = gtk_vbox_new(0, 0);
 	GuiObject buttonBox = gtk_hbutton_box_new();
 	gtk_button_box_set_layout(GTK_BUTTON_BOX(buttonBox), GTK_BUTTONBOX_START);
@@ -398,7 +359,6 @@ void DataSubEditor::createChildren () {
 	GuiObject_show(outerBox);
 	GuiObject_show(buttonBox);
 	GuiObject_show(scrolledWindow);
-	#endif
 	
 	for (int i = 1; i <= MAXNUM_ROWS; i ++) {
 		y = Gui_TOP_DIALOG_SPACING + (i - 1) * ROW_HEIGHT;
@@ -444,9 +404,6 @@ void DataSubEditor::showStructMember (
 	/* Show the value (for a single type) or a button (for a composite type). */
 
 	if (isSingleType) {
-		#if motif
-			XtVaSetValues (fieldData -> _text, XmNcolumns, stringLengths [type], NULL);   // TODO: change to GuiObject_size
-		#endif
 		MelderString_empty (& buffer);
 		wchar_t *text = singleTypeToText (memberAddress, type, memberDescription -> tagType, & buffer);
 		GuiText_setString (fieldData -> _text, text);
@@ -637,9 +594,6 @@ void VectorEditor::showMembers () {
 
 			MelderString_empty (& buffer);
 			wchar_t *text = singleTypeToText (elementAddress, type, _description -> tagType, & buffer);
-			#if motif
-				XtVaSetValues (fieldData -> _text, XmNcolumns, stringLengths [type], NULL);   // TODO: change to GuiObject_size
-			#endif
 			GuiText_setString (fieldData -> _text, text);
 			GuiObject_show (fieldData -> _text);
 			fieldData -> _address = elementAddress;
@@ -741,9 +695,6 @@ void MatrixEditor::showMembers () {
 
 			MelderString_empty (& buffer);
 			wchar_t *text = singleTypeToText (elementAddress, type, _description -> tagType, & buffer);
-			#if motif
-				XtVaSetValues (fieldData -> _text, XmNcolumns, stringLengths [type], NULL);   // TODO: change to GuiObject_size
-			#endif
 			GuiText_setString (fieldData -> _text, text);
 			GuiObject_show (fieldData -> _text);
 			fieldData -> _address = elementAddress;

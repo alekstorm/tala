@@ -129,22 +129,16 @@ static void gui_cb_menu (GUI_ARGS) {
 #elif defined (_WIN32)
 	int modified = FALSE;
 #else
-	#if gtk
-		// TODO: We kunnen bij GDK events geregistreren om key en button press af te vangen, maar dan
-		// wordt dit geen gewoon 'activate' signaal meer.
-		int modified = 0;
+	// TODO: We kunnen bij GDK events geregistreren om key en button press af te vangen, maar dan
+	// wordt dit geen gewoon 'activate' signaal meer.
+	int modified = 0;
 
-		// TODO: Dit implementeert het gedrag van Motif, en impliceert dat een toggled Call alleen een
-		// 'naar positief' is en niet de terug toggle 'naar negatief'.
-		if (G_OBJECT_TYPE(w) == GTK_TYPE_RADIO_MENU_ITEM && !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) { 
-			//g_debug("Gotcha!");
-			return;
-		}
-	#elif motif
-		XButtonPressedEvent *event = (XButtonPressedEvent *) ((XmDrawingAreaCallbackStruct *) call) -> event;
-		int modified = event -> type == ButtonPress &&
-			((event -> state & (ShiftMask | ControlMask | Mod1Mask)) != 0 || event -> button == Button2 || event -> button == Button3);
-	#endif
+	// TODO: Dit implementeert het gedrag van Motif, en impliceert dat een toggled Call alleen een
+	// 'naar positief' is en niet de terug toggle 'naar negatief'.
+	if (G_OBJECT_TYPE(w) == GTK_TYPE_RADIO_MENU_ITEM && !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(w))) { 
+		//g_debug("Gotcha!");
+		return;
+	}
 #endif
 	do_menu (void_me, modified);
 }
@@ -230,11 +224,7 @@ GuiObject praat_addMenuCommand (const wchar_t *window, const wchar_t *menu, cons
 			for (long i = position - 1; i > 0; i --) {
 				if (theCommands [i]. depth == depth - 1) {
 					if (theCommands [i]. callback == NULL && theCommands [i]. title != NULL && theCommands [i]. title [0] != '-')   /* Cascade button? */
-						#if gtk
-							parent = gtk_menu_item_get_submenu (GTK_MENU_ITEM (theCommands [i]. button));
-						#elif motif
-							XtVaGetValues (theCommands [i]. button, XmNsubMenuId, & parent, NULL);   /* The relevant menu title. */
-						#endif
+						parent = gtk_menu_item_get_submenu (GTK_MENU_ITEM (theCommands [i]. button));
 					break;
 				}
 			}
@@ -328,11 +318,7 @@ int praat_addMenuCommandScript (const wchar_t *window, const wchar_t *menu, cons
 			for (long i = position - 1; i > 0; i --) {
 				if (theCommands [i]. depth == depth - 1) {
 					if (theCommands [i]. callback == NULL && theCommands [i]. title != NULL && theCommands [i]. title [0] != '-')   /* Cascade button? */
-						#if gtk
-							parent = gtk_menu_item_get_submenu (GTK_MENU_ITEM (theCommands [i]. button));
-						#elif motif
-							XtVaGetValues (theCommands [i]. button, XmNsubMenuId, & parent, NULL);   /* The relevant menu title. */
-						#endif
+						parent = gtk_menu_item_get_submenu (GTK_MENU_ITEM (theCommands [i]. button));
 					break;
 				}
 			}

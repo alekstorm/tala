@@ -152,11 +152,7 @@ typedef struct {
 typedef struct {   /* Readonly */
 	MelderString batchName;   /* The name of the command file when called from batch. */
 	int batch;   /* Was the program called from the command line? */
-	#if gtk
-		GMainContext *context;
-	#elif motif
-		XtAppContext context;   /* If you want to install an Xt WorkProc (rare). */
-	#endif
+	GMainContext *context;
 	GuiObject topShell;   /* The application shell: parent of editors and standard dialogs. */
 } structPraatApplication, *PraatApplication;
 typedef struct {   /* Readonly */

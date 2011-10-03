@@ -88,11 +88,9 @@ wchar_t *sendpraatW (void *display, const wchar_t *programName, long timeOut, co
 
 static char errorMessage [1000];
 static wchar_t errorMessageW [1000];
-#if gtk
-	static long theTimeOut;
-	static void handleCompletion (int message) { (void) message; }
-	static void handleTimeOut (int message) { (void) message; sprintf (errorMessage, "Timed out after %ld seconds.", theTimeOut); }
-#endif
+static long theTimeOut;
+static void handleCompletion (int message) { (void) message; }
+static void handleTimeOut (int message) { (void) message; sprintf (errorMessage, "Timed out after %ld seconds.", theTimeOut); }
 
 char *sendpraat (void *display, const char *programName, long timeOut, const char *text) {
 	char nativeProgramName [100];

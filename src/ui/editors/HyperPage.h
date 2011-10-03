@@ -118,11 +118,7 @@ class HyperPage : public Editor {
   private:
 	static void print (void *void_me, Graphics graphics);
 	static void gui_drawingarea_cb_resize (void *void_me, GuiDrawingAreaResizeEvent event);
-#if gtk
 	static void gui_cb_verticalScroll (GtkRange *rng, gpointer void_me);
-#else
-	static void gui_cb_verticalScroll (GUI_ARGS);
-#endif
 	static void gui_drawingarea_cb_expose (void *void_me, GuiDrawingAreaExposeEvent event);
 	static void gui_drawingarea_cb_click (void *void_me, GuiDrawingAreaClickEvent event);
 	static int menu_cb_postScriptSettings (EDITOR_ARGS);

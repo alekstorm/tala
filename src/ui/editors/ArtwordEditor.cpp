@@ -131,7 +131,7 @@ void ArtwordEditor::gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent even
 void ArtwordEditor::gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	ArtwordEditor *editor = (ArtwordEditor *)void_me;
 	if (editor->_graphics == NULL) return;
-if (gtk && event -> type != BUTTON_PRESS) return;
+if (event -> type != BUTTON_PRESS) return;
 	Artword artword = (Artword) editor->_data;
 	Graphics_setWindow (editor->_graphics, 0, artword -> totalTime, -1.0, 1.0);
 	Graphics_setInner (editor->_graphics);
@@ -167,13 +167,7 @@ void ArtwordEditor::createChildren () {
 
 	GuiButton_createShown (_dialog, 240, 360, dy + 410, Gui_AUTOMATIC, L"Add target", gui_button_cb_addTarget, this, GuiButton_DEFAULT);
 
-	#if gtk
 	_radio = _dialog;	
-	#elif motif
-	_radio = XtVaCreateManagedWidget
-		("radioBox", xmRowColumnWidgetClass, _dialog,
-		 XmNradioBehavior, True, XmNx, 470, XmNy, dy, NULL);
-	#endif
 	for (int i = 1; i <= kArt_muscle_MAX; i ++) {
 		_button [i] = GuiRadioButton_createShown (_radio,
 			0, 160, Gui_AUTOMATIC, Gui_AUTOMATIC,

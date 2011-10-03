@@ -45,15 +45,8 @@ struct structPicture {
 	void (*selectionChangedCallback) (struct structPicture *, XtPointer, double, double, double, double);
 	XtPointer selectionChangedClosure;
 	int backgrounding, mouseSelectsInnerViewport;
-#if gtk
 	bool selectionInProgress;
 	double ixstart, iystart;
-#endif
-#if defined (UNIX)
-	#if motif
-	Region updateRegion;
-	#endif
-#endif
 };
 
 static void drawMarkers (Picture me)
@@ -144,7 +137,6 @@ static void drawSelection (Picture me, int high) {
 static int SMERIG_valid;
 static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 	iam (Picture);
-#if gtk
 //	g_debug("EXPOSE DRAWING AREA");
 	
 	// save old cairo contexts
@@ -174,47 +166,6 @@ static void gui_drawingarea_cb_expose (I, GuiDrawingAreaExposeEvent event) {
 //	test+=0.1;
 //	if (test > 3) test = 0.1;
 //	g_debug("%d", test);
-#elif defined (macintosh) && 0
-	WindowPtr window = (WindowPtr) ((EventRecord *) call) -> message;
-	static RgnHandle visRgn;
-	Rect rect;
-	long x1DC, x2DC, y1DC, y2DC;
-	Graphics_inqWsViewport (my selectionGraphics, & x1DC, & x2DC, & y1DC, & y2DC);
-	SetRect (& rect, x1DC, y1DC, x2DC, y2DC);
-	/* No clearing needed; macintosh clips to update region. */
-	if (visRgn == NULL) visRgn = NewRgn ();
-	GetPortVisibleRegion (GetWindowPort (window), visRgn);
-	if (RectInRgn (& rect, visRgn)) {
-		drawMarkers (me);
-		Graphics_play (my graphics, my graphics);
-		drawSelection (me, 1);
-	}
-#elif defined (_WIN32) || 1
-	(void) event;
-	drawMarkers (me);
-	Graphics_play (my graphics, my graphics);
-	drawSelection (me, 1);
-#else
-	XRectangle rectangle;
-	if (! my updateRegion) my updateRegion = XCreateRegion ();
-	rectangle. x = event -> x;
-	rectangle. y = event -> y;
-	rectangle. width = event -> width;
-	rectangle. height = event -> height;
-	XUnionRectWithRegion (& rectangle, my updateRegion, my updateRegion);
-	if (event -> count == 0) {
-		XSetRegion (XtDisplay (my drawingArea), Graphics_x_getGC (my graphics), my updateRegion);
-		if (my sensitive) XSetRegion (XtDisplay (my drawingArea), Graphics_x_getGC (my selectionGraphics), my updateRegion);
-		drawMarkers (me);
-		Graphics_play (my graphics, my graphics);
-		if (my sensitive && ! SMERIG_valid) drawSelection (me, 1);
-		XSetClipMask (XtDisplay (my drawingArea), Graphics_x_getGC (my graphics), None);
-		if (my sensitive) XSetClipMask (XtDisplay (my drawingArea), Graphics_x_getGC (my selectionGraphics), None);
-		XDestroyRegion (my updateRegion);
-		my updateRegion = NULL;
-	}
-	SMERIG_valid = 0;
-#endif
 }
 
 // TODO: Paul, als praat nu 100dpi zou zijn waarom zie ik hier dan nog 72.0 onder?
@@ -228,7 +179,6 @@ static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 	int xstart = event -> x;
 	int ystart = event -> y;
 	double xWC, yWC;
-#if gtk
 	int ix, iy;
 
 	Graphics_DCtoWC (my selectionGraphics, xstart, ystart, & xWC, & yWC);
@@ -269,62 +219,12 @@ static void gui_drawingarea_cb_click (I, GuiDrawingAreaClickEvent event) {
 			}
 		}
 	}
-#else
-	int ixstart, iystart, ix, iy, oldix = 0, oldiy = 0;
-
-	Graphics_DCtoWC (my selectionGraphics, xstart, ystart, & xWC, & yWC);
-	ix = ixstart = 1 + floor (xWC * SQUARES / SIDE);
-	iy = iystart = SQUARES - floor (yWC * SQUARES / SIDE);
-	if (ixstart < 1 || ixstart > SQUARES || iystart < 1 || iystart > SQUARES) return;
-	if (event -> shiftKeyPressed) {
-		int ix1 = 1 + floor (my selx1 * SQUARES / SIDE);
-		int ix2 = floor (my selx2 * SQUARES / SIDE);
-		int iy1 = SQUARES + 1 - floor (my sely2 * SQUARES / SIDE);
-		int iy2 = SQUARES - floor (my sely1 * SQUARES / SIDE);
-		ixstart = ix < (ix1 + ix2) / 2 ? ix2 : ix1;
-		iystart = iy < (iy1 + iy2) / 2 ? iy2 : iy1;
-	}
-	while (Graphics_mouseStillDown (my selectionGraphics)) {
-		if (ix >= 1 && ix <= SQUARES && iy >= 1 && iy <= SQUARES && (ix != oldix || iy != oldiy)) {
-			int ix1, ix2, iy1, iy2;
-			if (ix < ixstart) { ix1 = ix; ix2 = ixstart; }
-			else              { ix1 = ixstart; ix2 = ix; }
-			if (iy < iystart) { iy1 = iy; iy2 = iystart; }
-			else              { iy1 = iystart; iy2 = iy; }
-			if (my mouseSelectsInnerViewport) {
-				int fontSize = Graphics_inqFontSize (my graphics);
-				double xmargin = fontSize * 4.2 / 72.0, ymargin = fontSize * 2.8 / 72.0;
-				if (xmargin > ix2 - ix1 + 1) xmargin = ix2 - ix1 + 1;
-				if (ymargin > iy2 - iy1 + 1) ymargin = iy2 - iy1 + 1;
-				Picture_setSelection (me, 0.5 * (ix1 - 1) - xmargin, 0.5 * ix2 + xmargin,
-					0.5 * (SQUARES - iy2) - ymargin, 0.5 * (SQUARES + 1 - iy1) + ymargin, False);
-			} else {
-				Picture_setSelection (me, 0.5 * (ix1 - 1), 0.5 * ix2,
-					0.5 * (SQUARES - iy2), 0.5 * (SQUARES + 1 - iy1), False);
-				#if gtk
-					Graphics_flushWs (my graphics);
-				#endif
-			}
-			oldix = ix; oldiy = iy;
-		}
-		Graphics_getMouseLocation (my selectionGraphics, & xWC, & yWC);
-		ix = 1 + floor (xWC * SQUARES / SIDE);
-		iy = SQUARES - floor (yWC * SQUARES / SIDE);
-	}
-	if (my selectionChangedCallback) {
-		//Melder_casual ("selectionChangedCallback from gui_drawingarea_cb_click");
-		my selectionChangedCallback (me, my selectionChangedClosure,
-			my selx1, my selx2, my sely1, my sely2);
-	}
-#endif
 }
 
 Picture Picture_create (GuiObject drawingArea, Boolean sensitive) {
 	Picture me = Melder_calloc_e (struct structPicture, 1);
 	if (! me) return NULL;
-	#if gtk
-		my selectionInProgress = 0;
-	#endif
+	my selectionInProgress = 0;
 	my drawingArea = drawingArea;
 	/*
 	 * The initial viewport is a rectangle 6 inches wide and 4 inches high.
@@ -764,28 +664,20 @@ void Picture_setSelection
 	(Picture me, double x1NDC, double x2NDC, double y1NDC, double y2NDC, Boolean notify)
 {
 	if (my drawingArea) {
-		#if gtk
-			long x1, x2, y1, y2;
-			Graphics_WCtoDC (my selectionGraphics, my selx1, my sely1, & x1, & y1);
-			Graphics_WCtoDC (my selectionGraphics, my selx2, my sely2, & x2, & y2);
-			gtk_widget_queue_draw_area (my drawingArea, x1, y2, abs (x2 - x1), abs (y2 - y1));
-		#else
-			drawSelection (me, 0);   /* Unselect. */
-		#endif
+		long x1, x2, y1, y2;
+		Graphics_WCtoDC (my selectionGraphics, my selx1, my sely1, & x1, & y1);
+		Graphics_WCtoDC (my selectionGraphics, my selx2, my sely2, & x2, & y2);
+		gtk_widget_queue_draw_area (my drawingArea, x1, y2, abs (x2 - x1), abs (y2 - y1));
 	}
 	my selx1 = x1NDC;
 	my selx2 = x2NDC;
 	my sely1 = y1NDC;
 	my sely2 = y2NDC;
 	if (my drawingArea) {
-		#if gtk
-			long x1, x2, y1, y2;
-			Graphics_WCtoDC (my selectionGraphics, my selx1, my sely1, & x1, & y1);
-			Graphics_WCtoDC (my selectionGraphics, my selx2, my sely2, & x2, & y2);
-			gtk_widget_queue_draw_area (my drawingArea, x1, y2, abs (x2 - x1), abs (y2 - y1));
-		#else
-			drawSelection (me, 1);   /* Select. */
-		#endif
+		long x1, x2, y1, y2;
+		Graphics_WCtoDC (my selectionGraphics, my selx1, my sely1, & x1, & y1);
+		Graphics_WCtoDC (my selectionGraphics, my selx2, my sely2, & x2, & y2);
+		gtk_widget_queue_draw_area (my drawingArea, x1, y2, abs (x2 - x1), abs (y2 - y1));
 	}
 
 	if (notify && my selectionChangedCallback) {
@@ -798,7 +690,6 @@ void Picture_setSelection
 void Picture_background (Picture me) { my backgrounding = TRUE; }
 void Picture_foreground (Picture me) { my backgrounding = FALSE; }
 
-#if gtk
 void Picture_selfExpose (Picture me) {
 	if (my drawingArea) {
 		long x1, x2, y1, y2;
@@ -807,6 +698,5 @@ void Picture_selfExpose (Picture me) {
 		gtk_widget_queue_draw_area (my drawingArea, x1, y2, abs (x2 - x1), abs (y2 - y1));
 	}
 }
-#endif
 
 /* End of file Picture.c */

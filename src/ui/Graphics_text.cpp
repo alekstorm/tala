@@ -1078,7 +1078,7 @@ static void exitText (I) {
 			if (my useQuartz) {
 				// nothing
 			} else {
-				motif_mac_defaultFont ();
+				motif_mac_defaultFont (); // FIXME
 				if (my macColour.red != 0 || my macColour.green != 0 || my macColour.blue != 0) RGBForeColor (& theBlackColour);
 				if (my drawingArea) GuiMac_clipOff ();
 			}

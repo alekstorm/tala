@@ -202,17 +202,9 @@ int UiPause::end (int numberOfContinueButtons, int defaultContinueButton, int ca
 			thePauseForm_clicked = 0;
 			Melder_assert (theEventLoopDepth == 0);
 			theEventLoopDepth ++;
-			#if gtk
-				do {
-					gtk_main_iteration ();
-				} while (! thePauseForm_clicked);
-			#else
-				do {
-					XEvent event;
-					XtAppNextEvent (Melder_appContext, & event);
-					XtDispatchEvent (& event);
-				} while (! thePauseForm_clicked);
-			#endif
+			do {
+				gtk_main_iteration ();
+			} while (! thePauseForm_clicked);
 			theEventLoopDepth --;
 			if (wasBackgrounding) praat_background ();
 			Melder_setDefaultDir (& dir);

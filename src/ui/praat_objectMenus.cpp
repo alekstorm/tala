@@ -445,34 +445,26 @@ void praat_show (void) {
 
 void praat_addFixedButtons (GuiObject form) {
 // Het is bagger, ik weet het, maar kom maar met een betere oplossing... bijvoorkeur zonder #defines
-#if gtk
-	GuiObject buttons1 = NULL, buttons2 = NULL, buttons3 = NULL;
-	if (form) {
-		buttons1 = gtk_hbutton_box_new ();
-		buttons2 = gtk_hbutton_box_new ();
-		buttons3 = gtk_hbutton_box_new ();
-		gtk_button_box_set_layout (GTK_BUTTON_BOX (buttons1), GTK_BUTTONBOX_START);
-		gtk_button_box_set_layout (GTK_BUTTON_BOX (buttons2), GTK_BUTTONBOX_START);
-		gtk_button_box_set_layout (GTK_BUTTON_BOX (buttons3), GTK_BUTTONBOX_START);
-		gtk_box_pack_end (GTK_BOX (form), buttons3, FALSE, FALSE, 0);
-		gtk_box_pack_end (GTK_BOX (form), buttons2, FALSE, FALSE, 0);
-		gtk_box_pack_end (GTK_BOX (form), buttons1, FALSE, FALSE, 0);
-		gtk_widget_show (buttons1);
-		gtk_widget_show (buttons2);
-		gtk_widget_show (buttons3);
-	}
-	praat_addFixedButtonCommand (buttons1, L"Rename...", DO_Rename, 8, 70);
-	praat_addFixedButtonCommand (buttons1, L"Copy...", DO_Copy, 98, 70);
-	//praat_addFixedButtonCommand (buttons2, L"Inspect", DO_Inspect, 8, 40); // FIXME
-	praat_addFixedButtonCommand (buttons2, L"Info", DO_Info, 98, 40);
-	praat_addFixedButtonCommand (buttons3, L"Remove", DO_Remove, 8, 10);
-#else
-	praat_addFixedButtonCommand (form, L"Rename...", DO_Rename, 8, 70);
-	praat_addFixedButtonCommand (form, L"Copy...", DO_Copy, 98, 70);
-	//praat_addFixedButtonCommand (form, L"Inspect", DO_Inspect, 8, 40); // FIXME
-	praat_addFixedButtonCommand (form, L"Info", DO_Info, 98, 40);
-	praat_addFixedButtonCommand (form, L"Remove", DO_Remove, 8, 10);
-#endif
+GuiObject buttons1 = NULL, buttons2 = NULL, buttons3 = NULL;
+if (form) {
+	buttons1 = gtk_hbutton_box_new ();
+	buttons2 = gtk_hbutton_box_new ();
+	buttons3 = gtk_hbutton_box_new ();
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (buttons1), GTK_BUTTONBOX_START);
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (buttons2), GTK_BUTTONBOX_START);
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (buttons3), GTK_BUTTONBOX_START);
+	gtk_box_pack_end (GTK_BOX (form), buttons3, FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (form), buttons2, FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (form), buttons1, FALSE, FALSE, 0);
+	gtk_widget_show (buttons1);
+	gtk_widget_show (buttons2);
+	gtk_widget_show (buttons3);
+}
+praat_addFixedButtonCommand (buttons1, L"Rename...", DO_Rename, 8, 70);
+praat_addFixedButtonCommand (buttons1, L"Copy...", DO_Copy, 98, 70);
+//praat_addFixedButtonCommand (buttons2, L"Inspect", DO_Inspect, 8, 40); // FIXME
+praat_addFixedButtonCommand (buttons2, L"Info", DO_Info, 98, 40);
+praat_addFixedButtonCommand (buttons3, L"Remove", DO_Remove, 8, 10);
 }
 
 static MelderString itemTitle_about = { 0 };
@@ -540,20 +532,12 @@ void praat_addMenus (GuiObject bar) {
 	praat_addMenuCommand (L"Objects", L"Praat", L"Show action command...", 0, praat_HIDDEN, DO_praat_showAction);
 	button = praat_addMenuCommand (L"Objects", L"Praat", L"Goodies", 0, praat_UNHIDABLE, 0);
 
-	#if gtk
-		if (button) goodiesMenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (button));
-	#elif motif
-		if (button) XtVaGetValues (button, XmNsubMenuId, & goodiesMenu, NULL);
-	#endif
+	if (button) goodiesMenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (button));
 	praat_addMenuCommand (L"Objects", L"Goodies", L"Calculator...", 0, 'U', DO_praat_calculator);
 	praat_addMenuCommand (L"Objects", L"Goodies", L"Report difference of two proportions...", 0, 0, DO_praat_reportDifferenceOfTwoProportions);
 	praat_addMenuCommand (L"Objects", L"Goodies", L"List readable types of objects...", 0, 0, DO_praat_listReadableTypesOfObjects);
 	button = praat_addMenuCommand (L"Objects", L"Praat", L"Preferences", 0, praat_UNHIDABLE, 0);
-	#if gtk
-		if (button) preferencesMenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (button));
-	#elif motif
-		if (button) XtVaGetValues (button, XmNsubMenuId, & preferencesMenu, NULL);
-	#endif
+	if (button) preferencesMenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (button));
 	//praat_addMenuCommand (L"Objects", L"Preferences", L"Buttons...", 0, praat_UNHIDABLE, DO_praat_editButtons); // FIXME  /* Cannot be hidden. */
 	praat_addMenuCommand (L"Objects", L"Preferences", L"-- encoding prefs --", 0, 0, 0);
 	praat_addMenuCommand (L"Objects", L"Preferences", L"Text reading preferences...", 0, 0, DO_TextInputEncodingSettings);
