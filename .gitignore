@@ -3,14 +3,14 @@
 *.a
 *.la
 *.in
-*~
 .deps/
 .libs/
-a
 Makefile
 /aclocal.m4
 /autom4te.cache/
-/config.*
+/config.guess
+/config.h.in
+/config.sub
 /configure
 /depcomp
 /install-sh
