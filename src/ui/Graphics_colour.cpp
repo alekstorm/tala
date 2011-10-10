@@ -118,7 +118,7 @@ void Graphics_setColour (I, Graphics_Colour colour) {
 	iam (Graphics);
 	my colour = colour;
 	_Graphics_setColour (me, colour);
-	if (my recording) { op (SET_RGB_COLOUR, 3); put (colour. red); put (colour. green); put (colour. blue); }
+	if (my recording) { g_op (SET_RGB_COLOUR, 3); put (colour. red); put (colour. green); put (colour. blue); }
 }
 
 void _Graphics_setGrey (I, double fgrey) {
@@ -159,7 +159,7 @@ void Graphics_setGrey (I, double grey) {
 	iam (Graphics);
 	my colour. red = my colour. green = my colour. blue = grey;
 	_Graphics_setGrey (me, grey);
-	if (my recording) { op (SET_GREY, 1); put (grey); }
+	if (my recording) { g_op (SET_GREY, 1); put (grey); }
 }
 
 static void highlight (I, long x1DC, long x2DC, long y1DC, long y2DC) {
@@ -212,14 +212,14 @@ void Graphics_highlight (I, double x1WC, double x2WC, double y1WC, double y2WC) 
 	iam (Graphics);
 	highlight (me, wdx (x1WC), wdx (x2WC), wdy (y1WC), wdy (y2WC));
 	if (my recording)
-		{ op (HIGHLIGHT, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
+		{ g_op (HIGHLIGHT, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
 }
 
 void Graphics_unhighlight (I, double x1WC, double x2WC, double y1WC, double y2WC) {
 	iam (Graphics);
 	highlight (me, wdx (x1WC), wdx (x2WC), wdy (y1WC), wdy (y2WC));
 	if (my recording)
-		{ op (UNHIGHLIGHT, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
+		{ g_op (UNHIGHLIGHT, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
 }
 
 static void highlight2 (I, long x1DC, long x2DC, long y1DC, long y2DC,
@@ -280,7 +280,7 @@ void Graphics_highlight2 (I, double x1WC, double x2WC, double y1WC, double y2WC,
 	iam (Graphics);
 	highlight2 (me, wdx (x1WC), wdx (x2WC), wdy (y1WC), wdy (y2WC), wdx (x1WC_inner), wdx (x2WC_inner), wdy (y1WC_inner), wdy (y2WC_inner));
 	if (my recording)
-		{ op (HIGHLIGHT2, 8); put (x1WC); put (x2WC); put (y1WC); put (y2WC); put (x1WC_inner); put (x2WC_inner); put (y1WC_inner); put (y2WC_inner); }
+		{ g_op (HIGHLIGHT2, 8); put (x1WC); put (x2WC); put (y1WC); put (y2WC); put (x1WC_inner); put (x2WC_inner); put (y1WC_inner); put (y2WC_inner); }
 }
 
 void Graphics_unhighlight2 (I, double x1WC, double x2WC, double y1WC, double y2WC,
@@ -291,7 +291,7 @@ void Graphics_unhighlight2 (I, double x1WC, double x2WC, double y1WC, double y2W
 		highlight2 (me, wdx (x1WC), wdx (x2WC), wdy (y1WC), wdy (y2WC), wdx (x1WC_inner), wdx (x2WC_inner), wdy (y1WC_inner), wdy (y2WC_inner));
 	#endif
 	if (my recording)
-		{ op (UNHIGHLIGHT2, 8); put (x1WC); put (x2WC); put (y1WC); put (y2WC); put (x1WC_inner); put (x2WC_inner); put (y1WC_inner); put (y2WC_inner); }
+		{ g_op (UNHIGHLIGHT2, 8); put (x1WC); put (x2WC); put (y1WC); put (y2WC); put (x1WC_inner); put (x2WC_inner); put (y1WC_inner); put (y2WC_inner); }
 }
 
 void Graphics_xorOn (I, Graphics_Colour colour) {
@@ -325,7 +325,7 @@ void Graphics_xorOn (I, Graphics_Colour colour) {
 		#endif
 		my duringXor = true;
 	}
-	if (my recording) { op (XOR_ON, 3); put (colour. red); put (colour. green); put (colour. blue); }
+	if (my recording) { g_op (XOR_ON, 3); put (colour. red); put (colour. green); put (colour. blue); }
 }
 
 void Graphics_xorOff (I) {
@@ -353,7 +353,7 @@ void Graphics_xorOff (I) {
 		#endif
 		my duringXor = false;
 	}
-	if (my recording) { op (XOR_OFF, 0); }
+	if (my recording) { g_op (XOR_OFF, 0); }
 }
 
 Graphics_Colour Graphics_inqColour (I) {

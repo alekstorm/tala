@@ -1870,7 +1870,7 @@ int Formula_compile (Interpreter *interpreter, Any data, const wchar_t *expressi
 	theInterpreter = interpreter;
 	if (theInterpreter == NULL) {
 		theInterpreter = new Interpreter (NULL);
-		Collection_removeAllItems (theInterpreter -> _variables);
+		theInterpreter->_variables.clear();
 	}
 	theSource = (structData*)data;
 	theExpression = expression;

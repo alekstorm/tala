@@ -445,7 +445,7 @@ int Graphics_readRecordings (I, FILE *f) {
 
 void Graphics_markGroup (I) {
 	iam (Graphics);
-	if (my recording) { op (MARK_GROUP, 0); }
+	if (my recording) { g_op (MARK_GROUP, 0); }
 }
 
 void Graphics_undoGroup (I) {

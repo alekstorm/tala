@@ -143,7 +143,7 @@ void ScriptEditor::run (wchar_t **text) {
 }
 
 int ScriptEditor::menu_cb_run (EDITOR_ARGS) {
-	ScriptEditor *editor = (ScriptEditor *)editor;
+	ScriptEditor *editor = (ScriptEditor *)editor_me;
 	if (editor->_interpreter -> _running)
 		return Melder_error1 (L"The script is already running (paused). Please close or continue the pause or demo window.");
 	wchar_t *text = GuiText_getString (editor->_textWidget);
@@ -153,7 +153,7 @@ int ScriptEditor::menu_cb_run (EDITOR_ARGS) {
 }
 
 int ScriptEditor::menu_cb_runSelection (EDITOR_ARGS) {
-	ScriptEditor *editor = (ScriptEditor *)editor;
+	ScriptEditor *editor = (ScriptEditor *)editor_me;
 	if (editor->_interpreter -> _running)
 		return Melder_error1 (L"The script is already running (paused). Please close or continue the pause or demo window.");
 	wchar_t *text = GuiText_getSelection (editor->_textWidget);
@@ -166,7 +166,7 @@ int ScriptEditor::menu_cb_runSelection (EDITOR_ARGS) {
 }
 
 int ScriptEditor::menu_cb_addToMenu (EDITOR_ARGS) {
-	ScriptEditor *editor = (ScriptEditor *)editor;
+	ScriptEditor *editor = (ScriptEditor *)editor_me;
 	EDITOR_FORM (L"Add to menu", L"Add to fixed menu...")
 		WORD (L"Window", L"?")
 		SENTENCE (L"Menu", L"File")
@@ -190,7 +190,7 @@ int ScriptEditor::menu_cb_addToMenu (EDITOR_ARGS) {
 }
 
 int ScriptEditor::menu_cb_addToFixedMenu (EDITOR_ARGS) {
-	ScriptEditor *editor = (ScriptEditor *)editor;
+	ScriptEditor *editor = (ScriptEditor *)editor_me;
 	EDITOR_FORM (L"Add to fixed menu", L"Add to fixed menu...");
 		RADIO (L"Window", 1)
 			RADIOBUTTON (L"Objects")
@@ -215,7 +215,7 @@ int ScriptEditor::menu_cb_addToFixedMenu (EDITOR_ARGS) {
 }
 
 int ScriptEditor::menu_cb_addToDynamicMenu (EDITOR_ARGS) {
-	ScriptEditor *editor = (ScriptEditor *)editor;
+	ScriptEditor *editor = (ScriptEditor *)editor_me;
 	EDITOR_FORM (L"Add to dynamic menu", L"Add to dynamic menu...")
 		WORD (L"Class 1", L"Sound")
 		INTEGER (L"Number 1", L"0")
@@ -243,13 +243,13 @@ int ScriptEditor::menu_cb_addToDynamicMenu (EDITOR_ARGS) {
 }
 
 int ScriptEditor::menu_cb_clearHistory (EDITOR_ARGS) {
-	ScriptEditor *editor = (ScriptEditor *)editor;
+	ScriptEditor *editor = (ScriptEditor *)editor_me;
 	UiForm::history.clear ();
 	return 1;
 }
 
 int ScriptEditor::menu_cb_pasteHistory (EDITOR_ARGS) {
-	ScriptEditor *editor = (ScriptEditor *)editor;
+	ScriptEditor *editor = (ScriptEditor *)editor_me;
 	wchar_t *history = UiForm::history.get ();
 	if (history == NULL || history [0] == '\0')
 		return Melder_error1 (L"No history.");
@@ -273,7 +273,7 @@ int ScriptEditor::menu_cb_pasteHistory (EDITOR_ARGS) {
 }
 
 int ScriptEditor::menu_cb_expandIncludeFiles (EDITOR_ARGS) {
-	ScriptEditor *editor = (ScriptEditor *)editor;
+	ScriptEditor *editor = (ScriptEditor *)editor_me;
 	structMelderFile file = { 0 };
 	wchar_t *text = GuiText_getString (editor->_textWidget);
 	if (editor->_name) {

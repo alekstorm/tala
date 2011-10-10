@@ -32,6 +32,13 @@
 #define Interpreter_MAX_CALL_DEPTH  50
 
 #ifdef __cplusplus
+
+#include <map>
+#include <string>
+
+using std::map;
+using std::wstring;
+
 class UiForm;
 
 class InterpreterVariable {
@@ -43,6 +50,8 @@ class InterpreterVariable {
 	double _numericValue;
 	struct Formula_NumericArray _numericArrayValue;
 };
+
+typedef map<wstring, InterpreterVariable*> InterpreterVariableMap;
 
 class Interpreter {
   public:
@@ -75,12 +84,13 @@ class Interpreter {
 	wchar_t _labelNames [1+Interpreter_MAXNUM_LABELS] [100];
 	long _labelLines [1+Interpreter_MAXNUM_LABELS];
 	wchar_t _dialogTitle [1+100], _procedureNames [1+Interpreter_MAX_CALL_DEPTH] [100];
-	SortedSetOfString _variables;
+	InterpreterVariableMap _variables;
 	bool _running, _stopped;
 
   private:
 	int addNumericVariable (const wchar_t *key, double value);
 	InterpreterVariable* addStringVariable (const wchar_t *key, const wchar_t *value);
+	wstring getVariableNameIncludingProcedureName(const wchar_t *key);
 
 	static bool isCommand (const wchar_t *p);
 

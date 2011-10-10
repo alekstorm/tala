@@ -1635,7 +1635,7 @@ void Graphics_text (I, double xWC, double yWC, const wchar_t *txt) {
 	if (my recording) {
 		char *txt_utf8 = Melder_peekWcsToUtf8 (txt);
 		int length = strlen (txt_utf8) / sizeof (double) + 1;
-		op (TEXT, 3 + length); put (xWC); put (yWC); sput (txt_utf8, length)
+		g_op (TEXT, 3 + length); put (xWC); put (yWC); sput (txt_utf8, length)
 	}
 }
 
@@ -1806,25 +1806,25 @@ void Graphics_setTextAlignment (I, int hor, int vert) {
 	iam (Graphics);
 	if (hor != Graphics_NOCHANGE) my horizontalTextAlignment = hor;
 	if (vert != Graphics_NOCHANGE) my verticalTextAlignment = vert;
-	if (my recording) { op (SET_TEXT_ALIGNMENT, 2); put (hor); put (vert); }
+	if (my recording) { g_op (SET_TEXT_ALIGNMENT, 2); put (hor); put (vert); }
 }
 
 void Graphics_setFont (I, enum kGraphics_font font) {
 	iam (Graphics);
 	my font = font;
-	if (my recording) { op (SET_FONT, 1); put (font); }
+	if (my recording) { g_op (SET_FONT, 1); put (font); }
 }
 
 void Graphics_setFontSize (I, int size) {
 	iam (Graphics);
 	my fontSize = size;
-	if (my recording) { op (SET_FONT_SIZE, 1); put (size); }
+	if (my recording) { g_op (SET_FONT_SIZE, 1); put (size); }
 }
 
 void Graphics_setFontStyle (I, int style) {
 	iam (Graphics);
 	my fontStyle = style;
-	if (my recording) { op (SET_FONT_STYLE, 1); put (style); }
+	if (my recording) { g_op (SET_FONT_STYLE, 1); put (style); }
 }
 
 void Graphics_setItalic (I, bool onoff) {
@@ -1845,55 +1845,55 @@ void Graphics_setCode (I, bool onoff) {
 void Graphics_setTextRotation (I, double angle) {
 	iam (Graphics);
 	my textRotation = angle;
-	if (my recording) { op (SET_TEXT_ROTATION, 1); put (angle); }
+	if (my recording) { g_op (SET_TEXT_ROTATION, 1); put (angle); }
 }
 
 void Graphics_setWrapWidth (I, double wrapWidth) {
 	iam (Graphics);
 	my wrapWidth = wrapWidth;
-	if (my recording) { op (SET_WRAP_WIDTH, 1); put (wrapWidth); }
+	if (my recording) { g_op (SET_WRAP_WIDTH, 1); put (wrapWidth); }
 }
 
 void Graphics_setSecondIndent (I, double indent) {
 	iam (Graphics);
 	my secondIndent = indent;
-	if (my recording) { op (SET_SECOND_INDENT, 1); put (indent); }
+	if (my recording) { g_op (SET_SECOND_INDENT, 1); put (indent); }
 }
 
 void Graphics_setPercentSignIsItalic (I, bool isItalic) {
 	iam (Graphics);
 	my percentSignIsItalic = isItalic;
-	if (my recording) { op (SET_PERCENT_SIGN_IS_ITALIC, 1); put (isItalic); }
+	if (my recording) { g_op (SET_PERCENT_SIGN_IS_ITALIC, 1); put (isItalic); }
 }
 
 void Graphics_setNumberSignIsBold (I, bool isBold) {
 	iam (Graphics);
 	my numberSignIsBold = isBold;
-	if (my recording) { op (SET_NUMBER_SIGN_IS_BOLD, 1); put (isBold); }
+	if (my recording) { g_op (SET_NUMBER_SIGN_IS_BOLD, 1); put (isBold); }
 }
 
 void Graphics_setCircumflexIsSuperscript (I, bool isSuperscript) {
 	iam (Graphics);
 	my circumflexIsSuperscript = isSuperscript;
-	if (my recording) { op (SET_CIRCUMFLEX_IS_SUPERSCRIPT, 1); put (isSuperscript); }
+	if (my recording) { g_op (SET_CIRCUMFLEX_IS_SUPERSCRIPT, 1); put (isSuperscript); }
 }
 
 void Graphics_setUnderscoreIsSubscript (I, bool isSubscript) {
 	iam (Graphics);
 	my underscoreIsSubscript = isSubscript;
-	if (my recording) { op (SET_UNDERSCORE_IS_SUBSCRIPT, 1); put (isSubscript); }
+	if (my recording) { g_op (SET_UNDERSCORE_IS_SUBSCRIPT, 1); put (isSubscript); }
 }
 
 void Graphics_setDollarSignIsCode (I, bool isCode) {
 	iam (Graphics);
 	my dollarSignIsCode = isCode;
-	if (my recording) { op (SET_DOLLAR_SIGN_IS_CODE, 1); put (isCode); }
+	if (my recording) { g_op (SET_DOLLAR_SIGN_IS_CODE, 1); put (isCode); }
 }
 
 void Graphics_setAtSignIsLink (I, bool isLink) {
 	iam (Graphics);
 	my atSignIsLink = isLink;
-	if (my recording) { op (SET_AT_SIGN_IS_LINK, 1); put (isLink); }
+	if (my recording) { g_op (SET_AT_SIGN_IS_LINK, 1); put (isLink); }
 }
 
 /* Inquiries. */

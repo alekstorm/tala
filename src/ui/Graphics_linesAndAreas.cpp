@@ -904,7 +904,7 @@ void Graphics_polyline (I, long numberOfPoints, double *xWC, double *yWC) {	/* B
 	polyline (me, numberOfPoints, xyDC);
 	Melder_free (xyDC);
 	if (my recording) {
-		op (POLYLINE, 1 + 2 * numberOfPoints);
+		g_op (POLYLINE, 1 + 2 * numberOfPoints);
 		put (numberOfPoints);
 		mput (numberOfPoints, & xWC [0])
 		mput (numberOfPoints, & yWC [0])
@@ -919,7 +919,7 @@ void Graphics_line (I, double x1WC, double y1WC, double x2WC, double y2WC) {
 	xyDC [2] = wdx (x2WC);
 	xyDC [3] = wdy (y2WC);
 	polyline (me, 2, xyDC);
-	if (my recording) { op (LINE, 4); put (x1WC); put (y1WC); put (x2WC); put (y2WC); }
+	if (my recording) { g_op (LINE, 4); put (x1WC); put (y1WC); put (x2WC); put (y2WC); }
 }
 
 void Graphics_fillArea (I, long numberOfPoints, double *xWC, double *yWC) {
@@ -933,7 +933,7 @@ void Graphics_fillArea (I, long numberOfPoints, double *xWC, double *yWC) {
 	fillArea (me, numberOfPoints, xyDC);
 	Melder_free (xyDC);
 	if (my recording) {
-		op (FILL_AREA, 1 + 2 * numberOfPoints);
+		g_op (FILL_AREA, 1 + 2 * numberOfPoints);
 		put (numberOfPoints);
 		mput (numberOfPoints, & xWC [0])
 		mput (numberOfPoints, & yWC [0])
@@ -1230,7 +1230,7 @@ void Graphics_function (I, double yWC [], long ix1, long ix2, double x1WC, doubl
 	#define STAGGER(i)  (i)
 	MACRO_Graphics_function (double)
 	#undef STAGGER
-	if (my recording) { op (FUNCTION, 3 + n); put (n); put (x1WC); put (x2WC); mput (n, & yWC [ix1]) }
+	if (my recording) { g_op (FUNCTION, 3 + n); put (n); put (x1WC); put (x2WC); mput (n, & yWC [ix1]) }
 }
 
 void Graphics_function16 (I, int16_t yWC [], int stagger, long ix1, long ix2, double x1WC, double x2WC) {
@@ -1253,62 +1253,62 @@ void Graphics_function16 (I, int16_t yWC [], int stagger, long ix1, long ix2, do
 void Graphics_rectangle (I, double x1WC, double x2WC, double y1WC, double y2WC) {
 	iam (Graphics);
 	rectangle (me, wdx (x1WC), wdx (x2WC), wdy (y1WC), wdy (y2WC));
-	if (my recording) { op (RECTANGLE, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
+	if (my recording) { g_op (RECTANGLE, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
 }
 
 void Graphics_fillRectangle (I, double x1WC, double x2WC, double y1WC, double y2WC) {
 	iam (Graphics);
 	_Graphics_fillRectangle (me, wdx (x1WC), wdx (x2WC), wdy (y1WC), wdy (y2WC));
-	if (my recording) { op (FILL_RECTANGLE, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
+	if (my recording) { g_op (FILL_RECTANGLE, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
 }
 
 void Graphics_roundedRectangle (I, double x1WC, double x2WC, double y1WC, double y2WC, double r_mm) {
 	iam (Graphics);
 	roundedRectangle (me, wdx (x1WC), wdx (x2WC), wdy (y1WC), wdy (y2WC), ceil (r_mm * my resolution / 25.4));
-	if (my recording) { op (ROUNDED_RECTANGLE, 5); put (x1WC); put (x2WC); put (y1WC); put (y2WC); put (r_mm); }
+	if (my recording) { g_op (ROUNDED_RECTANGLE, 5); put (x1WC); put (x2WC); put (y1WC); put (y2WC); put (r_mm); }
 }
 
 void Graphics_fillRoundedRectangle (I, double x1WC, double x2WC, double y1WC, double y2WC, double r_mm) {
 	iam (Graphics);
 	fillRoundedRectangle (me, wdx (x1WC), wdx (x2WC), wdy (y1WC), wdy (y2WC), ceil (r_mm * my resolution / 25.4));
-	if (my recording) { op (FILL_ROUNDED_RECTANGLE, 5); put (x1WC); put (x2WC); put (y1WC); put (y2WC); put (r_mm); }
+	if (my recording) { g_op (FILL_ROUNDED_RECTANGLE, 5); put (x1WC); put (x2WC); put (y1WC); put (y2WC); put (r_mm); }
 }
 
 void Graphics_button (I, double x1WC, double x2WC, double y1WC, double y2WC) {
 	iam (Graphics);
 	button (me, wdx (x1WC), wdx (x2WC), wdy (y1WC), wdy (y2WC));
-	if (my recording) { op (BUTTON, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
+	if (my recording) { g_op (BUTTON, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
 }
 
 void Graphics_innerRectangle (I, double x1WC, double x2WC, double y1WC, double y2WC) {
 	iam (Graphics);
 	int dy = my yIsZeroAtTheTop ? -1 : 1;
 	rectangle (me, wdx (x1WC) + 1, wdx (x2WC) - 1, wdy (y1WC) + dy, wdy (y2WC) - dy);
-	if (my recording) { op (INNER_RECTANGLE, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
+	if (my recording) { g_op (INNER_RECTANGLE, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
 }
 
 void Graphics_circle (I, double xWC, double yWC, double rWC) {
 	iam (Graphics);
 	circle (me, wdx (xWC), wdy (yWC), my scaleX * rWC);
-	if (my recording) { op (CIRCLE, 3); put (xWC); put (yWC); put (rWC); }
+	if (my recording) { g_op (CIRCLE, 3); put (xWC); put (yWC); put (rWC); }
 }
 
 void Graphics_circle_mm (I, double xWC, double yWC, double diameter) {
 	iam (Graphics);
 	circle (me, wdx (xWC), wdy (yWC), 0.5 * diameter * my resolution / 25.4);
-	if (my recording) { op (CIRCLE_MM, 3); put (xWC); put (yWC); put (diameter); }
+	if (my recording) { g_op (CIRCLE_MM, 3); put (xWC); put (yWC); put (diameter); }
 }
 
 void Graphics_fillCircle (I, double xWC, double yWC, double rWC) {
 	iam (Graphics);
 	fillCircle (me, wdx (xWC), wdy (yWC), ceil (my scaleX * rWC));
-	if (my recording) { op (FILL_CIRCLE, 3); put (xWC); put (yWC); put (rWC); }
+	if (my recording) { g_op (FILL_CIRCLE, 3); put (xWC); put (yWC); put (rWC); }
 }
 
 void Graphics_fillCircle_mm (I, double xWC, double yWC, double diameter) {
 	iam (Graphics);
 	fillCircle (me, wdx (xWC), wdy (yWC), ceil (0.5 * diameter * my resolution / 25.4));
-	if (my recording) { op (FILL_CIRCLE_MM, 3); put (xWC); put (yWC); put (diameter); }
+	if (my recording) { g_op (FILL_CIRCLE_MM, 3); put (xWC); put (yWC); put (diameter); }
 }
 
 void Graphics_rectangle_mm (I, double xWC, double yWC, double horSide, double vertSide) {
@@ -1321,7 +1321,7 @@ void Graphics_rectangle_mm (I, double xWC, double yWC, double horSide, double ve
 	} else {
 		rectangle (me, xDC - halfHorSide, xDC + halfHorSide, yDC - halfVertSide, yDC + halfVertSide);
 	}
-	if (my recording) { op (RECTANGLE_MM, 4); put (xWC); put (yWC); put (horSide); put (vertSide); }
+	if (my recording) { g_op (RECTANGLE_MM, 4); put (xWC); put (yWC); put (horSide); put (vertSide); }
 }
 
 void Graphics_fillRectangle_mm (I, double xWC, double yWC, double horSide, double vertSide) {
@@ -1334,31 +1334,31 @@ void Graphics_fillRectangle_mm (I, double xWC, double yWC, double horSide, doubl
 	} else {
 		_Graphics_fillRectangle (me, xDC - halfHorSide, xDC + halfHorSide, yDC - halfVertSide, yDC + halfVertSide);
 	}
-	if (my recording) { op (FILL_RECTANGLE_MM, 4); put (xWC); put (yWC); put (horSide); put (vertSide); }
+	if (my recording) { g_op (FILL_RECTANGLE_MM, 4); put (xWC); put (yWC); put (horSide); put (vertSide); }
 }
 
 void Graphics_ellipse (I, double x1, double x2, double y1, double y2) {
 	iam (Graphics);
 	ellipse (me, wdx (x1), wdx (x2), wdy (y1), wdy (y2));
-	if (my recording) { op (ELLIPSE, 4); put (x1); put (x2); put (y1); put (y2); }
+	if (my recording) { g_op (ELLIPSE, 4); put (x1); put (x2); put (y1); put (y2); }
 }
 
 void Graphics_fillEllipse (I, double x1, double x2, double y1, double y2) {
 	iam (Graphics);
 	fillEllipse (me, wdx (x1), wdx (x2), wdy (y1), wdy (y2));
-	if (my recording) { op (FILL_ELLIPSE, 4); put (x1); put (x2); put (y1); put (y2); }
+	if (my recording) { g_op (FILL_ELLIPSE, 4); put (x1); put (x2); put (y1); put (y2); }
 }
 
 void Graphics_arc (I, double xWC, double yWC, double rWC, double fromAngle, double toAngle) {
 	iam (Graphics);
 	arc (me, wdx (xWC), wdy (yWC), my scaleX * rWC, fromAngle, toAngle);
-	if (my recording) { op (ARC, 5); put (xWC); put (yWC); put (rWC); put (fromAngle); put (toAngle); }
+	if (my recording) { g_op (ARC, 5); put (xWC); put (yWC); put (rWC); put (fromAngle); put (toAngle); }
 }
 
 void Graphics_fillArc (I, double xWC, double yWC, double rWC, double fromAngle, double toAngle) {
 	iam (Graphics);
 	fillArc (me, wdx (xWC), wdy (yWC), my scaleX * rWC, fromAngle, toAngle);
-	if (my recording) { op (FILL_ARC, 5); put (xWC); put (yWC); put (rWC); put (fromAngle); put (toAngle); }
+	if (my recording) { g_op (FILL_ARC, 5); put (xWC); put (yWC); put (rWC); put (fromAngle); put (toAngle); }
 }
 
 /* Arrows. */
@@ -1442,7 +1442,7 @@ void Graphics_arrow (I, double x1WC, double y1WC, double x2WC, double y2WC) {
 	xyDC [3] = wdy (y2WC) + (my yIsZeroAtTheTop ? -1.0 : 1.0) * (my screen ? 0.7 : 0.6) * sin ((angle - 180) * NUMpi / 180) * size;
 	polyline (me, 2, xyDC);
 	arrowHead (me, wdx (x2WC), wdy (y2WC), angle);
-	if (my recording) { op (ARROW, 4); put (x1WC); put (y1WC); put (x2WC); put (y2WC); }
+	if (my recording) { g_op (ARROW, 4); put (x1WC); put (y1WC); put (x2WC); put (y2WC); }
 }
 
 void Graphics_doubleArrow (I, double x1WC, double y1WC, double x2WC, double y2WC) {
@@ -1458,7 +1458,7 @@ void Graphics_doubleArrow (I, double x1WC, double y1WC, double x2WC, double y2WC
 	arrowHead (me, wdx (x1WC), wdy (y1WC), angle + 180);
 	//polyline (me, 2, xyDC);
 	arrowHead (me, wdx (x2WC), wdy (y2WC), angle);
-	if (my recording) { op (DOUBLE_ARROW, 4); put (x1WC); put (y1WC); put (x2WC); put (y2WC); }
+	if (my recording) { g_op (DOUBLE_ARROW, 4); put (x1WC); put (y1WC); put (x2WC); put (y2WC); }
 }
 
 void Graphics_arcArrow (I, double xWC, double yWC, double rWC,
@@ -1473,7 +1473,7 @@ void Graphics_arcArrow (I, double xWC, double yWC, double rWC,
 		wdx (xWC + rWC * cos (toAngle * (NUMpi / 180.0))),
 		wdy (yWC + rWC * sin (toAngle * (NUMpi / 180.0))), toAngle + 90);
 	if (my recording)
-		{ op (ARC_ARROW, 7); put (xWC); put (yWC); put (rWC);
+		{ g_op (ARC_ARROW, 7); put (xWC); put (yWC); put (rWC);
 		  put (fromAngle); put (toAngle); put (arrowAtStart); put (arrowAtEnd); }
 }
 
@@ -1482,19 +1482,19 @@ void Graphics_arcArrow (I, double xWC, double yWC, double rWC,
 void Graphics_setLineType (I, int lineType) {
 	iam (Graphics);
 	my lineType = lineType;
-	if (my recording) { op (SET_LINE_TYPE, 1); put (lineType); }
+	if (my recording) { g_op (SET_LINE_TYPE, 1); put (lineType); }
 }
 
 void Graphics_setLineWidth (I, double lineWidth) {
 	iam (Graphics);
 	my lineWidth = lineWidth;
-	if (my recording) { op (SET_LINE_WIDTH, 1); put (lineWidth); }
+	if (my recording) { g_op (SET_LINE_WIDTH, 1); put (lineWidth); }
 }
 
 void Graphics_setArrowSize (I, double arrowSize) {
 	iam (Graphics);
 	my arrowSize = arrowSize;
-	if (my recording) { op (SET_ARROW_SIZE, 1); put (arrowSize); }
+	if (my recording) { g_op (SET_ARROW_SIZE, 1); put (arrowSize); }
 }
 
 /* Inquiries. */

@@ -200,7 +200,7 @@ void Graphics_setWsWindow (I, double x1NDC, double x2NDC, double y1NDC, double y
 	my y2wNDC = y2NDC;
 	computeTrafo (me);
 	if (my recording)
-		{ op (SET_WS_WINDOW, 4); put (x1NDC); put (x2NDC); put (y1NDC); put (y2NDC); }
+		{ g_op (SET_WS_WINDOW, 4); put (x1NDC); put (x2NDC); put (y1NDC); put (y2NDC); }
 }
 
 void Graphics_inqWsWindow (I, double *x1NDC, double *x2NDC, double *y1NDC, double *y2NDC) {
@@ -243,7 +243,7 @@ void Graphics_setViewport (I, double x1NDC, double x2NDC, double y1NDC, double y
 	my y2NDC = y2NDC;
 	computeTrafo (me);
 	if (my recording)
-		{ op (SET_VIEWPORT, 4); put (x1NDC); put (x2NDC); put (y1NDC); put (y2NDC); }
+		{ g_op (SET_VIEWPORT, 4); put (x1NDC); put (x2NDC); put (y1NDC); put (y2NDC); }
 }
 
 void Graphics_setInner (I) {
@@ -266,7 +266,7 @@ void Graphics_setInner (I) {
 	my y1NDC = (1 - dy) * my outerViewport.y1NDC + dy * my outerViewport.y2NDC;
 	my y2NDC = (1 - dy) * my outerViewport.y2NDC + dy * my outerViewport.y1NDC;
 	computeTrafo (me);
-	if (my recording) { op (SET_INNER, 0); }
+	if (my recording) { g_op (SET_INNER, 0); }
 }
 
 void Graphics_unsetInner (I) {
@@ -277,7 +277,7 @@ void Graphics_unsetInner (I) {
 	my y2NDC = my outerViewport.y2NDC;
 	computeTrafo (me);
 	if (my recording)
-		{ op (UNSET_INNER, 0); }
+		{ g_op (UNSET_INNER, 0); }
 }
 
 void Graphics_setWindow (I, double x1WC, double x2WC, double y1WC, double y2WC) {
@@ -288,7 +288,7 @@ void Graphics_setWindow (I, double x1WC, double x2WC, double y1WC, double y2WC) 
 	my y2WC = y2WC;
 	computeTrafo (me);
 	if (my recording)
-		{ op (SET_WINDOW, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
+		{ g_op (SET_WINDOW, 4); put (x1WC); put (x2WC); put (y1WC); put (y2WC); }
 }
 
 /***** INQUIRIES TO CURRENT GRAPHICS *****/

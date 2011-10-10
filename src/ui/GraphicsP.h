@@ -191,7 +191,7 @@ class_create (GraphicsPostscript, Graphics);
 
 double * _Graphics_check (Graphics me, long number);
 #define put(f)  * ++ p = (double) (f)
-#define op(opcode,number)  double *p = _Graphics_check (me, number); if (! p) return; put (opcode); put (number)
+#define g_op(opcode,number)  double *p = _Graphics_check (me, number); if (! p) return; put (opcode); put (number)
 #define mput(n,a)  { double *f = a; for (long l = 0; l < n; l ++) put (f [l]); }
 #define sput(s,l)  { put (l); strcpy ((char *) (p + 1), s); p += l; }
 

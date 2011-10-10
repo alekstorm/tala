@@ -745,7 +745,7 @@ static void cellArrayOrImage (I, double **z_float, unsigned char **z_byte,
 		wdx (my x1WC), wdx (my x2WC), wdy (my y1WC), wdy (my y2WC), interpolate);
 	if (my recording) {
 		long nrow = iy2 - iy1 + 1, ncol = ix2 - ix1 + 1, ix, iy;
-		op (interpolate ? ( z_float ? IMAGE : IMAGE8 ) :
+		g_op (interpolate ? ( z_float ? IMAGE : IMAGE8 ) :
 			 (z_float ? CELL_ARRAY : CELL_ARRAY8 ), 8 + nrow * ncol);
 		put (x1WC); put (x2WC); put (y1WC); put (y2WC); put (minimum); put (maximum);
 		put (nrow); put (ncol);
@@ -824,7 +824,7 @@ void Graphics_imageFromFile (I, const wchar_t *relativeFileName, double x1, doub
 	if (my recording) {
 		char *txt_utf8 = Melder_peekWcsToUtf8 (relativeFileName);
 		int length = strlen (txt_utf8) / sizeof (double) + 1;
-		op (IMAGE_FROM_FILE, 5 + length); put (x1); put (x2); put (y1); put (y2); sput (txt_utf8, length)
+		g_op (IMAGE_FROM_FILE, 5 + length); put (x1); put (x2); put (y1); put (y2); sput (txt_utf8, length)
 	}
 }
 

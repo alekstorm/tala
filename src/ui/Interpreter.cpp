@@ -179,14 +179,12 @@ Interpreter::Interpreter (wchar_t *environmentName)
 	  _numberOfLabels(0),
 	  _callDepth(0),
 	  _running(false),
-	  _stopped(false),
-	  _variables(SortedSetOfString_create ()) {}
+	  _stopped(false) {}
 
 Interpreter::~Interpreter () {
 	Melder_free (_environmentName);
 	for (int ipar = 1; ipar <= Interpreter_MAXNUM_PARAMETERS; ipar ++)
 		Melder_free (_arguments [ipar]);
-	forget (_variables);
 }
 
 int Interpreter::readParameters (wchar_t *text) {
@@ -532,47 +530,41 @@ int Interpreter::getArgumentsFromString (const wchar_t *arguments) {
 
 int Interpreter::addNumericVariable (const wchar_t *key, double value) {
 	InterpreterVariable *variable = new InterpreterVariable (key);
-	if (! variable || ! Collection_addItem (_variables, variable)) return 0;
+        _variables[key] = variable;
 	variable -> _numericValue = value;
 	return 1;
 }
 
 InterpreterVariable* Interpreter::addStringVariable (const wchar_t *key, const wchar_t *value) {
 	InterpreterVariable *variable = new InterpreterVariable (key);
-	if (! variable || ! Collection_addItem (_variables, variable)) return NULL;
+        _variables[key] = variable;
 	variable -> _stringValue = Melder_wcsdup_f (value);
 	return variable;
 }
 
-InterpreterVariable* Interpreter::hasVariable (const wchar_t *key) {
-	long ivar = 0;
-	wchar_t variableNameIncludingProcedureName [1+200];
+wstring Interpreter::getVariableNameIncludingProcedureName(const wchar_t *key) {
 	Melder_assert (key != NULL);
+	wstring variableName(key);
 	if (key [0] == '.') {
-		wcscpy (variableNameIncludingProcedureName, _procedureNames [_callDepth]);
-		wcscat (variableNameIncludingProcedureName, key);
-	} else {
-		wcscpy (variableNameIncludingProcedureName, key);
+		variableName.insert(0, _procedureNames [_callDepth]);
 	}
-	ivar = SortedSetOfString_lookUp (_variables, variableNameIncludingProcedureName);
-	return (InterpreterVariable*)(ivar ? _variables -> item [ivar] : NULL);
+	return variableName;
+}
+
+InterpreterVariable* Interpreter::hasVariable (const wchar_t *key) {
+	wstring variableName = getVariableNameIncludingProcedureName(key);
+	InterpreterVariableMap::iterator variable = _variables.find(variableName);
+	return (variable != _variables.end()) ? variable->second : NULL;
 }
 
 InterpreterVariable* Interpreter::lookUpVariable (const wchar_t *key) {
-	InterpreterVariable *var = NULL;
-	wchar_t variableNameIncludingProcedureName [1+200];
-	Melder_assert (key != NULL);
-	if (key [0] == '.') {
-		wcscpy (variableNameIncludingProcedureName, _procedureNames [_callDepth]);
-		wcscat (variableNameIncludingProcedureName, key);
-	} else {
-		wcscpy (variableNameIncludingProcedureName, key);
+	wstring variableName = getVariableNameIncludingProcedureName(key);
+	InterpreterVariable *var = hasVariable (key);
+	if (!var) {
+		var = new InterpreterVariable (variableName.c_str());
+		_variables[variableName] = var;
 	}
-	var = hasVariable (variableNameIncludingProcedureName);
-	if (var) return var;
-	var = new InterpreterVariable (variableNameIncludingProcedureName);
-	if (! var || ! Collection_addItem (_variables, var)) return NULL;
-	return hasVariable (variableNameIncludingProcedureName);
+	return var;
 }
 
 long Interpreter::lookupLabel (const wchar_t *labelName) {
@@ -675,8 +667,7 @@ int Interpreter::run (wchar_t *text) {
 	/*
 	 * Copy the parameter names and argument values into the array of variables.
 	 */
-	forget (_variables);
-	_variables = SortedSetOfString_create ();
+	_variables.clear();
 	for (ipar = 1; ipar <= _numberOfParameters; ipar ++) {
 		wchar_t parameter [200];
 		/*
