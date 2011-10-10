@@ -51,10 +51,8 @@ class InfoEditor : public Editor {
 	virtual int openDocument (MelderFile file);
 	virtual void newDocument ();
 	virtual int saveDocument (MelderFile file);
-	virtual void closeDocument ();
 	virtual void menu_new (EditorCommand *cmd);
 
-	virtual void goAway ();
 	virtual void updateSizeMenu ();
 
   private:

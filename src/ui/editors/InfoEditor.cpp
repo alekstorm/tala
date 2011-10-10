@@ -127,8 +127,6 @@ int InfoEditor::saveDocument (MelderFile file) {
 	return 1;
 }
 
-void InfoEditor::closeDocument () {}
-
 const wchar_t * InfoEditor::getName () {
 	return L"info.txt";
 }
@@ -161,10 +159,6 @@ int InfoEditor::menu_cb_saveAs (EDITOR_ARGS) {
 	swprintf (defaultName, 300, editor->getName ());
 	editor->_saveDialog -> do_ (defaultName);
 	return 1;
-}
-
-void InfoEditor::goAway () {
-	closeDocument ();
 }
 
 int InfoEditor::menu_cb_undo (EDITOR_ARGS) {

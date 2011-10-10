@@ -175,7 +175,7 @@ void TextEditor::gui_button_cb_saveAndClose (void *void_me, GuiButtonEvent event
 	GuiObject_hide (editor->_dirtyCloseDialog);
 	if (editor->_name) {
 		if (! editor->saveDocument (& editor->_file)) { Melder_flushError (NULL); return; }
-		editor->closeDocument ();
+		editor->goAway ();
 	} else {
 		menu_cb_saveAs (editor, editor->getMenuCommand (L"File", L"Save as..."), NULL, NULL, NULL);
 	}
@@ -191,7 +191,8 @@ void TextEditor::gui_button_cb_discardAndClose (void *void_me, GuiButtonEvent ev
 	(void) event;
 	TextEditor *editor = (TextEditor *)void_me;
 	GuiObject_hide (editor->_dirtyCloseDialog);
-	editor->closeDocument ();
+	editor->_dirty = FALSE;
+	editor->goAway ();
 }
 
 void TextEditor::menu_new (EditorCommand *cmd) {
@@ -296,7 +297,7 @@ void TextEditor::goAway () {
 		GuiObject_show (_dirtyCloseDialog);
 	}
 	else
-		InfoEditor::goAway ();
+		Editor::goAway ();
 }
 
 const wchar_t * TextEditor::getName () {
