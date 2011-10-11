@@ -33,9 +33,15 @@
 #include "ui/melder_gui.h"
 #include "ui/Preferences.h"
 
-// FIXME
+#include <algorithm>
+#include <vector>
+
+using std::vector;
+
+typedef vector<InfoEditor*> InfoEditorVector;
+
 static InfoEditor *theInfoEditor;
-static Collection theOpenTextEditors = NULL;
+static vector<InfoEditor*> theInfoEditors;
 
 static int theTextEditorFontSize;
 
@@ -65,12 +71,7 @@ InfoEditor::InfoEditor (GuiObject parent, const wchar_t *initialText)
 	if (initialText) {
 		GuiText_setString (_textWidget, initialText);
 	}
-	if (theOpenTextEditors == NULL) {
-		theOpenTextEditors = Collection_create (NULL, 100);
-	}
-	if (theOpenTextEditors != NULL) {
-		Collection_addItem (theOpenTextEditors, this);
-	}
+	theInfoEditors.push_back(this);
 }
 
 InfoEditor::~InfoEditor () {
@@ -78,25 +79,29 @@ InfoEditor::~InfoEditor () {
 	forget (_saveDialog);
 	forget (_printDialog);
 	forget (_findDialog);
-	if (theOpenTextEditors) {
-		Collection_undangleItem (theOpenTextEditors, this);
-	}
+	goAway ();
 }
 
 void InfoEditor::clear () {
 	Melder_clearInfo ();
 }
 
+void InfoEditor::goAway() {
+        InfoEditorVector::iterator pos = find(theInfoEditors.begin(), theInfoEditors.end(), this);
+        if ( pos != theInfoEditors.end() ) {
+                theInfoEditors.erase(pos);
+        }
+	Editor::goAway();
+}
+
 int InfoEditor::openDocument (MelderFile file) {
-	if (theOpenTextEditors) {
-		for (long ieditor = 1; ieditor <= theOpenTextEditors -> size; ieditor ++) {
-			InfoEditor *editor = (InfoEditor*)theOpenTextEditors -> item [ieditor];
-			if (editor != this && MelderFile_equal (file, & editor -> _file)) {
-				editor->raise ();
-				Melder_error3 (L"Text file ", MelderFile_messageName (file), L" is already open.");
-				//forget (me);   // don't forget me before Melder_error, because "file" is owned by one of _dialogs // FIXME
-				return 0;
-			}
+	for ( InfoEditorVector::iterator i = theInfoEditors.begin(); i != theInfoEditors.end(); i++ ) {
+		InfoEditor *editor = *i;
+		if (editor != this && MelderFile_equal (file, & editor -> _file)) {
+			editor->raise ();
+			Melder_error3 (L"Text file ", MelderFile_messageName (file), L" is already open.");
+			goAway(); // don't close me before Melder_error, because "file" is owned by one of _dialogs
+			return 0;
 		}
 	}
 	wchar_t *text = MelderFile_readText (file);

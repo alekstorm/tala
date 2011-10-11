@@ -42,13 +42,18 @@
 
 #include "EditorM.h"
 
-static Collection theScriptEditors; // FIXME
+#include <algorithm>
+#include <vector>
+
+using std::vector;
+
+typedef vector<ScriptEditor*> ScriptEditorVector;
+
+static ScriptEditorVector theScriptEditors;
 
 int ScriptEditors_dirty (void) {
-	if (! theScriptEditors) return FALSE;
-	for (long i = 1; i <= theScriptEditors -> size; i ++) {
-		ScriptEditor *editor = (ScriptEditor*)theScriptEditors -> item [i];
-		if (editor->_dirty) return TRUE;
+	for ( ScriptEditorVector::iterator i = theScriptEditors.begin(); i != theScriptEditors.end(); i++ ) {
+		if ((*i)->_dirty) return TRUE;
 	}
 	return FALSE;
 }
@@ -58,13 +63,14 @@ ScriptEditor::ScriptEditor (GuiObject parent, Editor *other, const wchar_t *init
 	  _environmentName(other != NULL ? Melder_wcsdup_e (other -> _name) : NULL),
 	  _interpreter(new Interpreter (other != NULL ? other->_name : NULL)) {
 	createMenus ();
+	theScriptEditors.push_back(this);
 }
 
 ScriptEditor::~ScriptEditor () {
 	Melder_free (_environmentName);
 	forget (_interpreter);
 	forget (_argsDialog);
-	if (theScriptEditors) Collection_undangleItem (theScriptEditors, this);
+	goAway();
 }
 
 void ScriptEditor::nameChanged () {
@@ -87,6 +93,10 @@ void ScriptEditor::goAway () {
 		Melder_error1 (L"Cannot close the script window while the script is running or paused. Please close or continue the pause or demo window.");
 		Melder_flushError (NULL);
 		return;
+	}
+	ScriptEditorVector::iterator pos = find(theScriptEditors.begin(), theScriptEditors.end(), this);
+	if ( pos != theScriptEditors.end() ) {
+		theScriptEditors.erase(pos);
 	}
 	TextEditor::goAway ();
 }
@@ -333,33 +343,22 @@ void ScriptEditor::createMenus () {
 	menu->addCommand (L"Adding to a dynamic menu", 0, menu_cb_AddingToADynamicMenu);
 }
 
-void ScriptEditor::addToEditors (ScriptEditor *editor) {
-	if (theScriptEditors == NULL) {
-		theScriptEditors = Collection_create (NULL, 10);
-	}
-	Collection_addItem (theScriptEditors, editor);
-}
-
 ScriptEditor * ScriptEditor::createFromText (GuiObject parent, Editor *other, const wchar_t *initialText) {
 	ScriptEditor *editor = new ScriptEditor (parent, other, initialText);
-	addToEditors (editor);
 	return editor;
 }
 
 ScriptEditor * ScriptEditor::createFromScript (GuiObject parent, Editor *other, Script script) {
-	if (theScriptEditors) {
-		for (long ieditor = 1; ieditor <= theScriptEditors -> size; ieditor ++) {
-			ScriptEditor *editor = (ScriptEditor*)theScriptEditors -> item [ieditor];
-			if (MelderFile_equal (& script -> file, & editor -> _file)) {
-				editor->raise ();
-				Melder_error3 (L"Script ", MelderFile_messageName (& script -> file), L" is already open.");
-				return NULL;
-			}
+	for ( ScriptEditorVector::iterator i = theScriptEditors.begin(); i != theScriptEditors.end(); i++ ) {
+		ScriptEditor *editor = *i;
+		if (MelderFile_equal (& script -> file, & editor -> _file)) {
+			editor->raise ();
+			Melder_error3 (L"Script ", MelderFile_messageName (& script -> file), L" is already open.");
+			return NULL;
 		}
 	}
 	wchar_t *text = MelderFile_readText (& script -> file);
 	ScriptEditor *editor = new ScriptEditor (parent, other, text);
-	addToEditors (editor);
 	MelderFile_copy (& script -> file, & editor->_file);
 	editor->_name = Melder_wcsdup_f (Melder_fileToPath (& script -> file));
 	Melder_free (text);

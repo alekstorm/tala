@@ -32,7 +32,6 @@ int ScriptEditors_dirty (void);   /* Are there any modified and unsaved scripts?
 
 class ScriptEditor : public TextEditor {
   public:
-	static void addToEditors (ScriptEditor *editor);
 	static ScriptEditor * createFromText (GuiObject parent, Editor *other, const wchar_t *initialText);
 	static ScriptEditor * createFromScript (GuiObject parent, Editor *other, Script script);
 

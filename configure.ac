@@ -53,8 +53,9 @@ AC_ARG_ENABLE([debug],
   *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
 esac],[debug=false])
 
-COMMON="-DUNIX -Dlinux $DEBUG $GTK_CFLAGS $FLAC_CFLAGS $MAD_CFLAGS $PA_CFLAGS $GSL_CFLAGS $GLPK_CFLAGS -m64 -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -ggdb"
-AC_SUBST([COMMON])
+AC_SUBST(COMMON, "-DUNIX -Dlinux $DEBUG $GTK_CFLAGS $FLAC_CFLAGS $MAD_CFLAGS $PA_CFLAGS $GSL_CFLAGS $GLPK_CFLAGS -m64 -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -ggdb -O0 -fno-inline")
+AC_SUBST(CFLAGS, "")
+AC_SUBST(CXXFLAGS, "")
 
 # Checks for header files.
 AC_HEADER_DIRENT

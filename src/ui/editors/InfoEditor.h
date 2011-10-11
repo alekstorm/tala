@@ -47,6 +47,7 @@ class InfoEditor : public Editor {
 	static void cb_showOpen (EditorCommand *cmd, UiForm *sendingForm, const wchar_t *sendingString, Interpreter *interpreter);
 
 	virtual bool isScriptable () { return false; }
+	virtual void goAway ();
 
 	virtual int openDocument (MelderFile file);
 	virtual void newDocument ();

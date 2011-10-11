@@ -297,7 +297,7 @@ void TextEditor::goAway () {
 		GuiObject_show (_dirtyCloseDialog);
 	}
 	else
-		Editor::goAway ();
+		InfoEditor::goAway ();
 }
 
 const wchar_t * TextEditor::getName () {
