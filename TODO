@@ -1,0 +1,4 @@
+fix Data::canWrite*() behavior in subclasses
+collapse static and instance copies of Data methods into one
+underscore fields
+constructors for all Collection subclasses

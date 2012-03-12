@@ -25,20 +25,12 @@
 
 #include "Data.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
-#define Script_members Data_members \
-	structMelderFile file;
-#define Script_methods Data_methods
-class_create (Script, Data);
-
-Script Script_createFromFile (MelderFile fs);
-
-#ifdef __cplusplus
-	}
-#endif
+class Script : public Data {
+public:
+	Script (MelderFile fs);
+protected:
+	structMelderFile _file;
+};
 
 /* End of file Script.h */
 #endif

@@ -9,6 +9,5 @@ libsys_la_SOURCES = \
 	complex.cpp \
 	Data.cpp \
 	Script.cpp \
-	Simple.cpp \
 	Strings.cpp \
 	Thing.cpp

@@ -58,37 +58,19 @@
 #if defined (_WIN32)
 	#include <windows.h>
 #endif
-#include "sys/oo/oo_DESTROY.h"
-#include "Strings_def.h"
-#include "sys/oo/oo_COPY.h"
-#include "Strings_def.h"
-#include "sys/oo/oo_EQUAL.h"
-#include "Strings_def.h"
-#include "sys/oo/oo_CAN_WRITE_AS_ENCODING.h"
-#include "Strings_def.h"
-#include "sys/oo/oo_WRITE_TEXT.h"
-#include "Strings_def.h"
-#include "sys/oo/oo_READ_TEXT.h"
-#include "Strings_def.h"
-#include "sys/oo/oo_WRITE_BINARY.h"
-#include "Strings_def.h"
-#include "sys/oo/oo_READ_BINARY.h"
-#include "Strings_def.h"
-#include "sys/oo/oo_DESCRIPTION.h"
-#include "Strings_def.h"
 
-static long Strings_totalLength (Strings me) {
+long Strings::totalLength () {
 	long totalLength = 0, i;
-	for (i = 1; i <= my numberOfStrings; i ++) {
-		totalLength += wcslen (my strings [i]);
+	for (i = 1; i <= _numberOfStrings; i ++) {
+		totalLength += wcslen (_strings [i]);
 	}
 	return totalLength;
 }
 
-static long Strings_maximumLength (Strings me) {
+long Strings::maximumLength () {
 	long maximumLength = 0, i;
-	for (i = 1; i <= my numberOfStrings; i ++) {
-		long length = wcslen (my strings [i]);
+	for (i = 1; i <= _numberOfStrings; i ++) {
+		long length = wcslen (_strings [i]);
 		if (length > maximumLength) {
 			maximumLength = length;
 		}
@@ -96,41 +78,21 @@ static long Strings_maximumLength (Strings me) {
 	return maximumLength;
 }
 
-static void info (I) {
-	iam (Strings);
-	classData -> info (me);
-	MelderInfo_writeLine2 (L"Number of strings: ", Melder_integer (my numberOfStrings));
-	MelderInfo_writeLine3 (L"Total length: ", Melder_integer (Strings_totalLength (me)), L" characters");
-	MelderInfo_writeLine3 (L"Longest string: ", Melder_integer (Strings_maximumLength (me)), L" characters");
+void Strings::info () {
+	Data::info ();
+	MelderInfo_writeLine2 (L"Number of strings: ", Melder_integer (_numberOfStrings));
+	MelderInfo_writeLine3 (L"Total length: ", Melder_integer (totalLength ()), L" characters");
+	MelderInfo_writeLine3 (L"Longest string: ", Melder_integer (maximumLength ()), L" characters");
 }
 
-static const wchar * getVectorStr (I, long icol) {
-	iam (Strings);
+const wchar * Strings::getVectorStr (long icol) {
 	wchar_t *stringValue;
-	if (icol < 1 || icol > my numberOfStrings) return L"";
-	stringValue = my strings [icol];
+	if (icol < 1 || icol > _numberOfStrings) return L"";
+	stringValue = _strings [icol];
 	return stringValue == NULL ? L"" : stringValue;
 }
 
-class_methods (Strings, Data) {
-	class_method_local (Strings, destroy)
-	class_method_local (Strings, description)
-	class_method_local (Strings, copy)
-	class_method_local (Strings, equal)
-	class_method_local (Strings, canWriteAsEncoding)
-	class_method_local (Strings, writeText)
-	class_method_local (Strings, readText)
-	class_method_local (Strings, writeBinary)
-	class_method_local (Strings, readBinary)
-	class_method (info)
-	class_method (getVectorStr)
-	class_methods_end
-}
-
-#define Strings_createAsFileOrDirectoryList_TYPE_FILE  0
-#define Strings_createAsFileOrDirectoryList_TYPE_DIRECTORY  1
-static Strings Strings_createAsFileOrDirectoryList (const wchar_t *path, int type) {
-	Strings me = Thing_new (Strings);
+Strings::Strings (const wchar_t *path, bool fileList) {
 	#if USE_STAT
 		/*
 		 * Initialize.
@@ -164,7 +126,7 @@ static Strings Strings_createAsFileOrDirectoryList (const wchar_t *path, int typ
 		d = opendir (buffer8 [0] ? buffer8 : ".");
 		if (d == NULL) error3 (L"Cannot open directory ", searchDirectory. string, L".")
 		//Melder_casual ("opened");
-		my strings = (wchar_t**)NUMpvector (1, 1000000); cherror
+		_strings = (wchar_t**)NUMpvector (1, 1000000); cherror
 		struct dirent *entry;
 		while ((entry = readdir (d)) != NULL) {
 			MelderString_copy (& filePath, searchDirectory. string [0] ? searchDirectory. string : L".");
@@ -181,8 +143,8 @@ static Strings Strings_createAsFileOrDirectoryList (const wchar_t *path, int typ
 			}
 			//Melder_casual ("statted %s", filePath. string);
 			//Melder_casual ("file %s mode %s", filePath. string, Melder_integer (stats. st_mode / 4096));
-			if ((type == Strings_createAsFileOrDirectoryList_TYPE_FILE && S_ISREG (stats. st_mode)) ||
-				(type == Strings_createAsFileOrDirectoryList_TYPE_DIRECTORY && S_ISDIR (stats. st_mode)))
+			if ((fileList && S_ISREG (stats. st_mode)) ||
+				(!fileList && S_ISDIR (stats. st_mode)))
 			{
 				Melder_8bitFileRepresentationToWcs_inline (entry -> d_name, bufferW);
 				unsigned long length = wcslen (bufferW);
@@ -190,7 +152,7 @@ static Strings Strings_createAsFileOrDirectoryList (const wchar_t *path, int typ
 					(left. length == 0 || wcsnequ (bufferW, left. string, left. length)) &&
 					(right. length == 0 || (length >= right. length && wcsequ (bufferW + (length - right. length), right. string))))
 				{
-					my strings [++ my numberOfStrings] = Melder_wcsdup_e (bufferW); cherror
+					_strings [++ _numberOfStrings] = Melder_wcsdup_e (bufferW); cherror
 				}
 			}
 		}
@@ -199,17 +161,17 @@ static Strings Strings_createAsFileOrDirectoryList (const wchar_t *path, int typ
 		WIN32_FIND_DATAW findData;
 		wchar_t searchPath [300];
 		int len = wcslen (path), hasAsterisk = wcschr (path, '*') != NULL, endsInSeparator = len != 0 && path [len - 1] == '\\';
-		my strings = NUMpvector (1, 1000000); cherror
+		_strings = NUMpvector (1, 1000000); cherror
 		swprintf (searchPath, 300, L"%ls%ls%ls", path, hasAsterisk || endsInSeparator ? L"" : L"\\", hasAsterisk ? L"" : L"*");
 		searchHandle = FindFirstFileW (searchPath, & findData);
 		if (searchHandle != INVALID_HANDLE_VALUE) {
 			do {
-				if ((type == Strings_createAsFileOrDirectoryList_TYPE_FILE &&
+				if ((fileList &&
 						(findData. dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
-				 || (type == Strings_createAsFileOrDirectoryList_TYPE_DIRECTORY && 
+				 || (!fileList &&
 						(findData. dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0))
 				{
-					my strings [++ my numberOfStrings] = Melder_wcsdup_e (findData. cFileName); cherror
+					_strings [++ _numberOfStrings] = Melder_wcsdup_e (findData. cFileName); cherror
 				}
 			} while (FindNextFileW (searchHandle, & findData));
 			FindClose (searchHandle);
@@ -223,20 +185,9 @@ end:
 		MelderString_free (& left);
 		MelderString_free (& right);
 	#endif
-	iferror forget (me);
-	return me;
 }
 
-Strings Strings_createAsFileList (const wchar_t *path) {
-	return Strings_createAsFileOrDirectoryList (path, Strings_createAsFileOrDirectoryList_TYPE_FILE);
-}
-
-Strings Strings_createAsDirectoryList (const wchar_t *path) {
-	return Strings_createAsFileOrDirectoryList (path, Strings_createAsFileOrDirectoryList_TYPE_DIRECTORY);
-}
-
-Strings Strings_readFromRawTextFile (MelderFile file) {
-	Strings me = NULL;
+Strings::Strings (MelderFile file) {
 	MelderReadText text = MelderReadText_createFromFile (file); cherror
 	{
 		/*
@@ -247,33 +198,29 @@ Strings Strings_readFromRawTextFile (MelderFile file) {
 		/*
 		 * Create.
 		 */
-		me = Thing_new (Strings);
-		if (n > 0) my strings = (wchar_t**)NUMpvector (1, n); cherror
-		my numberOfStrings = n;
+		if (n > 0) _strings = (wchar_t**)NUMpvector (1, n); cherror
+		_numberOfStrings = n;
 
 		/*
 		 * Read strings.
 		 */
 		for (long i = 1; i <= n; i ++) {
 			wchar_t *line = MelderReadText_readLine (text); cherror
-			my strings [i] = Melder_wcsdup_e (line); cherror
+			_strings [i] = Melder_wcsdup_e (line); cherror
 		}
 	}
 
 end:
 	MelderReadText_delete (text);
 	iferror {
-		forget (me);
 		Melder_error3 (L"(Strings_readFromRawTextFile:) File ", MelderFile_messageName (file), L" not read.");
-		return NULL;
 	}
-	return me;
 }
 
-int Strings_writeToRawTextFile (Strings me, MelderFile file) {
+int Strings::writeToRawTextFile (MelderFile file) {
 	MelderString buffer = { 0 };
-	for (long i = 1; i <= my numberOfStrings; i ++) {
-		MelderString_append2 (& buffer, my strings [i], L"\n");
+	for (long i = 1; i <= _numberOfStrings; i ++) {
+		MelderString_append2 (& buffer, _strings [i], L"\n");
 	}
 	MelderFile_writeText (file, buffer.string);
 end:
@@ -282,31 +229,30 @@ end:
 	return 1;
 }
 
-void Strings_randomize (Strings me) {
-	for (long i = 1; i < my numberOfStrings; i ++) {
-		long other = NUMrandomInteger (i, my numberOfStrings);
-		wchar_t *dummy = my strings [other];
-		my strings [other] = my strings [i];
-		my strings [i] = dummy;
+void Strings::randomize () {
+	for (long i = 1; i < _numberOfStrings; i ++) {
+		long other = NUMrandomInteger (i, _numberOfStrings);
+		wchar_t *dummy = _strings [other];
+		_strings [other] = _strings [i];
+		_strings [i] = dummy;
 	}
 }
 
-int Strings_genericize (Strings me) {
+int Strings::genericize () {
 	wchar_t *buffer = NULL;
-//start:
-	buffer = Melder_calloc_e (wchar_t, Strings_maximumLength (me) * 3 + 1); cherror
-	for (long i = 1; i <= my numberOfStrings; i ++) {
-		const wchar_t *p = (const wchar_t *) my strings [i];
+	buffer = Melder_calloc_e (wchar_t, maximumLength () * 3 + 1); cherror
+	for (long i = 1; i <= _numberOfStrings; i ++) {
+		const wchar_t *p = (const wchar_t *) _strings [i];
 		while (*p) {
 			if (*p > 126) {   /* Backslashes are not converted, i.e. genericize^2 == genericize. */
 				wchar_t *newString;
-				Longchar_genericizeW (my strings [i], buffer);
+				Longchar_genericizeW (_strings [i], buffer);
 				newString = Melder_wcsdup_e (buffer); cherror
 				/*
 				 * Replace string only if copying was OK.
 				 */
-				Melder_free (my strings [i]);
-				my strings [i] = newString;
+				Melder_free (_strings [i]);
+				_strings [i] = newString;
 				break;
 			}
 			p ++;
@@ -318,18 +264,17 @@ end:
 	return 1;
 }
 
-int Strings_nativize (Strings me) {
+int Strings::nativize () {
 	wchar_t *buffer = NULL;
-//start:
-	buffer = Melder_calloc_e (wchar_t, Strings_maximumLength (me) + 1); cherror
-	for (long i = 1; i <= my numberOfStrings; i ++) {
-		Longchar_nativizeW (my strings [i], buffer, false);
+	buffer = Melder_calloc_e (wchar_t, maximumLength () + 1); cherror
+	for (long i = 1; i <= _numberOfStrings; i ++) {
+		Longchar_nativizeW (_strings [i], buffer, false);
 		wchar_t *newString = Melder_wcsdup_e (buffer); cherror
 		/*
 		 * Replace string only if copying was OK.
 		 */
-		Melder_free (my strings [i]);
-		my strings [i] = newString;
+		Melder_free (_strings [i]);
+		_strings [i] = newString;
 	}
 end:
 	Melder_free (buffer);
@@ -337,40 +282,40 @@ end:
 	return 1;
 }
 
-void Strings_sort (Strings me) {
-	NUMsort_str (my numberOfStrings, my strings);
+void Strings::sort () {
+	NUMsort_str (_numberOfStrings, _strings);
 }
 
-void Strings_remove (Strings me, long position) {
+void Strings::remove (long position) {
 	Melder_assert (position >= 1);
-	Melder_assert (position <= my numberOfStrings);
-	Melder_free (my strings [position]);
-	for (long i = position; i < my numberOfStrings; i ++) {
-		my strings [i] = my strings [i + 1];
+	Melder_assert (position <= _numberOfStrings);
+	Melder_free (_strings [position]);
+	for (long i = position; i < _numberOfStrings; i ++) {
+		_strings [i] = _strings [i + 1];
 	}
-	my numberOfStrings --;
+	_numberOfStrings --;
 }
 
-int Strings_replace (Strings me, long position, const wchar_t *text) {
+int Strings::replace (long position, const wchar_t *text) {
 	Melder_assert (position >= 1);
-	Melder_assert (position <= my numberOfStrings);
-	if (Melder_wcsequ (my strings [position], text)) return 1;
-	Melder_free (my strings [position]);
-	my strings [position] = Melder_wcsdup_e (text); cherror
+	Melder_assert (position <= _numberOfStrings);
+	if (Melder_wcsequ (_strings [position], text)) return 1;
+	Melder_free (_strings [position]);
+	_strings [position] = Melder_wcsdup_e (text); cherror
 end:
 	iferror return 0;
 	return 1;
 }
 
-int Strings_insert (Strings me, long position, const wchar_t *text) {
-	if (position == 0) position = my numberOfStrings + 1;
+int Strings::insert (long position, const wchar_t *text) {
+	if (position == 0) position = _numberOfStrings + 1;
 	Melder_assert (position >= 1);
-	Melder_assert (position <= my numberOfStrings + 1);
-	for (long i = my numberOfStrings + 1; i > position; i --) {
-		my strings [i] = my strings [i - 1];
+	Melder_assert (position <= _numberOfStrings + 1);
+	for (long i = _numberOfStrings + 1; i > position; i --) {
+		_strings [i] = _strings [i - 1];
 	}
-	my strings [position] = Melder_wcsdup_e (text); cherror
-	my numberOfStrings ++;
+	_strings [position] = Melder_wcsdup_e (text); cherror
+	_numberOfStrings ++;
 end:
 	iferror return 0;
 	return 1;

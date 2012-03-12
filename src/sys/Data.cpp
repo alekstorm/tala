@@ -33,131 +33,76 @@
 
 structMelderDir Data_directoryBeingRead = { { 0 } };
 
-static int copy (Any data1, Any data2) {
-	(void) data1;
-	(void) data2;
+int Data::copyTo (Data *to) {
+	(void) to;
+	if (! canCopy()) return (int)Melder_errorp3 (L"(Data_copy:) Class ", className(), L" cannot be copied.");
 	return 1;
 }
 
-static bool equal (Any data1, Any data2) {
-	(void) data1;
-	(void) data2;
-	return 1;
-}   /* Names may be different. */
-
-static bool canWriteAsEncoding (Any data, int encoding) {
-	(void) data;
-	(void) encoding;
-	return 1;
-}
-
-static int writeText (Any data, MelderFile openFile) {
-	(void) data;
+int Data::writeText (MelderFile openFile) {
 	(void) openFile;
 	return 1;
 }
 
-static int readText (Any data, MelderReadText text) {
-	(void) data;
+int Data::readText (MelderReadText text) {
 	(void) text;
 	return 1;
 }
 
-static int writeBinary (Any data, FILE *f) {
-	(void) data;
+int Data::writeBinary (FILE *f) {
 	(void) f;
 	return 1;
 }
 
-static int readBinary (Any data, FILE *f) {
-	(void) data;
+int Data::readBinary (FILE *f) {
 	(void) f;
 	return 1;
 }
 
-static int writeCache (Any data, CACHE *f) {
-	(void) data;
+int Data::writeCache (CACHE *f) {
 	(void) f;
 	return 1;
 }
 
-static int readCache (Any data, CACHE *f) {
-	(void) data;
+int Data::readCache (CACHE *f) {
 	(void) f;
 	return 1;
 }
 
-static int writeLisp (Any data, FILE *f) {
-	(void) data;
+int Data::writeLisp (FILE *f) {
 	(void) f;
 	return 1;
 }
 
-static int readLisp (Any data, FILE *f) {
-	(void) data;
+int Data::readLisp (FILE *f) {
 	(void) f;
 	return 1;
 }
 
-class_methods (Data, Thing) {
-	class_method (copy)
-	class_method (equal)
-	class_method (canWriteAsEncoding)
-	class_method (writeText)
-	class_method (readText)
-	class_method (writeBinary)
-	class_method (readBinary)
-	class_method (writeCache)
-	class_method (readCache)
-	class_method (writeLisp)
-	class_method (readLisp)
-	class_methods_end
-}
-
-Any Data_copy (I) {
-	iam (Data);
-	Data thee;
-	if (me == NULL) return NULL;
-	if (our copy == classData -> copy) return Melder_errorp3 (L"(Data_copy:) Class ", our _className, L" cannot be copied.");
-	thee = (structData*)_Thing_new (my methods);
-	if (! thee) return NULL;
-	if (! our copy (me, thee)) {
-		forget (thee);
-		return Melder_errorp3 (L"(Data_copy:) Object of class ", our _className, L" not copied.");
+Data *Data::copy () {
+	Data *other = (Data *)Thing::newFromClassName(className());
+	if (! copyTo(other)) {
+		forget (other);
+		return (Data *)Melder_errorp3 (L"(Data_copy:) Object of class ", className(), L" not copied.");
 	}
-	Thing_setName (thee, my name);
-	return thee;
+	other->setName(name);
+	return other;
 }
 
-bool Data_equal (I, thou) {
-	iam (Data); thouart (Data);
-	if (my methods != thy methods) return 0;   /* Different class: not equal. */
-	int offset = sizeof (struct structData);   /* We already compared the methods, and are going to skip the names. */
-	if (! memcmp ((char *) me + offset, (char *) thee + offset, our _size - offset))
-		return 1;   /* No shallow differences. */
-	return our equal (me, thee);
+bool Data::equal (Data *other) {
+	return className() == other->className();
 }
 
-bool Data_canWriteAsEncoding (I, int encoding) {
-	iam (Data);
-	return our canWriteAsEncoding (me, encoding);
+bool Data::canCopy () {
+	return true;
 }
 
-bool Data_canWriteText (I) {
-	iam (Data);
-	return our writeText != classData -> writeText;
+bool Data::canWriteText () {
+	/*return our writeText != classData -> writeText;*/ // FIXME
+	return false;
 }
 
-int Data_writeText (I, MelderFile openFile) {
-	iam (Data);
-	if (! our writeText (me, openFile)) return 0;
-	if (ferror (openFile -> filePointer)) return Melder_error1 (L"(Data_writeText:) I/O error.");
-	return 1;
-}
-
-int Data_createTextFile (I, MelderFile file, bool verbose) {
-	iam (Data);
-//start:
+int Data::createTextFile (MelderFile file, bool verbose) {
 	MelderFile_create (file, L"TEXT", 0, L"txt"); cherror
 	#if defined (_WIN32)
 		file -> requiresCRLF = true;
@@ -165,9 +110,9 @@ int Data_createTextFile (I, MelderFile file, bool verbose) {
 	file -> verbose = verbose;
 	file -> outputEncoding = Melder_getOutputEncoding ();
 	if (file -> outputEncoding == kMelder_textOutputEncoding_ASCII_THEN_UTF16)
-		file -> outputEncoding = Data_canWriteAsEncoding (me, kMelder_textOutputEncoding_ASCII) ? kMelder_textOutputEncoding_ASCII : kMelder_textOutputEncoding_UTF16;
+		file -> outputEncoding = canWriteAsEncoding (kMelder_textOutputEncoding_ASCII) ? kMelder_textOutputEncoding_ASCII : kMelder_textOutputEncoding_UTF16;
 	else if (file -> outputEncoding == kMelder_textOutputEncoding_ISO_LATIN1_THEN_UTF16)
-		file -> outputEncoding = Data_canWriteAsEncoding (me, kMelder_textOutputEncoding_ISO_LATIN1) ? kMelder_textOutputEncoding_ISO_LATIN1 : kMelder_textOutputEncoding_UTF16;
+		file -> outputEncoding = canWriteAsEncoding (kMelder_textOutputEncoding_ISO_LATIN1) ? kMelder_textOutputEncoding_ISO_LATIN1 : kMelder_textOutputEncoding_UTF16;
 	if (file -> outputEncoding == kMelder_textOutputEncoding_UTF16)
 		binputu2 (0xfeff, file -> filePointer);
 end:
@@ -175,56 +120,39 @@ end:
 	return 1;
 }
 
-static int _Data_writeToTextFile (I, MelderFile file, bool verbose) {
-	iam (Data);
-	if (! Data_canWriteText (me)) error3 (L"(Data_writeToTextFile:) Objects of class ", our _className, L" cannot be written to a text file.")
-	Data_createTextFile (me, file, verbose); cherror
+int Data::writeToTextFile (MelderFile file, bool verbose) {
+	if (! canWriteText ()) error3 (L"(Data_writeToTextFile:) Objects of class ", className(), L" cannot be written to a text file.")
+	createTextFile (file, verbose); cherror
 	#ifndef _WIN32
 		flockfile (file -> filePointer);   // BUG
 	#endif
-	MelderFile_write2 (file, L"File type = \"sys/oo/ooTextFile\"\nObject class = \"", our _className);
-	if (our version > 0) MelderFile_write2 (file, L" ", Melder_integer (our version));
+	MelderFile_write2 (file, L"File type = \"sys/oo/ooTextFile\"\nObject class = \"", className());
+	if (version > 0) MelderFile_write2 (file, L" ", Melder_integer (Thing::version));
 	MelderFile_write1 (file, L"\"\n");
-	Data_writeText (me, file); cherror
+	writeText (file); cherror
 	MelderFile_writeCharacter (file, '\n');
 end:
 	#ifndef _WIN32
 		if (file -> filePointer) funlockfile (file -> filePointer);
 	#endif
 	MelderFile_close (file);
-	iferror return Melder_error5 (L"Cannot write ", our _className, L"to file ", MelderFile_messageName (file), L".");
+	iferror return Melder_error5 (L"Cannot write ", className(), L"to file ", MelderFile_messageName (file), L".");
 	MelderFile_setMacTypeAndCreator (file, 'TEXT', 0);
 	return 1;
 }
 
-int Data_writeToTextFile (I, MelderFile file) {
-	return _Data_writeToTextFile (void_me, file, true);
+bool Data::canWriteBinary () {
+	/*return our writeBinary != classData -> writeBinary;*/ // FIXME
+	return false;
 }
 
-int Data_writeToShortTextFile (I, MelderFile file) {
-	return _Data_writeToTextFile (void_me, file, false);
-}
-
-bool Data_canWriteBinary (I) {
-	iam (Data);
-	return our writeBinary != classData -> writeBinary;
-}
-
-int Data_writeBinary (I, FILE *f) {
-	iam (Data);
-	if (! our writeBinary (me, f)) return 0;
-	if (ferror (f)) return Melder_error1 (L"I/O error.");
-	return 1;
-}
-
-int Data_writeToBinaryFile (I, MelderFile file) {
-	iam (Data);
-	if (! Data_canWriteBinary (me)) error3 (L"(Data_writeToBinaryFile:) Objects of class ", our _className, L" cannot be written to a generic binary file.")
+int Data::writeToBinaryFile (MelderFile file) {
+	if (! canWriteBinary ()) error3 (L"(Data_writeToBinaryFile:) Objects of class ", className(), L" cannot be written to a generic binary file.")
 	MelderFile_create (file, 0, 0, 0); cherror
 	if (fprintf (file -> filePointer, "sys/oo/ooBinaryFile") < 0)
 		error1 (L"Cannot write first bytes of file.")
-	binputw1 (our version > 0 ? Melder_wcscat3 (our _className, L" ", Melder_integer (our version)) : our _className, file -> filePointer);
-	if (! Data_writeBinary (me, file -> filePointer)) goto end;
+	binputw1 (Thing::version > 0 ? Melder_wcscat3 (className(), L" ", Melder_integer (Thing::version)) : className(), file -> filePointer);
+	writeBinary (file -> filePointer);
 end:
 	MelderFile_close (file);
 	iferror return Melder_error3 (L"(Data_writeToBinaryFile:) Cannot write file ", MelderFile_messageName (file), L".");
@@ -232,31 +160,22 @@ end:
 	return 1;
 }
 
-bool Data_canWriteLisp (I) {
-	iam (Data);
-	return our writeLisp != classData -> writeLisp;
+bool Data::canWriteLisp () {
+	/*return our writeLisp != classData -> writeLisp; */ // FIXME
+	return false;
 }
 
-int Data_writeLisp (I, FILE *f) {
-	iam (Data);
-	if (! our writeLisp (me, f)) return 0;
-	if (ferror (f)) return Melder_error1 (L"(Data_writeLisp:) I/O error.");
-	return 1;
+int Data::writeLispToConsole () {
+	if (! canWriteLisp ()) return (int)Melder_error3 (L"(Data_writeLispToConsole:) Class ", className(), L" cannot be written as LISP.");
+	wprintf (L"Write as LISP sequence to console: class %ls,  name \"%ls\".\n", className(), name ? name : L"<none>");
+	return writeLisp (stdout);
 }
 
-int Data_writeLispToConsole (I) {
-	iam (Data);
-	if (! Data_canWriteLisp (me)) return Melder_error3 (L"(Data_writeLispToConsole:) Class ", our _className, L" cannot be written as LISP.");
-	wprintf (L"Write as LISP sequence to console: class %ls,  name \"%ls\".\n", Thing_className (me), my name ? my name : L"<none>");
-	return Data_writeLisp (me, stdout);
-}
-
-int Data_writeToLispFile (I, MelderFile file) {
-	iam (Data);
+int Data::writeToLispFile (MelderFile file) {
 	FILE *f;
-	if (! Data_canWriteLisp (me)) return Melder_error3 (L"(Data_writeToLispFile:) Class ", our _className, L" cannot be written as LISP.");
+	if (! canWriteLisp ()) return Melder_error3 (L"(Data_writeToLispFile:) Class ", className(), L" cannot be written as LISP.");
 	if ((f = Melder_fopen (file, "w")) == NULL) return 0;
-	if (fprintf (f, "%sLispFile\n", Melder_peekWcsToUtf8 (our _className)) == EOF || ! Data_writeLisp (me, f)) {
+	if (fprintf (f, "%sLispFile\n", Melder_peekWcsToUtf8 (className())) == EOF || ! writeLisp (f)) {
 		fclose (f);
 		return Melder_error3 (L"(Data_writeToLispFile:) Error while writing file ",
 			MelderFile_messageName (file), L". Disk probably full.");
@@ -266,25 +185,15 @@ int Data_writeToLispFile (I, MelderFile file) {
 	return 1;
 }
 
-bool Data_canReadText (I) {
-	iam (Data);
-	return our readText != classData -> readText;
+bool Data::canReadText () {
+	/*return our readText != classData -> readText;*/ // FIXME
+	return false;
 }
 
-int Data_readText (I, MelderReadText text) {
-	iam (Data);
-	if (! our readText (me, text) || Melder_hasError ())
-		return Melder_error2 (Thing_className (me), L" not read.");
-	if (! MelderReadText_isValid (text))
-		return Melder_error3 (L"Early end of file. ", Thing_className (me), L" not read.");
-	return 1;
-}
-
-Any Data_readFromTextFile (MelderFile file) {
-	Data me = NULL;
+Data *Data::readFromTextFile (MelderFile file) {
+	Data *data = NULL;
 	wchar_t *klas = NULL;
 	MelderReadText text = NULL;
-//start:
 	text = MelderReadText_createFromFile (file); cherror
 	{
 		wchar_t *line = MelderReadText_readLine (text); cherror
@@ -293,41 +202,32 @@ Any Data_readFromTextFile (MelderFile file) {
 			wchar_t *end = wcsstr (line, L"sys/oo/ooTextFile");   /* oo format? */
 			if (end) {
 				klas = texgetw2 (text); cherror
-				me = (structData*)Thing_newFromClassName (klas); cherror
+				data = (Data *)Thing::newFromClassName (klas); cherror
 			} else {
 				end = wcsstr (line, L"TextFile");
 				if (end == NULL) error1 (L"Not an old-type text file; should not occur.")
 				*end = '\0';
-				me = (structData*)Thing_newFromClassName (line); cherror
-				Thing_version = -1;   /* Old version: override version number, which was set to 0 by newFromClassName. */
+				data = (Data *)Thing::newFromClassName (line); cherror
+				Thing::version = -1;   /* Old version: override version number, which was set to 0 by newFromClassName. */
 			}
 			MelderFile_getParentDir (file, & Data_directoryBeingRead);
-			Data_readText (me, text); cherror
+			data->readText (text); cherror
 		}
 	}
 end:
 	Melder_free (klas);
 	MelderReadText_delete (text);
-	iferror forget (me);
-	return me;
+	iferror forget (data);
+	return data;
 }
 
-bool Data_canReadBinary (I) {
-	iam (Data);
-	return our readBinary != classData -> readBinary;
+bool Data::canReadBinary () {
+	/*return our readBinary != classData -> readBinary;*/ // FIXME
+	return false;
 }
 
-int Data_readBinary (I, FILE *f) {
-	iam (Data);
-	if (! our readBinary (me, f)) return Melder_error3 (L"(Data_readBinary:) ", Thing_className (me), L" not read.");
-	if (feof (f))
-		return Melder_error3 (L"(Data_readBinary:) Early end of file. ", Thing_className (me), L" not read.");
-	if (ferror (f)) return Melder_error3 (L"(Data_readBinary:) I/O error. ", Thing_className (me), L" not read.");
-	return 1;
-}
-
-Any Data_readFromBinaryFile (MelderFile file) {
-	Data me = NULL;
+Data *Data::readFromBinaryFile (MelderFile file) {
+	Data *data = NULL;
 	int n;
 	FILE *f;
 	char line [200], *end;
@@ -338,66 +238,58 @@ Any Data_readFromBinaryFile (MelderFile file) {
 		char *klas;
 		fseek (f, strlen ("sys/oo/ooBinaryFile"), 0);
 		klas = bingets1 (f);
-		if (! klas || ! (me = (structData*)Thing_newFromClassNameA (klas))) { fclose (f); return 0; }
+		if (! klas || ! (data = (Data *)Thing::newFromClassNameA (klas))) { fclose (f); return 0; }
 		Melder_free (klas);
 	} else {
 		end = strstr (line, "BinaryFile");
-		if (! end || ! (*end = '\0', me = (structData*)Thing_newFromClassNameA (line))) {
+		if (! end || ! (*end = '\0', data = (Data *)Thing::newFromClassNameA (line))) {
 			fclose (f);
-			return Melder_errorp3 (L"(Data_readFromBinaryFile:) File ", MelderFile_messageName (file),
+			return (Data *)Melder_errorp3 (L"(Data_readFromBinaryFile:) File ", MelderFile_messageName (file),
 				L" is not a Data binary file.");
 		}
-		Thing_version = -1;   /* Old version: override version number, which was set to 0 by newFromClassName. */
+		Thing::version = -1;   /* Old version: override version number, which was set to 0 by newFromClassName. */
 		rewind (f);
 		fread (line, 1, end - line + strlen ("BinaryFile"), f);
 	}
 	MelderFile_getParentDir (file, & Data_directoryBeingRead);
-	if (! Data_readBinary (me, f)) forget (me);
+	if (! data->readBinary (f)) forget (data);
 	fclose (f);
-	return me;
+	return data;
 }
 
-bool Data_canReadLisp (I) {
-	iam (Data);
-	return our readLisp != classData -> readLisp;
+bool Data::canReadLisp () {
+	/*return our readLisp != classData -> readLisp;*/ // FIXME
+	return false;
 }
 
-int Data_readLisp (I, FILE *f) {
-	iam (Data);
-	if (! our readLisp (me, f)) return Melder_error3 (L"(Data_readLisp:) ", Thing_className (me), L" not read.");
-	/* (Do not check for end-of-file) */
-	if (ferror (f)) return Melder_error3 (L"(Data_readLisp:) I/O error. ", Thing_className (me), L" not read.");
-	return 1;
-}
-
-Any Data_readFromLispFile (MelderFile file) {
-	Data me = NULL;
+Data *Data::readFromLispFile (MelderFile file) {
+	Data *data = NULL;
 	FILE *f;
 	char line [200], *end;
 	if ((f = Melder_fopen (file, "r")) == NULL) return NULL;
 	fgets (line, 199, f);
 	end = strstr (line, "LispFile");
-	if (! end || ! (*end = '\0', me = (structData*)Thing_newFromClassNameA (line))) {
+	if (! end || ! (*end = '\0', data = (Data *)Thing::newFromClassNameA (line))) {
 		fclose (f);
-		return Melder_errorp3 (L"(Data_readFromLispFile:) File ", MelderFile_messageName (file),
+		return (Data *)Melder_errorp3 (L"(Data_readFromLispFile:) File ", MelderFile_messageName (file),
 			L" is not a Data LISP file.");
 	}
 	MelderFile_getParentDir (file, & Data_directoryBeingRead);
-	if (! Data_readLisp (me, f)) forget (me);
+	if (! data->readLisp (f)) forget (data);
 	fclose (f);
-	return me;
+	return data;
 }
 
 /* Generic reading. */
 
 static int numFileTypeRecognizers = 0;
-static Any (*fileTypeRecognizers [100]) (int nread, const char *header, MelderFile fs);
-void Data_recognizeFileType (Any (*recognizer) (int nread, const char *header, MelderFile fs)) {
+static Data * (*fileTypeRecognizers [100]) (int nread, const char *header, MelderFile fs);
+void Data::recognizeFileType (Data * (*recognizer) (int nread, const char *header, MelderFile fs)) {
 	Melder_assert (numFileTypeRecognizers < 100);
 	fileTypeRecognizers [++ numFileTypeRecognizers] = recognizer;
 }
 
-Any Data_readFromFile (MelderFile file) {
+Data * Data::readFromFile (MelderFile file) {
 	int nread, i;
 	char header [513];
 	FILE *f = Melder_fopen (file, "rb");
@@ -411,7 +303,7 @@ Any Data_readFromFile (MelderFile file) {
 	if (nread > 11) {
 		char *p = strstr (header, "TextFile");
 		if (p != NULL && p - header < nread - 8 && p - header < 40)
-			return Data_readFromTextFile (file);
+			return Data::readFromTextFile (file);
 	}
 	if (nread > 22) {
 		char headerCopy [101];
@@ -421,7 +313,7 @@ Any Data_readFromFile (MelderFile file) {
 			if (headerCopy [i] == '\0') headerCopy [i] = '\001';
 		char *p = strstr (headerCopy, "T\001e\001x\001t\001F\001i\001l\001e");
 		if (p != NULL && p - headerCopy < nread - 15 && p - headerCopy < 80)
-			return Data_readFromTextFile (file);
+			return Data::readFromTextFile (file);
 	}
 
 	/***** 2. Is this file a binary file as defined in Data.c? *****/
@@ -429,7 +321,7 @@ Any Data_readFromFile (MelderFile file) {
 	if (nread > 13) {
 		char *p = strstr (header, "BinaryFile");
 		if (p != NULL && p - header < nread - 10 && p - header < 40)
-			return Data_readFromBinaryFile (file);
+			return Data::readFromBinaryFile (file);
 	}
 
 	/***** 3. Is this file a LISP file as defined in Data.c? *****/
@@ -437,14 +329,14 @@ Any Data_readFromFile (MelderFile file) {
 	if (nread > 11) {
 		char *p = strstr (header, "LispFile");
 		if (p != NULL && p - header < nread - 8 && p - header < 40)
-			return Data_readFromLispFile (file);
+			return Data::readFromLispFile (file);
 	}
 
 	/***** 4. Is this file of a type for which a recognizer has been installed? *****/
 
 	MelderFile_getParentDir (file, & Data_directoryBeingRead);
 	for (i = 1; i <= numFileTypeRecognizers; i ++) {
-		Data object = (structData*)fileTypeRecognizers [i] (nread, header, file);
+		Data *object = (Data*)fileTypeRecognizers [i] (nread, header, file);
 		if (Melder_hasError ()) return NULL;
 		if (object) return object;
 	}
@@ -454,73 +346,73 @@ Any Data_readFromFile (MelderFile file) {
 	for (i = 0; i < nread; i ++)
 		if (header [i] < 32 || header [i] > 126)   /* Not ASCII? */
 			break;
-	if (i >= nread) return Data_readFromTextFile (file);
+	if (i >= nread) return Data::readFromTextFile (file);
 
-	return Melder_errorp3 (L"(Data_readFromFile:) File ", MelderFile_messageName (file), L" not recognized.");
+	return (Data *)Melder_errorp3 (L"(Data_readFromFile:) File ", MelderFile_messageName (file), L" not recognized.");
 }
 
 /* Recursive routines for working with struct members. */
 
-int Data_Description_countMembers (Data_Description structDescription) {
-	Data_Description desc;
+int Data::Description::countMembers (Data::Description *structDescription) {
+	Data::Description *desc;
 	int count = 0;
-	for (desc = structDescription; desc -> name; desc ++)
+	for (desc = structDescription; desc -> _name; desc ++)
 		count ++;
-	if (structDescription [0]. type == inheritwa) {
-		Data_Description parentDescription = * (Data_Description *) structDescription [0]. tagType;
+	if (structDescription [0]. _type == inheritwa) {
+		Data::Description *parentDescription = * (Data::Description **) structDescription [0]. _tagType;
 		if (parentDescription)
-			return count + Data_Description_countMembers (parentDescription);
+			return count + countMembers(parentDescription);
 	}
 	return count;
 }
 
-Data_Description Data_Description_findMatch (Data_Description structDescription, const wchar_t *name) {
-	Data_Description desc;
-	for (desc = structDescription; desc -> name; desc ++)
-		if (wcsequ (name, desc -> name)) return desc;
-	if (structDescription [0]. type == inheritwa) {
-		Data_Description parentDescription = * (Data_Description *) structDescription [0]. tagType;
+Data::Description *Data::Description::findMatch (Data::Description *structDescription, const wchar_t *name) {
+	Data::Description *desc;
+	for (desc = structDescription; desc -> _name; desc ++)
+		if (wcsequ (name, desc -> _name)) return desc;
+	if (structDescription [0]. _type == inheritwa) {
+		Data::Description *parentDescription = * (Data::Description **) structDescription [0]. _tagType;
 		if (parentDescription)
-			return Data_Description_findMatch (parentDescription, name);
+			return findMatch (parentDescription, name);
 	}
 	return NULL;   /* Not found. */
 }
 
-Data_Description Data_Description_findNumberUse (Data_Description structDescription, const wchar_t *string) {
-	Data_Description desc;
-	for (desc = structDescription; desc -> name; desc ++) {
-		if (desc -> max1 && wcsequ (desc -> max1, string)) return desc;
-		if (desc -> max2 && wcsequ (desc -> max2, string)) return desc;
+Data::Description * Data::Description::findNumberUse (Data::Description *structDescription, const wchar_t *string) {
+	Data::Description *desc;
+	for (desc = structDescription; desc -> _name; desc ++) {
+		if (desc -> _max1 && wcsequ (desc -> _max1, string)) return desc;
+		if (desc -> _max2 && wcsequ (desc -> _max2, string)) return desc;
 	}
-	if (structDescription [0]. type == inheritwa) {
-		Data_Description parentDescription = * (Data_Description *) structDescription [0]. tagType;
+	if (structDescription [0]. _type == inheritwa) {
+		Data::Description *parentDescription = * (Data::Description **) structDescription [0]. _tagType;
 		if (parentDescription)
-			return Data_Description_findNumberUse (parentDescription, string);
+			return findNumberUse (parentDescription, string);
 	}
 	return NULL;
 }
 
 /* Retrieving data from object + description. */
 
-long Data_Description_integer (void *address, Data_Description description) {
-	switch (description -> type) {
-		case bytewa: return * (signed char *) ((char *) address + description -> offset);
-		case shortwa: return * (short *) ((char *) address + description -> offset);
-		case intwa: return * (int *) ((char *) address + description -> offset);
-		case longwa: return * (long *) ((char *) address + description -> offset);
-		case ubytewa: return * (unsigned char *) ((char *) address + description -> offset);
-		case ushortwa: return * (unsigned short *) ((char *) address + description -> offset);
-		case uintwa: return * (unsigned int *) ((char *) address + description -> offset);
-		case ulongwa: return * (unsigned long *) ((char *) address + description -> offset);
-		case boolwa: return * (bool *) ((char *) address + description -> offset);
-		case charwa: return * (char *) ((char *) address + description -> offset);
-		case collectionwa: return (* (Collection *) ((char *) address + description -> offset)) -> size;
-		case objectwa: return (* (Collection *) ((char *) address + description -> offset)) -> size;
+long Data::Description::integer (void *address, Data::Description *description) {
+	switch (description -> _type) {
+		case bytewa: return * (signed char *) ((char *) address + description -> _offset);
+		case shortwa: return * (short *) ((char *) address + description -> _offset);
+		case intwa: return * (int *) ((char *) address + description -> _offset);
+		case longwa: return * (long *) ((char *) address + description -> _offset);
+		case ubytewa: return * (unsigned char *) ((char *) address + description -> _offset);
+		case ushortwa: return * (unsigned short *) ((char *) address + description -> _offset);
+		case uintwa: return * (unsigned int *) ((char *) address + description -> _offset);
+		case ulongwa: return * (unsigned long *) ((char *) address + description -> _offset);
+		case boolwa: return * (bool *) ((char *) address + description -> _offset);
+		case charwa: return * (char *) ((char *) address + description -> _offset);
+		case collectionwa: return (* (Collection **) ((char *) address + description -> _offset)) -> size();
+		case objectwa: return (* (Collection **) ((char *) address + description -> _offset)) -> size();
 		default: return 0;
 	}
 }
 
-int Data_Description_evaluateInteger (void *structAddress, Data_Description structDescription,
+int Data::Description::evaluateInteger (void *structAddress, Data::Description *structDescription,
 	const wchar_t *formula, long *result)
 {
 	if (formula == NULL) {   /* This was a VECTOR_FROM array. */
@@ -529,17 +421,17 @@ int Data_Description_evaluateInteger (void *structAddress, Data_Description stru
 	}
 	if (wcsnequ (formula, L"my ", 3)) {
 		wchar_t buffer [100], *minus1, *psize;
-		Data_Description sizeDescription;
+		Data::Description *sizeDescription;
 		wcscpy (buffer, formula + 3);   /* Skip leading "my ". */
 		if ((minus1 = wcsstr (buffer, L" - 1")) != NULL)
 			*minus1 = '\0';   /* Strip trailing " - 1", but remember. */
 		if ((psize = wcsstr (buffer, L" -> size")) != NULL)
 			*psize = '\0';   /* Strip trailing " -> size". */
-		if (! (sizeDescription = Data_Description_findMatch (structDescription, buffer))) {
+		if (! (sizeDescription = findMatch (structDescription, buffer))) {
 			*result = 0;
 			return 0 /*Melder_error ("Cannot find member \"%ls\".", buffer)*/;
-		}
-		*result = Data_Description_integer (structAddress, sizeDescription);
+		};
+		*result = Data::Description::integer (structAddress, sizeDescription);
 		if (minus1) *result -= 1;
 	} else {
 		*result = wcstol (formula, NULL, 10);

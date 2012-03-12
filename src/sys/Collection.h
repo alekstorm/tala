@@ -30,39 +30,30 @@
 		long size;
 		Any item [1..size];
 	introduce:
-		long position (I, Any data);
+		long position (Any data);
 	override:
-		void destroy (I);   // Destroys all the items.
-		int copy (I, thou);   // Copies all the items.
-		int equal (I, thou);   // Compares 'my item [i]' with 'thy item [i]', i = 1..size.
+		void destroy ();   // Destroys all the items.
+		int copy (thou);   // Copies all the items.
+		int equal (thou);   // Compares 'my item [i]' with 'thy item [i]', i = 1..size.
 	};
 	class Ordered = Collection {
 	};
 	class Sorted = Collection {
 	introduce:
-		int compare (I, thou);   // Compares the keys of two items;
+		int compare (thou);   // Compares the keys of two items;
 				// returns negative if me < thee, 0 if me == thee, and positive if me > thee.
 	};
 	class SortedSet = Sorted {   // Every item must be unique (by key).
-		override long position (I, Any data);   // Returns 0 (refusal) if the key of 'data' already occurs.
+		override long position (Any data);   // Returns 0 (refusal) if the key of 'data' already occurs.
 	};
 	class Cyclic = Collection;   // The cyclic list (a, b, c, d) equals (b, c, d, a) but not (d, c, a, b).
 */
 
 #include "Simple.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
-#define Collection_members Data_members \
-	void *itemClass; \
-	long _capacity, size; \
-	bool _dontOwnItems; \
-	Any *item;
-#define Collection_methods Data_methods \
-	long (*position) (I, Any data);
-class_create (Collection, Data);
+class Collection : public Data {
+public:
+	virtual long position (Thing *item);
 
 /*
 	An object of type Collection is a collection of items of any class.
@@ -76,8 +67,7 @@ class_create (Collection, Data);
 		item [1..size]		// the items.
 */
 
-int Collection_init (I, void *itemClass, long initialCapacity);
-Collection Collection_create (void *itemClass, long initialCapacity);
+Collection (wchar_t *itemClass, long initialCapacity);
 /*
 	Function:
 		return a new empty Collection, or NULL if out of memory.
@@ -87,7 +77,20 @@ Collection Collection_create (void *itemClass, long initialCapacity);
 		my _capacity == initialCapacity;
 */
 
-void Collection_dontOwnItems (I);
+virtual void destroy ();
+virtual void info ();
+
+virtual int copyTo (Collection *other);
+virtual bool equal (Collection *other);
+virtual bool canWriteAsEncoding(int encoding);
+virtual int writeText(MelderFile file);
+virtual int readText(MelderReadText text);
+virtual int writeBinary(FILE *file);
+virtual int readBinary(FILE *file);
+
+virtual long size ();
+
+void dontOwnItems ();
 
 /*
 	Data_copy, Data_equal, Data_writeXXX, Data_readXXX
@@ -96,7 +99,7 @@ void Collection_dontOwnItems (I);
 	these routines fail with a message and return 0.
 */
 
-int Collection_addItem (I, Any item);
+int addItem (Thing *item);
 /*
 	Function:
 		add the 'item' to the collection. Return 0 if out of memory, else 1.
@@ -110,7 +113,7 @@ int Collection_addItem (I, Any item);
 	if that item already occurred in the Collection.
 */
 
-void Collection_removeItem (I, long position);
+void removeItem (long position);
 /*
 	Function:
 		remove the item at 'position' from the collection and from memory.
@@ -121,7 +124,7 @@ void Collection_removeItem (I, long position);
 		my _capacity not changed;
 */
 
-void Collection_undangleItem (I, Any item);
+void undangleItem (Thing *item);
 /*
 	Function:
 		remove the item from the collection, without destroying it.
@@ -132,7 +135,7 @@ void Collection_undangleItem (I, Any item);
 		often used just before the item is destroyed, hence the name of this procedure.
 */
 
-Any Collection_subtractItem (I, long position);
+Thing * subtractItem (long position);
 /*
 	Function:
 		remove the item at 'position' from the collection and transfer ownership to the caller.
@@ -145,7 +148,7 @@ Any Collection_subtractItem (I, long position);
 		my _capacity not changed;
 */
 
-void Collection_removeAllItems (I);
+void removeAllItems ();
 /*
 	Function:
 		remove all items from the collection and from memory.
@@ -154,7 +157,7 @@ void Collection_removeAllItems (I);
 		my _capacity not changed;
 */
 
-void Collection_shrinkToFit (I);
+void shrinkToFit ();
 /*
 	Function:
 		release as much memory as possible without affecting the items.
@@ -162,7 +165,7 @@ void Collection_shrinkToFit (I);
 		my _capacity == max (my size, 1);
 */
 
-Any Collections_merge (I, thou);
+static Collection * merge (Collection *first, Collection *second);
 /*
 	Function:
 		merge two Collections into a new one.
@@ -171,32 +174,38 @@ Any Collections_merge (I, thou);
 		result -> size >= thy size;
 */
 
-/* For the inheritors. */
+protected:
 
-int _Collection_insertItem (I, Any item, long position);
+static Description description [];
+
+virtual int insertItem (Thing *item, long position);
+virtual int init (wchar_t *itemClass, long initialCapacity);
 
 /* Methods:
 
-	static long position (I, Any data, long hint);
+	static long position (Any data, long hint);
 		Question asked by Collection_addItem: return a position for the data.
 	Collection::position always returns my size + 1 (add item at the end).
 
 */
 
+	wchar_t *_itemClass;
+	long _capacity, _size;
+	bool _dontOwnItems;
+	Thing **_item;
+};
+
 /********** class Ordered **********/
 
-#define Ordered_members Collection_members
-#define Ordered_methods Collection_methods
-class_create (Ordered, Collection);
-
-Ordered Ordered_create (void);
-int Ordered_init (I, void *itemClass, long initialCapacity);
+class Ordered : public Collection {
+public:
+Ordered (wchar_t *itemClass, long initialCapacity);
 
 /* Behaviour:
 	Collection_addItem (Ordered) inserts an item at the end.
 */
 
-int Ordered_addItemPos (I, Any data, long position);
+int addItemPos (Thing *item, long position);
 /*
 	Function:
 		insert an item at 'position'.
@@ -204,15 +213,16 @@ int Ordered_addItemPos (I, Any data, long position);
 		insert the item at the end.
 */
 
+};
+
 /********** class Sorted **********/
 /* A Sorted is a sorted Collection. */
 
-#define Sorted_members Collection_members
-#define Sorted_methods Collection_methods \
-	int (*compare) (I, thou);
-class_create (Sorted, Collection);
-
-int Sorted_init (I, void *itemClass, long initialCapacity);
+class Sorted : public Collection {
+public:
+Sorted (wchar_t *itemClass, long initialCapacity);
+virtual long position (Thing *data);
+static int compare (const void *first, const void *second);
 
 /* Behaviour:
 	Collection_addItem (Sorted) inserts an item at such a position that the collection stays sorted.
@@ -228,94 +238,90 @@ int Sorted_init (I, void *itemClass, long initialCapacity);
 	with every insertion.
 */
 
-int Sorted_addItem_unsorted (I, Any data);
+virtual int addItem_unsorted (Thing *item);
 /*
 	Function:
 		add an item to the collection, quickly at the end.
 	Warning:
 		this leaves the collection unsorted; follow by Sorted_sort ().
 */
-void Sorted_sort (I);
+virtual void sort ();
 /* Call this after a number of calls to Sorted_addItem_unsorted (). */
 /* The procedure used is 'heapsort'. */
 
+};
+
 /********** class SortedSet **********/
 
-#define SortedSet_members Sorted_members
-#define SortedSet_methods Sorted_methods
-class_create (SortedSet, Sorted);
+class SortedSet : public Sorted {
+public:
+SortedSet (wchar_t *itemClass, long initialCapacity);
 
-int SortedSet_init (I, void *itemClass, long initialCapacity);
-
+virtual long position (Thing *data);
 /* Behaviour:
 	Collection_addItem (SortedSet) refuses to insert an item if this item already occurs.
 		Equality is there when the compare routine returns 0.
 	Collections_merge (SortedSet) yields a SortedSet that is the union of the two sources.
 */
 
-int SortedSet_hasItem (I, Any item);
+int hasItem (Thing *item);
+
+};
 
 /********** class SortedSetOfInt **********/
 
-#define SortedSetOfInt_members SortedSet_members
-#define SortedSetOfInt_methods SortedSet_methods
-class_create (SortedSetOfInt, SortedSet);
+class SortedSetOfInt : public SortedSet {
+public:
+SortedSetOfInt ();
 
-int SortedSetOfInt_init (I);
-SortedSetOfInt SortedSetOfInt_create (void);
+};
 
 /********** class SortedSetOfShort **********/
 
-#define SortedSetOfShort_members SortedSet_members
-#define SortedSetOfShort_methods SortedSet_methods
-class_create (SortedSetOfShort, SortedSet);
+class SortedSetOfShort : public SortedSet {
+public:
+SortedSetOfShort ();
 
-int SortedSetOfShort_init (I);
-SortedSetOfShort SortedSetOfShort_create (void);
+};
 
 /********** class SortedSetOfLong **********/
 
-#define SortedSetOfLong_members SortedSet_members
-#define SortedSetOfLong_methods SortedSet_methods
-class_create (SortedSetOfLong, SortedSet);
+class SortedSetOfLong : public SortedSet {
+public:
+SortedSetOfLong ();
 
-int SortedSetOfLong_init (I);
-SortedSetOfLong SortedSetOfLong_create (void);
+};
 
 /********** class SortedSetOfDouble **********/
 
-#define SortedSetOfDouble_members SortedSet_members
-#define SortedSetOfDouble_methods SortedSet_methods
-class_create (SortedSetOfDouble, SortedSet);
+class SortedSetOfDouble : public SortedSet {
+public:
+SortedSetOfDouble ();
 
-int SortedSetOfDouble_init (I);
-SortedSetOfDouble SortedSetOfDouble_create (void);
+};
 
 /********** class SortedSetOfString **********/
 
-#define SortedSetOfString_members SortedSet_members
-#define SortedSetOfString_methods SortedSet_methods
-class_create (SortedSetOfString, SortedSet);
-
-int SortedSetOfString_init (I);
-SortedSetOfString SortedSetOfString_create (void);
-long SortedSetOfString_lookUp (SortedSetOfString me, const wchar_t *string);
-int SortedSetOfString_add (SortedSetOfString me, const wchar_t *string);
+class SortedSetOfString : public SortedSet {
+public:
+SortedSetOfString ();
+long lookUp (const wchar_t *string);
+int add (const wchar_t *string);
+static int compare(SimpleString *first, SimpleString *second);
+};
 
 /********** class Cyclic **********/
 
-#define Cyclic_members Collection_members
-#define Cyclic_methods Collection_methods \
-	int (*compare) (I, thou);   /* virtual */
-class_create (Cyclic, Collection);
+class Cyclic : public Collection {
+public:
+Cyclic (wchar_t *itemClass, long initialCapacity);
 
-int Cyclic_init (I, void *itemClass, long initialCapacity);
+void unicize ();
+void cycleLeft ();
 
-void Cyclic_unicize (I);
+static int compare (Thing *first, Thing *second);
 
-#ifdef __cplusplus
-	}
-#endif
+};
 
 /* End of file Collection.h */
 #endif

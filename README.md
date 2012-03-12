@@ -11,12 +11,16 @@ resurrect.
 
 Requirements:
 
+* GNU Autoconf >= 2.52
+* GNU Automake >= 1.6.0
+* GNU Libtool  >= 1.4.2
+* pkg-config >= 0.24
 * GTK+ >= 2.0 (http://www.gtk.org/)
 * FLAC (http://flac.sourceforge.net/)
 * MAD (http://www.underbit.com/products/mad/)
 * PortAudio >= 1.9 (http://www.portaudio.com/)
 * GSL (http://www.gnu.org/s/gsl/)
-* GLPK (http://www.gnu.org/s/glpk/)
+* GLPK >= 4.42 (http://www.gnu.org/s/glpk/)
 
 Steps:
 

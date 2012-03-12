@@ -25,36 +25,40 @@
 
 #include "Data.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+struct SimpleInt : public Data {
+	int number;
 
-#include "Simple_def.h"
+public:
+	SimpleInt(int _number) { number = _number; }
+};
 
-#define SimpleInt_methods Data_methods
-oo_CLASS_CREATE (SimpleInt, Data);
+struct SimpleShort : public Data {
+	short number;
 
-#define SimpleShort_methods Data_methods
-oo_CLASS_CREATE (SimpleShort, Data);
+public:
+	SimpleShort(int _number) { number = _number; }
+};
 
-#define SimpleLong_methods Data_methods
-oo_CLASS_CREATE (SimpleLong, Data);
+struct SimpleLong : public Data {
+	long number;
 
-#define SimpleDouble_methods Data_methods
-oo_CLASS_CREATE (SimpleDouble, Data);
+public:
+	SimpleLong(int _number) { number = _number; }
+};
 
-#define SimpleString_methods Data_methods
-oo_CLASS_CREATE (SimpleString, Data);
+struct SimpleDouble : public Data {
+	double number;
 
-SimpleInt SimpleInt_create (int number);
-SimpleShort SimpleShort_create (short number);
-SimpleLong SimpleLong_create (long number);
-SimpleDouble SimpleDouble_create (double number);
-SimpleString SimpleString_create (const wchar_t *string);
+public:
+	SimpleDouble(int _number) { number = _number; }
+};
 
-#ifdef __cplusplus
-	}
-#endif
+struct SimpleString : public Data {
+	wchar_t *string;
+
+public:
+	SimpleString(const wchar_t *_string) { string = Melder_wcsdup_e (_string); }
+};
 
 /* End of file Simple.h */
 #endif

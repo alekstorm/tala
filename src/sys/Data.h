@@ -27,11 +27,9 @@
 /* It adds the functionality of reproduction, comparison, reading, and writing. */
 #include "Thing.h"
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
-
-Any Data_copy (I);
+class Data : public Thing {
+public:
+Data * copy ();
 /*
 	Message:
 		"return a deep copy of yourself, or NULL if out of memory."
@@ -39,7 +37,7 @@ Any Data_copy (I);
 		result -> name == NULL;	// The only attribute NOT copied.
 */
 
-bool Data_equal (Any data1, Any data2);
+bool equal (Data *other);
 /*
 	Message:
 		"return 1 if the shallow or deep attributes of 'data1' and 'data2' are equal;
@@ -48,23 +46,25 @@ bool Data_equal (Any data1, Any data2);
 		Data_equal (data, Data_copy (data)) should always return 1; the names are not compared.
 */
 
-bool Data_canWriteAsEncoding (I, int outputEncoding);
+bool canCopy ();
+
+bool canWriteAsEncoding (int outputEncoding);
 /*
 	Message:
 		"Can you write yourself in that encoding?"
 	The answer depends on whether all members can be written in that encoding.
 */
 
-bool Data_canWriteText (I);
+bool canWriteText ();
 /*
 	Message:
 		"Can you write yourself as text?"
 	The answer depends on whether the subclass defines the 'writeText' method.
 */
 
-int Data_createTextFile (I, MelderFile file, bool verbose);
+int createTextFile (MelderFile file, bool verbose);
 
-int Data_writeText (I, MelderFile openFile);
+int writeText (MelderFile openFile);
 /*
 	Message:
 		"try to write yourself as text to an open file."
@@ -77,7 +77,7 @@ int Data_writeText (I, MelderFile openFile);
 		The format depends on the 'writeText' method defined by the subclass.
 */
 
-int Data_writeToTextFile (I, MelderFile file);
+int writeToTextFile (MelderFile file, bool verbose);
 /*
 	Message:
 		"try to write yourself as text to a file".
@@ -88,7 +88,7 @@ int Data_writeToTextFile (I, MelderFile file);
 		The format of the lines after the second line is the same as in Data_writeText.
 */
 
-int Data_writeToShortTextFile (I, MelderFile file);
+int writeToShortTextFile (MelderFile file);
 /*
 	Message:
 		"try to write yourself as text to a file".
@@ -99,14 +99,14 @@ int Data_writeToShortTextFile (I, MelderFile file);
 		The format of the lines after the second line is the same as in Data_writeText.
 */
 
-bool Data_canWriteBinary (I);
+bool canWriteBinary ();
 /*
 	Message:
 		"Can you write yourself as binary data?"
 	The answer depends on whether the subclass defines the 'writeBinary' method.
 */
 
-int Data_writeBinary (I, FILE *f);
+int writeBinary (FILE *f);
 /*
 	Message:
 		"try to write yourself as binary data to an open file."
@@ -121,7 +121,7 @@ int Data_writeBinary (I, FILE *f);
 		and IEEE floating-point format.
 */
 
-int Data_writeToBinaryFile (I, MelderFile file);
+int writeToBinaryFile (MelderFile file);
 /*
 	Message:
 		"try to write yourself as binary data to a file".
@@ -131,14 +131,14 @@ int Data_writeToBinaryFile (I, MelderFile file);
 		The format of the file after this is the same as in Data_writeBinary.
 */
 
-bool Data_canWriteLisp (I);
+bool canWriteLisp ();
 /*
 	Message:
 		"Can you write yourself as a sequece of LISP objects?"
 	The answer depends on whether the subclass defines a 'writeLisp' method.
 */
 
-int Data_writeLisp (I, FILE *f);
+int writeLisp (FILE *f);
 /*
 	Message:
 		"try to write yourself as a sequence of LISP objects to the stream <f>."
@@ -151,7 +151,7 @@ int Data_writeLisp (I, FILE *f);
 		The format depends on the 'writeLisp' method defined by the subclass.
 */
 
-int Data_writeLispToConsole (I);
+int writeLispToConsole ();
 /*
 	Message:
 		"try to write yourself as a sequence of LISP objects to the standard output."
@@ -162,7 +162,7 @@ int Data_writeLispToConsole (I);
 		The standard output will most often be a window named "Console".
 */
 
-int Data_writeToLispFile (I, MelderFile file);
+int writeToLispFile (MelderFile file);
 /*
 	Message:
 		"try to write yourself as a sequence of LISP objects to a file".
@@ -178,7 +178,7 @@ int Data_writeToLispFile (I, MelderFile file);
 	that you want to read by name. This call is best placed in the beginning of main ().
 */
 
-bool Data_canReadText (I);
+bool canReadText ();
 /*
 	Message:
 		"Can you read yourself as text?"
@@ -186,7 +186,7 @@ bool Data_canReadText (I);
 	but is preferably the same as the answer from Data_canWriteText.
 */
 
-int Data_readText (I, MelderReadText text);
+int readText (MelderReadText text);
 /*
 	Message:
 		"try to read yourself as text from a string."
@@ -201,7 +201,7 @@ int Data_readText (I, MelderReadText text);
 		but is preferably the same as the format produced by the 'writeText' method.
 */
 
-Any Data_readFromTextFile (MelderFile file);
+static Data * readFromTextFile (MelderFile file);
 /*
 	Message:
 		"try to read a Data as text from a file".
@@ -217,7 +217,7 @@ Any Data_readFromTextFile (MelderFile file);
 		(plus those from Data_readText)
 */
 
-bool Data_canReadBinary (I);
+bool canReadBinary ();
 /*
 	Message:
 		"Can you read yourself as binary data?"
@@ -225,7 +225,7 @@ bool Data_canReadBinary (I);
 	but is preferably the same as the answer from Data_canWriteBinary.
 */
 
-int Data_readBinary (I, FILE *f);
+int readBinary (FILE *f);
 /*
 	Message:
 		"try to read yourself as binary data from the stream <f>."
@@ -240,7 +240,7 @@ int Data_readBinary (I, FILE *f);
 		but is preferably the same as the format produced by the 'writeBinary' method.
 */
 
-Any Data_readFromBinaryFile (MelderFile file);
+static Data * readFromBinaryFile (MelderFile file);
 /*
 	Message:
 		"try to read a Data as binary data from a file".
@@ -256,7 +256,7 @@ Any Data_readFromBinaryFile (MelderFile file);
 		(plus those from Data_readBinary)
 */
 
-bool Data_canReadLisp (I);
+bool canReadLisp ();
 /*
 	Message:
 		"Can you read yourself from a sequence of LISP objects?"
@@ -264,7 +264,7 @@ bool Data_canReadLisp (I);
 	but is preferably the same as the answer from Data_canWriteLisp.
 */
 
-int Data_readLisp (I, FILE *f);
+int readLisp (FILE *f);
 /*
 	Message:
 		"try to read yourself from a sequence of LISP objects in the stream <f>."
@@ -279,7 +279,7 @@ int Data_readLisp (I, FILE *f);
 		but is preferably the same as the format produced by the 'writeLisp' method.
 */
 
-Any Data_readFromLispFile (MelderFile fs);
+static Data * readFromLispFile (MelderFile fs);
 /*
 	Message:
 		"try to read a Data from a sequence of LISP objets in a file".
@@ -295,59 +295,72 @@ Any Data_readFromLispFile (MelderFile fs);
 		(plus those from Data_readLisp)
 */
 
-typedef struct structData_Description {
-	const wchar_t *name;   /* The name of this field. */
-	int type;   /* bytewa..inheritwa, see below */
-	int offset;   /* The offset of this field in the enveloping struct. */
-	int size;   /* The size of this field if it is in an array. */
-	const wchar_t *tagName;   /* For structs: tag; for classes: class name; for enums: type name. */
-	void *tagType;   /* For structs: offset table; for classes: class pointer; for enums: enum pointer. */
-	int rank;   /* 0 = single, 1 = vector, 2 = matrix, 3 = set, -1 = array. */
-	const wchar_t *min1, *max1;   /* For vectors and matrices. */
-	const wchar_t *min2, *max2;   /* For matrices. */
-} *Data_Description;
+struct Description {
+static int countMembers (Description *structDescription);
+/* Including inherited members. */
 
-#define Data_members Thing_members
-#define Data_methods Thing_methods \
-	struct structData_Description *description; \
-	int (*copy) (Any data_from, Any data_to); \
-	bool (*equal) (Any data1, Any data2); \
-	bool (*canWriteAsEncoding) (I, int outputEncoding); \
-	int (*writeText) (I, MelderFile openFile); \
-	int (*readText) (I, MelderReadText text); \
-	int (*writeBinary) (I, FILE *f); \
-	int (*readBinary) (I, FILE *f); \
-	int (*writeCache) (I, CACHE *f); \
-	int (*readCache) (I, CACHE *f); \
-	int (*writeLisp) (I, FILE *f); \
-	int (*readLisp) (I, FILE *f); \
-	/* Messages for scripting. */ \
-	double (*getNrow) (I); \
-	double (*getNcol) (I); \
-	double (*getXmin) (I); \
-	double (*getXmax) (I); \
-	double (*getYmin) (I); \
-	double (*getYmax) (I); \
-	double (*getNx) (I); \
-	double (*getNy) (I); \
-	double (*getDx) (I); \
-	double (*getDy) (I); \
-	double (*getX) (I, long ix); \
-	double (*getY) (I, long iy); \
-	const wchar * (*getRowStr) (I, long irow); \
-	const wchar * (*getColStr) (I, long icol); \
-	double (*getCell) (I); \
-	const wchar * (*getCellStr) (I); \
-	double (*getVector) (I, long irow, long icol); \
-	const wchar * (*getVectorStr) (I, long icol); \
-	double (*getMatrix) (I, long irow, long icol); \
-	const wchar * (*getMatrixStr) (I, long irow, long icol); \
-	double (*getFunction0) (I); \
-	double (*getFunction1) (I, long irow, double x); \
-	double (*getFunction2) (I, double x, double y); \
-	double (*getRowIndex) (I, const wchar_t *rowLabel); \
-	double (*getColumnIndex) (I, const wchar_t *columnLabel);
-class_create (Data, Thing);
+static Description * findMatch (Description *structDescription, const wchar_t *member);
+/* Find the location of member 'member' in a struct. */
+/* If 'structDescription' describes a class, the ancestor classes are also searched. */
+
+static Description * findNumberUse (Description *structDescription, const wchar_t *string);
+/* Find the first member that uses member 'string' in its size description (max1 or max2 fields). */
+
+/* Retrieving data from object + description. */
+
+static long integer (void *structAddress, Description *description);
+/* Convert data found at a certain offset from 'address' to an integer, according to the given 'description'. */
+
+static int evaluateInteger (void *structAddress, Description *structDescription,
+	const wchar_t *formula, long *result);
+/*
+ * Translates a string like '100' or 'my numberOfHorses' or 'my numberOfCows - 1' to an integer.
+ * The 'algorithm' does some wild guesses as to the meanings of the 'min1' and 'max1' strings.
+ * A full-fledged interpretation is preferable...
+ * Returns 0 if 'formula' cannot be parsed to a number.
+ */
+
+	const wchar_t *_name;   /* The name of this field. */
+	int _type;   /* bytewa..inheritwa, see below */
+	int _offset;   /* The offset of this field in the enveloping struct. */
+	int _size;   /* The size of this field if it is in an array. */
+	const wchar_t *_tagName;   /* For structs: tag; for classes: class name; for enums: type name. */
+	void *_tagType;   /* For structs: offset table; for classes: class pointer; for enums: enum pointer. */
+	int _rank;   /* 0 = single, 1 = vector, 2 = matrix, 3 = set, -1 = array. */
+	const wchar_t *_min1, *_max1;   /* For vectors and matrices. */
+	const wchar_t *_min2, *_max2;   /* For matrices. */
+};
+
+	Description *_description;
+	virtual int copyTo (Data *to);
+	virtual int writeCache (CACHE *f);
+	virtual int readCache (CACHE *f);
+	/* Messages for scripting. */
+	virtual double getNrow ();
+	virtual double getNcol ();
+	virtual double getXmin ();
+	virtual double getXmax ();
+	virtual double getYmin ();
+	virtual double getYmax ();
+	virtual double getNx ();
+	virtual double getNy ();
+	virtual double getDx ();
+	virtual double getDy ();
+	virtual double getX (long ix);
+	virtual double getY (long iy);
+	virtual const wchar * getRowStr (long irow);
+	virtual const wchar * getColStr (long icol);
+	virtual double getCell ();
+	virtual const wchar * getCellStr ();
+	virtual double getVector (long irow, long icol);
+	virtual const wchar * getVectorStr (long icol);
+	virtual double getMatrix (long irow, long icol);
+	virtual const wchar * getMatrixStr (long irow, long icol);
+	virtual double getFunction0 ();
+	virtual double getFunction1 (long irow, double x);
+	virtual double getFunction2 (double x, double y);
+	virtual double getRowIndex (const wchar_t *rowLabel);
+	virtual double getColumnIndex (const wchar_t *columnLabel);
 
 /* The values of 'type' in struct descriptions. */
 
@@ -381,31 +394,7 @@ class_create (Data, Thing);
 
 /* Recursive routines for working with struct members. */
 
-int Data_Description_countMembers (Data_Description structDescription);
-/* Including inherited members. */
-
-Data_Description Data_Description_findMatch (Data_Description structDescription, const wchar_t *member);
-/* Find the location of member 'member' in a struct. */
-/* If 'structDescription' describes a class, the ancestor classes are also searched. */
-
-Data_Description Data_Description_findNumberUse (Data_Description structDescription, const wchar_t *string);
-/* Find the first member that uses member 'string' in its size description (max1 or max2 fields). */
-
-/* Retrieving data from object + description. */
-
-long Data_Description_integer (void *structAddress, Data_Description description);
-/* Convert data found at a certain offset from 'address' to an integer, according to the given 'description'. */
-
-int Data_Description_evaluateInteger (void *structAddress, Data_Description structDescription,
-	const wchar_t *formula, long *result);
-/*
- * Translates a string like '100' or 'my numberOfHorses' or 'my numberOfCows - 1' to an integer.
- * The 'algorithm' does some wild guesses as to the meanings of the 'min1' and 'max1' strings.
- * A full-fledged interpretation is preferable...
- * Returns 0 if 'formula' cannot be parsed to a number.
- */
-
-void Data_recognizeFileType (Any (*recognizer) (int nread, const char *header, MelderFile fs));
+static void recognizeFileType (Data * (*recognizer) (int nread, const char *header, MelderFile fs));
 /*
 Purpose:
 	to make sure that a file can be read by Data_readFromFile.
@@ -451,7 +440,7 @@ Registering a file-type recognizer:
 	After this, Data_readFromFile is able to read Sun audio files.
 */
 
-Any Data_readFromFile (MelderFile file);
+static Data * readFromFile (MelderFile file);
 /*
 Purpose:
 	to read a file with data of any kind.
@@ -467,11 +456,9 @@ Behaviour:
 	If this also fails, Data_readFromFile returns NULL.
 */
 
-extern structMelderDir Data_directoryBeingRead;
+};
 
-#ifdef __cplusplus
-	}
-#endif
+extern structMelderDir Data_directoryBeingRead;
 
 /* End of file Data.h */
 #endif

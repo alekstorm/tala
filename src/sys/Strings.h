@@ -25,32 +25,32 @@
 
 #include "Data.h"
 
-#include "Strings_def.h"
+class Strings : public Data {
+public:
+	Strings (const wchar_t *path, bool fileList);
+	Strings (MelderFile file);
 
-#ifdef __cplusplus
-	extern "C" {
-#endif
+	void info ();
+	const wchar_t * getVectorStr(long icol);
 
-#define Strings_methods Data_methods
-oo_CLASS_CREATE (Strings, Data);
+	int writeToRawTextFile (MelderFile file);
 
-Strings Strings_createAsFileList (const wchar_t *path);
-Strings Strings_createAsDirectoryList (const wchar_t *path);
-Strings Strings_readFromRawTextFile (MelderFile file);
-int Strings_writeToRawTextFile (Strings me, MelderFile file);
+	void randomize ();
+	int genericize ();
+	int nativize ();
+	void sort ();
 
-void Strings_randomize (Strings me);
-int Strings_genericize (Strings me);
-int Strings_nativize (Strings me);
-void Strings_sort (Strings me);
+	void remove (long position);
+	int replace (long position, const wchar_t *text);
+	int insert (long position, const wchar_t *text);
 
-void Strings_remove (Strings me, long position);
-int Strings_replace (Strings me, long position, const wchar_t *text);
-int Strings_insert (Strings me, long position, const wchar_t *text);
+protected:
+	long _numberOfStrings;
+	wchar_t **_strings;
 
-#ifdef __cplusplus
-	}
-#endif
+	long totalLength ();
+	long maximumLength ();
+};
 
 /* End of file Strings.h */
 #endif

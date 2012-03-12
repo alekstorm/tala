@@ -35,55 +35,41 @@
 
 static long theTotalNumberOfThings;
 
-static void destroy (I) { iam (Thing); Melder_free (my name); }
+void Thing::destroy () {
+	Melder_free (name);
+}
 
-static void info (I) {
-	iam (Thing);
-	MelderInfo_writeLine2 (L"Object type: ", Thing_className (me));
-	MelderInfo_writeLine2 (L"Object name: ", my name ? my name : L"<no name>");
+void Thing::info () {
+	MelderInfo_writeLine2 (L"Object type: ", className ());
+	MelderInfo_writeLine2 (L"Object name: ", name ? name : L"<no name>");
 	time_t today = time (NULL);
 	MelderInfo_writeLine2 (L"Date: ", Melder_peekUtf8ToWcs (ctime (& today)));   /* Includes a newline. */
 }
 
-static void nameChanged (Any thing) {
-	(void) thing;
+void Thing::nameChanged () {}
+
+const wchar_t * Thing::className () {
+	return _className;
 }
 
-/* Because Thing has no parent, we cannot use the macro `class_methods': */
-static void _Thing_initialize (void *table);
-struct structThing_Table theStructThing =
-	{ _Thing_initialize, L"Thing", NULL, sizeof (struct structThing) };
-Thing_Table classThing = & theStructThing;
-static void _Thing_initialize (void *table) {
-	Thing_Table us = (structThing_Table*)table;
-	us -> destroy = destroy;
-	us -> info = info;
-	us -> nameChanged = nameChanged;
-}
-
-const wchar_t * Thing_className (I) { iam (Thing); return our _className; }
-
-Any _Thing_new (void *table) {
-	Thing_Table us = (structThing_Table*)table;
-	Thing me = (Thing) _Melder_calloc_e (1, us -> _size);
+void * Thing::operator new (size_t size) {
+	Thing *me = (Thing *) _Melder_calloc_e (1, size);
 	if (! me) return Melder_errorp ("(Thing_new:) Out of memory.");
 	theTotalNumberOfThings += 1;
-	my methods = us;
-	my name = NULL;
-	if (! us -> destroy)   /* Table not initialized? */
-		us -> _initialize (us);
-	if (Melder_debug == 39) Melder_casual ("created %ls", my methods -> _className);
 	return me;
 }
 
-static int numberOfReadableClasses = 0;
-static void *readableClasses [1 + 1000];
-static void _Thing_addOneReadableClass (Thing_Table readableClass) {
+int numberOfReadableClasses = 0;
+
+void *readableClasses [1 + 1000];
+
+void _Thing_addOneReadableClass (Thing_Table readableClass) {
 	if (++ numberOfReadableClasses > 1000)
 		Melder_fatal ("(Thing_recognizeClassesByName:) Too many (1001) readable classes.");
 	readableClasses [numberOfReadableClasses] = readableClass;
 	readableClass -> sequentialUniqueIdOfReadableClass = numberOfReadableClasses;
 }
+
 void Thing_recognizeClassesByName (void *readableClass, ...) {
 	va_list arg;
 	void *klas;
@@ -201,7 +187,6 @@ void * _Thing_check (I, void *klas, const char *fileName, int line) {
 }
 
 void Thing_infoWithId (I, unsigned long id) {
-	iam (Thing);
 	Melder_clearInfo ();
 	MelderInfo_open ();
 	if (id != 0) MelderInfo_writeLine2 (L"Object id: ", Melder_integer (id));
@@ -210,11 +195,10 @@ void Thing_infoWithId (I, unsigned long id) {
 }
 
 void Thing_info (I) {
-	iam (Thing);
 	Thing_infoWithId (me, 0);
 }
 
-wchar_t * Thing_getName (I) { iam (Thing); return my name; }
+wchar_t * Thing_getName (I) { return my name; }
 
 wchar_t * Thing_messageName (I) {
 	iam (Thing);

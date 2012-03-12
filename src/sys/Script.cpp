@@ -25,16 +25,8 @@
 
 #include "Script.h"
 
-class_methods (Script, Data) {
-	class_methods_end
-}
-
-Script Script_createFromFile (MelderFile file) {
-	Script me = Thing_new (Script); cherror
-	MelderFile_copy (file, & my file);
-end:
-	iferror forget (me);
-	return me;
+Script::Script (MelderFile file) {
+	MelderFile_copy (file, & _file);
 }
 
 /* End of file Script.c */
